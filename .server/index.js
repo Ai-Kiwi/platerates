@@ -1,10 +1,11 @@
 const express = require('express')
 var bodyParser = require('body-parser')
-var crypto = require('crypto');
-const multer = require('multer');
+const crypto = require('crypto');
 const sharp = require('sharp');
-
-const upload = multer();
+const jwt = require('jsonwebtoken');
+const safeCompare = require('safe-compare');
+const fs = require('fs');
+require('dotenv').config();
 
 const app = express()
 app.use(bodyParser.json({ limit: '2mb' }))       // to support JSON-encoded bodies
@@ -12,18 +13,13 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 
 
-var safeCompare = require('safe-compare');
-var jwt = require('jsonwebtoken');
-var fs = require('fs');
-var privateKey = fs.readFileSync('private.key'); 
-//var privateKey = crypto.randomBytes(32);
 
-var port = 3000;
+const privateKey = fs.readFileSync('private.key'); 
+//const privateKey = crypto.randomBytes(32);
 
-
+const port = process.env.port;
 
 const { MongoClient } = require('mongodb');
-const { table } = require('console');
 const mongoDB_dataBase = process.env.mongoDB_dataBase;
 const mongodb_url = process.env.mongodb_url;
 const mongodb_client = new MongoClient(mongodb_url, {
@@ -35,11 +31,6 @@ mongodb_client.connect()
 const database = mongodb_client.db(mongoDB_dataBase);
 
 
-//THIS NEEDS TO BE MOVED OVER TO FILES OR MORE SECURE SYSTEM
-const mongoDB_name = "admin";
-const mongoDB_password = "w8Z49@Nw$K3#A!RO7&3%QRhIQI^AicD#";
-
-
 function generateRandomString(length) {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
@@ -49,11 +40,6 @@ function generateRandomString(length) {
   }
   return result;
 }
-
-
-//ALL USER INPUTS MUST BE SANATISED
-//RIGHT NOW IT IS GOING STRAGHT INTO THE DATABASE AND THAT IS THE DUMBAST IDEA I HAVE EVER HAD
-//fix up system for login time out
 
 
 //create a key for putting in file, leaving where for when needed
@@ -86,10 +72,8 @@ async function updateUserPassword(email, newPassword) {
         passwordSalt: passwordSalt,
       }}
       );
-
-    console.log('Password updated successfully');
   } catch (error) {
-    console.error('Error updating password:', error);
+    console.log('Error updating password:', error);
   }
 }
 
@@ -187,7 +171,6 @@ async function testToken(token,ipAddress){
     }
     if (decoded == null){
       return [false]
-      console.log("decoded invaild");
     };
 
     const userId = decoded.userId;
@@ -200,13 +183,11 @@ async function testToken(token,ipAddress){
     //make sure token is not invald bcause of password reset
     if(decoded.tokenNotExpiredCode !== userData.tokenNotExpiredCode){
       return [false]; 
-      console.log("token is out of date");
     };
 
     //another test to make sure it is the same ip address
     if(decoded.ipAddress !== ipAddress){
       return [false];
-      console.log("token is wrong Ip address");
     };
 
     //another test to make sure device header informastion is the same as before
@@ -409,8 +390,6 @@ app.post('/post/upload', async (req, res) => {
     var vaildToken = false;
     var userId = "";
     [vaildToken, userId] = await testToken(token,req.ip); //frankly I have no idea why you need the square brackets but it fixes it so eh
-    console.log(token);
-    console.log(vaildToken);
 
     if (vaildToken) {
       var collection = database.collection('posts');
@@ -426,7 +405,6 @@ app.post('/post/upload', async (req, res) => {
         postId =  generateRandomString(16);
 
         let postIdInUse = await collection.findOne({postId: postId});
-        console.log(postIdInUse);
         if (postIdInUse === null){
           break
         }
@@ -436,14 +414,14 @@ app.post('/post/upload', async (req, res) => {
       //make sure title not to large or empty and isn't null or undefined
       if (title.length > 50) {
         return res.status(400).send('title is to large.');
-      }else if (title.trim().length === 0 && title) {
+      }else if (title === null || title.match(/^ *$/) !== null || title === undefined) {
         return res.status(400).send('title is empty.');
       }
 
       //make sure description not to large or empty and isn't null or undefined
       if (description.length > 250) {
         return res.status(400).send('description is to large');
-      }else if (description.trim().length === 0 && title) {
+      }else if (description === null || description.match(/^ *$/) !== null || description === undefined) {
         return res.status(400).send('description is empty.');
       }
 
@@ -518,6 +496,7 @@ app.post('/post/data', async (req, res) => {
   
     if (vaildToken) { // user token is valid
       var collection = database.collection('posts');
+      var userDataCollection = database.collection('user_data');
       var itemData = await collection.findOne({postId: postId})
 
       if (itemData === null) {
@@ -527,8 +506,6 @@ app.post('/post/data', async (req, res) => {
       if (itemData.shareMode !== 'public'){
         return res.status(403).send("can't view post");
       }
-
-      var returnData = {}
       
 
       let imageData = null;
@@ -536,6 +513,11 @@ app.post('/post/data', async (req, res) => {
       imageData = imageData.toString('base64');
 
 
+      const posterUserData = await userDataCollection.findOne({ userId: itemData.posterUserId })
+      console.log(posterUserData)
+      if (posterUserData === undefined || posterUserData === null) {
+        return res.status(400).send("unkown poster");
+      }
 
       return res.status(200).json({
         title : itemData.title,
@@ -543,6 +525,9 @@ app.post('/post/data', async (req, res) => {
         rating : itemData.rating,
         postId : postId,
         imageData : imageData,
+        posterData : {
+          username : posterUserData.username,
+        },
       });
 
     }else{
@@ -577,19 +562,14 @@ app.post('/post/feed', async (req, res) => {
       }
 
       posts = await collection.find({ shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(2).toArray();
-      console.table(posts)
       var returnData = {}
       returnData["posts"] = []
-
-      console.table(returnData);
       
 
       for (var i = 0; i < posts.length; i++) {
         returnData["posts"].push(posts[i].postId);
-        console.log(posts[i]);
         //Do something
       }
-      console.table(returnData);
 
       return res.status(200).json(returnData);
 
@@ -619,7 +599,7 @@ app.listen(port, () => {
 //encrystion and custom system to secure messaging for flutter website request
 //use tokens for requests
 // - tokens should instead have a time set and saved after you reset password and then cheek agensit that
-
+//add returning for server errors
 
 //stoping bots
 //when login you will have a captcha you have to solve, after catcha is solved and loin in you will be given a token.
@@ -628,6 +608,12 @@ app.listen(port, () => {
 //app should have anti emulator tools as well as obfuscating to stop getting token via running app
 //anti root kit in app
 //if alot sus things are done or maybe to many requests flag account and log them out to many flags ban account
+//add local caching of posts
+//add indexing to make make fetching posts from database faster
+//add thing when you get to end of posts that tells you that you have reached the end
+//fix catching on post desc
+//add back your feed text
+//fix postioning in taking photo page
 
 //features to add
 //take picture before sending
@@ -647,6 +633,7 @@ app.listen(port, () => {
 //logout all other devices
 //rate limiting to createing posts
 //add some basic error reporting to server
+//change system for input login timeouts to work better
 
 //server for software, with https instead of http
 

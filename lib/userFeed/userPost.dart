@@ -46,11 +46,13 @@ class _PostItemState extends State<PostItem> {
           description = jsonData["description"];
           rating = double.parse('${jsonData["rating"]}');
           imageData = base64Decode(jsonData['imageData']);
+          posterName = jsonData["posterData"]['username'];
           errorOccurred = false;
         });
       } catch (err) {}
       return;
     } else {
+      print(response.body);
       setState(() {
         errorOccurred = true;
       });
@@ -69,6 +71,11 @@ class _PostItemState extends State<PostItem> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (errorOccurred == true) {
       return Padding(
@@ -81,7 +88,7 @@ class _PostItemState extends State<PostItem> {
                 style: TextStyle(color: Colors.red, fontSize: 20),
               ))));
     } else {
-      if (title.isEmpty) {
+      if (title.isEmpty && description.isEmpty) {
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
             child: Container(
@@ -255,25 +262,28 @@ class _PostItemState extends State<PostItem> {
                   ),
                   const SizedBox(height: 8.0),
                   Padding(
-                    //desc
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Container(
-                      height: 150,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(
-                            width: 2,
-                            color: const Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      child: Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Text(
-                            description,
-                            style: TextStyle(color: Colors.white, fontSize: 15),
-                          )),
-                    ),
-                  ),
+                      //description
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Container(
+                          height: 100,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                                width: 2,
+                                color: const Color.fromARGB(255, 45, 45, 45)),
+                          ),
+                          child: ListView(
+                            children: [
+                              Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    description,
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                  ))
+                            ],
+                          ))),
                   const SizedBox(height: 16.0),
                 ])));
       }
