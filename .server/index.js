@@ -24,8 +24,8 @@ var port = 3000;
 
 const { MongoClient } = require('mongodb');
 const { table } = require('console');
-const mongoDB_dataBase = "toaster-dev";
-const mongodb_url = "mongodb://admin:w8Z49%40Nw%24K3%23A!RO7%263%25QRhIQI%5EAicD%23@192.168.0.166:27017/?authMechanism=DEFAULT";
+const mongoDB_dataBase = process.env.mongoDB_dataBase;
+const mongodb_url = process.env.mongodb_url;
 const mongodb_client = new MongoClient(mongodb_url, {
   useNewUrlParser: true, 
   useUnifiedTopology: true, 
