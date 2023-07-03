@@ -223,7 +223,7 @@ class _CreatePostState extends State<CreatePostPage> {
                                 Alert(
                                   context: context,
                                   type: AlertType.success,
-                                  title: "image posted",
+                                  title: "post uploaded",
                                   desc: "",
                                   buttons: [
                                     DialogButton(

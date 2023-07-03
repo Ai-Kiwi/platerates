@@ -18,17 +18,7 @@ class _userFeedState extends State<userFeed> {
   final double scrollDistence = 0.8;
   String? lastPost;
 
-  var postsWidget = <Widget>[
-    Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-        child: Text(
-          "Your feed",
-          style: TextStyle(color: Colors.white, fontSize: 40),
-        ),
-      ),
-    )
-  ];
+  var posts = [];
 
   Future<void> _fetchPosts() async {
     _isLoading = true;
@@ -51,12 +41,11 @@ class _userFeedState extends State<userFeed> {
         var fetchedData = jsonDecode(response.body);
         var postData = fetchedData["posts"];
         if (fetchedData["posts"].isEmpty) {
-          //no new posts to get just gonna pretend it is still getting new ones
           _isLoading = true;
           return;
         }
         for (var post in postData) {
-          postsWidget.add(PostItem(postId: post));
+          posts.add(post);
           lastPost = post;
         }
       });
@@ -100,15 +89,22 @@ class _userFeedState extends State<userFeed> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     //final ThemeData theme = Theme.of(context);
-
     return Container(
       decoration: const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
       child: Center(
-        child: ListView(
+        child: ListView.builder(
           controller: _scrollController,
-          children: postsWidget,
+          itemCount: posts.length,
+          itemBuilder: (context, index) {
+            return PostItem(postId: posts[index]);
+          },
         ),
       ),
     );

@@ -129,12 +129,15 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: const Center(
-                        child: Text(
-                            "Toaster is currently in a closed beta. Please contact the owner to request access to the closed beta.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                            )),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                              "Toaster is currently in a closed beta. Please contact the owner to request access to the closed beta.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                              )),
+                        ),
                       ),
                     ),
                   ),

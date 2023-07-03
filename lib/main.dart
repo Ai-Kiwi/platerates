@@ -1,4 +1,5 @@
 import 'package:Toaster/userFeed/userFeed.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'createPost/createPostPhoto.dart';
@@ -7,10 +8,13 @@ import 'navbar.dart';
 
 //add better loading system, should have a nice ui as well as handling for when it can't talk to the server
 
-const serverDomain = '192.168.0.157:3000';
+String serverDomain = 'toaster.aikiwi.dev';
 
 void main() {
   runApp(const MyApp());
+  if (kDebugMode) {
+    serverDomain = '192.168.0.157:3000';
+  }
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -23,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
+        value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           systemNavigationBarColor: Colors.green,
           statusBarIconBrightness: Brightness.light,
@@ -45,7 +49,7 @@ class MyApp extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                             Padding(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 16),
                               child: Text(
                                 "Toaster",
