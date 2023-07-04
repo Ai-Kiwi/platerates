@@ -11,10 +11,10 @@ import 'navbar.dart';
 String serverDomain = 'toaster.aikiwi.dev';
 
 void main() {
-  runApp(const MyApp());
   if (kDebugMode) {
-    serverDomain = '192.168.0.157:3000';
+    serverDomain = '192.168.0.157:3030';
   }
+  runApp(const MyApp());
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);

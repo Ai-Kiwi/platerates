@@ -213,6 +213,7 @@ app.get('/', (req, res) => {
 // POST method route
 app.post('/login', async (req, res) => {
   try{
+    console.log("user login")
     //add rate limitng
     //add system to see if the same ip address is making alot of requests
     //add system to make sure account is not locked with all ip's, that ip or anything
@@ -335,6 +336,7 @@ app.post('/login', async (req, res) => {
 })
 
 app.post('/testToken', async (req, res) => {
+  console.log("user testing token")
   const token = req.body.token;
   if(await testToken(token,req.ip)[0]){
     res.status(200).send();
@@ -345,6 +347,7 @@ app.post('/testToken', async (req, res) => {
 })
 
 app.post('/getProfile', async (req, res) => {
+  console.log("user fetching profile")
   try{
     const token = req.body.token;
     [validToken, requesterUserId] = await testToken(token,req.ip)
@@ -379,6 +382,7 @@ app.post('/getProfile', async (req, res) => {
 //createUser("jsowry936@gmail.com","1234","toasterLover46")
 
 app.post('/post/upload', async (req, res) => {
+  console.log("user uploading post")
   try{
     const token = req.body.token;
     const title = req.body.title;
@@ -487,8 +491,8 @@ app.post('/post/upload', async (req, res) => {
 
 app.post('/post/data', async (req, res) => {
   try{
+    console.log("user fetching post")
     const token = req.body.token;
-    console.log(await testToken(token,req.ip));
     var vaildToken, userId;
 
     [vaildToken, userId] = await testToken(token,req.ip)
@@ -514,7 +518,6 @@ app.post('/post/data', async (req, res) => {
 
 
       const posterUserData = await userDataCollection.findOne({ userId: itemData.posterUserId })
-      console.log(posterUserData)
       if (posterUserData === undefined || posterUserData === null) {
         return res.status(400).send("unkown poster");
       }
@@ -657,7 +660,16 @@ app.listen(port, () => {
 //add loading screen while uploading post
 //you can still somtimes upload when descripstion is nothing
 //look at why I always need to relogin
+//search menu
+//add caching for posts on local device
+//scrolling up is way to fast due to stuff reloading
+//fix constently getting posts, eg caching or fixing up // use flutter_cache_manager
 
 //use image_cropper for user avatars
 
 //system should never display images from internet, instead it should display from locally cached images which are auto gatherd from internet when needed
+
+
+//low resolstion
+//overflow on public or private post part
+//overflow on login screen
