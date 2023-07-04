@@ -101,9 +101,22 @@ class _userFeedState extends State<userFeed> {
       child: Center(
         child: ListView.builder(
           controller: _scrollController,
-          itemCount: posts.length,
+          itemCount: posts.length + 1,
           itemBuilder: (context, index) {
-            return PostItem(postId: posts[index]);
+            if (index == 0) {
+              return const Center(
+                  child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                      child: Text(
+                        "Your feed",
+                        style: TextStyle(color: Colors.white, fontSize: 40),
+                      )));
+            } else {
+              return PostItem(
+                postId: posts[index - 1],
+              );
+            }
           },
         ),
       ),
