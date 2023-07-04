@@ -589,87 +589,62 @@ app.listen(port, () => {
 })
 
 
-//error codes
-//If the user enters an incorrect password, the server will typically respond with an HTTP status code of 401 (Unauthorized) and a message indicating that the password is incorrect.
-//If the user is not authorized to access the resource, the server may respond with an HTTP status code of 403 (Forbidden) and a message indicating that the user does not have sufficient privileges to access the resource.
-//If the server is unable to connect to the database or perform some other necessary operation, it may respond with an HTTP status code of 500 (Internal Server Error) and a message indicating that there was a problem with the server.
-//If the user enters a correct password and the authentication is successful, the server may respond with an HTTP status code of 200 (OK) and provide access to the resource that the user was attempting to access.
-
-//notes for secrirty
-//use rate limitng for password login, one for ip then another if alot of different ip is trying to connect
-//sus actions should trigger and ban ip address
-//captcha to make sure there not a bot
-//encrystion and custom system to secure messaging for flutter website request
-//use tokens for requests
-// - tokens should instead have a time set and saved after you reset password and then cheek agensit that
-//add returning for server errors
-
-//stoping bots
-//when login you will have a captcha you have to solve, after catcha is solved and loin in you will be given a token.
-//token is just for that one device so you can't share making bots harder to make, includes inthings like device info and ip address.
-//proxy services and hosting providers should also be blocked
-//app should have anti emulator tools as well as obfuscating to stop getting token via running app
-//anti root kit in app
-//if alot sus things are done or maybe to many requests flag account and log them out to many flags ban account
-//add local caching of posts
-//add indexing to make make fetching posts from database faster
-//add thing when you get to end of posts that tells you that you have reached the end
-//fix catching on post desc
-//add back your feed text
-//fix postioning in taking photo page
 
 //features to add
-//take picture before sending
-//add toaster watermark for sharing
-//make error message dark mode
-//should be a way for users to delete their data
-//option for posts to be global or just friends
-//add sign in with google
-//login with username instead of email
+//reset password
+//profile's
+// //show past posts
+// // //delete old posts
+// //reset password
+// //change username
+// //change email
+// //logout current or all devices
+// //private accounts
+// //delete all data
+//report feature
+//adding as friend
+//rating posts
+//ban prompt 
+//rate limiting
+// //creating posts
+//indexing posts to be faster
+
+//security to add
+//root detection etc, bans after login
+//certificate pinning
+//bans based on device fingerprint
+//captcha for alota logins
+//block proxy's and vpns
+//device fingerprint to token
+
+//bugs to fix
+//look at why I always need to relogin
+//lack of post caching, scrolling spam regets from servers
+//add error checking for post item being added to documents in mongodb
+//loading screen after take photo and upload photo
+//delete old photos not needed when taking picture
+//fix up login timeouts formula
+//dark mode popups
+//postion of take picture
+
+//possible future features
+//chat system
+//search menu
+//nicer failed getting posts
+//add setting for not using flashlight
+//way to suggest features
 //toaster leaderboards
 //toaster streaks
-//should be able to rate your own toast
-//add caching 
-//add private accounts
-//reset password, email version and non email
-//logout of account
-//logout all other devices
-//rate limiting to createing posts
-//add some basic error reporting to server
-//change system for input login timeouts to work better
-
-//server for software, with https instead of http
-
-//fast changing to camera screen and back and fourth causes crash
-//add inner padding to early accses notice
-//add alert about reset password not being added yet
-//when using non green color them login page is still green
-//add rating system
-//add profile system
-//add reporting posts
-//add suggest features
-//delete old photos not needed
-//add popup on fail to take photo
-//crop photo
-//add setting for not using flashlight
-//add loading circle after you click take photo
-//profile screen shows posts they have made
-//add PopupMenuButton for when clicking on items
-//more then 5 lines don't get displayed with
-//add error checking for post item being added to documents in mongodb
-//add loading screen while uploading post
-//you can still somtimes upload when descripstion is nothing
-//look at why I always need to relogin
-//search menu
-//add caching for posts on local device
-//scrolling up is way to fast due to stuff reloading
-//fix constently getting posts, eg caching or fixing up // use flutter_cache_manager
-
-//use image_cropper for user avatars
-
-//system should never display images from internet, instead it should display from locally cached images which are auto gatherd from internet when needed
+//improve server error reporting
+//sign in with google
+//shareing toasts
+// //toaster watermark
+//reached end of your feed
 
 
 //low resolstion
 //overflow on public or private post part
 //overflow on login screen
+
+//plugins to use
+//use image_cropper for user avatars
