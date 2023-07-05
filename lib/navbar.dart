@@ -41,11 +41,11 @@ class UserNavbar extends StatelessWidget {
             activeIcon: Icon(Icons.add),
             label: 'create',
           ),
-          //BottomNavigationBarItem(
-          //  icon: Icon(Icons.person_outlined),
-          //  activeIcon: Icon(Icons.person),
-          //  label: 'profile',
-          //),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outlined),
+            activeIcon: Icon(Icons.person),
+            label: 'profile',
+          ),
         ],
         currentIndex: selectedIndex,
         //selectedItemColor: Colors.amber[800],
