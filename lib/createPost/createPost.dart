@@ -148,32 +148,32 @@ class _CreatePostState extends State<CreatePostPage> {
                     )),
               ),
             ),
-            const SizedBox(height: 16.0),
-            Padding(
-              //take photo button
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                width: double.infinity,
-                child: ToggleSwitch(
-                  minWidth: double.infinity,
-                  cornerRadius: 15.0,
-                  initialLabelIndex: 0,
-                  totalSwitches: 2,
-                  activeBgColors: const [
-                    [Colors.green],
-                    [Colors.redAccent]
-                  ],
-                  centerText: true,
-                  activeFgColor: Colors.white,
-                  inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
-                  inactiveFgColor: Colors.white,
-                  labels: postNamings,
-                  onToggle: (index) {
-                    shareModeSelected = index!;
-                  },
-                ),
-              ),
-            ),
+            //const SizedBox(height: 16.0),
+            //Padding(
+            //  //share mode selection
+            //  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //  child: Container(
+            //    width: double.infinity,
+            //    child: ToggleSwitch(
+            //      minWidth: double.infinity,
+            //      cornerRadius: 15.0,
+            //      initialLabelIndex: 0,
+            //      totalSwitches: 2,
+            //      activeBgColors: const [
+            //        [Colors.green],
+            //        [Colors.redAccent]
+            //      ],
+            //      centerText: true,
+            //      activeFgColor: Colors.white,
+            //      inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
+            //      inactiveFgColor: Colors.white,
+            //      labels: postNamings,
+            //      onToggle: (index) {
+            //        shareModeSelected = index!;
+            //      },
+            //    ),
+            //  ),
+            //),
             const SizedBox(height: 16.0),
             Padding(
               //take photo button
