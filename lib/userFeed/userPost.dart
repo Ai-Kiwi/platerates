@@ -113,12 +113,12 @@ class _PostItemState extends State<PostItem> {
                       height: 35,
                       child: Row(children: [
                         const SizedBox(width: 4),
-                        //SizedBox(
-                        //    height: 25,
-                        //    child: CircleAvatar(
-                        //      backgroundImage: NetworkImage(posterAvatar),
-                        //      radius: 15,
-                        //    )),
+                        const SizedBox(
+                            height: 25,
+                            child: CircleAvatar(
+                              backgroundImage: null,
+                              radius: 15,
+                            )),
                         Text(posterName,
                             style: const TextStyle(
                               color: Colors.white,

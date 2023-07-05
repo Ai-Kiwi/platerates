@@ -128,8 +128,9 @@ async function createUser(email,password,username){
         email: email,
         hashedPassword: hashedPassword,
         passwordSalt: passwordSalt,
-        accountLocked: false,
-        accountLockouts: {},
+        accountBanned: false,
+        accountBanReason: "",
+        accountBanExpiryDate: 0,
         failedLoginAttemptInfo: {},
         tokenNotExpiredCode: tokenNotExpiredCode,
         loginHistory: {},
@@ -299,7 +300,10 @@ app.post('/login', async (req, res) => {
         tokenNotExpiredCode: userData.tokenNotExpiredCode,
       }, privateKey, {expiresIn: '30d'});
       
-      res.status(200).send(token);
+      res.status(200).json({
+        token: token,
+        userId: userId,
+      });
       return;
 
     }else{
@@ -338,9 +342,14 @@ app.post('/login', async (req, res) => {
 app.post('/testToken', async (req, res) => {
   console.log("user testing token")
   const token = req.body.token;
-  if(await testToken(token,req.ip)[0]){
+  var tokenVaild, userId;
+  [tokenVaild, userId] = await testToken(token,req.ip)
+
+  if(tokenVaild){
+    console.log("vaild token");
     res.status(200).send();
   }else{
+    console.log("invaild token");
     res.status(401).send();
   }
 
@@ -605,9 +614,11 @@ app.listen(port, () => {
 //adding as friend
 //rating posts
 //ban prompt 
-//rate limiting
 // //creating posts
 //indexing posts to be faster
+//lisences
+// //use AboutDialog to get lisences from packages
+//privacy polocy
 
 //security to add
 //root detection etc, bans after login
@@ -616,6 +627,11 @@ app.listen(port, () => {
 //captcha for alota logins
 //block proxy's and vpns
 //device fingerprint to token
+//login history
+//rate limiting
+// //pots
+// //searching for things
+// //ading frineds
 
 //bugs to fix
 //look at why I always need to relogin
@@ -631,7 +647,9 @@ app.listen(port, () => {
 //chat system
 //search menu
 //nicer failed getting posts
-//add setting for not using flashlight
+//extra camera settings
+// //add setting for not using flashlight
+// //zoom for camera
 //way to suggest features
 //toaster leaderboards
 //toaster streaks
@@ -640,7 +658,9 @@ app.listen(port, () => {
 //shareing toasts
 // //toaster watermark
 //reached end of your feed
-
+//how long ago post was uploaded
+//able to click on user profile avatar and name to open them on posts
+//block users
 
 //low resolstion
 //overflow on public or private post part

@@ -29,9 +29,7 @@ class _CreatePostState extends State<CreatePostPage> {
   List<String> postCodeNames = ['public', 'friends'];
   List<String> postNamings = ['public post', 'friend\'s only post'];
 
-  _CreatePostState({
-    required this.imagePath,
-  });
+  _CreatePostState({required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
