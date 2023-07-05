@@ -19,16 +19,24 @@ class LoginResponse {
 // User class
 class User {
   String token = "";
+  String userId = "";
 
   //User({this.token});
   User();
 
   Future<void> loadTokenFromStoreage() async {
-    String? value = await storage.read(key: "token");
-    if (value == null) {
+    String? tokenValue = await storage.read(key: "token");
+    if (tokenValue == null) {
       token = "";
     } else {
-      token = value.toString();
+      token = tokenValue.toString();
+    }
+
+    String? userIdValue = await storage.read(key: "userId");
+    if (userIdValue == null) {
+      userId = "";
+    } else {
+      userId = userIdValue.toString();
     }
   }
 
@@ -69,8 +77,11 @@ class User {
         }),
       );
       if (response.statusCode == 200) {
-        token = response.body;
+        var returnData = jsonDecode(response.body);
+        token = returnData["token"];
+        userId = returnData["userId"];
         await storage.write(key: "token", value: token);
+        await storage.write(key: "userId", value: userId);
         return LoginResponse(error: null, success: true);
       } else {
         return LoginResponse(error: response.body, success: false);

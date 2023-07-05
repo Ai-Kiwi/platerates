@@ -1,3 +1,4 @@
+import 'package:Toaster/profile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -82,9 +83,7 @@ class MyHomePage extends StatefulWidget {
 List<Widget> pages = <Widget>[
   userFeed(),
   CameraPage(),
-  //Container(
-  //  child: Text("profile screen would be here"),
-  //),
+  //UserProfile(userId: userManager.userId)
 ];
 
 class _MyHomePageState extends State<MyHomePage> {
