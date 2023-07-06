@@ -57,7 +57,7 @@ class _userPostListState extends State<userPostList> {
     }
 
     final response = await http.post(
-      Uri.parse("http://$serverDomain$urlToFetch"),
+      Uri.parse("$serverDomain$urlToFetch"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

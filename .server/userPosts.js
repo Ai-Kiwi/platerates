@@ -141,7 +141,7 @@ router.post('/post/data', async (req, res) => {
         
   
         let imageData = null;
-        imageData = fs.readFileSync(`./images/${itemData.image}.jpg`)
+        imageData = fs.readFileSync(`./images/${itemData.image}.jpg`);
         imageData = imageData.toString('base64');
   
   

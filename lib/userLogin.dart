@@ -46,7 +46,7 @@ class User {
     }
     try {
       final response = await http.post(
-        Uri.parse("http://$serverDomain/testToken"),
+        Uri.parse("$serverDomain/testToken"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -67,7 +67,7 @@ class User {
   Future<LoginResponse> loginUser(String emailAddress, String password) async {
     try {
       final response = await http.post(
-        Uri.parse("http://$serverDomain/login"),
+        Uri.parse("$serverDomain/login"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
