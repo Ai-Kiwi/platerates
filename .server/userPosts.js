@@ -193,7 +193,7 @@ router.post('/post/feed', async (req, res) => {
           }
         }
   
-        posts = await collection.find({ shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(2).toArray();
+        posts = await collection.find({ shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
         var returnData = {}
         returnData["posts"] = []
         
@@ -211,7 +211,7 @@ router.post('/post/feed', async (req, res) => {
     }catch(err){
       console.log(err);
     }
-  })
+})
 
 
 

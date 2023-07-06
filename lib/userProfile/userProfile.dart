@@ -35,7 +35,7 @@ class _UserProfileState extends State<UserProfile> {
     return Scaffold(
         body: userPostList(
             urlToFetch: "/profile/posts",
-            extraUrlData: {userId: userId},
+            extraUrlData: {"userId": userId},
             widgetAddedToTop: Container(
                 decoration:
                     const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),

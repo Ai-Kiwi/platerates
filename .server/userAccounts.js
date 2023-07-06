@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { database } = require('./database');
+const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
 
 
-router.post('/getProfile', async (req, res) => {
+router.post('/profile/data', async (req, res) => {
     console.log("user fetching profile")
     try{
       const token = req.body.token;
@@ -35,6 +36,55 @@ router.post('/getProfile', async (req, res) => {
       console.log(err);
       res.status(500).send("server error")
     }
+})
+
+
+
+router.post('/profile/posts', async (req, res) => {
+  try{
+    const token = req.body.token;
+    const startPosPost = req.body.startPosPost;
+    const fetchingUserId = req.body.userId;
+    var startPosPostDate = 100000000000000
+
+    var vaildToken, userId;
+    [vaildToken, userId] = await testToken(token,req.ip)
+  
+    if (vaildToken) { // user token is valid
+      var collection = database.collection('posts');
+      var posts;
+
+      if (startPosPost) {
+        const startPosPostData = await collection.findOne({ postId: startPosPost })
+        if (!startPosPostData){
+          return res.status(400).send("invaild start post");
+        }else{
+          startPosPostDate = startPosPostData.postDate;
+        }
+      }
+
+      posts = await collection.find({posterUserId : fetchingUserId, shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
+      var returnData = {}
+      returnData["posts"] = []
+      
+      if (posts.length == 0) {
+        console.log("nothing to fetch");
+        console.log(fetchingUserId);
+      }
+
+      for (var i = 0; i < posts.length; i++) {
+        returnData["posts"].push(posts[i].postId);
+        //Do something
+      }
+
+      return res.status(200).json(returnData);
+
+    }else{
+      return res.status(401).send("invaild token");
+    }
+  }catch(err){
+    console.log(err);
+  }
 })
 
 
