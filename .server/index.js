@@ -67,6 +67,9 @@ app.listen(port, () => {
 //post management 
 // //3 dot button if it's your post
 // // //delete post
+//advanced logging
+// //every function should have logging
+// //logging should be annymous for final release
 
 // - security to add
 ////captcha for alota logins
@@ -76,7 +79,6 @@ app.listen(port, () => {
 // //searching for things
 // //ading frineds
 //block proxy's and vpns
-//
 //-client side
 //root detection etc, bans after login
 //certificate pinning
@@ -95,6 +97,8 @@ app.listen(port, () => {
 //fix up login timeouts formula
 //dark mode popups
 //postion of take picture
+//spam asks for new things when at end of feed
+// //applies to both profile and feed, however only profile has log messages for it
 
 // - possible future features after release
 //chat system

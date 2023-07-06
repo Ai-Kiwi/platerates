@@ -108,6 +108,12 @@ class _userPostListState extends State<userPostList> {
     }
   }
 
+  void updateChildWidget(String newState) {
+    setState(() {
+      widgetAddedToTop = widgetAddedToTop;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
