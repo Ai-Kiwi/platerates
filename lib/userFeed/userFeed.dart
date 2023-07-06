@@ -1,12 +1,5 @@
-import 'dart:convert';
-
-import 'package:Toaster/posts/userPost.dart';
 import 'package:Toaster/posts/userPostList.dart';
 import 'package:flutter/material.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:http/http.dart' as http;
-import '../main.dart';
-import '../userLogin.dart';
 
 class userFeed extends StatefulWidget {
   @override

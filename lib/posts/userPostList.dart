@@ -20,7 +20,9 @@ class userPostList extends StatefulWidget {
 
   @override
   State<userPostList> createState() => _userPostListState(
-      widgetAddedToTop: widgetAddedToTop, urlToFetch: urlToFetch);
+      widgetAddedToTop: widgetAddedToTop,
+      urlToFetch: urlToFetch,
+      extraUrlData: extraUrlData);
 }
 
 class _userPostListState extends State<userPostList> {
@@ -30,7 +32,7 @@ class _userPostListState extends State<userPostList> {
   final double scrollDistence = 0.8;
   String? lastPost;
   String urlToFetch;
-  var extraUrlData;
+  Map<String, String>? extraUrlData;
 
   _userPostListState(
       {required this.widgetAddedToTop,
@@ -46,9 +48,8 @@ class _userPostListState extends State<userPostList> {
     };
     //add all the extra parm's
     if (extraUrlData != null) {
-      extraUrlData.forEach((key, value) {
-        dataSending[key] = value;
-      });
+      //extraUrlData!.forEach((key, value) => dataSending[key] = value);
+      dataSending.addAll(extraUrlData!);
     }
 
     if (lastPost != null) {
