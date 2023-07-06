@@ -29,7 +29,7 @@ class _UserProfileState extends State<UserProfile> {
 
   Future<void> _fetchProfile() async {
     final response = await http.post(
-      Uri.parse("http://$serverDomain/profile/data"),
+      Uri.parse("$serverDomain/profile/data"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

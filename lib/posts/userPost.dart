@@ -29,7 +29,7 @@ class _PostItemState extends State<PostItem> {
 
   Future<void> _collectData() async {
     final response = await http.post(
-      Uri.parse("http://$serverDomain/post/data"),
+      Uri.parse("$serverDomain/post/data"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

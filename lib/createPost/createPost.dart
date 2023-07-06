@@ -201,7 +201,7 @@ class _CreatePostState extends State<CreatePostPage> {
                             try {
                               print(_title);
                               final response = await http.post(
-                                Uri.parse("http://$serverDomain/post/upload"),
+                                Uri.parse("$serverDomain/post/upload"),
                                 headers: <String, String>{
                                   'Content-Type':
                                       'application/json; charset=UTF-8',

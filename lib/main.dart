@@ -10,11 +10,12 @@ import 'navbar.dart';
 
 //add better loading system, should have a nice ui as well as handling for when it can't talk to the server
 
-String serverDomain = 'toaster.aikiwi.dev';
+String serverDomain = 'https://toaster.aikiwi.dev';
+bool productionMode = false;
 
 void main() {
-  if (kDebugMode) {
-    serverDomain = '192.168.0.157:3030';
+  if (productionMode == false) {
+    serverDomain = 'http://192.168.0.157:3030';
   }
   runApp(const MyApp());
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
