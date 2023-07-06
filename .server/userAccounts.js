@@ -9,7 +9,8 @@ router.post('/profile/data', async (req, res) => {
     console.log("user fetching profile")
     try{
       const token = req.body.token;
-      [validToken, requesterUserId] = await testToken(token,req.ip)
+      const userId = req.body.userId;
+      [validToken, requesterUserId] = await testToken(token,req.ip);
       const collection = database.collection('user_data');
   
       if (validToken === false){
@@ -20,11 +21,15 @@ router.post('/profile/data', async (req, res) => {
       //if they dont supply any user just fetch themselves
       var fetchingUserId = requesterUserId
       if (req.query.userId) {
-        fetchingUserId = req.query.userId
+        fetchingUserId = req.query.userId;
       }
   
       const userData = await collection.findOne({ userId: userId })
-  
+      
+      if (userData === undefined || userData === null){
+        res.status(400).send("unkown user");
+        console.log("failed unkown error");
+      }
   
       res.status(200).json({
         username: userData.username,
@@ -69,7 +74,6 @@ router.post('/profile/posts', async (req, res) => {
       
       if (posts.length == 0) {
         console.log("nothing to fetch");
-        console.log(fetchingUserId);
       }
 
       for (var i = 0; i < posts.length; i++) {
