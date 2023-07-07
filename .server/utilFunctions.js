@@ -35,10 +35,12 @@ function millisecondsToTime(milliseconds){
     return `${Math.floor(time)} days`
   }
 
-  time = time / 360
-
-  if (time < 24) {
+  if (time < 300) {
+    time = time / 360
     return `${Math.floor(time)} years`
+  }else{
+    time = time / 30
+    return `${Math.floor(time)} months`
   }
 }
 
