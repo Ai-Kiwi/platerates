@@ -125,6 +125,11 @@ class _CameraPageState extends State<CameraPage> {
                   "Create post",
                   style: TextStyle(color: Colors.white, fontSize: 40),
                 ))),
+        const Divider(
+          color: Color.fromARGB(255, 110, 110, 110),
+          thickness: 1.0,
+        ),
+        const SizedBox(height: 8.0),
         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(

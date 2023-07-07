@@ -45,8 +45,6 @@ app.listen(port, () => {
 // - features to add before release
 //reset password
 //profile's
-// //show past posts
-// // //delete old posts
 // //reset password
 // //change username
 // //change email
@@ -98,11 +96,11 @@ app.listen(port, () => {
 //delete old photos not needed when taking picture
 //fix up login timeouts formula
 //dark mode popups
-//postion of take picture
+//postion of text to take picture for post
 //spam asks for new things when at end of feed
 // //applies to both profile and feed, however only profile has log messages for it
 //if connection closes mid data send it will crash the whole app
-//add propper catching with mongodb
+//add propper catching with mongodb fails
 
 // - possible future features after release
 //indexing posts to be faster
