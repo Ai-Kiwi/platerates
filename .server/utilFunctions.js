@@ -10,4 +10,39 @@ function generateRandomString(length) {
     return result;
 }
 
-module.exports = { generateRandomString };
+function millisecondsToTime(milliseconds){
+  let time = milliseconds / 1000;
+
+  if (time < 60) {
+    return `${Math.floor(time)} seconds`
+  }
+
+  time = time / 60
+
+  if (time < 60) {
+    return `${Math.floor(time)} minutes`
+  }
+
+  time = time / 60
+
+  if (time < 60) {
+    return `${Math.floor(time)} hours`
+  }
+
+  time = time / 24
+
+  if (time < 24) {
+    return `${Math.floor(time)} days`
+  }
+
+  time = time / 360
+
+  if (time < 24) {
+    return `${Math.floor(time)} years`
+  }
+}
+
+module.exports = { 
+  generateRandomString:generateRandomString, 
+  millisecondsToTime:millisecondsToTime 
+};

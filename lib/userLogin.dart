@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 const SizedBox(height: 32.0),
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
                     "Login",
                     style: TextStyle(color: Colors.white, fontSize: 40),
