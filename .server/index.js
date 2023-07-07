@@ -1,5 +1,6 @@
 const express = require('express')
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const { banAccount } = require('./userAccounts');
 
 
 require('dotenv').config();
@@ -66,6 +67,10 @@ app.listen(port, () => {
 //advanced logging
 // //every function should have logging
 // //logging should be annymous for final release
+//public release verison
+// //look at better way to store images
+// //make sure nginx forwards ip address informastion
+// //look at if certbot could instead be on server
 
 // - security to add
 ////captcha for alota logins

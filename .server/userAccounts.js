@@ -95,7 +95,34 @@ router.post('/profile/posts', async (req, res) => {
   }
 })
 
+async function banAccount(userId,time) {
+  try{
+    const collection = database.collection("user_credentials");
 
+    const result = await collection.updateOne(
+      { userId: userId },
+      { $set: {
+        accountBanExpiryDate : Date.now() + time,
+        tokenNotExpiredCode : generateRandomString(16),
+        }
+      }
+    );
+
+
+
+    console.table(result);
+
+    if (result.acknowledged === true) {
+      return true
+    }else{
+      return false
+    }
+    
+  }catch(err){
+    console.log(err);
+    return false
+  }
+}
 
 async function createUser(email,password,username){
     try{
@@ -145,7 +172,6 @@ async function createUser(email,password,username){
           email: email,
           hashedPassword: hashedPassword,
           passwordSalt: passwordSalt,
-          accountBanned: false,
           accountBanReason: "",
           accountBanExpiryDate: 0,
           failedLoginAttemptInfo: {},
@@ -180,4 +206,5 @@ async function createUser(email,password,username){
 
 module.exports = {
     router:router,
+    banAccount:banAccount,
 };
