@@ -1,7 +1,7 @@
 const express = require('express')
 var bodyParser = require('body-parser');
 const { banAccount } = require('./userAccounts');
-import rateLimit from 'express-rate-limit'
+const { rateLimit } = require('express-rate-limit');
 
 const limiter = rateLimit({
 	windowMs: 3 * 60 * 1000, // 3 minutes

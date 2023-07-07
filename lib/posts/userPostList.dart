@@ -29,6 +29,7 @@ class _userPostListState extends State<UserPostList> {
   Widget widgetAddedToTop;
   ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
+  bool _reachedEnd = false;
   final double scrollDistence = 0.8;
   String? lastPost;
   final String urlToFetch;
@@ -42,6 +43,9 @@ class _userPostListState extends State<UserPostList> {
   var posts = [];
 
   Future<void> _fetchPosts() async {
+    if (_reachedEnd == true) {
+      return;
+    }
     _isLoading = true;
     var dataSending = <String, String>{
       'token': userManager.token,
@@ -68,7 +72,7 @@ class _userPostListState extends State<UserPostList> {
         var fetchedData = jsonDecode(response.body);
         var postData = fetchedData["posts"];
         if (fetchedData["posts"].isEmpty) {
-          _isLoading = true;
+          _reachedEnd = true;
           return;
         }
         for (var post in postData) {
@@ -82,7 +86,7 @@ class _userPostListState extends State<UserPostList> {
           context: context,
           type: AlertType.error,
           title: "an error occurred while getting new posts",
-          desc: "a fairly big problem",
+          desc: response.body,
           buttons: [
             DialogButton(
               onPressed: () => Navigator.pop(context),
@@ -100,7 +104,7 @@ class _userPostListState extends State<UserPostList> {
   }
 
   void _onScroll() {
-    if (!_isLoading &&
+    if (_isLoading == false &&
         _scrollController.position.pixels >=
             (_scrollController.position.maxScrollExtent * scrollDistence)) {
       _fetchPosts();

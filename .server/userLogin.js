@@ -74,7 +74,7 @@ async function testToken(token,ipAddress){
     const userData = await collection.findOne({ userId: userId });
 
     //make sure user exists
-    if (userData != null){
+    if (userData === null){
       return [false];
     }
 
