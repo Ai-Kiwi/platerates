@@ -84,7 +84,7 @@ router.post('/post/upload', async (req, res) => {
           return res.status(400).send('error saving image');
         }
   
-        response = await collection.insertOne(
+        let response = await collection.insertOne(
           {
             posterUserId: userId,
             title: title,
@@ -99,10 +99,15 @@ router.post('/post/upload', async (req, res) => {
             rating:0.0,
           }
         )
-  
         
-        console.log("post deleted");
-        return res.status(200).send('created post');
+        if (response.acknowledged === true){
+          console.log("post created");
+          return res.status(200).send('created post');
+        }else{
+          console.log("failed to create post");
+          return res.status(200).send('failed to create post');
+        }
+        
   
       }else{
         console.log("invaild token");
@@ -169,6 +174,7 @@ router.post('/post/data', async (req, res) => {
       }
     }catch(err){
       console.log(err);
+      return res.status(500).send("server error")
     }
 })
 
@@ -184,15 +190,15 @@ router.post('/post/delete', async (req, res) => {
     
       if (vaildToken) { // user token is valid
         var collection = database.collection('posts');
-  
         var post = await collection.findOne({ postId: postId});
 
+        if (post === null) {
+          return res.status(400).send("post not found");
+        }
+
         if (post.posterUserId === userId) {
-
           await collection.deleteOne({ postId: postId});
-
           fs.rmSync(`./images/${post.image}.jpg`);
-
           return res.status(200).send("post deleted");
 
         }else{
@@ -204,6 +210,7 @@ router.post('/post/delete', async (req, res) => {
       }
     }catch(err){
       console.log(err);
+      return res.status(500).send("server error")
     }
 })
 
@@ -244,14 +251,17 @@ router.post('/post/feed', async (req, res) => {
           returnData["posts"].push(posts[i].postId);
           //Do something
         }
-  
+        
+        console.log("returning posts");
         return res.status(200).json(returnData);
   
       }else{
+        console.log("invaild token");
         return res.status(401).send("invaild token");
       }
     }catch(err){
       console.log(err);
+      return res.status(500).send("server error");
     }
 })
 

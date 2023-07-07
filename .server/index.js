@@ -82,7 +82,7 @@ app.listen(port, () => {
 //root detection etc, bans after login
 //certificate pinning
 //bans based on device fingerprint
-//device fingerprint to token
+//add device fingerprint info to token
 //login history
 //late loading librarys
 //api key that app uses
@@ -91,7 +91,6 @@ app.listen(port, () => {
 // - bugs to fix
 //lack of post caching, scrolling spam regets from servers
 // //maybe fetch for cache ahead of time, that way when you scroll loading doesn't happen
-//add error checking for post item being added to documents in mongodb
 //loading screen after take photo and upload photo
 //delete old photos not needed when taking picture
 //fix up login timeouts formula
@@ -100,7 +99,6 @@ app.listen(port, () => {
 //spam asks for new things when at end of feed
 // //applies to both profile and feed, however only profile has log messages for it
 //if connection closes mid data send it will crash the whole app
-//add propper catching with mongodb fails
 
 // - possible future features after release
 //indexing posts to be faster
@@ -124,6 +122,7 @@ app.listen(port, () => {
 //private stuff
 // //private accounts
 // //private posts
+//backup database
 
 // - low resolstion
 //overflow on public or private post part
