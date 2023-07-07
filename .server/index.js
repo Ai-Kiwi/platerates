@@ -60,13 +60,9 @@ app.listen(port, () => {
 // //don't let login
 // //expire all current login tokens
 // //system to remember past bans, formula for ban time based on this
-//indexing posts to be faster
 //lisences
 // //use AboutDialog to get lisences from packages
-//privacy polocy
-//post management 
-// //3 dot button if it's your post
-// // //delete post
+//privacy policy
 //advanced logging
 // //every function should have logging
 // //logging should be annymous for final release
@@ -101,8 +97,10 @@ app.listen(port, () => {
 //spam asks for new things when at end of feed
 // //applies to both profile and feed, however only profile has log messages for it
 //if connection closes mid data send it will crash the whole app
+//add propper catching with mongodb
 
 // - possible future features after release
+//indexing posts to be faster
 //chat system
 //search menu
 //nicer failed getting posts

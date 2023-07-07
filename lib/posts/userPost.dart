@@ -22,6 +22,7 @@ class _PostItemState extends State<PostItem> {
   double rating = 0;
   String posterName = "";
   String posterAvatar = "";
+  String posterUserId = "";
   var imageData;
   bool errorOccurred = false;
 
@@ -47,6 +48,7 @@ class _PostItemState extends State<PostItem> {
           rating = double.parse('${jsonData["rating"]}');
           imageData = base64Decode(jsonData['imageData']);
           posterName = jsonData["posterData"]['username'];
+          posterUserId = jsonData["posterData"]['userId'];
           errorOccurred = false;
         });
       } catch (err) {}
@@ -81,8 +83,9 @@ class _PostItemState extends State<PostItem> {
       return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
           child: Container(
-              decoration: BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
-              child: Center(
+              decoration:
+                  const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
+              child: const Center(
                   child: Text(
                 "error getting post",
                 style: TextStyle(color: Colors.red, fontSize: 20),
@@ -92,10 +95,10 @@ class _PostItemState extends State<PostItem> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
           child: Container(
               decoration: BoxDecoration(
-                  color: Color.fromARGB(215, 40, 40, 40),
+                  color: const Color.fromARGB(215, 40, 40, 40),
                   borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(
-                      color: Color.fromARGB(215, 45, 45, 45), width: 3)),
+                      color: const Color.fromARGB(215, 45, 45, 45), width: 3)),
               width: double.infinity,
               child: Column(children: <Widget>[
                 const SizedBox(height: 16.0),
@@ -103,37 +106,45 @@ class _PostItemState extends State<PostItem> {
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(
-                            width: 2,
-                            color: const Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      width: double.infinity,
-                      height: 35,
-                      child: Row(children: [
-                        const SizedBox(width: 4),
-                        const SizedBox(
-                            height: 25,
-                            child: CircleAvatar(
-                              backgroundImage: null,
-                              radius: 15,
-                            )),
-                        Text(posterName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            )),
-                      ]),
-                    )),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          border: Border.all(
+                              width: 2,
+                              color: const Color.fromARGB(255, 45, 45, 45)),
+                        ),
+                        width: double.infinity,
+                        height: 35,
+                        child: Row(children: <Widget>[
+                          Flexible(
+                            child: Row(children: [
+                              const SizedBox(width: 4),
+                              const SizedBox(
+                                  height: 25,
+                                  child: CircleAvatar(
+                                    backgroundImage: null,
+                                    radius: 15,
+                                  )),
+                              Text(posterName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  )),
+                            ]),
+                          ),
+                          PostManageButton(
+                            userId: userManager.userId,
+                            posterUserId: posterUserId,
+                            postId: postId,
+                          ),
+                        ]))),
                 const SizedBox(height: 8.0),
                 Padding(
                     // image
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: ClipRRect(
                         borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        child: postImage(
+                        child: PostImage(
                           imageData: imageData,
                         ))),
                 const SizedBox(height: 8.0),
@@ -154,7 +165,7 @@ class _PostItemState extends State<PostItem> {
                         foregroundColor:
                             MaterialStateProperty.all<Color>(Colors.white),
                         backgroundColor: MaterialStateProperty.all<Color>(
-                            Color.fromARGB(255, 75, 75, 75)),
+                            const Color.fromARGB(255, 75, 75, 75)),
                       ),
                       onPressed: () {
                         Alert(
@@ -165,13 +176,13 @@ class _PostItemState extends State<PostItem> {
                               "It's not like it's the main part of the app or anything.",
                           buttons: [
                             DialogButton(
-                              child: Text(
+                              onPressed: () => Navigator.pop(context),
+                              width: 120,
+                              child: const Text(
                                 "ok",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20),
                               ),
-                              onPressed: () => Navigator.pop(context),
-                              width: 120,
                             )
                           ],
                         ).show();
@@ -210,13 +221,13 @@ class _PostItemState extends State<PostItem> {
                               "idk, just close your eyes, it's really not that hard",
                           buttons: [
                             DialogButton(
-                              child: Text(
+                              onPressed: () => Navigator.pop(context),
+                              width: 120,
+                              child: const Text(
                                 "ok",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20),
                               ),
-                              onPressed: () => Navigator.pop(context),
-                              width: 120,
                             )
                           ],
                         ).show();
@@ -242,10 +253,11 @@ class _PostItemState extends State<PostItem> {
                           color: const Color.fromARGB(255, 45, 45, 45)),
                     ),
                     child: Padding(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           title,
-                          style: TextStyle(color: Colors.white, fontSize: 15),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 15),
                         )),
                   ),
                 ),
@@ -268,7 +280,7 @@ class _PostItemState extends State<PostItem> {
                                 padding: EdgeInsets.all(8),
                                 child: Text(
                                   description,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.white, fontSize: 15),
                                 ))
                           ],
@@ -279,10 +291,10 @@ class _PostItemState extends State<PostItem> {
   }
 }
 
-class postImage extends StatelessWidget {
+class PostImage extends StatelessWidget {
   var imageData;
 
-  postImage({required this.imageData});
+  PostImage({required this.imageData});
 
   @override
   Widget build(BuildContext context) {
@@ -316,6 +328,125 @@ class postImage extends StatelessWidget {
               ),
             )),
       );
+    }
+  }
+}
+
+class PostManageButton extends StatelessWidget {
+  final String userId;
+  final String posterUserId;
+  final String postId;
+
+  PostManageButton(
+      {required this.userId, required this.posterUserId, required this.postId});
+
+  @override
+  Widget build(BuildContext context) {
+    if (userId == posterUserId) {
+      return FittedBox(
+          child: Center(
+              child: PopupMenuButton<String>(
+        icon: Icon(
+          Icons.more_vert,
+          size: 35, // Adjust the size of the icon
+          color: Colors.grey[500],
+        ),
+        onSelected: (value) {
+          // Handle menu item selection
+          if (value == 'delete') {
+            Alert(
+              context: context,
+              type: AlertType.warning,
+              title: "are you sure you want to delete this post?",
+              desc: "what the title said",
+              buttons: [
+                DialogButton(
+                  onPressed: () async {
+                    final response = await http.post(
+                      Uri.parse("$serverDomain/post/delete"),
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                      },
+                      body: jsonEncode(<String, String>{
+                        'token': userManager.token,
+                        'postId': postId,
+                      }),
+                    );
+                    if (response.statusCode == 200) {
+                      Navigator.pop(context);
+                      Alert(
+                        context: context,
+                        type: AlertType.success,
+                        title: "post deleted",
+                        desc: "refresh page to see",
+                        buttons: [
+                          DialogButton(
+                            onPressed: () => Navigator.pop(context),
+                            width: 120,
+                            child: const Text(
+                              "ok",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          )
+                        ],
+                      ).show();
+                    } else {
+                      Alert(
+                        context: context,
+                        type: AlertType.error,
+                        title: "error deleteing post",
+                        desc: response.body,
+                        buttons: [
+                          DialogButton(
+                            onPressed: () => Navigator.pop(context),
+                            width: 120,
+                            child: const Text(
+                              "ok",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          )
+                        ],
+                      ).show();
+                    }
+                  },
+                  color: Colors.green,
+                  child: const Text(
+                    "Yes",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ),
+                DialogButton(
+                  color: Colors.red,
+                  child: const Text(
+                    "No",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ).show();
+            //} else if (value == 'option2') {
+            //  // Handle option 2 selection
+          }
+        },
+        itemBuilder: (BuildContext context) {
+          return [
+            const PopupMenuItem<String>(
+              value: 'delete',
+              child: Text(
+                'delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ];
+        },
+      )));
+    } else {
+      return const FittedBox();
     }
   }
 }

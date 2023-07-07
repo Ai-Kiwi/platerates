@@ -10,7 +10,7 @@ class _userFeedState extends State<userFeed> {
   @override
   Widget build(BuildContext context) {
     //final ThemeData theme = Theme.of(context);
-    return userPostList(
+    return UserPostList(
       urlToFetch: "/post/feed",
       widgetAddedToTop: const Center(
           child: Padding(

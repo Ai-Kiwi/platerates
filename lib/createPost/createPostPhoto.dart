@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Toaster/createPost/createPost.dart';
+import 'package:Toaster/libs/loadScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
@@ -106,11 +107,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     if (!_isCameraReady || _cameras == null || _cameras!.isEmpty) {
-      return const Scaffold(
-          backgroundColor: Color.fromRGBO(16, 16, 16, 1),
-          body: Center(
-            child: CircularProgressIndicator(),
-          ));
+      return LoadingScreen(toasterLogo: false);
     }
 
     var size = MediaQuery.of(context).size.width;

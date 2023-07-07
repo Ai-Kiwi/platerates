@@ -1,7 +1,6 @@
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'createPost/createPostPhoto.dart';
@@ -45,7 +44,9 @@ class MyApp extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   // Show a loading indicator while the authentication state is being fetched
-                  return LoadingScreen();
+                  return LoadingScreen(
+                    toasterLogo: true,
+                  );
                 } else {
                   if (snapshot.hasData && snapshot.data == true) {
                     // User is logged in, navigate to home page
