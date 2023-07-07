@@ -7,7 +7,7 @@ const { generateRandomString } = require('./utilFunctions');
 const sharp = require('sharp');
 
 router.post('/post/upload', async (req, res) => {
-    console.log("user uploading post")
+    console.log("user uploading post");
     try{
       const token = req.body.token;
       const title = req.body.title;
@@ -101,23 +101,25 @@ router.post('/post/upload', async (req, res) => {
         )
   
         
-  
+        console.log("post deleted");
         return res.status(200).send('created post');
   
       }else{
-        res.status(401).send("invaild token");
+        console.log("invaild token");
+        return res.status(401).send("invaild token");
       }
     
     }catch(err){
       console.log(err);
+      return res.status(500).send("server error")
     }
   
 })
 
 
 
-
 router.post('/post/data', async (req, res) => {
+  console.log("user fetching post data")
     try{
       console.log("user fetching post")
       const token = req.body.token;
@@ -158,6 +160,7 @@ router.post('/post/data', async (req, res) => {
           imageData : imageData,
           posterData : {
             username : posterUserData.username,
+            userId : itemData.posterUserId,
           },
         });
   
@@ -171,7 +174,43 @@ router.post('/post/data', async (req, res) => {
 
 
 
+router.post('/post/delete', async (req, res) => {
+  console.log("user deleteing post")
+    try{
+      const token = req.body.token;
+      const postId = req.body.postId;
+      var vaildToken, userId;
+      [vaildToken, userId] = await testToken(token,req.ip)
+    
+      if (vaildToken) { // user token is valid
+        var collection = database.collection('posts');
+  
+        var post = await collection.findOne({ postId: postId});
+
+        if (post.posterUserId === userId) {
+
+          await collection.deleteOne({ postId: postId});
+
+          fs.rmSync(`./images/${post.image}.jpg`);
+
+          return res.status(200).send("post deleted");
+
+        }else{
+          return res.status(403).send("post not yours");
+        }
+  
+      }else{
+        return res.status(401).send("invaild token");
+      }
+    }catch(err){
+      console.log(err);
+    }
+})
+
+
+
 router.post('/post/feed', async (req, res) => {
+  console.log("user fetching feed")
     try{
       const token = req.body.token;
       const startPosPost = req.body.startPosPost;
@@ -196,7 +235,10 @@ router.post('/post/feed', async (req, res) => {
         posts = await collection.find({ shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
         var returnData = {}
         returnData["posts"] = []
-        
+   
+        if (posts.length == 0) {
+          console.log("nothing to fetch");
+        }
   
         for (var i = 0; i < posts.length; i++) {
           returnData["posts"].push(posts[i].postId);

@@ -7,7 +7,7 @@ import 'main.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-final storage = FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 class LoginResponse {
   bool? success;
@@ -100,6 +100,8 @@ class User {
 }
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -111,27 +113,29 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: const Center(
-                child: Text(
-          'Log in',
-          style: TextStyle(
-            fontFamily: 'Roboto',
-            fontSize: 30,
-          ),
-        ))),
-        body: AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
+        body: Container(
             decoration:
                 const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
             child: Center(
                 child: Column(
               children: <Widget>[
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 32.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(color: Colors.white, fontSize: 40),
+                  ),
+                ),
+                const Divider(
+                  color: Color.fromARGB(255, 110, 110, 110),
+                  thickness: 1.0,
+                ),
+                const SizedBox(height: 8.0),
                 Padding(
                   //closed beta reminder
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
+                  child: SizedBox(
                     width: double.infinity,
                     height: 50.0,
                     child: Container(
@@ -141,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       child: const Center(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(
                               "Toaster is currently in a closed beta. Please contact the owner to request access to the closed beta.",
                               textAlign: TextAlign.center,
@@ -153,48 +157,39 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8.0),
-                Divider(
-                  color: Color.fromARGB(255, 110, 110, 110),
-                  thickness: 1.0,
-                ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 16.0),
                 Padding(
                   //email input feild
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
-                    child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          _username = value;
-                        });
-                      },
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                      decoration: InputDecoration(
-                        labelText: 'Email Address',
-                        labelStyle: TextStyle(
-                            color: const Color.fromARGB(255, 200, 200, 200)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(
-                              width: 2,
-                              color: const Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(
-                              width: 2,
-                              color: const Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(
-                              width: 2, color: Theme.of(context).primaryColor),
-                        ),
-                        contentPadding: EdgeInsets.all(16.0),
-                        fillColor: const Color.fromARGB(255, 40, 40, 40),
-                        filled: true,
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        _username = value;
+                      });
+                    },
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                    decoration: InputDecoration(
+                      labelText: 'Email Address',
+                      labelStyle: const TextStyle(
+                          color: Color.fromARGB(255, 200, 200, 200)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: const BorderSide(
+                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: const BorderSide(
+                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: BorderSide(
+                            width: 2, color: Theme.of(context).primaryColor),
+                      ),
+                      contentPadding: const EdgeInsets.all(16.0),
+                      fillColor: const Color.fromARGB(255, 40, 40, 40),
+                      filled: true,
                     ),
                   ),
                 ),
@@ -202,48 +197,43 @@ class _LoginPageState extends State<LoginPage> {
                 Padding(
                   //password input feild
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
-                    child: TextFormField(
-                        onChanged: (value) {
-                          setState(() {
-                            _password = value;
-                          });
-                        },
-                        obscureText: true,
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          labelStyle: TextStyle(
-                              color: const Color.fromARGB(255, 200, 200, 200)),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(
-                                width: 2,
-                                color: const Color.fromARGB(255, 45, 45, 45)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(
-                                width: 2,
-                                color: const Color.fromARGB(255, 45, 45, 45)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(
-                                width: 2,
-                                color: Theme.of(context).primaryColor),
-                          ),
-                          contentPadding: EdgeInsets.all(16.0),
-                          fillColor: const Color.fromARGB(255, 40, 40, 40),
-                          filled: true,
-                        )),
-                  ),
+                  child: TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          _password = value;
+                        });
+                      },
+                      obscureText: true,
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: const TextStyle(
+                            color: Color.fromARGB(255, 200, 200, 200)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          borderSide: const BorderSide(
+                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          borderSide: const BorderSide(
+                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                          borderSide: BorderSide(
+                              width: 2, color: Theme.of(context).primaryColor),
+                        ),
+                        contentPadding: const EdgeInsets.all(16.0),
+                        fillColor: const Color.fromARGB(255, 40, 40, 40),
+                        filled: true,
+                      )),
                 ),
                 const SizedBox(height: 24.0),
                 Padding(
                   //login button
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
+                  child: SizedBox(
                     width: double.infinity,
                     height: 50.0,
                     child: ElevatedButton(
@@ -252,30 +242,32 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(15.0),
                       )),
                       onPressed: () async {
-                        LoginResponse CorrectLogin =
+                        LoginResponse correctLogin =
                             await userManager.loginUser(_username, _password);
 
-                        if (CorrectLogin.success == true) {
+                        if (correctLogin.success == true) {
+                          // ignore: use_build_context_synchronously
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => MyHomePage()),
                           );
                         } else {
+                          // ignore: use_build_context_synchronously
                           Alert(
                             context: context,
                             type: AlertType.error,
                             title: "login failed",
-                            desc: CorrectLogin.error,
+                            desc: correctLogin.error,
                             buttons: [
                               DialogButton(
-                                child: Text(
+                                onPressed: () => Navigator.pop(context),
+                                width: 120,
+                                child: const Text(
                                   "ok",
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 20),
                                 ),
-                                onPressed: () => Navigator.pop(context),
-                                width: 120,
                               )
                             ],
                           ).show();
@@ -300,12 +292,12 @@ class _LoginPageState extends State<LoginPage> {
                           "just idk, don't use bad passwords and remember them??? I mean i'm just saying it would fix alota problems in this day and age.",
                       buttons: [
                         DialogButton(
-                          child: Text(
+                          onPressed: () => Navigator.pop(context),
+                          width: 120,
+                          child: const Text(
                             "ok",
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
-                          onPressed: () => Navigator.pop(context),
-                          width: 120,
                         )
                       ],
                     ).show();

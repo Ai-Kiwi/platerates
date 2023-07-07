@@ -92,6 +92,7 @@ async function testToken(token,ipAddress){
 
 // POST method route
 router.post('/login', async (req, res) => {
+  console.log("user attempting login")
     try{
       console.log("user login")
       //add rate limitng
@@ -118,8 +119,8 @@ router.post('/login', async (req, res) => {
       const userData = await collection.findOne({ email: userEmail });
       //make sure it is vaild account lol
       if (userData === null){
-        res.status(401).send("invalid login credentials"); //incorrect login
-        return;
+        console.log("invaild credentials enterd")
+        return res.status(401).send("invalid login credentials"); //incorrect login
       }
       const hashedPassword = userData.hashedPassword;
       const passwordSalt = userData.passwordSalt;
@@ -144,10 +145,9 @@ router.post('/login', async (req, res) => {
       if(userData.failedLoginAttemptInfo[userIpAddress].recentAttemptNumber > 0){
         //if lockout time is still within the range of login
         if(userData.failedLoginAttemptInfo[userIpAddress].lockoutTime > Date.now()){
-          res.status(408).send("login timeout " + String(Math.ceil((userData.failedLoginAttemptInfo[userIpAddress].lockoutTime - Date.now()) / 1000)) + " seconds left")
+          console.log("login time out");
+          return res.status(408).send("login timeout " + String(Math.ceil((userData.failedLoginAttemptInfo[userIpAddress].lockoutTime - Date.now()) / 1000)) + " seconds left")
   
-  
-          return;
         }else{
           //see counter is due to be reset
           if(userData.failedLoginAttemptInfo[userIpAddress].resetCounterTime > Date.now()){
@@ -175,7 +175,8 @@ router.post('/login', async (req, res) => {
           //token not expired code, used to make sure that user has not done password reset or anything
           tokenNotExpiredCode: userData.tokenNotExpiredCode,
         }, privateKey, {expiresIn: '30d'});
-        
+
+        console.log("sent login info");
         res.status(200).json({
           token: token,
           userId: userId,
@@ -203,20 +204,20 @@ router.post('/login', async (req, res) => {
             }
           }
         );
-        res.status(401).send("invalid login credentials"); //incorrect login
-        return;
+        console.log("invaild login credentials")
+        return res.status(401).send("invalid login credentials"); //incorrect login
       }
   
       //res.send('POST request to the homepage')
     }catch(err){
-      res.status(401).send("invalid login credentials");
       console.log(err);
-      return;
+      return res.status(401).send("invalid login credentials");
     }
 })
 
 
 router.post('/testToken', async (req, res) => {
+  console.log("user testing token")
     console.log("user testing token")
     const token = req.body.token;
     var tokenVaild, userId;
@@ -224,10 +225,10 @@ router.post('/testToken', async (req, res) => {
   
     if(tokenVaild){
       console.log("vaild token");
-      res.status(200).send();
+      return res.status(200).send();
     }else{
       console.log("invaild token");
-      res.status(401).send();
+      return res.status(401).send();
     }
   
 })

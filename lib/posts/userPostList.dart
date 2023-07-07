@@ -7,25 +7,25 @@ import 'package:http/http.dart' as http;
 import '../main.dart';
 import '../userLogin.dart';
 
-class userPostList extends StatefulWidget {
+class UserPostList extends StatefulWidget {
   Widget widgetAddedToTop;
   String urlToFetch;
   var extraUrlData;
 
-  userPostList(
+  UserPostList(
       {super.key,
       required this.widgetAddedToTop,
       required this.urlToFetch,
       this.extraUrlData});
 
   @override
-  State<userPostList> createState() => _userPostListState(
+  State<UserPostList> createState() => _userPostListState(
       widgetAddedToTop: widgetAddedToTop,
       urlToFetch: urlToFetch,
       extraUrlData: extraUrlData);
 }
 
-class _userPostListState extends State<userPostList> {
+class _userPostListState extends State<UserPostList> {
   Widget widgetAddedToTop;
   ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
@@ -85,17 +85,16 @@ class _userPostListState extends State<userPostList> {
           desc: "a fairly big problem",
           buttons: [
             DialogButton(
-              child: Text(
+              onPressed: () => Navigator.pop(context),
+              width: 120,
+              child: const Text(
                 "ok",
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-              onPressed: () => Navigator.pop(context),
-              width: 120,
             )
           ],
         ).show();
       });
-      print(response.statusCode);
     }
     _isLoading = false;
   }

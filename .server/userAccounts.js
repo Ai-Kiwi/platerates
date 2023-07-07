@@ -14,6 +14,7 @@ router.post('/profile/data', async (req, res) => {
       const collection = database.collection('user_data');
   
       if (validToken === false){
+        console.log("returned invaild token");
         res.status(401).send("invaild token");
       }
   
@@ -27,25 +28,25 @@ router.post('/profile/data', async (req, res) => {
       const userData = await collection.findOne({ userId: userId })
       
       if (userData === undefined || userData === null){
-        res.status(400).send("unkown user");
-        console.log("failed unkown error");
+        console.log("failed as invaild user");
+        return res.status(400).send("unkown user");
       }
   
       res.status(200).json({
         username: userData.username,
         bio: userData.bio,
-  
       });
       
     }catch(err){
       console.log(err);
-      res.status(500).send("server error")
+      return res.status(500).send("server error")
     }
 })
 
 
 
 router.post('/profile/posts', async (req, res) => {
+  console.log("user fetching posts on profile")
   try{
     const token = req.body.token;
     const startPosPost = req.body.startPosPost;
@@ -62,6 +63,7 @@ router.post('/profile/posts', async (req, res) => {
       if (startPosPost) {
         const startPosPostData = await collection.findOne({ postId: startPosPost })
         if (!startPosPostData){
+          console.log("invaild start pos")
           return res.status(400).send("invaild start post");
         }else{
           startPosPostDate = startPosPostData.postDate;
@@ -84,10 +86,12 @@ router.post('/profile/posts', async (req, res) => {
       return res.status(200).json(returnData);
 
     }else{
+      console.log("invaild token")
       return res.status(401).send("invaild token");
     }
   }catch(err){
     console.log(err);
+    return res.status(500).send("server error")
   }
 })
 

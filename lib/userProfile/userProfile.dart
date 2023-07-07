@@ -55,12 +55,12 @@ class _UserProfileState extends State<UserProfile> {
           desc: response.body,
           buttons: [
             DialogButton(
-              child: Text(
+              onPressed: () => Navigator.pop(context),
+              width: 120,
+              child: const Text(
                 "ok",
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-              onPressed: () => Navigator.pop(context),
-              width: 120,
             )
           ],
         ).show();
@@ -83,10 +83,12 @@ class _UserProfileState extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading == true) {
-      return LoadingScreen();
+      return LoadingScreen(
+        toasterLogo: false,
+      );
     } else {
       return Scaffold(
-          body: userPostList(
+          body: UserPostList(
               urlToFetch: "/profile/posts",
               extraUrlData: {"userId": userId},
               widgetAddedToTop: Container(
@@ -97,7 +99,7 @@ class _UserProfileState extends State<UserProfile> {
                       Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 16),
-                          child: Container(
+                          child: SizedBox(
                             width: double.infinity,
                             height: 100,
                             child: Row(
@@ -107,12 +109,13 @@ class _UserProfileState extends State<UserProfile> {
                                     width: 100,
                                     height: 100,
                                     decoration: BoxDecoration(
-                                        color: Color.fromRGBO(16, 16, 16, 1),
+                                        color:
+                                            const Color.fromRGBO(16, 16, 16, 1),
                                         borderRadius:
                                             BorderRadius.circular(10.0),
                                         border: Border.all(
-                                            color:
-                                                Color.fromARGB(215, 45, 45, 45),
+                                            color: const Color.fromARGB(
+                                                215, 45, 45, 45),
                                             width: 3)),
                                     child: const Center(
                                       child: CircularProgressIndicator(),
