@@ -10,7 +10,7 @@ router.post('/profile/data', async (req, res) => {
     try{
       const token = req.body.token;
       const userId = req.body.userId;
-      [validToken, requesterUserId] = await testToken(token,req.ip);
+      [validToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
       const collection = database.collection('user_data');
   
       if (validToken === false){
@@ -54,7 +54,7 @@ router.post('/profile/posts', async (req, res) => {
     var startPosPostDate = 100000000000000
 
     var vaildToken, userId;
-    [vaildToken, userId] = await testToken(token,req.ip)
+    [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
   
     if (vaildToken) { // user token is valid
       var collection = database.collection('posts');
