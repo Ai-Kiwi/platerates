@@ -83,6 +83,7 @@ router.post('/profile/posts', async (req, res) => {
         //Do something
       }
 
+      console.log("returning posts");
       return res.status(200).json(returnData);
 
     }else{
@@ -107,8 +108,6 @@ async function banAccount(userId,time) {
         }
       }
     );
-
-
 
     console.table(result);
 

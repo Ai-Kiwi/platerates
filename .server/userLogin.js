@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { database } = require('./database');
 const { millisecondsToTime } = require("./utilFunctions");
+const { error } = require('console');
 
 
 //fs.writeFileSync('private.key',crypto.randomBytes(32))
@@ -32,15 +33,23 @@ async function updateUserPassword(email, newPassword) {
 
 
     // Update the user document with the new hashed password
-    await collection.updateOne(
+    let collectionUpdate = await collection.updateOne(
       { _id: user._id },
       { $set: {
         hashedPassword: hashedPassword,
         passwordSalt: passwordSalt,
       }}
       );
+    
+    if (collectionUpdate.acknowledged === true){
+      return true;
+    }else{
+      return false;
+    }
+
   } catch (error) {
     console.log('Error updating password:', error);
+    return false;
   }
 }
 
@@ -64,6 +73,11 @@ async function testToken(token,ipAddress){
     var collection = database.collection('user_credentials');
     const userData = await collection.findOne({ userId: userId });
 
+    //make sure user exists
+    if (userData != null){
+      return [false];
+    }
+
     //make sure token is not invald bcause of password reset
     if(decoded.tokenNotExpiredCode !== userData.tokenNotExpiredCode){
       return [false]; 
@@ -74,13 +88,7 @@ async function testToken(token,ipAddress){
       return [false];
     };
 
-    //another test to make sure device header informastion is the same as before
-
-
-    //make sure to test if the token time is out of date
-    //look into soon think its auto done
     return [true, userId];
-    
 
   }catch(err){
     console.log(err);
@@ -183,7 +191,7 @@ router.post('/login', async (req, res) => {
       const resetCounterTime = Date.now() + (Math.pow(1.250,recentAttemptNumber) * 15)  * 1000;
 
       //save to mongodb
-      await collection.updateOne(
+      let updatedTimeout = await collection.updateOne(
         { email: userEmail },
         { $set: {
           failedLoginAttemptInfo: {
@@ -196,7 +204,12 @@ router.post('/login', async (req, res) => {
           }
         }
       );
-      console.log("invaild login credentials")
+
+      if (updatedTimeout.acknowledged != true){
+        Error("failed to add user timeout to database");
+      }
+
+      console.log("invaild login credentials");
       return res.status(401).send("invalid login credentials"); //incorrect login
     }
   }catch(err){
