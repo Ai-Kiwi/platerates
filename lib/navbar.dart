@@ -1,11 +1,11 @@
-import 'main.dart';
-
 import 'package:flutter/material.dart';
 
 class UserNavbar extends StatelessWidget {
   final int selectedIndex;
-  ValueChanged<int> onClicked;
-  UserNavbar({super.key, required this.selectedIndex, required this.onClicked});
+  final ValueChanged<int> onClicked;
+
+  const UserNavbar(
+      {super.key, required this.selectedIndex, required this.onClicked});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,6 @@ class UserNavbar extends StatelessWidget {
         unselectedItemColor: Colors.white60,
         showUnselectedLabels: false,
         selectedItemColor: Colors.white,
-
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             activeIcon: Icon(Icons.home),
@@ -48,7 +47,6 @@ class UserNavbar extends StatelessWidget {
           ),
         ],
         currentIndex: selectedIndex,
-        //selectedItemColor: Colors.amber[800],
         onTap: onClicked,
       ),
     );

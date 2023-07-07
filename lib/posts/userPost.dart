@@ -292,7 +292,7 @@ class _PostItemState extends State<PostItem> {
 }
 
 class PostImage extends StatelessWidget {
-  var imageData;
+  final imageData;
 
   PostImage({required this.imageData});
 

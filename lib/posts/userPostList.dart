@@ -8,9 +8,9 @@ import '../main.dart';
 import '../userLogin.dart';
 
 class UserPostList extends StatefulWidget {
-  Widget widgetAddedToTop;
-  String urlToFetch;
-  var extraUrlData;
+  final Widget widgetAddedToTop;
+  final String urlToFetch;
+  final extraUrlData;
 
   UserPostList(
       {super.key,
@@ -31,8 +31,8 @@ class _userPostListState extends State<UserPostList> {
   bool _isLoading = false;
   final double scrollDistence = 0.8;
   String? lastPost;
-  String urlToFetch;
-  Map<String, String>? extraUrlData;
+  final String urlToFetch;
+  final Map<String, String>? extraUrlData;
 
   _userPostListState(
       {required this.widgetAddedToTop,
