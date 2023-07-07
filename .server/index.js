@@ -1,18 +1,22 @@
 const express = require('express')
 var bodyParser = require('body-parser');
 const { banAccount } = require('./userAccounts');
+import rateLimit from 'express-rate-limit'
 
+const limiter = rateLimit({
+	windowMs: 3 * 60 * 1000, // 3 minutes
+	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests, please try again later.',
+  keyGenerator: (req) => {
+    return req.headers['x-forwarded-for'];
+  },
+})
 
 require('dotenv').config();
 
-
 const port = process.env.port;
-
-
-
-
-
-
 
 
 const app = express()
@@ -25,7 +29,7 @@ userPosts = require("./userPosts");
 userAccounts = require("./userAccounts");
 userLogin = require("./userLogin");
 
-
+app.use(limiter)
 app.use('/', userPosts.router);
 app.use('/', userAccounts.router);
 app.use('/', userLogin.router);
@@ -33,7 +37,7 @@ app.use('/', userLogin.router);
 
 // GET method route
 app.get('/', (req, res) => {
-  res.send("nothing");
+  res.send(`nothing ${req.headers['x-forwarded-for']}`);
 })
 
 app.listen(port, () => {
@@ -43,7 +47,6 @@ app.listen(port, () => {
 
 
 // - features to add before release
-//reset password
 //profile's
 // //reset password
 // //change username
@@ -52,30 +55,18 @@ app.listen(port, () => {
 // //private accounts
 // //delete all data
 //report feature
-//adding as friend
 //rating posts
-//account banning, and prompt for login
-// //prompt on app login
-// //don't let login
-// //expire all current login tokens
-// //system to remember past bans, formula for ban time based on this
 //lisences
 // //use AboutDialog to get lisences from packages
-//privacy policy
-//advanced logging
-// //every function should have logging
-// //logging should be annymous for final release
-//public release verison
-// //look at better way to store images
-// //make sure nginx forwards ip address informastion
-// //look at if certbot could instead be on server
+// //privacy policy
+
 
 // - security to add
-////captcha for alota logins
+//captcha for logins
+//captcha for create accounts
 //-server side
 //rate limiting
 // //posts
-// //searching for things
 // //ading frineds
 //block proxy's and vpns
 //-client side
@@ -101,6 +92,8 @@ app.listen(port, () => {
 //if connection closes mid data send it will crash the whole app
 
 // - possible future features after release
+//creating accounts
+//adding as friend
 //indexing posts to be faster
 //chat system
 //search menu
@@ -123,6 +116,7 @@ app.listen(port, () => {
 // //private accounts
 // //private posts
 //backup database
+//look at better way to store images
 
 // - low resolstion
 //overflow on public or private post part

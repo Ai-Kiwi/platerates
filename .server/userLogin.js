@@ -106,7 +106,7 @@ router.post('/login', async (req, res) => {
 
     const userEmail = req.body.email;
     const userPassword = req.body.password;
-    const userIpAddress = req.ip;
+    const userIpAddress = req.headers['x-forwarded-for'];
 
     
     // get user info from database //
@@ -224,7 +224,7 @@ router.post('/testToken', async (req, res) => {
     console.log("user testing token")
     const token = req.body.token;
     var tokenVaild, userId;
-    [tokenVaild, userId] = await testToken(token,req.ip)
+    [tokenVaild, userId] = await testToken(token,req.headers['x-forwarded-for'])
   
     if(tokenVaild){
       console.log("vaild token");

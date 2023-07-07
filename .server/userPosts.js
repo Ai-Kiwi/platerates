@@ -18,7 +18,7 @@ router.post('/post/upload', async (req, res) => {
       
       var vaildToken = false;
       var userId = "";
-      [vaildToken, userId] = await testToken(token,req.ip); //frankly I have no idea why you need the square brackets but it fixes it so eh
+      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for']);
   
       if (vaildToken) {
         var collection = database.collection('posts');
@@ -130,7 +130,7 @@ router.post('/post/data', async (req, res) => {
       const token = req.body.token;
       var vaildToken, userId;
   
-      [vaildToken, userId] = await testToken(token,req.ip)
+      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
       const postId = req.body.postId;
     
       if (vaildToken) { // user token is valid
@@ -186,7 +186,7 @@ router.post('/post/delete', async (req, res) => {
       const token = req.body.token;
       const postId = req.body.postId;
       var vaildToken, userId;
-      [vaildToken, userId] = await testToken(token,req.ip)
+      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
     
       if (vaildToken) { // user token is valid
         var collection = database.collection('posts');
@@ -224,7 +224,7 @@ router.post('/post/feed', async (req, res) => {
       var startPosPostDate = 100000000000000
       var vaildToken, userId;
   
-      [vaildToken, userId] = await testToken(token,req.ip)
+      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
     
       if (vaildToken) { // user token is valid
         var collection = database.collection('posts');
