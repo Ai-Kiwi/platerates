@@ -1,4 +1,5 @@
 import 'package:Toaster/libs/loadScreen.dart';
+import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,9 @@ class MyApp extends StatelessWidget {
                 } else {
                   if (snapshot.hasData && snapshot.data == true) {
                     // User is logged in, navigate to home page
-                    return MyHomePage();
+                    return const PostRatingList(
+                      postId: 'pXSSOuCntYUSSLcw',
+                    );
                   } else {
                     // User is not logged in, navigate to login page
                     return LoginPage();

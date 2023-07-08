@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class userFeed extends StatefulWidget {
   @override
-  State<userFeed> createState() => _userFeedState();
+  State<userFeed> createState() => _UserFeedState();
 }
 
-class _userFeedState extends State<userFeed> {
+class _UserFeedState extends State<userFeed> {
   @override
   Widget build(BuildContext context) {
     //final ThemeData theme = Theme.of(context);
@@ -20,7 +20,7 @@ class _userFeedState extends State<userFeed> {
                 "Your feed",
                 style: TextStyle(color: Colors.white, fontSize: 40),
               )),
-          const Divider(
+          Divider(
             color: Color.fromARGB(255, 110, 110, 110),
             thickness: 1.0,
           ),
