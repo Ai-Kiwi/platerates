@@ -122,6 +122,8 @@ app.listen(port, () => {
 //backup database
 //look at better way to store images
 //word censoring
+//rate limiting per account basses
+//paid verison that bypass rate limit
 
 // - low resolstion
 //overflow on public or private post part
