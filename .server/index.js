@@ -86,10 +86,14 @@ app.listen(port, () => {
 //delete old photos not needed when taking picture
 //fix up login timeouts formula
 //dark mode popups
-//postion of text to take picture for post
-//spam asks for new things when at end of feed
-// //applies to both profile and feed, however only profile has log messages for it
 //if connection closes mid data send it will crash the whole app
+
+
+
+
+
+
+
 
 // - possible future features after release
 //creating accounts
@@ -117,10 +121,12 @@ app.listen(port, () => {
 // //private posts
 //backup database
 //look at better way to store images
+//word censoring
 
 // - low resolstion
 //overflow on public or private post part
 //overflow on login screen
+//overflow on username
 
 // - plugins to use
 //use image_cropper for user avatars
