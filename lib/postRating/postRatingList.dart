@@ -1,6 +1,5 @@
 import 'package:Toaster/postRating/userRating.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class PostRatingList extends StatefulWidget {
   final String postId;
@@ -12,6 +11,8 @@ class PostRatingList extends StatefulWidget {
 }
 
 class _PostRatingListState extends State<PostRatingList> {
+  ScrollController _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,9 +20,19 @@ class _PostRatingListState extends State<PostRatingList> {
         decoration: const BoxDecoration(
           color: Color.fromRGBO(16, 16, 16, 1),
         ),
-        child: ListView(children: [
-          userRating(ratingId: "E"),
-        ]),
+        //child: ListView.builder(
+        //  controller: _scrollController,
+        //  itemCount: posts.length + 1,
+        //  itemBuilder: (context, index) {
+        //    if (index == 0) {
+        //      return widgetAddedToTop;
+        //    } else {
+        //      return PostItem(
+        //        postId: posts[index - 1],
+        //      );
+        //    }
+        //  },
+        //),
       ),
     );
   }

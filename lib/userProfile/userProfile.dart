@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
-import 'package:Toaster/posts/userPostList.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -43,8 +43,6 @@ class _UserProfileState extends State<UserProfile> {
         var fetchedData = jsonDecode(response.body);
         userBio = fetchedData['bio'];
         username = fetchedData['username'];
-        print(userBio);
-        print(username);
       });
     } else {
       setState(() {
@@ -88,77 +86,82 @@ class _UserProfileState extends State<UserProfile> {
       );
     } else {
       return Scaffold(
-          body: UserPostList(
-              urlToFetch: "/profile/posts",
-              extraUrlData: {"userId": userId},
-              widgetAddedToTop: Container(
-                  decoration:
-                      const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
-                  child: Column(
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 16),
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 100,
-                            child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                        color:
-                                            const Color.fromRGBO(16, 16, 16, 1),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        border: Border.all(
-                                            color: const Color.fromARGB(
-                                                215, 45, 45, 45),
-                                            width: 3)),
-                                    child: const Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  ),
-                                  Center(
-                                      child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 16.0, horizontal: 16),
-                                          child: Text(
-                                            username,
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 25),
-                                          ))),
-                                ]),
-                          )),
-                      Padding(
-                          //description
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Container(
-                              height: 100,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                border: Border.all(
-                                    width: 2,
-                                    color:
-                                        const Color.fromARGB(255, 45, 45, 45)),
+        body: LazyLoadPage(
+          urlToFetch: "/profile/posts",
+          extraUrlData: {"userId": userId},
+          widgetAddedToTop: Container(
+              decoration:
+                  const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
+              child: Column(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 100,
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                    color: const Color.fromRGBO(16, 16, 16, 1),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    border: Border.all(
+                                        color: const Color.fromARGB(
+                                            215, 45, 45, 45),
+                                        width: 3)),
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
-                              child: ListView(children: <Widget>[
-                                Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: Text(
-                                      userBio,
-                                      style: const TextStyle(
-                                          color: Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          fontSize: 15),
-                                    ))
-                              ]))),
-                    ],
-                  ))));
+                              Center(
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0, horizontal: 16),
+                                      child: Text(
+                                        username,
+                                        style: const TextStyle(
+                                            color: Colors.white, fontSize: 25),
+                                      ))),
+                            ]),
+                      )),
+                  Padding(
+                      //description
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Container(
+                          height: 100,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                                width: 2,
+                                color: const Color.fromARGB(255, 45, 45, 45)),
+                          ),
+                          child: ListView(children: <Widget>[
+                            Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(
+                                  userBio,
+                                  style: const TextStyle(
+                                      color: Color.fromARGB(255, 255, 255, 255),
+                                      fontSize: 15),
+                                ))
+                          ]))),
+                ],
+              )),
+          widgetAddedToEnd: const Center(
+            child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Text(
+                  "posts all they have, it is",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                )),
+          ),
+        ),
+      );
     }
   }
 }

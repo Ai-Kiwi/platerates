@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/postRating/userRating.dart';
 import 'package:Toaster/posts/userPost.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -7,57 +8,64 @@ import 'package:http/http.dart' as http;
 import '../main.dart';
 import '../userLogin.dart';
 
-class UserPostList extends StatefulWidget {
+class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToTop;
+  final Widget widgetAddedToEnd;
   final String urlToFetch;
   final extraUrlData;
 
-  UserPostList(
+  LazyLoadPage(
       {super.key,
       required this.widgetAddedToTop,
       required this.urlToFetch,
+      required this.widgetAddedToEnd,
       this.extraUrlData});
 
   @override
-  State<UserPostList> createState() => _userPostListState(
+  State<LazyLoadPage> createState() => _LazyLoadPageState(
       widgetAddedToTop: widgetAddedToTop,
       urlToFetch: urlToFetch,
-      extraUrlData: extraUrlData);
+      extraUrlData: extraUrlData,
+      widgetAddedToEnd: widgetAddedToEnd);
 }
 
-class _userPostListState extends State<UserPostList> {
+class _LazyLoadPageState extends State<LazyLoadPage> {
   Widget widgetAddedToTop;
+  Widget widgetAddedToEnd;
   ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
-  bool _reachedEnd = false;
   final double scrollDistence = 0.8;
-  String? lastPost;
   final String urlToFetch;
   final Map<String, String>? extraUrlData;
 
-  _userPostListState(
+  _LazyLoadPageState(
       {required this.widgetAddedToTop,
       required this.urlToFetch,
+      required this.widgetAddedToEnd,
       this.extraUrlData});
 
-  var posts = [];
+  var lastItem;
+  var itemsCollected = [];
 
-  Future<void> _fetchPosts() async {
-    if (_reachedEnd == true) {
-      return;
+  Future<void> _fetchItems() async {
+    //test if they have reached the end
+    if (itemsCollected.length > 0) {
+      if (itemsCollected[itemsCollected.length - 1] == "end") {
+        return;
+      }
     }
-    _isLoading = true;
-    var dataSending = <String, String>{
+    _isLoading = true; //say that it is loading more
+    //setup data for sending
+    Map<dynamic, dynamic> dataSending = {
       'token': userManager.token,
     };
     //add all the extra parm's
     if (extraUrlData != null) {
-      //extraUrlData!.forEach((key, value) => dataSending[key] = value);
       dataSending.addAll(extraUrlData!);
     }
 
-    if (lastPost != null) {
-      dataSending['startPosPost'] = lastPost!;
+    if (lastItem != null) {
+      dataSending['startPosPost'] = lastItem!;
     }
 
     final response = await http.post(
@@ -70,14 +78,15 @@ class _userPostListState extends State<UserPostList> {
     if (response.statusCode == 200) {
       setState(() {
         var fetchedData = jsonDecode(response.body);
-        var postData = fetchedData["posts"];
-        if (fetchedData["posts"].isEmpty) {
-          _reachedEnd = true;
+        var postData = fetchedData["items"];
+        if (fetchedData["items"].isEmpty) {
+          itemsCollected.add("end");
+          print("end of feed reached");
           return;
         }
         for (var post in postData) {
-          posts.add(post);
-          lastPost = post;
+          itemsCollected.add(post);
+          lastItem = post;
         }
       });
     } else {
@@ -85,7 +94,7 @@ class _userPostListState extends State<UserPostList> {
         Alert(
           context: context,
           type: AlertType.error,
-          title: "an error occurred while getting new posts",
+          title: "an error occurred while getting new items",
           desc: response.body,
           buttons: [
             DialogButton(
@@ -107,20 +116,21 @@ class _userPostListState extends State<UserPostList> {
     if (_isLoading == false &&
         _scrollController.position.pixels >=
             (_scrollController.position.maxScrollExtent * scrollDistence)) {
-      _fetchPosts();
+      _fetchItems();
     }
   }
 
   void updateChildWidget(String newState) {
     setState(() {
       widgetAddedToTop = widgetAddedToTop;
+      widgetAddedToEnd = widgetAddedToEnd;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchPosts();
+    _fetchItems();
     _scrollController.addListener(_onScroll);
   }
 
@@ -137,14 +147,23 @@ class _userPostListState extends State<UserPostList> {
       child: Center(
         child: ListView.builder(
           controller: _scrollController,
-          itemCount: posts.length + 1,
+          itemCount: itemsCollected.length + 1,
           itemBuilder: (context, index) {
             if (index == 0) {
               return widgetAddedToTop;
+            } else if (itemsCollected[index - 1] == "end") {
+              return widgetAddedToEnd;
             } else {
-              return PostItem(
-                postId: posts[index - 1],
-              );
+              print(itemsCollected[index - 1]);
+              if (itemsCollected[index - 1]["type"] == "post") {
+                return PostItem(
+                  postId: itemsCollected[index - 1]["data"],
+                );
+              } else if (itemsCollected[index - 1]["type"] == "rating") {
+                return userRating(
+                  ratingId: itemsCollected[index - 1]["data"],
+                );
+              } else {}
             }
           },
         ),
