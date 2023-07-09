@@ -59,6 +59,7 @@ app.listen(port, () => {
 //lisences
 // //use AboutDialog to get lisences from packages
 // //privacy policy
+//caching
 
 
 // - security to add
@@ -87,6 +88,7 @@ app.listen(port, () => {
 //fix up login timeouts formula
 //dark mode popups
 //if connection closes mid data send it will crash the whole app
+//after deleting post scrolling down then back up glitchs you back down repeartivly
 
 
 // - possible future features after release
