@@ -61,25 +61,31 @@ router.post('/profile/posts', async (req, res) => {
       var posts;
 
       if (startPosPost) {
-        const startPosPostData = await collection.findOne({ postId: startPosPost })
-        if (!startPosPostData){
-          console.log("invaild start pos")
+        if (startPosPost.type === "post" && !startPosPost.data){
           return res.status(400).send("invaild start post");
-        }else{
-          startPosPostDate = startPosPostData.postDate;
         }
+
+        const startPosPostData = await collection.findOne({ postId: startPosPost.data })
+        if (!startPosPostData){
+          return res.status(400).send("invaild start post");
+        }
+          
+        startPosPostDate = startPosPostData.postDate;
       }
 
       posts = await collection.find({posterUserId : fetchingUserId, shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
       var returnData = {}
-      returnData["posts"] = []
+      returnData["items"] = []
       
       if (posts.length == 0) {
         console.log("nothing to fetch");
       }
 
       for (var i = 0; i < posts.length; i++) {
-        returnData["posts"].push(posts[i].postId);
+        returnData["items"].push({
+          type : "post",
+          data : posts[i].postId
+        });
         //Do something
       }
 

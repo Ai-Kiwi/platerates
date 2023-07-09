@@ -29,7 +29,7 @@ userPosts = require("./userPosts");
 userAccounts = require("./userAccounts");
 userLogin = require("./userLogin");
 
-app.use(limiter)
+app.use('/', limiter)
 app.use('/', userPosts.router);
 app.use('/', userAccounts.router);
 app.use('/', userLogin.router);
@@ -60,24 +60,25 @@ app.listen(port, () => {
 // //use AboutDialog to get lisences from packages
 // //privacy policy
 //caching
+//profile pictures to post and ratings
 
 
 // - security to add
 //captcha for logins
 //captcha for create accounts
 //-server side
-//rate limiting
-// //posts
-// //ading frineds
 //block proxy's and vpns
 //-client side
 //root detection etc, bans after login
 //certificate pinning
 //bans based on device fingerprint
+// //login to another device with fingerprint will ban that account as well
+// //login with same ip address within a few days of ban will ban that account as well
 //add device fingerprint info to token
 //login history
 //late loading librarys
 //api key that app uses
+//per account rate limit, strictness depends of account account trust level
 
 
 // - bugs to fix
@@ -92,6 +93,7 @@ app.listen(port, () => {
 
 
 // - possible future features after release
+//non picture related posts
 //creating accounts
 // //captcha
 // //rate limit for making accounts
@@ -130,3 +132,4 @@ app.listen(port, () => {
 
 // - plugins to use
 //use image_cropper for user avatars
+//use https://stackoverflow.com/questions/45031499/how-to-get-unique-device-id-in-flutter for doing device id
