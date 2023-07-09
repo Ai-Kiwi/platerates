@@ -89,14 +89,10 @@ app.listen(port, () => {
 //if connection closes mid data send it will crash the whole app
 
 
-
-
-
-
-
-
 // - possible future features after release
 //creating accounts
+// //captcha
+// //rate limit for making accounts
 //adding as friend
 //indexing posts to be faster
 //chat system

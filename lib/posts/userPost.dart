@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:Toaster/userLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -168,24 +169,11 @@ class _PostItemState extends State<PostItem> {
                             const Color.fromARGB(255, 75, 75, 75)),
                       ),
                       onPressed: () {
-                        Alert(
-                          context: context,
-                          type: AlertType.info,
-                          title: "rating has not been added yet",
-                          desc:
-                              "It's not like it's the main part of the app or anything.",
-                          buttons: [
-                            DialogButton(
-                              onPressed: () => Navigator.pop(context),
-                              width: 120,
-                              child: const Text(
-                                "ok",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                            )
-                          ],
-                        ).show();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PostRatingList(postId: postId)));
                       },
                       child: RatingBarIndicator(
                         rating: rating,
