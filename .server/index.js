@@ -59,9 +59,14 @@ app.listen(port, () => {
 //lisences
 // //use AboutDialog to get lisences from packages
 // //privacy policy
-//caching
 //profile pictures to post and ratings
-
+//make lazy loading lib collect data not when drawing item
+//back buttons to all menus
+//move everything over from image folder to data in mongodb
+//move over server to docker images
+//post limit
+// //post timeout
+// //rate timeout
 
 // - security to add
 //captcha for logins
@@ -82,8 +87,6 @@ app.listen(port, () => {
 
 
 // - bugs to fix
-//lack of post caching, scrolling spam regets from servers
-// //maybe fetch for cache ahead of time, that way when you scroll loading doesn't happen
 //loading screen after take photo and upload photo
 //delete old photos not needed when taking picture
 //fix up login timeouts formula
@@ -93,6 +96,7 @@ app.listen(port, () => {
 
 
 // - possible future features after release
+//ahead of time post downloading
 //non picture related posts
 //creating accounts
 // //captcha
@@ -128,7 +132,8 @@ app.listen(port, () => {
 // - low resolstion
 //overflow on public or private post part
 //overflow on login screen
-//overflow on username
+//overflow on username in profile
+//overflow of username in rating
 
 // - plugins to use
 //use image_cropper for user avatars

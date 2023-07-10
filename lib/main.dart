@@ -3,6 +3,8 @@ import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:json_cache/json_cache.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'createPost/createPostPhoto.dart';
 import 'userLogin.dart';
 import 'navbar.dart';
@@ -11,11 +13,13 @@ import 'navbar.dart';
 
 String serverDomain = 'https://toaster.aikiwi.dev';
 bool productionMode = false;
+late JsonCacheMem jsonCache;
 
 void main() {
   if (productionMode == false) {
     serverDomain = 'http://192.168.0.157:3030';
   }
+
   runApp(const MyApp());
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setPreferredOrientations(
@@ -24,6 +28,19 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  Stream<bool> initializeApp() async* {
+    //load in json cache stuff
+    final sharedPrefs = await SharedPreferences.getInstance();
+    jsonCache = JsonCacheMem(JsonCacheSharedPreferences(sharedPrefs));
+    jsonCache.clear();
+
+    //load in token
+    if (userManager.token == "") {
+      await userManager.loadTokenFromStoreage();
+    }
+    yield await userManager.checkLoginState();
+  }
 
   // This widget is the root of your application.
   @override
@@ -40,7 +57,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
                 primaryColor: Colors.green, primarySwatch: Colors.green),
             home: StreamBuilder<bool>(
-              stream: userManager.checkLoginStateStream(),
+              stream: initializeApp(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   // Show a loading indicator while the authentication state is being fetched

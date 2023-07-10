@@ -90,13 +90,6 @@ class User {
       return LoginResponse(error: "error contacting server", success: false);
     }
   }
-
-  Stream<bool> checkLoginStateStream() async* {
-    if (token == "") {
-      await loadTokenFromStoreage();
-    }
-    yield await checkLoginState();
-  }
 }
 
 class LoginPage extends StatefulWidget {
