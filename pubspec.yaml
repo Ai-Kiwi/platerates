@@ -43,6 +43,8 @@ dependencies:
   path_provider: ^2.0.15
   image: ^4.0.17
   toggle_switch: ^2.1.0
+  json_cache: ^2.1.0
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_launcher_icons: "^0.13.1"

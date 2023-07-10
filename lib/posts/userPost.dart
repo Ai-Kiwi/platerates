@@ -4,6 +4,7 @@ import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:Toaster/userLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:json_cache/json_cache.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
@@ -30,45 +31,67 @@ class _PostItemState extends State<PostItem> {
   _PostItemState(this.postId);
 
   Future<void> _collectData() async {
-    final response = await http.post(
-      Uri.parse("$serverDomain/post/data"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'token': userManager.token,
-        'postId': postId,
-      }),
-    );
-    if (response.statusCode == 200) {
-      try {
-        setState(() {
-          var jsonData = jsonDecode(response.body);
-          title = jsonData["title"];
-          description = jsonData["description"];
-          rating = double.parse('${jsonData["rating"]}');
-          imageData = base64Decode(jsonData['imageData']);
-          posterName = jsonData["posterData"]['username'];
-          posterUserId = jsonData["posterData"]['userId'];
-          errorOccurred = false;
-        });
-      } catch (err) {}
-      return;
-    } else {
-      print(response.body);
-      setState(() {
-        errorOccurred = true;
-      });
-      print(response.statusCode);
-      return;
+    var jsonData;
+    var extractedData = await jsonCache.value('post-$postId');
+    if (extractedData != null) {
+      jsonData = jsonDecode(extractedData["data"]);
     }
+
+    if (jsonData == null) {
+      final response = await http.post(
+        Uri.parse("$serverDomain/post/data"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'token': userManager.token,
+          'postId': postId,
+        }),
+      );
+      if (response.statusCode == 200) {
+        //if true do nothing and then it will display
+        jsonData = jsonDecode(response.body);
+        await jsonCache.refresh('post-$postId', {"data": response.body});
+      } else {
+        Alert(
+          context: context,
+          type: AlertType.error,
+          title: "failed fetching post data",
+          desc: response.body,
+          buttons: [
+            DialogButton(
+              onPressed: () => Navigator.pop(context),
+              width: 120,
+              child: const Text(
+                "ok",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            )
+          ],
+        ).show();
+        return;
+      }
+    }
+
+    //as non of these have returned error it must have found data
+    try {
+      setState(() {
+        title = jsonData["title"];
+        description = jsonData["description"];
+        rating = double.parse('${jsonData["rating"]}');
+        imageData = base64Decode(jsonData['imageData']);
+        posterName = jsonData["posterData"]['username'];
+        posterUserId = jsonData["posterData"]['userId'];
+        errorOccurred = false;
+      });
+    } catch (err) {}
   }
 
   @override
   void initState() {
     super.initState();
     //no idea why the hell the error happens but this if statement fixes it
-    if (mounted) {
+    if (mounted && title.isEmpty) {
       _collectData();
     }
   }

@@ -6,6 +6,8 @@ const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
 const sharp = require('sharp');
 
+
+
 router.post('/post/upload', async (req, res) => {
     console.log("user uploading post");
     try{
@@ -23,7 +25,6 @@ router.post('/post/upload', async (req, res) => {
       if (vaildToken) {
         var collection = database.collection('posts');
   
-        const image = req.file;
         var imageId = generateRandomString(16);
         while (fs.existsSync(imageId)) {
           imageId = generateRandomString(16);
@@ -75,8 +76,6 @@ router.post('/post/upload', async (req, res) => {
           if ((width === MAX_RESOLUTION.width && height === MAX_RESOLUTION.height) === false) {
             return res.status(400).send('Image resolution exceeds the allowed limit.');
           }
-        
-          fs.writeFileSync(`./images/${imageId}.jpg`, imageData);
   
   
         } catch (err) {
@@ -89,7 +88,7 @@ router.post('/post/upload', async (req, res) => {
             posterUserId: userId,
             title: title,
             description: description,
-            image: imageId,
+            image: base64Image,
             postDate: Date.now(),
             shareMode: shareMode,
             postId: postId,
@@ -126,7 +125,6 @@ router.post('/post/upload', async (req, res) => {
 router.post('/post/data', async (req, res) => {
   console.log("user fetching post data")
     try{
-      console.log("user fetching post")
       const token = req.body.token;
       var vaildToken, userId;
   
@@ -139,30 +137,29 @@ router.post('/post/data', async (req, res) => {
         var itemData = await collection.findOne({postId: postId})
   
         if (itemData === null) {
+          console.log("invaild post");
           return res.status(404).send("invaild post");
         }
   
         if (itemData.shareMode !== 'public'){
+          console.log("user can't view post");
           return res.status(403).send("can't view post");
         }
-        
-  
-        let imageData = null;
-        imageData = fs.readFileSync(`./images/${itemData.image}.jpg`);
-        imageData = imageData.toString('base64');
   
   
         const posterUserData = await userDataCollection.findOne({ userId: itemData.posterUserId })
         if (posterUserData === undefined || posterUserData === null) {
+          console.log("unkown poster");
           return res.status(400).send("unkown poster");
         }
-  
+
+        console.log("sending post data");
         return res.status(200).json({
           title : itemData.title,
           description : itemData.description,
           rating : itemData.rating,
           postId : postId,
-          imageData : imageData,
+          imageData : itemData.image,
           posterData : {
             username : posterUserData.username,
             userId : itemData.posterUserId,
@@ -170,6 +167,7 @@ router.post('/post/data', async (req, res) => {
         });
   
       }else{
+        console.log("invaild token");
         return res.status(401).send("invaild token");
       }
     }catch(err){
@@ -197,9 +195,13 @@ router.post('/post/delete', async (req, res) => {
         }
 
         if (post.posterUserId === userId) {
-          await collection.deleteOne({ postId: postId});
-          fs.rmSync(`./images/${post.image}.jpg`);
-          return res.status(200).send("post deleted");
+          let deletedResponse = await collection.deleteOne({ postId: postId});
+  
+          if (deletedResponse.acknowledged === true) {
+            return res.status(200).send("post deleted");
+          }else{
+            return res.status(200).send("failed deleting post");
+          }
 
         }else{
           return res.status(403).send("post not yours");

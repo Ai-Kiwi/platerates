@@ -11,28 +11,42 @@ class PostRatingList extends StatefulWidget {
 }
 
 class _PostRatingListState extends State<PostRatingList> {
-  ScrollController _scrollController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        height: double.infinity,
+        width: double.infinity,
         decoration: const BoxDecoration(
           color: Color.fromRGBO(16, 16, 16, 1),
         ),
-        //child: ListView.builder(
-        //  controller: _scrollController,
-        //  itemCount: posts.length + 1,
-        //  itemBuilder: (context, index) {
-        //    if (index == 0) {
-        //      return widgetAddedToTop;
-        //    } else {
-        //      return PostItem(
-        //        postId: posts[index - 1],
-        //      );
-        //    }
-        //  },
-        //),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: [
+                  userRating(
+                    ratingId: "",
+                  ),
+                  userRating(
+                    ratingId: "",
+                  ),
+                  userRating(
+                    ratingId: "",
+                  ),
+                  userRating(
+                    ratingId: "",
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              //bottom area where exit button is
+              width: double.infinity,
+              height: 50,
+            )
+          ],
+        ),
       ),
     );
   }
