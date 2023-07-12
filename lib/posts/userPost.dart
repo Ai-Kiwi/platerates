@@ -1,8 +1,9 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/dataCollect.dart';
+import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/postRating/postRatingList.dart';
-import 'package:Toaster/userLogin.dart';
+import 'package:Toaster/login/userLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -197,11 +198,13 @@ class _PostItemState extends State<PostItem> {
                             const Color.fromARGB(255, 75, 75, 75)),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    PostRatingList(postId: postId)));
+                        Navigator.of(context).push(smoothTransitions
+                            .slideUp(PostRatingList(postId: postId)));
+                        //Navigator.push(
+                        //    context,
+                        //    MaterialPageRoute(
+                        //        builder: (context) =>
+                        //            PostRatingList(postId: postId)));
                       },
                       child: RatingBarIndicator(
                         rating: rating,

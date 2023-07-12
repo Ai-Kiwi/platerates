@@ -8,7 +8,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../libs/dataCollect.dart';
 import '../main.dart';
-import '../userLogin.dart';
+import '../login/userLogin.dart';
 
 class userRating extends StatefulWidget {
   final String ratingId;

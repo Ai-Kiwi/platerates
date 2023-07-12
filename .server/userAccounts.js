@@ -17,7 +17,7 @@ router.post('/profile/basicData', async (req, res) => {
 
     if (validToken === false){
       console.log("returned invaild token");
-      res.status(401).send("invaild token");
+      return res.status(401).send("invaild token");
     }
 
 
@@ -35,6 +35,50 @@ router.post('/profile/basicData', async (req, res) => {
       userAvatar : userData.avatar,
     });
     
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
+
+
+router.post('/profile/settings/change', async (req, res) => {
+  console.log(" => user profile setting change")
+  try{
+    const token = req.body.token;
+    const setting = req.body.setting;
+    const value = req.body.value;
+
+    var vaildToken, userId;
+    [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+  
+    if (vaildToken) { // user token is valid
+
+      if (setting === "username") {
+        if (value.length > 25) {
+          console.log("username to large")
+          return res.status(400).send("username to large")
+        }
+
+        const collection = database.collection('user_data');
+
+        const response = await collection.updateOne({userId: userId},{ $set: {username : value}}) 
+
+        if (response.acknowledged === true) {
+          console.log("updated username")
+          return res.status(200).send("updated username")
+        }else{
+          console.log("failed to update username")
+          return res.status(400).send("failed to update username")
+        }
+
+
+      }else{
+        console.log("unkown setting")
+        return res.status(400).send("unkown setting")
+      }
+    }
   }catch(err){
     console.log(err);
     return res.status(500).send("server error")

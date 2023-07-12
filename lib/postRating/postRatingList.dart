@@ -7,7 +7,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../main.dart';
-import '../userLogin.dart';
+import '../login/userLogin.dart';
 
 class PostRatingList extends StatefulWidget {
   final String postId;
