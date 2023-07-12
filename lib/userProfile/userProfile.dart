@@ -205,24 +205,83 @@ class _UserProfileState extends State<UserProfile> {
                                 desc:
                                     "select which devices you wish to logout.",
                                 buttons: [
+                                  //DialogButton(
+                                  //  onPressed: () async {},
+                                  //  color: Colors.green,
+                                  //  child: const Text(
+                                  //    "this",
+                                  //    style: TextStyle(
+                                  //        color: Colors.white, fontSize: 20),
+                                  //  ),
+                                  //),
                                   DialogButton(
-                                    onPressed: () async {},
                                     color: Colors.green,
                                     child: const Text(
-                                      "this",
+                                      "everyone",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 20),
                                     ),
-                                  ),
-                                  DialogButton(
-                                    color: Colors.green,
-                                    child: const Text(
-                                      "all",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       Navigator.pop(context);
+                                      final response = await http.post(
+                                        Uri.parse("$serverDomain/login/logout"),
+                                        headers: <String, String>{
+                                          'Content-Type':
+                                              'application/json; charset=UTF-8',
+                                        },
+                                        body: jsonEncode(<String, String>{
+                                          'token': userManager.token,
+                                        }),
+                                      );
+                                      if (response.statusCode == 200) {
+                                        //if true do nothing and then it will display
+                                        //Navigator.pop(context);
+                                        //Navigator.push(
+                                        //    context,
+                                        //    MaterialPageRoute(
+                                        //        builder: (context) =>
+                                        //            LoginPage()));
+                                        Alert(
+                                          context: context,
+                                          type: AlertType.error,
+                                          title: "logged out",
+                                          desc:
+                                              "please restart the app to apply",
+                                          buttons: [
+                                            DialogButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              width: 120,
+                                              child: const Text(
+                                                "ok",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20),
+                                              ),
+                                            )
+                                          ],
+                                        ).show();
+                                      } else {
+                                        Alert(
+                                          context: context,
+                                          type: AlertType.error,
+                                          title: "failed logging out",
+                                          desc: response.body,
+                                          buttons: [
+                                            DialogButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              width: 120,
+                                              child: const Text(
+                                                "ok",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20),
+                                              ),
+                                            )
+                                          ],
+                                        ).show();
+                                      }
                                     },
                                   ),
                                   DialogButton(

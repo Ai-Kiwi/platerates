@@ -53,15 +53,13 @@ router.post('/profile/data', async (req, res) => {
   
       if (validToken === false){
         console.log("returned invaild token");
-        res.status(401).send("invaild token");
+        return res.status(401).send("invaild token");
       }
   
       //if they dont supply any user just fetch themselves
       if (!userId) {
         userId = requesterUserId;
       }
-
-      console.log(userId);
   
       const userData = await collection.findOne({ userId: userId });
       
@@ -76,7 +74,7 @@ router.post('/profile/data', async (req, res) => {
       }
   
       console.log("returning output");
-      res.status(200).json({
+      return res.status(200).json({
         username: userData.username,
         bio: userData.bio,
       });
