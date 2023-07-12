@@ -6,7 +6,6 @@ import 'package:Toaster/userLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import '../libs/dataCollect.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
 

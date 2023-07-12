@@ -160,8 +160,9 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
                 return userRating(
                   ratingId: itemsCollected[index - 1]["data"],
                 );
-              } else {}
+              }
             }
+            return null;
           },
         ),
       ),
