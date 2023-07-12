@@ -74,6 +74,8 @@ app.listen(port, () => {
 //add system to save token
 //add returning to everything for post ratings in console print
 //add user avatar
+//display if you have or haven't rated a tost
+//display ratings on your profile
 
 // - security to add
 //captcha for logins
@@ -91,6 +93,7 @@ app.listen(port, () => {
 //late loading librarys
 //api key that app uses
 //per account rate limit, strictness depends of account account trust level
+//verify with phone number possibly
 
 
 // - bugs to fix

@@ -77,16 +77,19 @@ async function testToken(token,ipAddress){
 
     //make sure user exists
     if (userData === null){
+      console.log("user doesn't exist");
       return [false];
     }
 
     //make sure token is not invald bcause of password reset
     if(decoded.tokenNotExpiredCode !== userData.tokenNotExpiredCode){
+      console.log("invaild tokenNotExpiredCode");
       return [false]; 
     };
 
     //another test to make sure it is the same ip address
     if(decoded.ipAddress !== ipAddress){
+      console.log("invaild ip address");
       return [false];
     };
 
@@ -98,6 +101,8 @@ async function testToken(token,ipAddress){
   }
   
 }
+
+
 
 
 // POST method route
@@ -218,6 +223,47 @@ router.post('/login', async (req, res) => {
     console.log(err);
     return res.status(401).send("invalid login credentials");
   }
+})
+
+router.post('/login/logout', async (req, res) => {
+  console.log(" => user fetching rating data")
+    try{
+      const token = req.body.token;
+      var vaildToken, userId;
+  
+      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+    
+      if (vaildToken) { // user token is valid
+        var collection = database.collection('user_credentials');
+        var posts;
+
+        //fetch the user credentials
+        const userCreds = await collection.findOne({ userId :  userId})
+        if (userCreds === null) {
+          console.log("no user found");
+          return res.status(400).send("no user found");
+        
+        }
+
+        const newTokenNotExpiredCode = await updateUserPassword(16);
+        const reponse = await collection.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode}})
+        if (reponse.acknowledged === true){
+          console.log("user logged out")
+          return res.status(200).send("user logged out");
+        }else{
+          console.log("failed to logout user");
+          return res.status(400).send("failed to logout user");
+        }
+
+  
+      }else{
+        console.log("invaild token");
+        return res.status(401).send("invaild token");
+      }
+    }catch(err){
+      console.log(err);
+      return res.status(500).send("server error");
+    }
 })
 
 
