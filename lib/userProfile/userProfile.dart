@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
+import 'package:Toaster/userSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -150,6 +151,103 @@ class _UserProfileState extends State<UserProfile> {
                                       fontSize: 15),
                                 ))
                           ]))),
+                  Visibility(
+                      child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8),
+                    //user settings box
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          height: 33,
+                          width: 75,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              textStyle: const TextStyle(fontSize: 15),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5.0, vertical: 1.0),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 45, 45, 45),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => UserSettings()));
+                            },
+                            child: const Text("settings",
+                                style: TextStyle(
+                                    color: Color.fromARGB(210, 255, 255, 255),
+                                    fontWeight: FontWeight.normal)),
+                          ),
+                        ),
+                        Expanded(child: Center()),
+                        SizedBox(
+                          height: 33,
+                          width: 75,
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              textStyle: const TextStyle(fontSize: 15),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 5.0, vertical: 1.0),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 45, 45, 45),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              Alert(
+                                context: context,
+                                type: AlertType.error,
+                                title: "who would you like to logout?",
+                                desc:
+                                    "select which devices you wish to logout.",
+                                buttons: [
+                                  DialogButton(
+                                    onPressed: () async {},
+                                    color: Colors.green,
+                                    child: const Text(
+                                      "this",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20),
+                                    ),
+                                  ),
+                                  DialogButton(
+                                    color: Colors.green,
+                                    child: const Text(
+                                      "all",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  DialogButton(
+                                    color: Colors.red,
+                                    child: const Text(
+                                      "cancel",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  )
+                                ],
+                              ).show();
+                            },
+                            child: const Text("logout",
+                                style: TextStyle(
+                                    color: Color.fromARGB(210, 255, 255, 255),
+                                    fontWeight: FontWeight.normal)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
                 ],
               )),
           widgetAddedToEnd: const Center(

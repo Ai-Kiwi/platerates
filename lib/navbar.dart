@@ -23,6 +23,7 @@ class UserNavbar extends StatelessWidget {
         ),
       ),
       child: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         backgroundColor: theme.primaryColor,
         unselectedFontSize: 0,
         selectedFontSize: 15,

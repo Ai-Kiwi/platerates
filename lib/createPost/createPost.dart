@@ -66,7 +66,7 @@ class _CreatePostState extends State<CreatePostPage> {
             ),
             const SizedBox(height: 16),
             Padding(
-              //email input feild
+              //title input feild
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Container(
                 child: TextFormField(
@@ -111,7 +111,7 @@ class _CreatePostState extends State<CreatePostPage> {
             ),
             const SizedBox(height: 16.0),
             Padding(
-              //password input feild
+              //description input feild
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Container(
                 child: TextField(
@@ -204,7 +204,6 @@ class _CreatePostState extends State<CreatePostPage> {
                             File postImageFile = File(imagePath);
 
                             try {
-                              print(_title);
                               final response = await http.post(
                                 Uri.parse("$serverDomain/post/upload"),
                                 headers: <String, String>{
@@ -263,7 +262,6 @@ class _CreatePostState extends State<CreatePostPage> {
                                 ).show();
                               }
                             } catch (err) {
-                              print(err);
                               Alert(
                                 context: context,
                                 type: AlertType.error,

@@ -9,7 +9,9 @@ const { millisecondsToTime } = require("./utilFunctions");
 const { error } = require('console');
 
 
-//fs.writeFileSync('private.key',crypto.randomBytes(32))
+//if (fs.existsSync() === false) {
+//  fs.writeFileSync('private.key',crypto.randomBytes(32))
+//}
 const privateKey = fs.readFileSync('private.key'); 
 
 
@@ -100,7 +102,7 @@ async function testToken(token,ipAddress){
 
 // POST method route
 router.post('/login', async (req, res) => {
-  console.log("user attempting login")
+  console.log(" => user attempting login")
   try{
     console.log("user login")
 
@@ -220,19 +222,18 @@ router.post('/login', async (req, res) => {
 
 
 router.post('/testToken', async (req, res) => {
-  console.log("user testing token")
-    console.log("user testing token")
-    const token = req.body.token;
-    var tokenVaild, userId;
-    [tokenVaild, userId] = await testToken(token,req.headers['x-forwarded-for'])
-  
-    if(tokenVaild){
-      console.log("vaild token");
-      return res.status(200).send();
-    }else{
-      console.log("invaild token");
-      return res.status(401).send();
-    }
+  console.log(" => user testing token")
+  const token = req.body.token;
+  var tokenVaild, userId;
+  [tokenVaild, userId] = await testToken(token,req.headers['x-forwarded-for'])
+
+  if(tokenVaild){
+    console.log("vaild token");
+    return res.status(200).send();
+  }else{
+    console.log("invaild token");
+    return res.status(401).send();
+  }
   
 })
 
