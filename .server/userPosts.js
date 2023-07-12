@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
 const { database } = require('./database');
 const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
@@ -9,7 +8,7 @@ const sharp = require('sharp');
 
 
 router.post('/post/upload', async (req, res) => {
-    console.log("user uploading post");
+    console.log(" => user uploading post");
     try{
       const token = req.body.token;
       const title = req.body.title;
@@ -92,9 +91,6 @@ router.post('/post/upload', async (req, res) => {
             postDate: Date.now(),
             shareMode: shareMode,
             postId: postId,
-            reviews: {
-  
-            },
             rating:0.0,
           }
         )
@@ -123,7 +119,7 @@ router.post('/post/upload', async (req, res) => {
 
 
 router.post('/post/data', async (req, res) => {
-  console.log("user fetching post data")
+  console.log(" => user fetching post data")
     try{
       const token = req.body.token;
       var vaildToken, userId;
@@ -146,12 +142,6 @@ router.post('/post/data', async (req, res) => {
           return res.status(403).send("can't view post");
         }
   
-  
-        const posterUserData = await userDataCollection.findOne({ userId: itemData.posterUserId })
-        if (posterUserData === undefined || posterUserData === null) {
-          console.log("unkown poster");
-          return res.status(400).send("unkown poster");
-        }
 
         console.log("sending post data");
         return res.status(200).json({
@@ -160,10 +150,7 @@ router.post('/post/data', async (req, res) => {
           rating : itemData.rating,
           postId : postId,
           imageData : itemData.image,
-          posterData : {
-            username : posterUserData.username,
-            userId : itemData.posterUserId,
-          },
+          posterId : itemData.posterUserId
         });
   
       }else{
@@ -179,7 +166,7 @@ router.post('/post/data', async (req, res) => {
 
 
 router.post('/post/delete', async (req, res) => {
-  console.log("user deleteing post")
+  console.log(" => user deleteing post")
     try{
       const token = req.body.token;
       const postId = req.body.postId;
@@ -219,7 +206,7 @@ router.post('/post/delete', async (req, res) => {
 
 
 router.post('/post/feed', async (req, res) => {
-  console.log("user fetching feed")
+  console.log(" => user fetching feed")
     try{
       const token = req.body.token;
       const startPosPost = req.body.startPosPost;

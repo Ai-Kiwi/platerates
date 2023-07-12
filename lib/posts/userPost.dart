@@ -1,11 +1,12 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:Toaster/userLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:json_cache/json_cache.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import '../libs/dataCollect.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
 
@@ -75,16 +76,21 @@ class _PostItemState extends State<PostItem> {
 
     //as non of these have returned error it must have found data
     try {
+      Map basicUserData =
+          await dataCollect.getBasicUserData(jsonData['posterId'], context);
+      //print(basicUserData);
       setState(() {
         title = jsonData["title"];
         description = jsonData["description"];
         rating = double.parse('${jsonData["rating"]}');
         imageData = base64Decode(jsonData['imageData']);
-        posterName = jsonData["posterData"]['username'];
-        posterUserId = jsonData["posterData"]['userId'];
+        posterName = basicUserData["username"];
+        posterUserId = jsonData['posterId'];
         errorOccurred = false;
       });
-    } catch (err) {}
+    } catch (err) {
+      print(err);
+    }
   }
 
   @override
@@ -353,111 +359,105 @@ class PostManageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (userId == posterUserId) {
-      return FittedBox(
-          child: Center(
-              child: PopupMenuButton<String>(
-        icon: Icon(
-          Icons.more_vert,
-          size: 35, // Adjust the size of the icon
-          color: Colors.grey[500],
-        ),
-        onSelected: (value) {
-          // Handle menu item selection
-          if (value == 'delete') {
-            Alert(
-              context: context,
-              type: AlertType.warning,
-              title: "are you sure you want to delete this post?",
-              desc: "what the title said",
-              buttons: [
-                DialogButton(
-                  onPressed: () async {
-                    final response = await http.post(
-                      Uri.parse("$serverDomain/post/delete"),
-                      headers: <String, String>{
-                        'Content-Type': 'application/json; charset=UTF-8',
-                      },
-                      body: jsonEncode(<String, String>{
-                        'token': userManager.token,
-                        'postId': postId,
-                      }),
-                    );
-                    if (response.statusCode == 200) {
-                      Navigator.pop(context);
-                      Alert(
-                        context: context,
-                        type: AlertType.success,
-                        title: "post deleted",
-                        desc: "refresh page to see",
-                        buttons: [
-                          DialogButton(
-                            onPressed: () => Navigator.pop(context),
-                            width: 120,
-                            child: const Text(
-                              "ok",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          )
-                        ],
-                      ).show();
-                    } else {
-                      Alert(
-                        context: context,
-                        type: AlertType.error,
-                        title: "error deleteing post",
-                        desc: response.body,
-                        buttons: [
-                          DialogButton(
-                            onPressed: () => Navigator.pop(context),
-                            width: 120,
-                            child: const Text(
-                              "ok",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          )
-                        ],
-                      ).show();
-                    }
-                  },
-                  color: Colors.green,
-                  child: const Text(
-                    "Yes",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ),
-                DialogButton(
-                  color: Colors.red,
-                  child: const Text(
-                    "No",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  onPressed: () {
+    return FittedBox(
+        child: Center(
+            child: PopupMenuButton<String>(
+      icon: Icon(
+        Icons.more_vert,
+        size: 35, // Adjust the size of the icon
+        color: Colors.grey[500],
+      ),
+      onSelected: (value) {
+        // Handle menu item selection
+        if (value == 'delete') {
+          Alert(
+            context: context,
+            type: AlertType.warning,
+            title: "are you sure you want to delete this post?",
+            desc: "what the title said",
+            buttons: [
+              DialogButton(
+                onPressed: () async {
+                  final response = await http.post(
+                    Uri.parse("$serverDomain/post/delete"),
+                    headers: <String, String>{
+                      'Content-Type': 'application/json; charset=UTF-8',
+                    },
+                    body: jsonEncode(<String, String>{
+                      'token': userManager.token,
+                      'postId': postId,
+                    }),
+                  );
+                  if (response.statusCode == 200) {
                     Navigator.pop(context);
-                  },
-                )
-              ],
-            ).show();
-            //} else if (value == 'option2') {
-            //  // Handle option 2 selection
-          }
-        },
-        itemBuilder: (BuildContext context) {
-          return [
-            const PopupMenuItem<String>(
-              value: 'delete',
-              child: Text(
-                'delete',
-                style: TextStyle(color: Colors.red),
+                    Alert(
+                      context: context,
+                      type: AlertType.success,
+                      title: "post deleted",
+                      desc: "refresh page to see",
+                      buttons: [
+                        DialogButton(
+                          onPressed: () => Navigator.pop(context),
+                          width: 120,
+                          child: const Text(
+                            "ok",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        )
+                      ],
+                    ).show();
+                  } else {
+                    Alert(
+                      context: context,
+                      type: AlertType.error,
+                      title: "error deleteing post",
+                      desc: response.body,
+                      buttons: [
+                        DialogButton(
+                          onPressed: () => Navigator.pop(context),
+                          width: 120,
+                          child: const Text(
+                            "ok",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        )
+                      ],
+                    ).show();
+                  }
+                },
+                color: Colors.green,
+                child: const Text(
+                  "Yes",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
               ),
+              DialogButton(
+                color: Colors.red,
+                child: const Text(
+                  "No",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ).show();
+          //} else if (value == 'option2') {
+          //  // Handle option 2 selection
+        }
+      },
+      itemBuilder: (BuildContext context) {
+        return [
+          const PopupMenuItem<String>(
+            value: 'delete',
+            child: Text(
+              'delete',
+              style: TextStyle(color: Colors.red),
             ),
-          ];
-        },
-      )));
-    } else {
-      return const FittedBox();
-    }
+          ),
+        ];
+      },
+    )));
   }
 }

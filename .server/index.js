@@ -2,6 +2,7 @@ const express = require('express')
 var bodyParser = require('body-parser');
 const { banAccount } = require('./userAccounts');
 const { rateLimit } = require('express-rate-limit');
+const userPostRatings = require('./userPostRating');
 
 const limiter = rateLimit({
 	windowMs: 3 * 60 * 1000, // 3 minutes
@@ -28,9 +29,11 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 userPosts = require("./userPosts");
 userAccounts = require("./userAccounts");
 userLogin = require("./userLogin");
+userPostRating = require("./userPostRating");
 
 app.use('/', limiter)
 app.use('/', userPosts.router);
+app.use('/', userPostRating.router);
 app.use('/', userAccounts.router);
 app.use('/', userLogin.router);
 
@@ -62,11 +65,15 @@ app.listen(port, () => {
 //profile pictures to post and ratings
 //make lazy loading lib collect data not when drawing item
 //back buttons to all menus
-//move everything over from image folder to data in mongodb
-//move over server to docker images
 //post limit
 // //post timeout
 // //rate timeout
+// //reset password
+// //create account
+//posts should always have 3 dots
+//add system to save token
+//add returning to everything for post ratings in console print
+//add user avatar
 
 // - security to add
 //captcha for logins
@@ -93,6 +100,10 @@ app.listen(port, () => {
 //dark mode popups
 //if connection closes mid data send it will crash the whole app
 //after deleting post scrolling down then back up glitchs you back down repeartivly
+//clean up http status codes to be nicer
+//http error responses
+//naming system for mongodb
+//on token error test token and restart app
 
 
 // - possible future features after release
@@ -128,6 +139,7 @@ app.listen(port, () => {
 //word censoring
 //rate limiting per account basses
 //paid verison that bypass rate limit
+//move rating to another section & move report to 3 dots for posts
 
 // - low resolstion
 //overflow on public or private post part

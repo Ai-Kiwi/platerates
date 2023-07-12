@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import '../libs/dataCollect.dart';
 import '../main.dart';
 import '../userLogin.dart';
 
@@ -23,6 +25,7 @@ class _userRatingState extends State<userRating> {
   String posterName = "";
   String posterUserId = "";
   double rating = 0;
+  var rootItem;
 
   Future<void> _collectData() async {
     var jsonData;
@@ -33,7 +36,7 @@ class _userRatingState extends State<userRating> {
 
     if (jsonData == null) {
       final response = await http.post(
-        Uri.parse("$serverDomain/post/data"),
+        Uri.parse("$serverDomain/post/rating/data"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -69,13 +72,18 @@ class _userRatingState extends State<userRating> {
 
     //as non of these have returned error it must have found data
     try {
+      Map basicUserData = await dataCollect.getBasicUserData(
+          jsonData['ratingPosterId'], context);
       setState(() {
         text = jsonData["text"];
         rating = double.parse('${jsonData["rating"]}');
-        posterName = jsonData["posterData"]['username'];
-        posterUserId = jsonData["posterData"]['userId'];
+        posterName = basicUserData['username'];
+        posterUserId = jsonData['ratingPosterId'];
+        rootItem = jsonData['rootItem'];
       });
-    } catch (err) {}
+    } catch (err) {
+      print(err);
+    }
   }
 
   @override
@@ -134,7 +142,66 @@ class _userRatingState extends State<userRating> {
                   size: 35, // Adjust the size of the icon
                   color: Colors.grey[500],
                 ),
-                onSelected: (value) {},
+                onSelected: (value) async {
+                  if (value == 'delete') {
+                    final response = await http.post(
+                      Uri.parse("$serverDomain/post/rating/delete"),
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                      },
+                      body: jsonEncode(<String, String>{
+                        'token': userManager.token,
+                        'ratingId': ratingId,
+                      }),
+                    );
+                    if (response.statusCode == 200) {
+                      Alert(
+                        context: context,
+                        type: AlertType.success,
+                        title: "rating deleted",
+                        desc: "refresh page to see",
+                        buttons: [
+                          DialogButton(
+                            onPressed: () {
+                              jsonCache.remove('post-${rootItem["data"]}');
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PostRatingList(
+                                          postId: rootItem["data"])));
+                            },
+                            width: 120,
+                            child: const Text(
+                              "ok",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          )
+                        ],
+                      ).show();
+                    } else {
+                      Alert(
+                        context: context,
+                        type: AlertType.error,
+                        title: "error deleteing rating",
+                        desc: response.body,
+                        buttons: [
+                          DialogButton(
+                            onPressed: () => Navigator.pop(context),
+                            width: 120,
+                            child: const Text(
+                              "ok",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          )
+                        ],
+                      ).show();
+                    }
+                  }
+                },
                 itemBuilder: (BuildContext context) {
                   return [
                     const PopupMenuItem<String>(

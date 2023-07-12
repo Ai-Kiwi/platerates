@@ -36,7 +36,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
   bool _isLoading = false;
   final double scrollDistence = 0.8;
   final String urlToFetch;
-  final Map<String, String>? extraUrlData;
+  var extraUrlData;
 
   _LazyLoadPageState(
       {required this.widgetAddedToTop,
@@ -67,7 +67,6 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
     if (lastItem != null) {
       dataSending['startPosPost'] = lastItem!;
     }
-    print(dataSending);
     final response = await http.post(
       Uri.parse("$serverDomain$urlToFetch"),
       headers: <String, String>{
@@ -81,7 +80,6 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
         var postData = fetchedData["items"];
         if (fetchedData["items"].isEmpty) {
           itemsCollected.add("end");
-          print("end of feed reached");
           return;
         }
         for (var post in postData) {
@@ -154,7 +152,6 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
             } else if (itemsCollected[index - 1] == "end") {
               return widgetAddedToEnd;
             } else {
-              print(itemsCollected[index - 1]);
               if (itemsCollected[index - 1]["type"] == "post") {
                 return PostItem(
                   postId: itemsCollected[index - 1]["data"],

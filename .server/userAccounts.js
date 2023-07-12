@@ -3,13 +3,51 @@ const router = express.Router();
 const { database } = require('./database');
 const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
+const { versions } = require('sharp');
+
+
+
+router.post('/profile/basicData', async (req, res) => {
+  console.log(" => user fetching profile")
+  try{
+    const token = req.body.token;
+    const userId = req.body.userId;
+    [validToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
+    const collection = database.collection('user_data');
+
+    if (validToken === false){
+      console.log("returned invaild token");
+      res.status(401).send("invaild token");
+    }
+
+
+
+
+    const userData = await collection.findOne({ userId: userId })
+    
+    if (userData === undefined || userData === null){
+      console.log("failed as invaild user");
+      return res.status(400).send("unkown user");
+    }
+
+    res.status(200).json({
+      username: userData.username,
+      userAvatar : userData.avatar,
+    });
+    
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
 
 
 router.post('/profile/data', async (req, res) => {
-    console.log("user fetching profile")
+    console.log(" => user fetching profile")
     try{
       const token = req.body.token;
-      const userId = req.body.userId;
+      var userId = req.body.userId;
       [validToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
       const collection = database.collection('user_data');
   
@@ -18,20 +56,26 @@ router.post('/profile/data', async (req, res) => {
         res.status(401).send("invaild token");
       }
   
-  
       //if they dont supply any user just fetch themselves
-      var fetchingUserId = requesterUserId
-      if (req.query.userId) {
-        fetchingUserId = req.query.userId;
+      if (!userId) {
+        userId = requesterUserId;
       }
+
+      console.log(userId);
   
-      const userData = await collection.findOne({ userId: userId })
+      const userData = await collection.findOne({ userId: userId });
       
       if (userData === undefined || userData === null){
         console.log("failed as invaild user");
         return res.status(400).send("unkown user");
       }
+
+      if (userData.shareMode != "public") {
+        console.log("no perms to view profile");
+        return res.status(400).send("no perms to view profile");
+      }
   
+      console.log("returning output");
       res.status(200).json({
         username: userData.username,
         bio: userData.bio,
@@ -43,10 +87,8 @@ router.post('/profile/data', async (req, res) => {
     }
 })
 
-
-
 router.post('/profile/posts', async (req, res) => {
-  console.log("user fetching posts on profile")
+  console.log(" => user fetching posts on profile")
   try{
     const token = req.body.token;
     const startPosPost = req.body.startPosPost;
@@ -115,7 +157,6 @@ async function banAccount(userId,time) {
       }
     );
 
-    console.table(result);
 
     if (result.acknowledged === true) {
       return true
@@ -194,6 +235,7 @@ async function createUser(email,password,username){
           administrator: false,
           creationDate: Date.now(),
           privateAccount: false,
+          shareMode: "public",
         }
       )
       if (userCredentialsOutput.acknowledged === true && userDataOutput.acknowledged === true){
