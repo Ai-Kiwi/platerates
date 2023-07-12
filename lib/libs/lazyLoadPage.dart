@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
-import '../userLogin.dart';
+import '../login/userLogin.dart';
 
 class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToTop;

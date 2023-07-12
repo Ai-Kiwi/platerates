@@ -5,7 +5,7 @@ const safeCompare = require('safe-compare');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { database } = require('./database');
-const { millisecondsToTime } = require("./utilFunctions");
+const { millisecondsToTime, generateRandomString } = require("./utilFunctions");
 const { error } = require('console');
 
 
@@ -33,13 +33,14 @@ async function updateUserPassword(email, newPassword) {
     .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
     .digest("hex");
 
-
+    const tokenNotExpiedCode = generateRandomString(16);
     // Update the user document with the new hashed password
     let collectionUpdate = await collection.updateOne(
       { _id: user._id },
       { $set: {
         hashedPassword: hashedPassword,
         passwordSalt: passwordSalt,
+        tokenNotExpiredCode: tokenNotExpiedCode,
       }}
       );
     
@@ -226,7 +227,7 @@ router.post('/login', async (req, res) => {
 })
 
 router.post('/login/logout', async (req, res) => {
-  console.log(" => user fetching rating data")
+  console.log(" => user log out")
     try{
       const token = req.body.token;
       var vaildToken, userId;
@@ -245,7 +246,7 @@ router.post('/login/logout', async (req, res) => {
         
         }
 
-        const newTokenNotExpiredCode = await updateUserPassword(16);
+        const newTokenNotExpiredCode = await generateRandomString(16);
         const reponse = await collection.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode}})
         if (reponse.acknowledged === true){
           console.log("user logged out")

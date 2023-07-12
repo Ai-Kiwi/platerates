@@ -5,7 +5,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
-import '../userLogin.dart';
+import '../login/userLogin.dart';
 
 class DataCollect {
   Future<Map> getBasicUserData(String userId, context) async {

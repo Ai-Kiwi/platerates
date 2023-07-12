@@ -50,15 +50,8 @@ app.listen(port, () => {
 
 
 // - features to add before release
-//profile's
-// //reset password
-// //change username
-// //change email
-// //logout current or all devices
-// //private accounts
-// //delete all data
+//finish reset password
 //report feature
-//rating posts
 //lisences
 // //use AboutDialog to get lisences from packages
 // //privacy policy
@@ -70,12 +63,13 @@ app.listen(port, () => {
 // //rate timeout
 // //reset password
 // //create account
-//posts should always have 3 dots
-//add system to save token
 //add returning to everything for post ratings in console print
 //add user avatar
-//display if you have or haven't rated a tost
+//display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
+//remove the dumb jokes I added in text feilds
+//make when no posts it be cleaner
+//fix up error status messages
 
 // - security to add
 //captcha for logins
@@ -110,6 +104,10 @@ app.listen(port, () => {
 
 
 // - possible future features after release
+//add option to use token forever
+//look at changing token expire time
+//change email address
+//way to delete all user data
 //ahead of time post downloading
 //non picture related posts
 //creating accounts
@@ -143,6 +141,7 @@ app.listen(port, () => {
 //rate limiting per account basses
 //paid verison that bypass rate limit
 //move rating to another section & move report to 3 dots for posts
+//lazy loading pass revestion for post so can know if to update post data
 
 // - low resolstion
 //overflow on public or private post part

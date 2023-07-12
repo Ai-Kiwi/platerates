@@ -4,10 +4,12 @@ import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
+import '../libs/smoothTransitions.dart';
 import '../main.dart';
-import '../userLogin.dart';
+import '../login/userLogin.dart';
 
 class UserProfile extends StatefulWidget {
   final String userId;
@@ -172,10 +174,8 @@ class _UserProfileState extends State<UserProfile> {
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => UserSettings()));
+                              Navigator.of(context).push(
+                                  smoothTransitions.slideUp(UserSettings()));
                             },
                             child: const Text("settings",
                                 style: TextStyle(
@@ -200,7 +200,7 @@ class _UserProfileState extends State<UserProfile> {
                             onPressed: () {
                               Alert(
                                 context: context,
-                                type: AlertType.error,
+                                type: AlertType.info,
                                 title: "who would you like to logout?",
                                 desc:
                                     "select which devices you wish to logout.",
@@ -241,26 +241,7 @@ class _UserProfileState extends State<UserProfile> {
                                         //    MaterialPageRoute(
                                         //        builder: (context) =>
                                         //            LoginPage()));
-                                        Alert(
-                                          context: context,
-                                          type: AlertType.error,
-                                          title: "logged out",
-                                          desc:
-                                              "please restart the app to apply",
-                                          buttons: [
-                                            DialogButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                              width: 120,
-                                              child: const Text(
-                                                "ok",
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20),
-                                              ),
-                                            )
-                                          ],
-                                        ).show();
+                                        Phoenix.rebirth(context);
                                       } else {
                                         Alert(
                                           context: context,

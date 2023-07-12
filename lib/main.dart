@@ -3,10 +3,11 @@ import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:json_cache/json_cache.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'createPost/createPostPhoto.dart';
-import 'userLogin.dart';
+import 'login/userLogin.dart';
 import 'navbar.dart';
 
 //add better loading system, should have a nice ui as well as handling for when it can't talk to the server
@@ -20,7 +21,7 @@ void main() {
     serverDomain = 'http://192.168.0.157:3030';
   }
 
-  runApp(const MyApp());
+  runApp(Phoenix(child: const MyApp()));
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
