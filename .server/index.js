@@ -52,6 +52,9 @@ app.listen(port, () => {
 
 
 // - features to add before release
+//lazy loading looks really bad with nothing
+//test everything is working
+//changelog and client out of date system
 //finish reset password
 //lisences
 // //use AboutDialog to get lisences from packages
@@ -63,13 +66,12 @@ app.listen(port, () => {
 // //rate timeout
 // //reset password
 // //create account
+// //change username
 //add returning to everything for post ratings in console print
 //add user avatar
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
 //remove the dumb jokes I added in text feilds
-//make when no posts it be cleaner
-//fix up error status messages
 
 // - security to add
 //captcha for logins

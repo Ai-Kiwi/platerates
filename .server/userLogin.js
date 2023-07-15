@@ -110,7 +110,6 @@ async function testToken(token,ipAddress){
 router.post('/login', async (req, res) => {
   console.log(" => user attempting login")
   try{
-    console.log("user login")
 
     const userEmail = req.body.email;
     const userPassword = req.body.password;
@@ -126,6 +125,7 @@ router.post('/login', async (req, res) => {
       console.log("invaild credentials enterd")
       return res.status(401).send("invalid login credentials"); //incorrect login
     }
+
     const hashedPassword = userData.hashedPassword;
     const passwordSalt = userData.passwordSalt;
     const userId = userData.userId;
@@ -133,7 +133,7 @@ router.post('/login', async (req, res) => {
     //look if account is banned
     if (userData.accountBanExpiryDate > Date.now()){
       console.log("account is banned")
-      return res.status(401).send(`account banned ${ millisecondsToTime( userData.accountBanExpiryDate - Date.now() ) }`);
+      return res.status(403).send(`account banned ${ millisecondsToTime( userData.accountBanExpiryDate - Date.now() ) }`);
     }
 
     //the way this works is abit werid so ima explain it.
@@ -242,7 +242,7 @@ router.post('/login/logout', async (req, res) => {
         const userCreds = await collection.findOne({ userId :  userId})
         if (userCreds === null) {
           console.log("no user found");
-          return res.status(400).send("no user found");
+          return res.status(404).send("no user found");
         
         }
 
@@ -253,7 +253,7 @@ router.post('/login/logout', async (req, res) => {
           return res.status(200).send("user logged out");
         }else{
           console.log("failed to logout user");
-          return res.status(400).send("failed to logout user");
+          return res.status(500).send("failed to logout user");
         }
 
   

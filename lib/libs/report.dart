@@ -20,7 +20,7 @@ class ReportSystem {
         }
       }),
     );
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       Alert(
         context: context,
         type: AlertType.success,

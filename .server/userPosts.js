@@ -37,15 +37,19 @@ router.post('/post/upload', async (req, res) => {
   
         //make sure title not to large or empty and isn't null or undefined
         if (title.length > 50) {
+          console.log("title is to large");
           return res.status(400).send('title is to large.');
         }else if (title === null || title.match(/^ *$/) !== null || title === undefined) {
+          console.log("title is empty");
           return res.status(400).send('title is empty.');
         }
   
         //make sure description not to large or empty and isn't null or undefined
         if (description.length > 250) {
+          console.log("description is to large.");
           return res.status(400).send('description is to large');
         }else if (description === null || description.match(/^ *$/) !== null || description === undefined) {
+          console.log("description is empty.");
           return res.status(400).send('description is empty.');
         }
   
@@ -53,6 +57,7 @@ router.post('/post/upload', async (req, res) => {
         if (shareMode === "public") {
         }else if (shareMode === "friends"){
         }else{
+          console.log("invaild post share mode")
           return res.status(400).send('Invaild share mode.');
         }
   
@@ -68,13 +73,14 @@ router.post('/post/upload', async (req, res) => {
             height: 1080,
           };
           if ((width === MAX_RESOLUTION.width && height === MAX_RESOLUTION.height) === false) {
+            console.log("image resolution incorrect")
             return res.status(400).send('Image resolution exceeds the allowed limit.');
           }
   
   
         } catch (err) {
           console.log(err)
-          return res.status(400).send('error saving image');
+          return res.status(500).send('error saving image');
         }
   
         let response = await collection.insertOne(
@@ -92,10 +98,10 @@ router.post('/post/upload', async (req, res) => {
         
         if (response.acknowledged === true){
           console.log("post created");
-          return res.status(200).send('created post');
+          return res.status(201).send('created post');
         }else{
           console.log("failed to create post");
-          return res.status(200).send('failed to create post');
+          return res.status(500).send('failed to create post');
         }
         
   
@@ -173,23 +179,28 @@ router.post('/post/delete', async (req, res) => {
         var post = await collection.findOne({ postId: postId});
 
         if (post === null) {
-          return res.status(400).send("post not found");
+          console.log("post not found")
+          return res.status(404).send("post not found");
         }
 
         if (post.posterUserId === userId) {
           let deletedResponse = await collection.deleteOne({ postId: postId});
   
           if (deletedResponse.acknowledged === true) {
+            console.log("post deleted");
             return res.status(200).send("post deleted");
           }else{
-            return res.status(200).send("failed deleting post");
+            console.log("failed to delete post");
+            return res.status(500).send("failed deleting post");
           }
 
         }else{
+          console.log("user doesn't own post");
           return res.status(403).send("post not yours");
         }
   
       }else{
+        console.log("user token is invaild");
         return res.status(401).send("invaild token");
       }
     }catch(err){
@@ -216,11 +227,13 @@ router.post('/post/feed', async (req, res) => {
   
         if (startPosPost) {
           if (startPosPost.type === "post" && !startPosPost.data){
+            console.log("invaild start post")
             return res.status(400).send("invaild start post");
           }
 
           const startPosPostData = await collection.findOne({ postId: startPosPost.data })
           if (!startPosPostData){
+            console.log("invaild start post")
             return res.status(400).send("invaild start post");
           }
             

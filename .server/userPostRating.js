@@ -7,9 +7,6 @@ const { generateRandomString } = require('./utilFunctions');
 
 
 
-
-
-
 async function updatePostRating(rootItem){
   var postRatingsCollection = database.collection('post_ratings');
   var postsCollection = database.collection('posts');
@@ -58,14 +55,14 @@ router.post('/post/rating/delete', async (req, res) => {
         const ratingData = await postRatingsCollection.findOne({ ratingId :  ratingId})
         if (ratingData == null) {
           console.log("no post found");
-          return res.status(400).send("no post found");
+          return res.status(404).send("no post found");
         
         }
 
         //test if comment is your's
         if (ratingData.ratingPosterId != userId){
           console.log("post not yours");
-          return res.status(400).send("post not yours");
+          return res.status(403).send("post not yours");
         }
 
 
@@ -76,9 +73,11 @@ router.post('/post/rating/delete', async (req, res) => {
           console.log("post deleted")
           updatePostRating(ratingData.rootItem);
           return res.status(200).send("post deleted");
+
         }else{
           console.log("failed to delete post");
-          return res.status(400).send("failed to delete post");
+          return res.status(500).send("failed to delete post");
+
         }
         
         
@@ -119,29 +118,34 @@ router.post('/post/rating/data', async (req, res) => {
         //fetch the post
         const ratingData = await postRatingsCollection.findOne({ ratingId :  ratingId})
         if (ratingData == null) {
-          return res.status(400).send("no post found");
+          console.log("failed to find post");
+          return res.status(404).send("no post found");
         
         }
         const rootItem = ratingData.rootItem;
 
         //extract root item info
         if (!rootItem) {
+          console.log("no root item attached");
           return res.status(400).send("no root item");
         }
         const rootItemData = await postsCollection.findOne({ postId : rootItem.data })
         if (!rootItemData){
+          console.log("root item is invaild");
           return res.status(400).send("invaild root post");
         }
         if (rootItemData.shareMode != "public") {
+          console.log("post is not public")
           return res.status(400).send("root post not shared to you");
         }
 
         if (ratingData.shareMode != "public") {
+          console.log("rating is not public")
           return res.status(400).send("rating not shared to you");
         }
 
         updatePostRating(rootItem);
-        //test if they have already commented
+        console.log("response sent")
         return res.status(200).json({
           rating : ratingData.rating,
           text : ratingData.text,
@@ -185,23 +189,28 @@ router.post('/post/rating/upload', async (req, res) => {
 
         //extract root item info
         if (!rootItem) {
+          console.log("no root item");
           return res.status(400).send("no root item");
         }
         const rootItemData = await postsCollection.findOne({ postId : rootItem.data })
         if (!rootItemData){
+          console.log("invaild root item");
           return res.status(400).send("invaild root post");
         }
         if (rootItemData.shareMode != "public") {
+          console.log("root post not shared with user");
           return res.status(400).send("root post not shared to you");
         }
 
         //test if they have already commented
         const alreadyExistComment = await postRatingsCollection.findOne({ ratingPosterId :  userId, rootItem : {type: rootItem.type, data: rootItem.data},})
         if (alreadyExistComment) {
+          console.log("you have already rated");
           return res.status(400).send("you have already rated");
         }
 
         if (rootItemData.posterUserId === userId) {
+          console.log("you can't rate on your own post");
           return res.status(400).send("you can not rate your own post");
         }
 
@@ -209,20 +218,25 @@ router.post('/post/rating/upload', async (req, res) => {
 
         //report error if shareMode is public
         if (!shareMode) {
+          console.log("had no share mode");
           return res.status(400).send("share mode can't be nothing");
         }
 
         //test that text and rating values are correct
         if (!rating) {
+          console.log("had no rating");
           return res.status(400).send("no rating provided");
         }
         if (rating < 0 || rating > 5) {
+          console.log("had out of range rating")
           return res.status(400).send("invaild rating");
         }
         if (!text) {
+          console.log("had no text attached")
           return res.status(400).send("no text provided");
         }
         if (text.length > 500) {
+          console.log("text was to large")
           return res.status(400).send("text to large");
         }
 
@@ -251,12 +265,12 @@ router.post('/post/rating/upload', async (req, res) => {
 
         if (postResponse.acknowledged === true) {
           updatePostRating(rootItem);
-          console.log("post uploaded");
-          return res.status(200).send("post uploaded");
+          console.log("rating uploaded");
+          return res.status(201).send("rating uploaded");
 
         }else{
           console.log("failed uploading rating");
-          return res.status(401).send("failed uploading rating");
+          return res.status(500).send("failed uploading rating");
 
         }
         
@@ -292,11 +306,13 @@ router.post('/post/ratings', async (req, res) => {
         //extract start item data
         if (startPosPost) {
           if (startPosPost.type === "rating" && !startPosPost.data){
+            console.log("invaild start post")
             return res.status(400).send("invaild start post");
           }
 
           const startPosPostData = await postsCollection.findOne({ ratingId: startPosPost.data, rootItem : rootItem })
           if (!startPosPostData){
+            console.log("invaild start post")
             return res.status(400).send("invaild start post");
           }
             
@@ -305,14 +321,17 @@ router.post('/post/ratings', async (req, res) => {
 
         //extract root item info
         if (!rootItem) {
+          console.log("no root item");
           return res.status(400).send("no root item");
         }
         const rootItemData = await postsCollection.findOne({ postId : rootItem.data })
         if (!rootItemData){
+          console.log("invaild root item");
           return res.status(400).send("invaild root post");
         }
         if (rootItemData.shareMode != "public") {
-          return res.status(400).send("root post not shared to you");
+          console.log("root post not shared with you")
+          return res.status(403).send("root post not shared to you");
         }
 
         const posts = await postRatingsCollection.find({ shareMode: 'public', creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({postDate: -1}).limit(5).toArray();

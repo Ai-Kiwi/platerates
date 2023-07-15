@@ -220,7 +220,7 @@ class _CreatePostState extends State<CreatePostPage> {
                                 }),
                               );
 
-                              if (response.statusCode == 200) {
+                              if (response.statusCode == 201) {
                                 // ignore: use_build_context_synchronously
                                 Alert(
                                   context: context,
