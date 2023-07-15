@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../libs/dataCollect.dart';
+import '../libs/report.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
 
@@ -200,10 +201,19 @@ class _userRatingState extends State<userRating> {
                         ],
                       ).show();
                     }
+                  } else if (value == 'report') {
+                    reportSystem.reportItem(context, "post_rating", ratingId);
                   }
                 },
                 itemBuilder: (BuildContext context) {
                   return [
+                    const PopupMenuItem<String>(
+                      value: 'report',
+                      child: Text(
+                        'report 🚩',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
                     const PopupMenuItem<String>(
                       value: 'delete',
                       child: Text(
