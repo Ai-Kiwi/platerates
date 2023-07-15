@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:Toaster/login/userResetPassword.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import '../libs/smoothTransitions.dart';
 import '../main.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -277,23 +279,8 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(
                   // reset password
                   onPressed: () {
-                    Alert(
-                      context: context,
-                      type: AlertType.info,
-                      title: "reset password not added yet",
-                      desc:
-                          "just idk, don't use bad passwords and remember them??? I mean i'm just saying it would fix alota problems in this day and age.",
-                      buttons: [
-                        DialogButton(
-                          onPressed: () => Navigator.pop(context),
-                          width: 120,
-                          child: const Text(
-                            "ok",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        )
-                      ],
-                    ).show();
+                    Navigator.of(context).push(
+                        smoothTransitions.slideUp(const ResetPasswordPage()));
                   },
                   child: const Text('Reset Password'),
                 ),

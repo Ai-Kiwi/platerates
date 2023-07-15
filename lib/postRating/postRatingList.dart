@@ -39,7 +39,9 @@ class _PostRatingListState extends State<PostRatingList> {
 
     setState(() {
       print(response.body);
-      if (response.body == "you have already rated") {
+      if (response.body == "you have already rated" ||
+          response.body == "you can not rate your own post") {
+        print(response.body);
         hasRated = true;
       } else {
         hasRated = false;

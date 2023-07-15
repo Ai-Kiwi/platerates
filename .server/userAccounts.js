@@ -264,7 +264,6 @@ async function createUser(email,password,username){
           accountBanExpiryDate: 0,
           failedLoginAttemptInfo: {},
           tokenNotExpiedCode: tokenNotExpiredCode,
-          loginHistory: {},
         }
       )
       const userDataOutput = await userDataCollection.insertOne(
