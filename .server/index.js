@@ -26,12 +26,14 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 
 
-userPosts = require("./userPosts");
-userAccounts = require("./userAccounts");
-userLogin = require("./userLogin");
-userPostRating = require("./userPostRating");
+const userPosts = require("./userPosts");
+const userAccounts = require("./userAccounts");
+const userLogin = require("./userLogin");
+const userPostRating = require("./userPostRating");
+const report = require("./report.js")
 
 app.use('/', limiter)
+app.use('/', report.router);
 app.use('/', userPosts.router);
 app.use('/', userPostRating.router);
 app.use('/', userAccounts.router);
@@ -51,7 +53,6 @@ app.listen(port, () => {
 
 // - features to add before release
 //finish reset password
-//report feature
 //lisences
 // //use AboutDialog to get lisences from packages
 // //privacy policy
@@ -88,6 +89,10 @@ app.listen(port, () => {
 //per account rate limit, strictness depends of account account trust level
 //verify with phone number possibly
 
+//admin page
+//view reports
+//view bans, ban user
+//create account
 
 // - bugs to fix
 //loading screen after take photo and upload photo
@@ -103,6 +108,7 @@ app.listen(port, () => {
 
 
 // - possible future features after release
+//auto remove posts after alot of reports
 //back buttons to all menus
 //make it more clear that rating is clickable
 //spam requests from account leads to account ban
@@ -142,7 +148,6 @@ app.listen(port, () => {
 //word censoring
 //rate limiting per account basses
 //paid verison that bypass rate limit
-//move rating to another section & move report to 3 dots for posts
 //lazy loading pass revestion for post so can know if to update post data
 
 // - low resolstion

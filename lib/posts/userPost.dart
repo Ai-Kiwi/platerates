@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
+import '../libs/report.dart';
 import '../main.dart';
 
 class PostItem extends StatefulWidget {
@@ -218,45 +219,6 @@ class _PostItemState extends State<PostItem> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 4.0),
-                  //report it button
-                  SizedBox(
-                    height: 25,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        textStyle: const TextStyle(fontSize: 15),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5.0, vertical: 1.0),
-                        backgroundColor: Colors.red,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      onPressed: () {
-                        Alert(
-                          context: context,
-                          type: AlertType.info,
-                          title: "reporting has not been added yet",
-                          desc:
-                              "idk, just close your eyes, it's really not that hard",
-                          buttons: [
-                            DialogButton(
-                              onPressed: () => Navigator.pop(context),
-                              width: 120,
-                              child: const Text(
-                                "ok",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                            )
-                          ],
-                        ).show();
-                      },
-                      child: const Text("report 🚩",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                  ),
                 ]),
                 const SizedBox(height: 8.0),
                 //title and desc
@@ -369,7 +331,7 @@ class PostManageButton extends StatelessWidget {
         size: 35, // Adjust the size of the icon
         color: Colors.grey[500],
       ),
-      onSelected: (value) {
+      onSelected: (value) async {
         // Handle menu item selection
         if (value == 'delete') {
           Alert(
@@ -445,12 +407,19 @@ class PostManageButton extends StatelessWidget {
               )
             ],
           ).show();
-          //} else if (value == 'option2') {
-          //  // Handle option 2 selection
+        } else if (value == 'report') {
+          reportSystem.reportItem(context, "post", postId);
         }
       },
       itemBuilder: (BuildContext context) {
         return [
+          const PopupMenuItem<String>(
+            value: 'report',
+            child: Text(
+              'report 🚩',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
           const PopupMenuItem<String>(
             value: 'delete',
             child: Text(

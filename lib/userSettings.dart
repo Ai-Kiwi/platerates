@@ -35,14 +35,14 @@ class _UserSettingsState extends State<UserSettings> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ListView(
                 children: [
-                  Padding(
+                  const Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
                       child: Text(
                         "Settings",
                         style: TextStyle(color: Colors.white, fontSize: 40),
                       )),
-                  Divider(
+                  const Divider(
                     color: Color.fromARGB(255, 110, 110, 110),
                     thickness: 1.0,
                   ),
@@ -57,7 +57,7 @@ class _UserSettingsState extends State<UserSettings> {
                           content: Column(
                             children: <Widget>[
                               TextField(
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   icon: Icon(Icons.account_circle),
                                   labelText: 'Username',
                                 ),
@@ -125,7 +125,7 @@ class _UserSettingsState extends State<UserSettings> {
                                   ).show();
                                 }
                               },
-                              child: Text(
+                              child: const Text(
                                 "Change",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 20),
@@ -195,11 +195,11 @@ class settingItem extends StatelessWidget {
                   ))),
               Expanded(
                   child: Text(settingName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 25,
                         color: Colors.white,
                       ))),
-              AspectRatio(
+              const AspectRatio(
                   aspectRatio: 1,
                   child: Center(
                       child: Icon(
