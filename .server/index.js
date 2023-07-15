@@ -57,7 +57,6 @@ app.listen(port, () => {
 // //privacy policy
 //profile pictures to post and ratings
 //make lazy loading lib collect data not when drawing item
-//back buttons to all menus
 //post limit
 // //post timeout
 // //rate timeout
@@ -104,6 +103,9 @@ app.listen(port, () => {
 
 
 // - possible future features after release
+//back buttons to all menus
+//make it more clear that rating is clickable
+//spam requests from account leads to account ban
 //add option to use token forever
 //look at changing token expire time
 //change email address

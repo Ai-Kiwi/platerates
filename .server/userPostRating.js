@@ -201,6 +201,12 @@ router.post('/post/rating/upload', async (req, res) => {
           return res.status(400).send("you have already rated");
         }
 
+        if (rootItemData.posterUserId === userId) {
+          return res.status(400).send("you can not rate your own post");
+        }
+
+
+
         //report error if shareMode is public
         if (!shareMode) {
           return res.status(400).send("share mode can't be nothing");

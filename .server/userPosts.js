@@ -24,11 +24,6 @@ router.post('/post/upload', async (req, res) => {
       if (vaildToken) {
         var collection = database.collection('posts');
   
-        var imageId = generateRandomString(16);
-        while (fs.existsSync(imageId)) {
-          imageId = generateRandomString(16);
-        }
-  
         //loop over making sure post Id is not used
         while (true){
           postId =  generateRandomString(16);
