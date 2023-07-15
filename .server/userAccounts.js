@@ -12,28 +12,30 @@ router.post('/profile/basicData', async (req, res) => {
   try{
     const token = req.body.token;
     const userId = req.body.userId;
-    [validToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
+    var vaildToken;
+    var requesterUserId;
+    [vaildToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
     const collection = database.collection('user_data');
 
-    if (validToken === false){
+    if (vaildToken) { // user token is valid
+      const userData = await collection.findOne({ userId: userId })
+      
+      if (userData === undefined || userData === null){
+        console.log("failed as invaild user");
+        return res.status(404).send("unkown user");
+      }
+
+      console.log("sending basic data");
+      res.status(200).json({
+        username: userData.username,
+        userAvatar : userData.avatar,
+      });
+
+    }else{
       console.log("returned invaild token");
       return res.status(401).send("invaild token");
-    }
-
-
-
-
-    const userData = await collection.findOne({ userId: userId })
     
-    if (userData === undefined || userData === null){
-      console.log("failed as invaild user");
-      return res.status(400).send("unkown user");
     }
-
-    res.status(200).json({
-      username: userData.username,
-      userAvatar : userData.avatar,
-    });
     
   }catch(err){
     console.log(err);
@@ -68,15 +70,18 @@ router.post('/profile/settings/change', async (req, res) => {
         if (response.acknowledged === true) {
           console.log("updated username")
           return res.status(200).send("updated username")
+
         }else{
           console.log("failed to update username")
-          return res.status(400).send("failed to update username")
+          return res.status(500).send("failed to update username")
+
         }
 
 
       }else{
         console.log("unkown setting")
-        return res.status(400).send("unkown setting")
+        return res.status(404).send("unkown setting")
+
       }
     }
   }catch(err){
@@ -95,33 +100,35 @@ router.post('/profile/data', async (req, res) => {
       [validToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
       const collection = database.collection('user_data');
   
-      if (validToken === false){
+      if (validToken){
+        
+        //if they dont supply any user just fetch themselves
+        if (!userId) {
+          userId = requesterUserId;
+        }
+      
+        const userData = await collection.findOne({ userId: userId });
+
+        if (userData === undefined || userData === null){
+          console.log("failed as invaild user");
+          return res.status(404).send("unkown user");
+        }
+
+        if (userData.shareMode != "public") {
+          console.log("no perms to view profile");
+          return res.status(403).send("no perms to view profile");
+        }
+      
+        console.log("returning profile data");
+        return res.status(200).json({
+          username: userData.username,
+          bio: userData.bio,
+        });
+
+      }else{
         console.log("returned invaild token");
         return res.status(401).send("invaild token");
       }
-  
-      //if they dont supply any user just fetch themselves
-      if (!userId) {
-        userId = requesterUserId;
-      }
-  
-      const userData = await collection.findOne({ userId: userId });
-      
-      if (userData === undefined || userData === null){
-        console.log("failed as invaild user");
-        return res.status(400).send("unkown user");
-      }
-
-      if (userData.shareMode != "public") {
-        console.log("no perms to view profile");
-        return res.status(400).send("no perms to view profile");
-      }
-  
-      console.log("returning output");
-      return res.status(200).json({
-        username: userData.username,
-        bio: userData.bio,
-      });
       
     }catch(err){
       console.log(err);
@@ -146,11 +153,13 @@ router.post('/profile/posts', async (req, res) => {
 
       if (startPosPost) {
         if (startPosPost.type === "post" && !startPosPost.data){
+          console.log("invalid start post");
           return res.status(400).send("invaild start post");
         }
 
         const startPosPostData = await collection.findOne({ postId: startPosPost.data })
         if (!startPosPostData){
+          console.log("invalid start post");
           return res.status(400).send("invaild start post");
         }
           
@@ -295,4 +304,5 @@ async function createUser(email,password,username){
 module.exports = {
     router:router,
     banAccount:banAccount,
+    createUser:createUser,
 };

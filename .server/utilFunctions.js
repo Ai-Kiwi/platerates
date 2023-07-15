@@ -44,6 +44,8 @@ function millisecondsToTime(milliseconds){
   }
 }
 
+//async function 
+
 module.exports = { 
   generateRandomString:generateRandomString, 
   millisecondsToTime:millisecondsToTime 
