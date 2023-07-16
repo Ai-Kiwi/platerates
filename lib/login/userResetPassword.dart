@@ -305,6 +305,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               context: context,
                               type: AlertType.success,
                               title: "reset password code created",
+                              desc: "check your emails",
                               buttons: [
                                 DialogButton(
                                   onPressed: () => Navigator.pop(context),
