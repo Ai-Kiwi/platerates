@@ -4,6 +4,7 @@ const { database } = require('./database');
 const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
 const { versions } = require('sharp');
+const { userTimeout, userTimeoutTest } = require('./timeouts');
 
 
 
@@ -58,6 +59,13 @@ router.post('/profile/settings/change', async (req, res) => {
     if (vaildToken) { // user token is valid
 
       if (setting === "username") {
+        //test timeout
+        const [timeoutActive, timeoutTime] = await userTimeoutTest(userId,"change_username")
+        if (timeoutActive === true) {
+          console.log("username timed out " + timeoutTime);
+          return res.status(408).send("please wait " + timeoutTime + " to change username");
+        }
+
         if (value.length > 25) {
           console.log("username to large")
           return res.status(400).send("username to large")
@@ -68,8 +76,11 @@ router.post('/profile/settings/change', async (req, res) => {
         const response = await collection.updateOne({userId: userId},{ $set: {username : value}}) 
 
         if (response.acknowledged === true) {
-          console.log("updated username")
-          return res.status(200).send("updated username")
+          //update username
+          userTimeout(userId,"change_username", 60 * 60 * 24 * 7);
+          console.log("updated username");
+          return res.status(200).send("updated username");
+          
 
         }else{
           console.log("failed to update username")

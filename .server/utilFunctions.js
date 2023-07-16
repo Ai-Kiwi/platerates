@@ -14,33 +14,33 @@ function millisecondsToTime(milliseconds){
   let time = milliseconds / 1000;
 
   if (time < 60) {
-    return `${Math.floor(time)} seconds`
+    return `${Math.round(time)} seconds`
   }
 
   time = time / 60
 
   if (time < 60) {
-    return `${Math.floor(time)} minutes`
+    return `${Math.round(time)} minutes`
   }
 
   time = time / 60
 
   if (time < 60) {
-    return `${Math.floor(time)} hours`
+    return `${Math.round(time)} hours`
   }
 
   time = time / 24
 
   if (time < 24) {
-    return `${Math.floor(time)} days`
+    return `${Math.round(time)} days`
   }
 
-  if (time < 300) {
+  if (time < 360) {
     time = time / 360
-    return `${Math.floor(time)} years`
+    return `${Math.round(time)} years`
   }else{
     time = time / 30
-    return `${Math.floor(time)} months`
+    return `${Math.round(time)} months`
   }
 }
 

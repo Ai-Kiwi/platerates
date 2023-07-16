@@ -24,6 +24,7 @@ router.post('/report', async (req, res) => {
       //test if item already reported
       const userReportItem = await reportsCollection.findOne({item : rootItem, reporterId : userId})
       if (userReportItem !== null) {
+        console.log("already reported");
         return res.status(409).send("already reported")
       }
 
@@ -38,12 +39,14 @@ router.post('/report', async (req, res) => {
         reportingItem = await postRatingsollection.findOne({ratingId : reportItem.data});
 
       }else{
+        console.log("unkown type");
         return res.status(409).send("unkown type")
 
       }
 
 
       if (reportingItem === null) {
+        console.log("item does not exist");
         return res.status(404).send("item does not exist")
       }
 
@@ -67,8 +70,10 @@ router.post('/report', async (req, res) => {
       )
 
       if (response.acknowledged === true){
+        console.log("reported");
         return res.status(201).send("reported")
       }else{
+        console.log("failed reporting");
         return res.status(500).send("failed reporting")
       }
 

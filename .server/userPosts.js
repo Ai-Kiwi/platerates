@@ -4,6 +4,7 @@ const { database } = require('./database');
 const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
 const sharp = require('sharp');
+const { userTimeout, userTimeoutTest } = require('./timeouts');
 
 
 
@@ -33,7 +34,12 @@ router.post('/post/upload', async (req, res) => {
             break
           }
         }
-  
+
+        const [timeoutActive, timeoutTime] = await userTimeoutTest(userId,"post_upload")
+        if (timeoutActive === true) {
+          console.log("user is timed out for " + timeoutTime);
+          return res.status(408).send('timed out for ' + timeoutTime);
+        }
   
         //make sure title not to large or empty and isn't null or undefined
         if (title.length > 50) {
@@ -97,6 +103,7 @@ router.post('/post/upload', async (req, res) => {
         )
         
         if (response.acknowledged === true){
+          userTimeout(userId,"post_upload", 60)
           console.log("post created");
           return res.status(201).send('created post');
         }else{
