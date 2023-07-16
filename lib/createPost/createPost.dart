@@ -195,8 +195,7 @@ class _CreatePostState extends State<CreatePostPage> {
                     Alert(
                       context: context,
                       type: AlertType.warning,
-                      title: "Are you sure you want to post?",
-                      desc: "once done this is done",
+                      title: "Are you sure you want to post this?",
                       buttons: [
                         DialogButton(
                           onPressed: () async {
@@ -226,7 +225,6 @@ class _CreatePostState extends State<CreatePostPage> {
                                   context: context,
                                   type: AlertType.success,
                                   title: "post uploaded",
-                                  desc: "",
                                   buttons: [
                                     DialogButton(
                                       width: 120,
@@ -266,7 +264,6 @@ class _CreatePostState extends State<CreatePostPage> {
                                 context: context,
                                 type: AlertType.error,
                                 title: "unkown error contacting server",
-                                desc: null,
                                 buttons: [
                                   DialogButton(
                                     width: 120,

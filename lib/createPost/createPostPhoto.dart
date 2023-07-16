@@ -196,8 +196,6 @@ class _CameraPageState extends State<CameraPage> {
                                   context: context,
                                   type: AlertType.error,
                                   title: "error taking photo",
-                                  desc:
-                                      "please contact owner to get this issue fixed.",
                                   buttons: [
                                     DialogButton(
                                       child: Text(

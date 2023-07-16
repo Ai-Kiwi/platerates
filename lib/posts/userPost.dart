@@ -338,7 +338,6 @@ class PostManageButton extends StatelessWidget {
             context: context,
             type: AlertType.warning,
             title: "are you sure you want to delete this post?",
-            desc: "what the title said",
             buttons: [
               DialogButton(
                 onPressed: () async {

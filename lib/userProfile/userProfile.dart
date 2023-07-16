@@ -294,7 +294,7 @@ class _UserProfileState extends State<UserProfile> {
             child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
                 child: Text(
-                  "posts all they have, it is",
+                  "end of posts.",
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 )),
           ),

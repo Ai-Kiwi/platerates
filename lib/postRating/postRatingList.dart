@@ -92,7 +92,7 @@ class _PostRatingListState extends State<PostRatingList> {
                               padding: EdgeInsets.symmetric(
                                   vertical: 16.0, horizontal: 16),
                               child: Text(
-                                "ratings end, reached you have.",
+                                "end of ratings.",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 25),
                               )),
