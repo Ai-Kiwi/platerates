@@ -54,6 +54,8 @@ class _UserSettingsState extends State<UserSettings> {
                       Alert(
                           context: context,
                           title: "Change username",
+                          desc:
+                              "please note you can only change it once per week",
                           content: Column(
                             children: <Widget>[
                               TextField(

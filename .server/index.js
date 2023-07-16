@@ -62,11 +62,8 @@ app.listen(port, () => {
 //profile pictures to post and ratings
 //make lazy loading lib collect data not when drawing item
 //post limit
-// //post timeout
-// //rate timeout
 // //reset password
 // //create account
-// //change username
 //add returning to everything for post ratings in console print
 //add user avatar
 //display if you have or haven't rated a toast before clicking on it
@@ -110,6 +107,7 @@ app.listen(port, () => {
 
 
 // - possible future features after release
+//system for when down for maintenance
 //auto remove posts after alot of reports
 //back buttons to all menus
 //make it more clear that rating is clickable
