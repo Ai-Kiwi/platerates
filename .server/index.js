@@ -55,20 +55,19 @@ app.listen(port, () => {
 //lazy loading looks really bad with nothing
 //test everything is working
 //changelog and client out of date system
-//finish reset password
 //lisences
 // //use AboutDialog to get lisences from packages
 // //privacy policy
 //profile pictures to post and ratings
 //make lazy loading lib collect data not when drawing item
-//post limit
-// //reset password
-// //create account
 //add returning to everything for post ratings in console print
 //add user avatar
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
-//remove the dumb jokes I added in text feilds
+//remove the dumb jokes I added in on client
+//hash reset password codes
+//expire reset password code after use
+
 
 // - security to add
 //captcha for logins
@@ -106,7 +105,14 @@ app.listen(port, () => {
 //on token error test token and restart app
 
 
+//cache overhall
+//ratings get removed from cache after restart and every now and again
+//cache has expirey date
+//cache is all cleard once a week or so
+
 // - possible future features after release
+//notifcation when someone logins into your account
+//update rating data only for posts
 //system for when down for maintenance
 //auto remove posts after alot of reports
 //back buttons to all menus
