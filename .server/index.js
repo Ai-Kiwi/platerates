@@ -65,11 +65,11 @@ app.listen(port, () => {
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
 //remove the dumb jokes I added in on client
-//hash reset password codes
-//expire reset password code after use
+
 
 
 // - security to add
+//hash reset password codes
 //captcha for logins
 //captcha for create accounts
 //-server side
