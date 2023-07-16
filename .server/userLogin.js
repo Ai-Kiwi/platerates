@@ -7,6 +7,8 @@ const crypto = require('crypto');
 const { database } = require('./database');
 const { millisecondsToTime, generateRandomString } = require("./utilFunctions");
 const { error } = require('console');
+const { sendMail } = require('./mailsender');
+const { userTimeout, userTimeoutTest } = require('./timeouts');
 
 
 //if (fs.existsSync() === false) {
@@ -20,12 +22,6 @@ async function updateUserPassword(email, newPassword) {
     // Retrieve the user document using the email
     const collection = database.collection("user_credentials");
 
-    const user = collection.findOne({ email:email })
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
     // Generate a new hashed password
     const passwordSalt = crypto.randomBytes(16).toString('hex');
     const hashedPassword = crypto.createHash("sha256")
@@ -36,7 +32,7 @@ async function updateUserPassword(email, newPassword) {
     const tokenNotExpiedCode = generateRandomString(16);
     // Update the user document with the new hashed password
     let collectionUpdate = await collection.updateOne(
-      { _id: user._id },
+      { email: email },
       { $set: {
         hashedPassword: hashedPassword,
         passwordSalt: passwordSalt,
@@ -276,15 +272,139 @@ router.post('/testToken', async (req, res) => {
 
   if(tokenVaild){
     console.log("vaild token");
-    return res.status(200).send();
+    return res.status(200).send("vaild token");
   }else{
     console.log("invaild token");
-    return res.status(401).send();
+    return res.status(401).send("invaild token");
   }
   
 })
 
+router.post('/login/reset-password', async (req, res) => {
+  console.log(" => user creating reset password code");
+  try{
+    const email = req.body.email;
+    const newPassword = req.body.newPassword;
+    const resetCode = req.body.resetCode;
+    const ipAddress = req.headers['x-forwarded-for'];
+    const userCredentialsCollection = database.collection("user_credentials");
+    
+    //fetch user data
+    const userCredentials = await userCredentialsCollection.findOne({email: email});
+    if (userCredentials === null){
+      console.log("failed to find user");
+      return res.status(404).send("user not found");
+    }
 
+
+    //if it has a value then it must be 2nd request which is using code
+    //if it doesn't have a value then they must be 
+    if (resetCode) {
+      //test if code is valid
+      if (userCredentials.resetPassword.code !== resetCode) {
+        console.log("code invalid");
+        return res.status(400).send("code invalid");
+      }
+
+      //test if password is nothing
+      if (newPassword === null){
+        console.log("password is nothing");
+        return res.status(400).send("password is nothing");
+      }
+      
+
+      //test if code is expired
+      if (userCredentials.resetPassword.expireTime >= Date.now()) {
+        console.log("code expired");
+        return res.status(410).send("code expired");
+      }
+
+      //test if password is invalid
+      if (newPassword.length === 0 || newPassword.length > 32) {
+        console.log("password size invalid");
+        return res.status(400).send("password size invalid");
+      }
+      console.log(email)
+      console.log(newPassword)
+      //update password
+      const response = await updateUserPassword(email,newPassword);
+      if (response === true) {
+        //expire code
+        const response = await userCredentialsCollection.updateOne(
+          { userId: userCredentials.userId },
+          { $set: {
+            resetPassword : {
+              expireTime : 0,
+            }
+            }
+          }
+        );
+        if (response.acknowledged === false){
+          console.log("failed to remove code from usable");
+        }
+
+        console.log("changed password");
+        return res.status(200).send("password changed");
+
+      }else{
+        console.log("failed to change password");
+        return res.status(500).send("failed to change password");
+
+      }
+      
+    }else{
+      //test for timeouts
+      const [timeoutActive, timeoutTime] = await userTimeoutTest(userCredentials.userId,"create-reset-password-code");
+      if (timeoutActive === true) {
+        console.log("reset password for user is timed out " + timeoutTime);
+        return res.status(408).send("please wait " + timeoutTime + " to reset password");
+      }
+
+
+      const resetPasswordCode = generateRandomString(8);
+
+      //send reset password
+      console.log("sending email data")
+      const emailData = await sendMail(
+        '"no-reply toaster" <toaster@aikiwi.dev>',
+        email,
+        "Password reset code for toaster",
+        "Your one time toaster account password reset code from ip address" + ipAddress + " is " + resetPasswordCode + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
+
+      );
+      if (emailData) {
+        const expireTime = Date.now() + (1000 * 60 * 15) // expires in 15m 
+        const response = await userCredentialsCollection.updateOne(
+          { userId: userCredentials.userId },
+          { $set: {
+            resetPassword : {
+              code : resetPasswordCode,
+              expireTime : expireTime,
+            }
+            }
+          }
+        );
+
+        if (response.acknowledged === true) {
+          userTimeout(userCredentials.userId,"create-reset-password-code",60 * 60 * 24);
+          return res.status(200).send("created password reset code");
+
+        }else{
+          return res.status(500).send("server error");
+        } 
+
+      }else{
+        console.log("failed sending email data");
+        return res.status(500).send("server error");
+      }
+    }
+
+}catch(err){
+  console.log(err);
+  return res.status(500).send("server error");
+}
+  
+})
 
 module.exports = {
     router: router,

@@ -41,8 +41,6 @@ async function userTimeoutTest(userId,timeoutAction) {
         return [false];
     }
 
-    console.log(userData);
-    console.table(userData);
     //item not created yet
     if (userData.cooldowns[timeoutAction] === undefined){
         console.log("timeout reason does not exist");

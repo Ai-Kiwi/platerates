@@ -26,5 +26,10 @@ async function sendMail(from,to,subject,text) {
         return info;
     }catch (err){
         console.log(err);
+        return null
     }
 }
+
+module.exports = {
+  sendMail:sendMail,
+};
