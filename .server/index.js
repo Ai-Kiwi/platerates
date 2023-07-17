@@ -93,6 +93,8 @@ app.listen(port, () => {
 //view reports
 //view bans, ban user
 //create account
+//can delete any posts as if they own the post
+//have a custom flair on their name to show they are an admin
 
 // - bugs to fix
 //loading screen after take photo and upload photo
