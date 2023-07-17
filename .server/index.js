@@ -67,6 +67,7 @@ app.listen(port, () => {
 //split popups into its own curom file and reuse that for ease of reading and creating code
 //admin zone todo things
 //way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
+//way to change user bio
 
 
 
