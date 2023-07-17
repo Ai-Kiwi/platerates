@@ -54,7 +54,6 @@ app.listen(port, () => {
 
 // - features to add before release
 //lazy loading looks really bad with nothing
-//test everything is working
 //changelog and client out of date system
 //lisences
 // //use AboutDialog to get lisences from packages
@@ -65,8 +64,13 @@ app.listen(port, () => {
 //add user avatar
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
-//remove the dumb jokes I added in on client
-
+//add reasons for why posts were reported
+//split popups into its own curom file and reuse that for ease of reading and creating code
+//admin zone todo things
+//way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
+//way to change user bio
+//create another branch for relase verison of toaster
+//have toaster server dockerised 
 
 
 // - security to add
@@ -92,6 +96,8 @@ app.listen(port, () => {
 //view reports
 //view bans, ban user
 //create account
+//can delete any posts as if they own the post
+//have a custom flair on their name to show they are an admin
 
 // - bugs to fix
 //loading screen after take photo and upload photo
