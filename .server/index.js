@@ -1,6 +1,6 @@
 const express = require('express')
 var bodyParser = require('body-parser');
-const { banAccount } = require('./userAccounts');
+const { banAccount, createUser } = require('./userAccounts');
 const { rateLimit } = require('express-rate-limit');
 const userPostRatings = require('./userPostRating');
 
@@ -19,6 +19,7 @@ require('dotenv').config();
 
 const port = process.env.port;
 
+//createUser("jsowry936@gmail.com","1234","toasterLover46")
 
 const app = express()
 app.use(bodyParser.json({ limit: '2mb' }))       // to support JSON-encoded bodies
