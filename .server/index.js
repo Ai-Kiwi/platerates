@@ -53,7 +53,6 @@ app.listen(port, () => {
 
 // - features to add before release
 //lazy loading looks really bad with nothing
-//test everything is working
 //changelog and client out of date system
 //lisences
 // //use AboutDialog to get lisences from packages
@@ -64,7 +63,10 @@ app.listen(port, () => {
 //add user avatar
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
-//remove the dumb jokes I added in on client
+//add reasons for why posts were reported
+//split popups into its own curom file and reuse that for ease of reading and creating code
+//admin zone todo things
+//way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
 
 
 
