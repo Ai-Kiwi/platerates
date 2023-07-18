@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import 'package:toggle_switch/toggle_switch.dart';
@@ -254,19 +255,23 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ).show();
                           } else {
                             if (response.statusCode == 200) {
+                              // ignore: use_build_context_synchronously
                               Alert(
                                 context: context,
                                 type: AlertType.success,
                                 title: "password changed",
                                 buttons: [
                                   DialogButton(
-                                    onPressed: () => Navigator.pop(context),
                                     width: 120,
                                     child: const Text(
                                       "ok",
                                       style: TextStyle(
                                           color: Colors.white, fontSize: 20),
                                     ),
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                      Phoenix.rebirth(context);
+                                    },
                                   )
                                 ],
                               ).show();

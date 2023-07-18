@@ -135,6 +135,7 @@ router.post('/profile/data', async (req, res) => {
         return res.status(200).json({
           username: userData.username,
           bio: userData.bio,
+          administrator: userData.administrator,
         });
 
       }else{
