@@ -83,6 +83,7 @@ app.listen(port, () => {
 //admin zone todo things
 //way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
 //add cache for user profiles
+//some way to contact support
 
 // - security to add
 //hash reset password codes
@@ -130,6 +131,7 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//way to delete account
 //split popups into its own curom file and reuse that for ease of reading and creating code
 //changelog
 //create another branch for relase verison of toaster
