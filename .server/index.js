@@ -71,8 +71,7 @@ app.listen(port, () => {
 
 // - features to add before release
 //lazy loading looks really bad with nothing
-//lisences
-// //privacy policy
+//privacy policy
 //profile pictures to post and ratings
 //make lazy loading lib collect data not when drawing item
 //add returning to everything for post ratings in console print
