@@ -130,6 +130,9 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//redo system for chaning username and bio
+// //custom page
+// //auto puts in what currently is in use so typos can easily be fixed
 //way to delete account
 //split popups into its own curom file and reuse that for ease of reading and creating code
 //changelog
