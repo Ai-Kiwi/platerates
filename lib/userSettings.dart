@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -150,18 +151,123 @@ class _UserSettingsState extends State<UserSettings> {
                   ),
                   settingItem(
                     settingIcon: Icons.lock,
-                    settingName: "change password",
+                    settingName: "password",
                     ontap: () {
                       Navigator.of(context).push(
                           smoothTransitions.slideRight(ResetPasswordPage()));
                     },
                   ),
                   settingItem(
+                    settingIcon: Icons.chat,
+                    settingName: "bio (no impl yet)",
+                    ontap: () {
+                      String newBio = "";
+                      Alert(
+                          context: context,
+                          title: "Change bio",
+                          content: Column(
+                            children: <Widget>[
+                              TextField(
+                                maxLines: 5,
+                                minLines: 3,
+                                maxLength: 500,
+                                maxLengthEnforcement: MaxLengthEnforcement
+                                    .truncateAfterCompositionEnds,
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.account_circle),
+                                  labelText: 'bio',
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    newBio = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          buttons: [
+                            DialogButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                final response = await http.post(
+                                  Uri.parse(
+                                      "$serverDomain/profile/settings/change"),
+                                  headers: <String, String>{
+                                    'Content-Type':
+                                        'application/json; charset=UTF-8',
+                                  },
+                                  body: jsonEncode(<String, String>{
+                                    'token': userManager.token,
+                                    "setting": "bio",
+                                    "value": newBio,
+                                  }),
+                                );
+                                if (response.statusCode == 200) {
+                                  Alert(
+                                    context: context,
+                                    type: AlertType.success,
+                                    title: "bio changed",
+                                    desc: "refresh profile page to see",
+                                    buttons: [
+                                      DialogButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        width: 120,
+                                        child: const Text(
+                                          "ok",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                      )
+                                    ],
+                                  ).show();
+                                } else {
+                                  Alert(
+                                    context: context,
+                                    type: AlertType.error,
+                                    title: "bio change failed",
+                                    desc: response.body,
+                                    buttons: [
+                                      DialogButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        width: 120,
+                                        child: const Text(
+                                          "ok",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                      )
+                                    ],
+                                  ).show();
+                                }
+                              },
+                              child: const Text(
+                                "Change",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                            ),
+                            DialogButton(
+                              color: Colors.red,
+                              child: const Text(
+                                "cancel",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            )
+                          ]).show();
+                    },
+                  ),
+                  settingItem(
                     settingIcon: Icons.info,
                     settingName: "licenses",
                     ontap: () {
-                      Navigator.of(context)
-                          .push(smoothTransitions.slideRight(LicensePage()));
+                      Navigator.of(context).push(
+                          smoothTransitions.slideRight(const LicensePage()));
                     },
                   ),
                   Expanded(child: Center()),
