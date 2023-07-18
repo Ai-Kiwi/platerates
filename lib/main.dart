@@ -1,23 +1,37 @@
+import 'dart:convert';
+
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:json_cache/json_cache.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'createPost/createPostPhoto.dart';
+import 'errorPages.dart';
 import 'login/userLogin.dart';
 import 'navbar.dart';
 
 //add better loading system, should have a nice ui as well as handling for when it can't talk to the server
 
 String serverDomain = 'https://toaster.aikiwi.dev';
-bool productionMode = false;
 late JsonCacheMem jsonCache;
 
+//make sure it is running the latest verison
+late String appName;
+late String packageName;
+late String version;
+late String buildNumber;
+
 void main() {
-  if (productionMode == false) {
+  //make sure something a rather to use app verison
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (kDebugMode == true) {
     serverDomain = 'http://192.168.0.157:3030';
   }
 
@@ -30,17 +44,54 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Stream<bool> initializeApp() async* {
+  Stream<String> initializeApp() async* {
     //load in json cache stuff
     final sharedPrefs = await SharedPreferences.getInstance();
     jsonCache = JsonCacheMem(JsonCacheSharedPreferences(sharedPrefs));
     jsonCache.clear();
 
+    //setup verison stuff
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appName = packageInfo.appName;
+    packageName = packageInfo.packageName;
+    version = packageInfo.version;
+    buildNumber = packageInfo.buildNumber;
+
+    //contact server and get verison
+    try {
+      final response = await http.post(
+        Uri.parse("$serverDomain/latestVersion"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({}),
+      );
+      if (response.statusCode == 200) {
+        if (response.body != version) {
+          yield "client-out-of-date";
+          return;
+        }
+      } else {
+        //really should be error for this
+      }
+    } catch (err) {
+      yield "server-contact-error";
+      return;
+    }
+
     //load in token
     if (userManager.token == "") {
       await userManager.loadTokenFromStoreage();
     }
-    yield await userManager.checkLoginState();
+
+    var loginStateData = await userManager.checkLoginState();
+    if (loginStateData == true) {
+      yield "valid-token";
+      return;
+    } else {
+      yield "invalid-token";
+      return;
+    }
   }
 
   // This widget is the root of your application.
@@ -57,7 +108,7 @@ class MyApp extends StatelessWidget {
             title: 'Toaster',
             theme: ThemeData(
                 primaryColor: Colors.green, primarySwatch: Colors.green),
-            home: StreamBuilder<bool>(
+            home: StreamBuilder<String>(
               stream: initializeApp(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -66,9 +117,19 @@ class MyApp extends StatelessWidget {
                     toasterLogo: true,
                   );
                 } else {
-                  if (snapshot.hasData && snapshot.data == true) {
+                  print(snapshot.data);
+                  //if (snapshot.hasData && snapshot.data == true) {
+                  if (snapshot.data == "valid-token") {
                     // User is logged in, navigate to home page
                     return MyHomePage();
+                  } else if (snapshot.data == "server-contact-error") {
+                    //error contacting server
+                    return DisplayErrorMessagePage(
+                        errorMessage: "error contacting server");
+                  } else if (snapshot.data == "client-out-of-date") {
+                    //  //client is out of date
+                    return DisplayErrorMessagePage(
+                        errorMessage: "client out of date");
                   } else {
                     // User is not logged in, navigate to login page
                     return const LoginPage();

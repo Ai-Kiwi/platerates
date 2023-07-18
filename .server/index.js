@@ -18,14 +18,31 @@ const limiter = rateLimit({
 require('dotenv').config();
 
 const port = process.env.port;
+const clientVersion = "1.0.0";
 
-//createUser("jsowry936@gmail.com","1234","toasterLover46")
-
+//setup app
 const app = express()
 app.use(bodyParser.json({ limit: '2mb' }))       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 
+
+
+//post for latest verison
+app.post("/latestVersion", async (req, res) => {
+  console.log(" => user fetching profile")
+  try{
+    return res.status(200).send("1.0.0")
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
+
+
+//createUser("jsowry936@gmail.com","1234","toasterLover46")
+
 
 const userPosts = require("./userPosts");
 const userAccounts = require("./userAccounts");
@@ -56,7 +73,6 @@ app.listen(port, () => {
 //lazy loading looks really bad with nothing
 //changelog and client out of date system
 //lisences
-// //use AboutDialog to get lisences from packages
 // //privacy policy
 //profile pictures to post and ratings
 //make lazy loading lib collect data not when drawing item
@@ -69,9 +85,7 @@ app.listen(port, () => {
 //admin zone todo things
 //way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
 //way to change user bio
-//create another branch for relase verison of toaster
-//have toaster server dockerised 
-
+//add cache for user profiles
 
 // - security to add
 //hash reset password codes
@@ -91,6 +105,7 @@ app.listen(port, () => {
 //api key that app uses
 //per account rate limit, strictness depends of account account trust level
 //verify with phone number possibly
+//have to do email verify if different ip address or device
 
 //admin page
 //view reports
@@ -118,6 +133,8 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//create another branch for relase verison of toaster
+//have toaster server dockerised
 //notifcation when someone logins into your account
 //update rating data only for posts
 //system for when down for maintenance

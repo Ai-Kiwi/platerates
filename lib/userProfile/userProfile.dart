@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/adminZone.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
@@ -25,6 +26,7 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   final String userId;
   bool _isLoading = true;
+  bool _isAdminAccount = false;
   String userBio = "";
   String username = "";
 
@@ -46,6 +48,7 @@ class _UserProfileState extends State<UserProfile> {
         var fetchedData = jsonDecode(response.body);
         userBio = fetchedData['bio'];
         username = fetchedData['username'];
+        _isAdminAccount = fetchedData['administrator'];
       });
     } else {
       setState(() {
@@ -183,6 +186,39 @@ class _UserProfileState extends State<UserProfile> {
                                     fontWeight: FontWeight.normal)),
                           ),
                         ),
+                        Visibility(
+                            visible: _isAdminAccount,
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 8),
+                                SizedBox(
+                                  height: 33,
+                                  width: 95,
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      textStyle: const TextStyle(fontSize: 15),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0, vertical: 1.0),
+                                      backgroundColor:
+                                          const Color.fromARGB(255, 45, 45, 45),
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          smoothTransitions
+                                              .slideUp(AdminZonePage()));
+                                    },
+                                    child: const Text("admin zone",
+                                        style: TextStyle(
+                                            color: Color.fromARGB(
+                                                210, 255, 255, 255),
+                                            fontWeight: FontWeight.normal)),
+                                  ),
+                                ),
+                              ],
+                            )),
                         Expanded(child: Center()),
                         SizedBox(
                           height: 33,

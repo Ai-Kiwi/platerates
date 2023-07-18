@@ -4,6 +4,7 @@ import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../main.dart';
 import 'libs/smoothTransitions.dart';
@@ -154,6 +155,24 @@ class _UserSettingsState extends State<UserSettings> {
                       Navigator.of(context).push(
                           smoothTransitions.slideRight(ResetPasswordPage()));
                     },
+                  ),
+                  settingItem(
+                    settingIcon: Icons.info,
+                    settingName: "licenses",
+                    ontap: () {
+                      Navigator.of(context)
+                          .push(smoothTransitions.slideRight(LicensePage()));
+                    },
+                  ),
+                  Expanded(child: Center()),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                    child: Center(
+                        child: Text("version " + version,
+                            style: TextStyle(
+                              color: Colors.white,
+                            ))),
                   ),
                 ],
               ))),

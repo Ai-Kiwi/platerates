@@ -314,7 +314,7 @@ router.post('/login/reset-password', async (req, res) => {
       
 
       //test if code is expired
-      if (userCredentials.resetPassword.expireTime >= Date.now()) {
+      if (userCredentials.resetPassword.expireTime <= Date.now()) {
         console.log("code expired");
         return res.status(410).send("code expired");
       }
