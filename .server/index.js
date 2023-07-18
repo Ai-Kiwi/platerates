@@ -71,7 +71,6 @@ app.listen(port, () => {
 
 // - features to add before release
 //lazy loading looks really bad with nothing
-//changelog and client out of date system
 //lisences
 // //privacy policy
 //profile pictures to post and ratings
@@ -81,10 +80,8 @@ app.listen(port, () => {
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
 //add reasons for why posts were reported
-//split popups into its own curom file and reuse that for ease of reading and creating code
 //admin zone todo things
 //way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
-//way to change user bio
 //add cache for user profiles
 
 // - security to add
@@ -133,6 +130,8 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//split popups into its own curom file and reuse that for ease of reading and creating code
+//changelog
 //create another branch for relase verison of toaster
 //have toaster server dockerised
 //notifcation when someone logins into your account

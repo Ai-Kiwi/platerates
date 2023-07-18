@@ -89,6 +89,27 @@ router.post('/profile/settings/change', async (req, res) => {
 
         }
 
+        } else if (setting === "bio") {
+  
+          if (value.length > 500) {
+            console.log("bio to large")
+            return res.status(400).send("bio to large")
+          }
+  
+          const collection = database.collection('user_data');
+  
+          const response = await collection.updateOne({userId: userId},{ $set: {bio : value}}) 
+  
+          if (response.acknowledged === true) {
+            //update username
+            console.log("updated bio");
+            return res.status(200).send("updated bio");
+  
+          }else{
+            console.log("failed to update bio")
+            return res.status(500).send("failed to update bio")
+  
+          }
 
       }else{
         console.log("unkown setting")
