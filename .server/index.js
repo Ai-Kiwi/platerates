@@ -70,19 +70,17 @@ app.listen(port, () => {
 
 
 // - features to add before release
-//lazy loading looks really bad with nothing
+//lazy loading looks really bad with nothing being display'd
 //privacy policy
-//profile pictures to post and ratings
 //make lazy loading lib collect data not when drawing item
-//add returning to everything for post ratings in console print
-//add user avatar
+//add user avatar and apply to things like posts and comments/ratings
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile
 //add reasons for why posts were reported
 //admin zone todo things
-//way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
 //add cache for user profiles
 //some way to contact support
+//add password autofill
 
 // - security to add
 //hash reset password codes
@@ -131,6 +129,7 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
 //redo system for chaning username and bio
 // //custom page
 // //auto puts in what currently is in use so typos can easily be fixed
