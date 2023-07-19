@@ -103,6 +103,7 @@ app.listen(port, () => {
 //per account rate limit, strictness depends of account account trust level
 //verify with phone number possibly
 //have to do email verify if different ip address or device
+//add https://github.com/marketplace/actions/flutter-action
 
 //admin page
 //view reports
