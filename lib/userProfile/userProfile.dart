@@ -9,6 +9,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../libs/smoothTransitions.dart';
+import '../libs/userAvatar.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
 
@@ -109,19 +110,24 @@ class _UserProfileState extends State<UserProfile> {
                         child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(16, 16, 16, 1),
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    border: Border.all(
-                                        color: const Color.fromARGB(
-                                            215, 45, 45, 45),
-                                        width: 3)),
-                                child: const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
+                              //Container(
+                              //  width: 100,
+                              //  height: 100,
+                              //  decoration: BoxDecoration(
+                              //      color: const Color.fromRGBO(16, 16, 16, 1),
+                              //      borderRadius: BorderRadius.circular(10.0),
+                              //      border: Border.all(
+                              //          color: const Color.fromARGB(
+                              //              215, 45, 45, 45),
+                              //          width: 3)),
+                              //  child: const Center(
+                              //    child: CircularProgressIndicator(),
+                              //  ),
+                              //),
+                              UserAvatar(
+                                avatarImage: null,
+                                size: 100,
+                                roundness: 30,
                               ),
                               Center(
                                   child: Padding(

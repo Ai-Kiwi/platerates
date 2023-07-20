@@ -111,6 +111,11 @@ router.post('/profile/settings/change', async (req, res) => {
   
           }
 
+      } else if (setting === "avatar") {
+  
+        
+          
+
       }else{
         console.log("unkown setting")
         return res.status(404).send("unkown setting")

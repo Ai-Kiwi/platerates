@@ -366,7 +366,7 @@ router.post('/login/reset-password', async (req, res) => {
       //send reset password
       console.log("sending email data")
       const emailData = await sendMail(
-        '"no-reply toaster" <toaster@aikiwi.dev>',
+        '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
         email,
         "Password reset code for toaster",
         "Your one time toaster account password reset code from ip address" + ipAddress + " is " + resetPasswordCode + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."

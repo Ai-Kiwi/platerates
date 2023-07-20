@@ -41,7 +41,7 @@ app.post("/latestVersion", async (req, res) => {
 
 
 
-//createUser("jsowry936@gmail.com","1234","toasterLover46")
+//createUser("jsowry9362@gmail.com","1234","toastFan46")
 
 
 const userPosts = require("./userPosts");
@@ -80,9 +80,7 @@ app.listen(port, () => {
 //display ratings on your profile
 //add reasons for why posts were reported
 //admin zone todo things
-//way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
 //add cache for user profiles
-//some way to contact support
 
 // - security to add
 //hash reset password codes
@@ -131,6 +129,9 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//way to reset password and not have cooldown, maybe if done from already logged in acount it bypass cooldown.
+//move verison testing over to has instead of version
+//add testing for client, add for github actions too
 //redo system for chaning username and bio
 // //custom page
 // //auto puts in what currently is in use so typos can easily be fixed
