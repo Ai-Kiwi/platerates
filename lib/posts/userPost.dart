@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
+import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _PostItemState extends State<PostItem> {
   String description = "";
   double rating = 0;
   String posterName = "";
-  String posterAvatar = "";
+  var posterAvatar;
   String posterUserId = "";
   var imageData;
   bool errorOccurred = false;
@@ -130,7 +131,6 @@ class _PostItemState extends State<PostItem> {
                   borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(
                       color: const Color.fromARGB(215, 45, 45, 45), width: 3)),
-              width: double.infinity,
               child: Column(children: <Widget>[
                 const SizedBox(height: 16.0),
                 //user logo and name
@@ -149,12 +149,12 @@ class _PostItemState extends State<PostItem> {
                           Flexible(
                             child: Row(children: [
                               const SizedBox(width: 4),
-                              const SizedBox(
-                                  height: 25,
-                                  child: CircleAvatar(
-                                    backgroundImage: null,
-                                    radius: 15,
-                                  )),
+                              UserAvatar(
+                                avatarImage: posterAvatar,
+                                size: 25,
+                                roundness: 7.5,
+                              ),
+                              const SizedBox(width: 4),
                               Text(posterName,
                                   style: const TextStyle(
                                     color: Colors.white,

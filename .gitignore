@@ -45,7 +45,6 @@ app.*.map.json
 /android/app/release
 
 #server stuff
-.server/images/
 .server/node_modules/
 .server/private.key
 .server/.env

@@ -6,8 +6,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: 'postmaster@aikiwi.dev',
-    pass: 'e8a939036393ef0ed129ce66aa832325-262b213e-9d20ad13'
+    user: 'postmaster@noreply.aikiwi.dev',
+    pass: 'cc0ddfe1bd8d417ac6d6eac05f08fa5f-c30053db-99090a01'
   }
 });
 
