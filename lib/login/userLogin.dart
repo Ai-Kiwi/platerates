@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/login/userResetPassword.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -151,6 +152,33 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+            //warning about running on web
+            Visibility(
+                visible: kIsWeb,
+                child: Column(children: [
+                  Padding(
+                      //closed beta reminder
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                          width: double.infinity,
+                          height: 50.0,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 231, 38, 38),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: const Center(
+                                  child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                    "Toaster is currently in a closed beta. Please contact the owner to request access to the closed beta.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    )),
+                              ))))),
+                  const SizedBox(height: 16.0),
+                ])),
             const SizedBox(height: 16.0),
             Padding(
               //email input feild

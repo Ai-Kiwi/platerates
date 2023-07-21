@@ -11,9 +11,9 @@ const { sendMail } = require('./mailsender');
 const { userTimeout, userTimeoutTest } = require('./timeouts');
 
 
-//if (fs.existsSync() === false) {
-//  fs.writeFileSync('private.key',crypto.randomBytes(32))
-//}
+if (fs.existsSync('private.key') === false) {
+  fs.writeFileSync('private.key',crypto.randomBytes(32))
+}
 const privateKey = fs.readFileSync('private.key'); 
 
 

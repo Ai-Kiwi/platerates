@@ -18,7 +18,7 @@ const limiter = rateLimit({
 require('dotenv').config();
 
 const port = process.env.port;
-const clientVersion = "1.0.0";
+const clientVersion = "1.0.0+1";
 
 //setup app
 const app = express()
@@ -32,7 +32,27 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.post("/latestVersion", async (req, res) => {
   console.log(" => user fetching profile")
   try{
-    return res.status(200).send("1.0.0")
+    return res.status(200).send(clientVersion)
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
+app.get("/deleteData", async (req, res) => {
+  console.log(" => user delete data website")
+  try{
+    return res.status(200).sendFile(__dirname + "/deleteData.html");
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
+app.get('/privacyPolicy', async (req, res) => {
+  console.log(" => user delete data website")
+  try{
+    return res.status(200).sendFile(__dirname + "/privacyPolicy.html");
   }catch(err){
     console.log(err);
     return res.status(500).send("server error")
@@ -41,7 +61,7 @@ app.post("/latestVersion", async (req, res) => {
 
 
 
-//createUser("jsowry9362@gmail.com","1234","toastFan46")
+//createUser("demouser@aikiwi.dev","xZb2VQyvgBV8#24axwVLaOHwDHzKv@az","demo user")
 
 
 const userPosts = require("./userPosts");
@@ -60,7 +80,7 @@ app.use('/', userLogin.router);
 
 // GET method route
 app.get('/', (req, res) => {
-  res.send(`nothing ${req.headers['x-forwarded-for']}`);
+  res.send(`nothing of value here`);
 })
 
 app.listen(port, () => {
@@ -68,6 +88,12 @@ app.listen(port, () => {
 })
 
 
+// REMEMBER //
+//anything done such as adding ads must be updated on privacy polocy and google play console
+//all content must be ok for children
+//when added reporting change rating of app
+//when new features are added there should be a way for it to stick with deleted accounts
+//all more data collected and what not should be checked on google play console
 
 // - features to add before release
 //privacy policy
@@ -77,6 +103,7 @@ app.listen(port, () => {
 //add reasons for why posts were reported
 //admin zone todo things
 //add cache for user profiles
+//block users
 
 
 // - security to add
