@@ -1,11 +1,8 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/lazyLoadPage.dart';
-import 'package:Toaster/libs/loadScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../main.dart';
 import 'libs/smoothTransitions.dart';
@@ -13,6 +10,8 @@ import 'login/userLogin.dart';
 import 'login/userResetPassword.dart';
 
 class UserSettings extends StatefulWidget {
+  const UserSettings({super.key});
+
   //UserSettings({});
 
   @override
@@ -48,7 +47,7 @@ class _UserSettingsState extends State<UserSettings> {
                     color: Color.fromARGB(255, 110, 110, 110),
                     thickness: 1.0,
                   ),
-                  settingItem(
+                  SettingItem(
                     settingIcon: Icons.person_outline,
                     settingName: "username",
                     ontap: () {
@@ -91,6 +90,7 @@ class _UserSettingsState extends State<UserSettings> {
                                   }),
                                 );
                                 if (response.statusCode == 200) {
+                                  // ignore: use_build_context_synchronously
                                   Alert(
                                     context: context,
                                     type: AlertType.success,
@@ -149,7 +149,7 @@ class _UserSettingsState extends State<UserSettings> {
                           ]).show();
                     },
                   ),
-                  settingItem(
+                  SettingItem(
                     settingIcon: Icons.lock,
                     settingName: "password",
                     ontap: () {
@@ -157,7 +157,7 @@ class _UserSettingsState extends State<UserSettings> {
                           smoothTransitions.slideRight(ResetPasswordPage()));
                     },
                   ),
-                  settingItem(
+                  SettingItem(
                     settingIcon: Icons.chat,
                     settingName: "bio (no impl yet)",
                     ontap: () {
@@ -203,6 +203,7 @@ class _UserSettingsState extends State<UserSettings> {
                                   }),
                                 );
                                 if (response.statusCode == 200) {
+                                  // ignore: use_build_context_synchronously
                                   Alert(
                                     context: context,
                                     type: AlertType.success,
@@ -222,6 +223,7 @@ class _UserSettingsState extends State<UserSettings> {
                                     ],
                                   ).show();
                                 } else {
+                                  // ignore: use_build_context_synchronously
                                   Alert(
                                     context: context,
                                     type: AlertType.error,
@@ -262,7 +264,7 @@ class _UserSettingsState extends State<UserSettings> {
                           ]).show();
                     },
                   ),
-                  settingItem(
+                  SettingItem(
                     settingIcon: Icons.info,
                     settingName: "licenses",
                     ontap: () {
@@ -270,13 +272,13 @@ class _UserSettingsState extends State<UserSettings> {
                           smoothTransitions.slideRight(const LicensePage()));
                     },
                   ),
-                  Expanded(child: Center()),
+                  const Expanded(child: Center()),
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
                     child: Center(
-                        child: Text("version " + version,
-                            style: TextStyle(
+                        child: Text("version $version",
+                            style: const TextStyle(
                               color: Colors.white,
                             ))),
                   ),
@@ -286,12 +288,12 @@ class _UserSettingsState extends State<UserSettings> {
   }
 }
 
-class settingItem extends StatelessWidget {
-  String settingName;
-  var settingIcon;
-  var ontap;
+class SettingItem extends StatelessWidget {
+  final String settingName;
+  final settingIcon;
+  final ontap;
 
-  settingItem(
+  const SettingItem(
       {super.key,
       required this.settingIcon,
       required this.settingName,
@@ -303,6 +305,7 @@ class settingItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: InkWell(
           //change username
+          onTap: ontap,
           child: Container(
             decoration: BoxDecoration(
                 color: const Color.fromARGB(215, 40, 40, 40),
@@ -336,7 +339,6 @@ class settingItem extends StatelessWidget {
                   ))),
             ]),
           ),
-          onTap: ontap,
         ));
   }
 }
