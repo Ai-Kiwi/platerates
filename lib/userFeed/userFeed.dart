@@ -33,6 +33,14 @@ class _UserFeedState extends State<userFeed> {
               style: TextStyle(color: Colors.white, fontSize: 25),
             )),
       ),
+      widgetAddedToBlank: const Center(
+        child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+            child: Text(
+              "nothing in your feed",
+              style: TextStyle(color: Colors.white, fontSize: 25),
+            )),
+      ),
     );
   }
 }

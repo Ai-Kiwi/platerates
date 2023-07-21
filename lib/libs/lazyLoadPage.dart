@@ -11,38 +11,46 @@ import '../login/userLogin.dart';
 class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToTop;
   final Widget widgetAddedToEnd;
+  final Widget widgetAddedToBlank;
   final String urlToFetch;
   final extraUrlData;
 
-  const LazyLoadPage(
-      {super.key,
-      required this.widgetAddedToTop,
-      required this.urlToFetch,
-      required this.widgetAddedToEnd,
-      this.extraUrlData});
+  const LazyLoadPage({
+    super.key,
+    required this.widgetAddedToTop,
+    required this.urlToFetch,
+    required this.widgetAddedToEnd,
+    required this.widgetAddedToBlank,
+    this.extraUrlData,
+  });
 
   @override
   State<LazyLoadPage> createState() => _LazyLoadPageState(
-      widgetAddedToTop: widgetAddedToTop,
-      urlToFetch: urlToFetch,
-      extraUrlData: extraUrlData,
-      widgetAddedToEnd: widgetAddedToEnd);
+        widgetAddedToTop: widgetAddedToTop,
+        urlToFetch: urlToFetch,
+        extraUrlData: extraUrlData,
+        widgetAddedToEnd: widgetAddedToEnd,
+        widgetAddedToBlank: widgetAddedToBlank,
+      );
 }
 
 class _LazyLoadPageState extends State<LazyLoadPage> {
   Widget widgetAddedToTop;
   Widget widgetAddedToEnd;
+  Widget widgetAddedToBlank;
   ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   final double scrollDistence = 0.8;
   final String urlToFetch;
   var extraUrlData;
 
-  _LazyLoadPageState(
-      {required this.widgetAddedToTop,
-      required this.urlToFetch,
-      required this.widgetAddedToEnd,
-      this.extraUrlData});
+  _LazyLoadPageState({
+    required this.widgetAddedToTop,
+    required this.urlToFetch,
+    required this.widgetAddedToEnd,
+    required this.widgetAddedToBlank,
+    this.extraUrlData,
+  });
 
   var lastItem;
   var itemsCollected = [];
@@ -50,7 +58,8 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
   Future<void> _fetchItems() async {
     //test if they have reached the end
     if (itemsCollected.length > 0) {
-      if (itemsCollected[itemsCollected.length - 1] == "end") {
+      if (itemsCollected[itemsCollected.length - 1] == "end" ||
+          itemsCollected[itemsCollected.length - 1] == "blank") {
         return;
       }
     }
@@ -79,7 +88,11 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
         var fetchedData = jsonDecode(response.body);
         var postData = fetchedData["items"];
         if (fetchedData["items"].isEmpty) {
-          itemsCollected.add("end");
+          if (itemsCollected.isEmpty) {
+            itemsCollected.add("blank");
+          } else {
+            itemsCollected.add("end");
+          }
           return;
         }
         for (var post in postData) {
@@ -151,6 +164,8 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
               return widgetAddedToTop;
             } else if (itemsCollected[index - 1] == "end") {
               return widgetAddedToEnd;
+            } else if (itemsCollected[index - 1] == "blank") {
+              return widgetAddedToBlank;
             } else {
               if (itemsCollected[index - 1]["type"] == "post") {
                 return PostItem(

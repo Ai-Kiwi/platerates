@@ -97,6 +97,16 @@ class _PostRatingListState extends State<PostRatingList> {
                                     color: Colors.white, fontSize: 25),
                               )),
                         ),
+                        widgetAddedToBlank: const Center(
+                          child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 16),
+                              child: Text(
+                                "no ratings to display",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 25),
+                              )),
+                        ),
                         extraUrlData: {
                           "rootItem": {"type": "post", "data": rootItem}
                         },

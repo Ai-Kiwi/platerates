@@ -340,6 +340,14 @@ class _UserProfileState extends State<UserProfile> {
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 )),
           ),
+          widgetAddedToBlank: const Center(
+            child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Text(
+                  "no posts to display",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                )),
+          ),
         ),
       );
     }

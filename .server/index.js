@@ -70,7 +70,6 @@ app.listen(port, () => {
 
 
 // - features to add before release
-//lazy loading looks really bad with nothing being display'd
 //privacy policy
 //make lazy loading lib collect data not when drawing item
 //display if you have or haven't rated a toast before clicking on it

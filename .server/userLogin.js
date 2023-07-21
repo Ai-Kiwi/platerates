@@ -67,7 +67,6 @@ async function testToken(token,ipAddress){
 
     const userId = decoded.userId;
 
-
     //get data from server
     var collection = database.collection('user_credentials');
     const userData = await collection.findOne({ userId: userId });
@@ -171,7 +170,6 @@ router.post('/login', async (req, res) => {
 
     //if the username and password is the same
     if(safeCompare(hashedPasswordEntered,hashedPassword)){
-      
       //should add a system for when it fails to sign, then again probs not needed
       var token = jwt.sign({
         userId : userId,
