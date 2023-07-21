@@ -96,6 +96,7 @@ app.listen(port, () => {
 //all more data collected and what not should be checked on google play console
 
 // - features to add before release
+//add in app links to privacy policy 
 //privacy policy
 //make lazy loading lib collect data not when drawing item
 //display if you have or haven't rated a toast before clicking on it
