@@ -1,11 +1,4 @@
-import 'dart:convert';
-
-import 'package:Toaster/libs/lazyLoadPage.dart';
-import 'package:Toaster/libs/loadScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:rflutter_alert/rflutter_alert.dart';
-import '../main.dart';
 
 class AdminZonePage extends StatefulWidget {
   //UserSettings({});
@@ -31,15 +24,15 @@ class _AdminZonePageState extends State<AdminZonePage> {
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ListView(
-                children: [
-                  const Padding(
+                children: const [
+                  Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
                       child: Text(
                         "Settings",
                         style: TextStyle(color: Colors.white, fontSize: 40),
                       )),
-                  const Divider(
+                  Divider(
                     color: Color.fromARGB(255, 110, 110, 110),
                     thickness: 1.0,
                   ),
@@ -49,12 +42,12 @@ class _AdminZonePageState extends State<AdminZonePage> {
   }
 }
 
-class settingItem extends StatelessWidget {
-  String settingName;
-  var settingIcon;
-  var ontap;
+class _SettingItem extends StatelessWidget {
+  final String settingName;
+  final settingIcon;
+  final ontap;
 
-  settingItem(
+  _SettingItem(
       {super.key,
       required this.settingIcon,
       required this.settingName,
