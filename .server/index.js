@@ -73,13 +73,12 @@ app.listen(port, () => {
 //lazy loading looks really bad with nothing being display'd
 //privacy policy
 //make lazy loading lib collect data not when drawing item
-//add user avatar and apply to things like posts and comments/ratings
 //display if you have or haven't rated a toast before clicking on it
-//display ratings on your profile
+//display ratings on your profile, either with posts or another tab
 //add reasons for why posts were reported
 //admin zone todo things
 //add cache for user profiles
-//add password autofill
+
 
 // - security to add
 //hash reset password codes
@@ -128,6 +127,8 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//add password autofill
+//custom thing for users that allows you to click on them, should be custom libary, used for comments and posts
 //redo system for chaning username and bio
 // //custom page
 // //auto puts in what currently is in use so typos can easily be fixed

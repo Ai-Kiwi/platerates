@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Toaster/login/userResetPassword.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../libs/smoothTransitions.dart';
@@ -160,6 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                     _username = value;
                   });
                 },
+                autofillHints: const [AutofillHints.email],
                 style: const TextStyle(color: Colors.white, fontSize: 20),
                 decoration: InputDecoration(
                   labelText: 'Email Address',
@@ -196,6 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                       _password = value;
                     });
                   },
+                  autofillHints: const [AutofillHints.password],
                   obscureText: true,
                   style: const TextStyle(color: Colors.white, fontSize: 20),
                   decoration: InputDecoration(
@@ -239,7 +242,8 @@ class _LoginPageState extends State<LoginPage> {
                         await userManager.loginUser(_username, _password);
 
                     if (correctLogin.success == true) {
-                      // ignore: use_build_context_synchronously
+                      //save login
+                      //TextInput.finishAutofillContext();
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => MyHomePage()),
