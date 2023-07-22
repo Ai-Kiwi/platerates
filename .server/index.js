@@ -195,7 +195,6 @@ app.listen(port, () => {
 //sign in with google
 //shareing toasts
 // //toaster watermark
-//reached end of your feed
 //how long ago post was uploaded
 //able to click on user profile avatar and name to open them on posts
 //block users
@@ -208,6 +207,7 @@ app.listen(port, () => {
 //rate limiting per account basses
 //paid verison that bypass rate limit
 //lazy loading pass revestion for post so can know if to update post data
+//random pair up with people to chay
 
 // - low resolstion
 //overflow on public or private post part
