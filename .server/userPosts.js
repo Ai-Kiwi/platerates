@@ -149,13 +149,28 @@ router.post('/post/data', async (req, res) => {
           console.log("user can't view post");
           return res.status(403).send("can't view post");
         }
-  
+
+        const postRatingsCollection = database.collection('post_ratings');
+
+        const ratingsAmount = await postRatingsCollection.countDocuments({ "rootItem.data" : postId, "rootItem.type" : "post" });
+
+        const userRatingData = await postRatingsCollection.findOne({ "rootItem.data" : postId, "rootItem.type" : "post", userId : userId});
+        var requesterHasRated = false;
+        if (userRatingData != null) {
+          requesterHasRated = true;
+        }
+        //say they have rated if they post
+        if (userId === itemData.posterUserId) { 
+          requesterHasRated = true;
+        }
 
         console.log("sending post data");
         return res.status(200).json({
           title : itemData.title,
           description : itemData.description,
           rating : itemData.rating,
+          ratingsAmount : `${ratingsAmount}`, // converts to string as client software pefers that
+          requesterRated :`${requesterHasRated}`,
           postId : postId,
           imageData : itemData.image,
           posterId : itemData.posterUserId

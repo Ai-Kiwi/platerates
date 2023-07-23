@@ -99,18 +99,12 @@ app.listen(port, () => {
 //all more data collected and what not should be checked on google play console
 
 // - features to add before release
-//add in app links to privacy policy 
-//privacy policy
 //make lazy loading lib collect data not when drawing item
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile, either with posts or another tab
 //add reasons for why posts were reported
-//admin zone todo things
 //add cache for user profiles
 //block users
-
-//web todo
-//fix up camera
 
 // - security to add
 //hash reset password codes
@@ -152,6 +146,7 @@ app.listen(port, () => {
 //naming system for mongodb
 //on token error test token and restart app
 //for popups like change bio, it should only remove menu after it succses instead of after failure to.
+//web verison should say when using device wider then tall and say not to use on desktop
 
 //cache overhall
 //ratings get removed from cache after restart and every now and again
