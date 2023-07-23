@@ -160,7 +160,7 @@ class _UserSettingsState extends State<UserSettings> {
                   ),
                   SettingItem(
                     settingIcon: Icons.chat,
-                    settingName: "bio (no impl yet)",
+                    settingName: "bio",
                     ontap: () {
                       String newBio = "";
                       Alert(
