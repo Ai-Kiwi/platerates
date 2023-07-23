@@ -1,4 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:rflutter_alert/rflutter_alert.dart';
+import '../login/userLogin.dart';
+import '../main.dart';
 
 class AdminZonePage extends StatefulWidget {
   //UserSettings({});
@@ -24,17 +31,134 @@ class _AdminZonePageState extends State<AdminZonePage> {
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ListView(
-                children: const [
-                  Padding(
+                children: [
+                  const Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
                       child: Text(
-                        "Settings",
+                        "Admin zone",
                         style: TextStyle(color: Colors.white, fontSize: 40),
                       )),
-                  Divider(
+                  const Divider(
                     color: Color.fromARGB(255, 110, 110, 110),
                     thickness: 1.0,
+                  ),
+                  _AdminItem(
+                    settingIcon: Icons.person_outline,
+                    settingName: "create user",
+                    ontap: () async {
+                      String accountUsername = "";
+                      String accountEmail = "";
+
+                      Alert(
+                          context: context,
+                          title: "create user",
+                          content: Column(
+                            children: <Widget>[
+                              TextField(
+                                maxLengthEnforcement: MaxLengthEnforcement
+                                    .truncateAfterCompositionEnds,
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.account_circle),
+                                  labelText: 'username',
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    accountUsername = value;
+                                  });
+                                },
+                              ),
+                              TextField(
+                                maxLengthEnforcement: MaxLengthEnforcement
+                                    .truncateAfterCompositionEnds,
+                                decoration: const InputDecoration(
+                                  icon: Icon(Icons.account_circle),
+                                  labelText: 'email',
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    accountEmail = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          buttons: [
+                            DialogButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                final response = await http.post(
+                                  Uri.parse("$serverDomain/admin/createUser"),
+                                  headers: <String, String>{
+                                    'Content-Type':
+                                        'application/json; charset=UTF-8',
+                                  },
+                                  body: jsonEncode(<String, String>{
+                                    'token': userManager.token,
+                                    "username": accountUsername,
+                                    "email": accountEmail,
+                                  }),
+                                );
+                                if (response.statusCode == 200) {
+                                  // ignore: use_build_context_synchronously
+                                  Alert(
+                                    context: context,
+                                    type: AlertType.success,
+                                    title: "user created",
+                                    buttons: [
+                                      DialogButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        width: 120,
+                                        child: const Text(
+                                          "ok",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                      )
+                                    ],
+                                  ).show();
+                                } else {
+                                  // ignore: use_build_context_synchronously
+                                  Alert(
+                                    context: context,
+                                    type: AlertType.error,
+                                    title: "failed creating user",
+                                    desc: response.body,
+                                    buttons: [
+                                      DialogButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        width: 120,
+                                        child: const Text(
+                                          "ok",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                      )
+                                    ],
+                                  ).show();
+                                }
+                              },
+                              child: const Text(
+                                "create",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                            ),
+                            DialogButton(
+                              color: Colors.red,
+                              child: const Text(
+                                "cancel",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            )
+                          ]).show();
+                    },
                   ),
                 ],
               ))),
@@ -42,12 +166,12 @@ class _AdminZonePageState extends State<AdminZonePage> {
   }
 }
 
-class _SettingItem extends StatelessWidget {
+class _AdminItem extends StatelessWidget {
   final String settingName;
   final settingIcon;
   final ontap;
 
-  _SettingItem(
+  _AdminItem(
       {super.key,
       required this.settingIcon,
       required this.settingName,
