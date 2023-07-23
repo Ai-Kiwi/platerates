@@ -3,6 +3,8 @@ var bodyParser = require('body-parser');
 const { banAccount, createUser } = require('./userAccounts');
 const { rateLimit } = require('express-rate-limit');
 const userPostRatings = require('./userPostRating');
+const path = require("path")
+const cors = require('cors');
 
 const limiter = rateLimit({
 	windowMs: 3 * 60 * 1000, // 3 minutes
@@ -26,6 +28,11 @@ app.use(bodyParser.json({ limit: '2mb' }))       // to support JSON-encoded bodi
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 
+
+// Enable CORS for all routes
+app.use(cors());
+
+app.use(express.static(path.join(__dirname, 'web/')))
 
 
 //post for latest verison
@@ -69,6 +76,7 @@ const userAccounts = require("./userAccounts");
 const userLogin = require("./userLogin");
 const userPostRating = require("./userPostRating");
 const report = require("./report.js")
+const adminZone = require("./adminZone")
 
 app.use('/', limiter)
 app.use('/', report.router);
@@ -76,12 +84,7 @@ app.use('/', userPosts.router);
 app.use('/', userPostRating.router);
 app.use('/', userAccounts.router);
 app.use('/', userLogin.router);
-
-
-// GET method route
-app.get('/', (req, res) => {
-  res.send(`nothing of value here`);
-})
+app.use('/', adminZone.router)
 
 app.listen(port, () => {
   console.log(`Toaster server listening on port ${port}`)
@@ -105,6 +108,8 @@ app.listen(port, () => {
 //add cache for user profiles
 //block users
 
+//web todo
+//fix up camera
 
 // - security to add
 //hash reset password codes
@@ -130,11 +135,11 @@ app.listen(port, () => {
 //admin page
 //view reports
 //view bans, ban user
-//create account
 //can delete any posts as if they own the post
 //have a custom flair on their name to show they are an admin
 
 // - bugs to fix
+//for some reason somtimes username in profile page doesn't change correctly when chaning login
 //loading screen after take photo and upload photo
 //delete old photos not needed when taking picture
 //fix up login timeouts formula
@@ -145,7 +150,7 @@ app.listen(port, () => {
 //http error responses
 //naming system for mongodb
 //on token error test token and restart app
-
+//for popups like change bio, it should only remove menu after it succses instead of after failure to.
 
 //cache overhall
 //ratings get removed from cache after restart and every now and again
@@ -153,6 +158,7 @@ app.listen(port, () => {
 //cache is all cleard once a week or so
 
 // - possible future features after release
+//ammount of ratings next to value of what rating a post is
 //add password autofill
 //custom thing for users that allows you to click on them, should be custom libary, used for comments and posts
 //redo system for chaning username and bio

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:Toaster/login/userResetPassword.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../libs/smoothTransitions.dart';
@@ -110,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(16, 16, 16, 1),
+        backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: SafeArea(
             child: Center(
                 child: Column(
@@ -156,6 +155,7 @@ class _LoginPageState extends State<LoginPage> {
             Visibility(
                 visible: kIsWeb,
                 child: Column(children: [
+                  const SizedBox(height: 16.0),
                   Padding(
                       //closed beta reminder
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -171,13 +171,12 @@ class _LoginPageState extends State<LoginPage> {
                                   child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                                 child: Text(
-                                    "Toaster is currently in a closed beta. Please contact the owner to request access to the closed beta.",
+                                    "You are using web version which is poorly optimised and not recommend, please use phone app for best experience",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Colors.white,
                                     )),
                               ))))),
-                  const SizedBox(height: 16.0),
                 ])),
             const SizedBox(height: 16.0),
             Padding(
@@ -272,6 +271,7 @@ class _LoginPageState extends State<LoginPage> {
                     if (correctLogin.success == true) {
                       //save login
                       //TextInput.finishAutofillContext();
+                      // ignore: use_build_context_synchronously
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -313,17 +313,33 @@ class _LoginPageState extends State<LoginPage> {
               },
               child: const Text('Reset Password'),
             ),
-            Expanded(child: Center()),
-            Padding(
+            const Padding(
+                //login button
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                child: Text('by signing in you agree to our privacy policy',
+                    style: TextStyle(
+                      fontStyle: FontStyle.normal,
+                      color: Colors.white70,
+                    ))),
+            const Padding(
+                //login button
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+                child: Text('view at https://toaster.aikiwi.dev/privacyPolicy',
+                    style: TextStyle(
+                      fontStyle: FontStyle.normal,
+                      color: Colors.white70,
+                    ))),
+
+            const Expanded(child: Center()),
+            const Padding(
               //login button
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-              child: const Text(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+              child: Text(
                 'contact support at toaster@aikiwi.dev',
                 style: TextStyle(
                     fontStyle: FontStyle.normal, color: Colors.white70),
               ),
-            )
+            ),
           ],
         ))));
   }

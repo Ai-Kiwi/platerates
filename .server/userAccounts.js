@@ -285,6 +285,7 @@ async function createUser(email,password,username){
       }
   
       if(emailInUse===true){
+        console.log("email already in use")
         return false;
       }
   
@@ -331,10 +332,13 @@ async function createUser(email,password,username){
         }
       )
       if (userCredentialsOutput.acknowledged === true && userDataOutput.acknowledged === true){
+        console.log("created account")
         return true;
+      }else{
+        console.log("failed creating account")
       }
   
-      return false
+
     }catch (err){
       console.log(err);
       return false;
