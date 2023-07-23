@@ -98,6 +98,9 @@ app.listen(port, () => {
 //when new features are added there should be a way for it to stick with deleted accounts
 //all more data collected and what not should be checked on google play console
 
+//web fix
+//camera can't save to local on web (tested atleast on computer)
+
 // - features to add before release
 //make lazy loading lib collect data not when drawing item
 //display if you have or haven't rated a toast before clicking on it
