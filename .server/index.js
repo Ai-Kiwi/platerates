@@ -106,6 +106,7 @@ app.listen(port, () => {
 //add cache for user profiles
 //block users
 //settings popups broken
+//https://stackoverflow.com/questions/76527143/how-to-make-my-flutter-up-and-running-after-a-flutter-upgrade
 //no way to go back on pages for web 
 
 // - security to add
@@ -114,6 +115,7 @@ app.listen(port, () => {
 //captcha for create accounts
 //-server side
 //block proxy's and vpns
+//smarter rate limits
 //-client side
 //root detection etc, bans after login
 //certificate pinning
@@ -142,30 +144,21 @@ app.listen(port, () => {
 //fix up login timeouts formula
 //dark mode popups
 //if connection closes mid data send it will crash the whole app
-//after deleting post scrolling down then back up glitchs you back down repeartivly
-//clean up http status codes to be nicer
-//http error responses
-//naming system for mongodb
+//restart app when tokens go invalid
 //on token error test token and restart app
 //for popups like change bio, it should only remove menu after it succses instead of after failure to.
 //web verison should say when using device wider then tall and say not to use on desktop
 
-//cache overhall
-//ratings get removed from cache after restart and every now and again
-//cache has expirey date
-//cache is all cleard once a week or so
-
 // - possible future features after release
-//ammount of ratings next to value of what rating a post is
+//clean up cache and make it much smarter, for instense split it up into different parts.
 //add password autofill
 //custom thing for users that allows you to click on them, should be custom libary, used for comments and posts
 //redo system for chaning username and bio
 // //custom page
 // //auto puts in what currently is in use so typos can easily be fixed
+// //doesn't delete everything after error
 //way to delete account
 //split popups into its own curom file and reuse that for ease of reading and creating code
-//changelog
-//create another branch for relase verison of toaster
 //have toaster server dockerised
 //notifcation when someone logins into your account
 //update rating data only for posts
@@ -173,7 +166,6 @@ app.listen(port, () => {
 //auto remove posts after alot of reports
 //back buttons to all menus
 //make it more clear that rating is clickable
-//spam requests from account leads to account ban
 //add option to use token forever
 //look at changing token expire time
 //change email address
@@ -184,14 +176,17 @@ app.listen(port, () => {
 // //captcha
 // //rate limit for making accounts
 //adding as friend
-//indexing posts to be faster
+//indexing posts so to be faster
 //chat system
+// //pair up with random people and anonymously chat, if like can add as friends.
 //search menu
 //nicer failed getting posts
 //extra camera settings
 // //add setting for not using flashlight
 // //zoom for camera
 //way to suggest features
+//app that reports errors to server
+// //ask for users consent before and add to privacy polocy and google app settings
 //toaster leaderboards
 //toaster streaks
 //improve server error reporting
@@ -207,12 +202,9 @@ app.listen(port, () => {
 //backup database
 //look at better way to store images
 //word censoring
-//rate limiting per account basses
-//paid verison that bypass rate limit
 //lazy loading pass revestion for post so can know if to update post data
-//random pair up with people to chay
 
-// - low resolstion
+// - low resolstion bugs
 //overflow on public or private post part
 //overflow on login screen
 //overflow on username in profile
