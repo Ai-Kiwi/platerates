@@ -99,6 +99,7 @@ app.listen(port, () => {
 //all more data collected and what not should be checked on google play console
 
 // - features to add before release
+//add in app links to privacy policy 
 //privacy policy
 //make lazy loading lib collect data not when drawing item
 //display if you have or haven't rated a toast before clicking on it
@@ -200,7 +201,6 @@ app.listen(port, () => {
 //sign in with google
 //shareing toasts
 // //toaster watermark
-//reached end of your feed
 //how long ago post was uploaded
 //able to click on user profile avatar and name to open them on posts
 //block users
@@ -213,6 +213,7 @@ app.listen(port, () => {
 //rate limiting per account basses
 //paid verison that bypass rate limit
 //lazy loading pass revestion for post so can know if to update post data
+//random pair up with people to chay
 
 // - low resolstion
 //overflow on public or private post part
