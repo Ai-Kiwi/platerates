@@ -105,6 +105,8 @@ app.listen(port, () => {
 //add reasons for why posts were reported
 //add cache for user profiles
 //block users
+//settings popups broken
+//no way to go back on pages for web 
 
 // - security to add
 //hash reset password codes
