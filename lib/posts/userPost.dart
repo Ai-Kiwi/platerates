@@ -164,7 +164,6 @@ class _PostItemState extends State<PostItem> {
                             ]),
                           ),
                           PostManageButton(
-                            userId: userManager.userId,
                             posterUserId: posterUserId,
                             postId: postId,
                           ),
@@ -314,12 +313,10 @@ class PostImage extends StatelessWidget {
 }
 
 class PostManageButton extends StatelessWidget {
-  final String userId;
   final String posterUserId;
   final String postId;
 
-  PostManageButton(
-      {required this.userId, required this.posterUserId, required this.postId});
+  const PostManageButton({required this.posterUserId, required this.postId});
 
   @override
   Widget build(BuildContext context) {

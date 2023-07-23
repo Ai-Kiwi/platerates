@@ -14,10 +14,10 @@ import '../main.dart';
 import '../login/userLogin.dart';
 
 class UserProfile extends StatefulWidget {
-  final String userId;
+  final String? userId;
 
   UserProfile({
-    required this.userId,
+    this.userId,
   });
 
   @override
@@ -25,7 +25,7 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final String userId;
+  final String? userId;
   bool _isLoading = true;
   bool _isAdminAccount = false;
   String userBio = "";
