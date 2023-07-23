@@ -26,6 +26,8 @@ class _PostItemState extends State<PostItem> {
   String description = "";
   double rating = 0;
   String posterName = "";
+  int ratingsAmount = 0;
+  bool? hasRated = true;
   var posterAvatar;
   String posterUserId = "";
   var imageData;
@@ -88,6 +90,8 @@ class _PostItemState extends State<PostItem> {
         imageData = base64Decode(jsonData['imageData']);
         posterName = basicUserData["username"];
         posterUserId = jsonData['posterId'];
+        ratingsAmount = int.parse(jsonData['ratingsAmount']);
+        hasRated = bool.tryParse(jsonData['requesterRated']);
         errorOccurred = false;
       });
     } catch (err) {
@@ -186,38 +190,54 @@ class _PostItemState extends State<PostItem> {
                   SizedBox(
                     height: 25,
                     child: TextButton(
-                      style: ButtonStyle(
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                              vertical: 1.0), // Adjust the padding values
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                            const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                                vertical: 1.0), // Adjust the padding values
+                          ),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromARGB(255, 75, 75, 75)),
                         ),
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Colors.white),
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            const Color.fromARGB(255, 75, 75, 75)),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).push(smoothTransitions
-                            .slideUp(PostRatingList(postId: postId)));
-                        //Navigator.push(
-                        //    context,
-                        //    MaterialPageRoute(
-                        //        builder: (context) =>
-                        //            PostRatingList(postId: postId)));
-                      },
-                      child: RatingBarIndicator(
-                        rating: rating,
-                        itemBuilder: (context, index) => const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        itemCount: 5,
-                        itemSize: 15.0,
-                        direction: Axis.horizontal,
-                      ),
-                    ),
+                        onPressed: () {
+                          Navigator.of(context).push(smoothTransitions
+                              .slideUp(PostRatingList(postId: postId)));
+                          //Navigator.push(
+                          //    context,
+                          //    MaterialPageRoute(
+                          //        builder: (context) =>
+                          //            PostRatingList(postId: postId)));
+                        },
+                        child: Row(
+                          children: [
+                            RatingBarIndicator(
+                              rating: rating,
+                              itemBuilder: (context, index) => const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              itemCount: 5,
+                              itemSize: 15.0,
+                              direction: Axis.horizontal,
+                            ),
+                            Text(" ($ratingsAmount)")
+                          ],
+                        )),
                   ),
+                  //display if you have rated yet
+                  Visibility(
+                      visible: !hasRated!,
+                      child: const Row(
+                        children: [
+                          SizedBox(width: 8),
+                          Text(
+                            "not rated yet",
+                            style: TextStyle(color: Colors.red, fontSize: 16),
+                          ),
+                        ],
+                      ))
                 ]),
                 const SizedBox(height: 8.0),
                 //title and desc

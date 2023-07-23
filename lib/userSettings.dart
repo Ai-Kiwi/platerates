@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -272,6 +273,23 @@ class _UserSettingsState extends State<UserSettings> {
                           smoothTransitions.slideRight(const LicensePage()));
                     },
                   ),
+                  SettingItem(
+                    settingIcon: Icons.lock,
+                    settingName: "privacy policy",
+                    ontap: () {
+                      launchUrl(Uri.parse(
+                          "https://toaster.aikiwi.dev/privacyPolicy"));
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.help,
+                    settingName: "contact support",
+                    ontap: () {
+                      launchUrl(Uri.parse("mailto:toaster@aikiwi.dev"));
+                    },
+                  ),
+                  //launch();
+
                   const Expanded(child: Center()),
                   Padding(
                     padding:
