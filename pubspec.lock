@@ -66,7 +66,7 @@ packages:
     source: hosted
     version: "2.5.1"
   camera_web:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: camera_web
       sha256: bcbd775fb3a9d51cc3ece899d54ad66f6306410556bac5759f78e13f9228841f
