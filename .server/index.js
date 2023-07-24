@@ -111,6 +111,7 @@ app.listen(port, () => {
 //settings popups broken
 //https://stackoverflow.com/questions/76527143/how-to-make-my-flutter-up-and-running-after-a-flutter-upgrade
 //no way to go back on pages for web 
+//admin delete posts and comments
 
 // - security to add
 //hash reset password codes
