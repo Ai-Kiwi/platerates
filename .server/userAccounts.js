@@ -139,8 +139,6 @@ router.post('/profile/data', async (req, res) => {
       [validToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
       const collection = database.collection('user_data');
 
-      console.log(userId);
-      console.log(requesterUserId);
       if (validToken){
         
         //if they dont supply any user just fetch themselves
