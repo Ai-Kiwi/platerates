@@ -295,7 +295,7 @@ class _UserSettingsState extends State<UserSettings> {
                     padding:
                         const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
                     child: Center(
-                        child: Text("version $version",
+                        child: Text("version $version build $buildNumber",
                             style: const TextStyle(
                               color: Colors.white,
                             ))),
