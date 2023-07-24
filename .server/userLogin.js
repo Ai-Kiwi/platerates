@@ -367,7 +367,7 @@ router.post('/login/reset-password', async (req, res) => {
         '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
         email,
         "Password reset code for toaster",
-        "Your one time toaster account password reset code from ip address" + ipAddress + " is " + resetPasswordCode + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
+        "Your one time toaster account password reset code from ip address " + ipAddress + " is " + resetPasswordCode + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
 
       );
       if (emailData) {
