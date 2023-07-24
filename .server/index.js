@@ -139,6 +139,7 @@ app.listen(port, () => {
 //view bans, ban user
 //can delete any posts as if they own the post
 //have a custom flair on their name to show they are an admin
+//make a function for testing if user is admin to make easier
 
 // - bugs to fix
 //for some reason somtimes username in profile page doesn't change correctly when chaning login
