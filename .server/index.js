@@ -116,6 +116,7 @@ app.listen(port, () => {
 //add rules for swearing
 //test if email is valid
 //make reset password more clear how it works.
+//stop tokens randomly clearing themselves.
 
 // - security to add
 //hash reset password codes
