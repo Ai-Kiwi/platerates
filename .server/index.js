@@ -114,6 +114,8 @@ app.listen(port, () => {
 //admin delete posts and comments
 //block swearing
 //add rules for swearing
+//test if email is valid
+//make reset password more clear how it works.
 
 // - security to add
 //hash reset password codes
