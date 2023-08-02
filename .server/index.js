@@ -167,6 +167,8 @@ app.listen(port, () => {
 //web verison should say when using device wider then tall and say not to use on desktop
 
 // - possible future features after release
+//link accounts (for adding friends, not login)
+//link contacts
 //sign up other people incentive, like toaster premium, then tests if ip address or account has already been used for a code.
 //toaster premium
 // //fancy emoji reply
