@@ -102,6 +102,9 @@ app.listen(port, () => {
 //camera can't save to local on web (tested atleast on computer)
 
 // - features to add before release
+//allow low res photos
+//camera settings like switching camera and flash mode
+//add error reporting for why camera failed
 //fix taking picture on website
 //add password autofill
 //make images that are more horonal work and not have errors, (crop work with more width as well instead of just more height)

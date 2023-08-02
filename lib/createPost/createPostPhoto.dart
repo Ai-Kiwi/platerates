@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Toaster/createPost/createPost.dart';
 import 'package:Toaster/libs/loadScreen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
@@ -46,10 +47,10 @@ class _CameraPageState extends State<CameraPage> {
     super.dispose();
   }
 
-  Future<String> _resizePhoto(String filePath) async {
+  Future<List<int>?> _resizePhoto(XFile file) async {
     try {
-      final file = File(filePath);
-      var image = img.decodeJpg(File(filePath).readAsBytesSync());
+      var image = img.decodeImage(await file.readAsBytes());
+
       image = img.copyResize(image!, width: 1080);
 
       List<int> imgSize = img.findTrim(image);
@@ -58,49 +59,69 @@ class _CameraPageState extends State<CameraPage> {
           height: 1080, width: 1080, x: 0, y: (imgSize[3] - 1080) ~/ 2);
 
       //if there is already a photo remove it
-      if (await file.exists()) {
-        // If the file exists, delete it
-        try {
-          await file.delete();
-        } catch (e) {
-          return "";
-        }
-      }
+      //if (await file.exists()) {
+      //  // If the file exists, delete it
+      //  try {
+      //    await file.delete();
+      //  } catch (err) {
+      //    print(err);
+      //    return "";
+      //  }
+      //}
 
-      await img.encodeJpgFile(filePath, image, quality: 100);
-      return filePath;
-    } on Error {
-      return "";
+      //await img.encodeJpgFile(filePath, image, quality: 100);
+
+      List<int> finalImgSize = img.findTrim(image);
+
+      //if (finalImgSize[3] != 1080 || finalImgSize[4] != 1080) {
+      //  print("camera to low res");
+      //  return null;
+      //}
+
+      final List<int> editedBytes = img.encodeJpg(image, quality: 100);
+
+      return editedBytes;
+    } catch (err) {
+      print(err);
+      return null;
     }
   }
 
-  Future<String> _takePicture() async {
-    if (!_isCameraReady || _cameraController == null) return "";
+  Future<List<int>?> _takePicture() async {
+    if (!_isCameraReady || _cameraController == null) return null;
 
-    final Directory extDir = await getApplicationDocumentsDirectory();
-    final String dirPath = '${extDir.path}/';
-    await Directory(dirPath).create(recursive: true);
-    String filePath = '${dirPath}PostPicture.jpg';
-    File pictureFile = File(filePath);
+    if (_cameraController!.value.isTakingPicture) return null;
 
-    if (_cameraController!.value.isTakingPicture) return "";
+    //final Directory extDir = await getApplicationDocumentsDirectory();
+    //final String dirPath = '${extDir.path}/';
+    //await Directory(dirPath).create(recursive: true);
+    //String filePath = '${dirPath}PostPicture.jpg';
+    //File pictureFile = File(filePath);
 
-    //if there is already a photo remove it
-    if (await pictureFile.exists()) {
-      // If the file exists, delete it
-      try {
-        await pictureFile.delete();
-      } catch (e) {
-        return "";
-      }
-    }
+    ////if there is already a photo remove it
+    //if (await pictureFile.exists()) {
+    //  // If the file exists, delete it
+    //  try {
+    //    await pictureFile.delete();
+    //  } catch (err) {
+    //    DebugConsole.log(err);
+    //    return "";
+    //  }
+    //}
 
     try {
       final image = await _cameraController!.takePicture();
+      //print(image);
 
-      return await _resizePhoto(image.path);
-    } on CameraException {
-      return "";
+      return await _resizePhoto(image);
+      //return "e";
+      //} on CameraException {
+      //  print("camera exception");
+      //  return "";
+      //}
+    } catch (err) {
+      print(err);
+      return null;
     }
   }
 
@@ -182,13 +203,13 @@ class _CameraPageState extends State<CameraPage> {
                             onPressed: () async {
                               final imagePath = await _takePicture();
 
-                              if (imagePath.isNotEmpty) {
+                              if (imagePath != null) {
                                 // You can handle the captured image path here, e.g., display it on a new page or save it.
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => CreatePostPage(
-                                            imagePath: imagePath,
+                                            imageData: imagePath,
                                           )),
                                 );
                               } else {

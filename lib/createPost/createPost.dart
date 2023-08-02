@@ -11,28 +11,36 @@ import '../main.dart';
 import '../login/userLogin.dart';
 
 class CreatePostPage extends StatefulWidget {
-  final String imagePath;
+  final List<int> imageData;
 
   CreatePostPage({
-    required this.imagePath,
+    required this.imageData,
   });
 
   @override
-  _CreatePostState createState() => _CreatePostState(imagePath: imagePath);
+  _CreatePostState createState() => _CreatePostState(imageData: imageData);
 }
 
 class _CreatePostState extends State<CreatePostPage> {
-  final String imagePath;
+  final List<int> imageData;
+  late Uint8List convertedImageData;
   String _title = '';
   String _description = '';
   int shareModeSelected = 0;
   List<String> postCodeNames = ['public', 'friends'];
   List<String> postNamings = ['public post', 'friend\'s only post'];
 
-  _CreatePostState({required this.imagePath});
+  _CreatePostState({required this.imageData});
+
+  Uint8List uintListToBytes(List<int> uintList) {
+    final buffer = Uint8List.fromList(uintList);
+    final byteData = ByteData.view(buffer.buffer);
+    return byteData.buffer.asUint8List();
+  }
 
   @override
   Widget build(BuildContext context) {
+    convertedImageData = Uint8List.fromList(imageData);
     return Scaffold(
         backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: Center(
@@ -61,7 +69,7 @@ class _CreatePostState extends State<CreatePostPage> {
                 width: double.infinity,
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.file(File(imagePath))),
+                    child: Image.memory(convertedImageData)),
               ),
             ),
             const SizedBox(height: 16),
@@ -200,7 +208,6 @@ class _CreatePostState extends State<CreatePostPage> {
                         DialogButton(
                           onPressed: () async {
                             Navigator.pop(context);
-                            File postImageFile = File(imagePath);
 
                             try {
                               final response = await http.post(
@@ -214,8 +221,8 @@ class _CreatePostState extends State<CreatePostPage> {
                                   "title": _title,
                                   "description": _description,
                                   "shareMode": postCodeNames[shareModeSelected],
-                                  "image": base64Encode(
-                                      postImageFile.readAsBytesSync()),
+                                  "image":
+                                      base64Encode(uintListToBytes(imageData)),
                                 }),
                               );
 
