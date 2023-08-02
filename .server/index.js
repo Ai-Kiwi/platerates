@@ -167,6 +167,7 @@ app.listen(port, () => {
 //web verison should say when using device wider then tall and say not to use on desktop
 
 // - possible future features after release
+//sign up other people incentive, like toaster premium, then tests if ip address or account has already been used for a code.
 //clean up cache and make it much smarter, for instense split it up into different parts.
 //add password autofill
 //custom thing for users that allows you to click on them, should be custom libary, used for comments and posts
