@@ -102,6 +102,10 @@ app.listen(port, () => {
 //camera can't save to local on web (tested atleast on computer)
 
 // - features to add before release
+//fix taking picture on website
+//add password autofill
+//make images that are more horonal work and not have errors, (crop work with more width as well instead of just more height)
+//test caching is working on the website
 //make lazy loading lib collect data not when drawing item
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile, either with posts or another tab
