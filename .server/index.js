@@ -168,6 +168,19 @@ app.listen(port, () => {
 
 // - possible future features after release
 //sign up other people incentive, like toaster premium, then tests if ip address or account has already been used for a code.
+//toaster premium
+// //fancy emoji reply
+// //increased rate limits
+// //fancy colored name and badge if you want
+// //accses to features early
+// //customize profile background
+// //animated avatar
+// //send huge messages
+//badges
+// //early supporter badge
+// //creater badge
+// //admin badge
+// //premium badge
 //clean up cache and make it much smarter, for instense split it up into different parts.
 //add password autofill
 //custom thing for users that allows you to click on them, should be custom libary, used for comments and posts
@@ -196,7 +209,10 @@ app.listen(port, () => {
 //adding as friend
 //indexing posts so to be faster
 //chat system
-// //pair up with random people and anonymously chat, if like can add as friends.
+// //reply to people
+// //reply with emoji
+// //attachments
+// //fearuee pair up with random people and anonymously chat, if like can add as friends.
 //search menu
 //nicer failed getting posts
 //extra camera settings
