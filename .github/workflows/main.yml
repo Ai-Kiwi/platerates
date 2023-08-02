@@ -1,5 +1,5 @@
 name: flutter android compile
-on: [push]
+#on: [push]
 jobs:
   flutter-android-compile:
    runs-on: ubuntu-latest
