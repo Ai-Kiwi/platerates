@@ -102,6 +102,8 @@ app.listen(port, () => {
 //camera can't save to local on web (tested atleast on computer)
 
 // - features to add before release
+//add listTile for things, and other relevant ones to make more clear.
+//add camera swap button (make loading circle only ve in camera preview area (as well as error messages)
 //allow low res photos
 //camera settings like switching camera and flash mode
 //add error reporting for why camera failed
