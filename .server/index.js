@@ -102,6 +102,7 @@ app.listen(port, () => {
 //camera can't save to local on web (tested atleast on computer)
 
 // - features to add before release
+//followers system
 //add listTile for things, and other relevant ones to make more clear.
 //add camera swap button (make loading circle only ve in camera preview area (as well as error messages)
 //allow low res photos
@@ -216,6 +217,7 @@ app.listen(port, () => {
 // //reply to people
 // //reply with emoji
 // //attachments
+// //last active display
 // //fearuee pair up with random people and anonymously chat, if like can add as friends.
 //search menu
 //nicer failed getting posts
