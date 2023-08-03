@@ -102,6 +102,11 @@ app.listen(port, () => {
 //camera can't save to local on web (tested atleast on computer)
 
 // - features to add before release
+//account notices
+// //used or things like getting dev messages
+// //used for things like updates that have come out
+//report/warn bostions accont for bad name
+//add going onto peoples profiles
 //followers system
 //add listTile for things, and other relevant ones to make more clear.
 //add camera swap button (make loading circle only ve in camera preview area (as well as error messages)
