@@ -111,8 +111,6 @@ app.listen(port, () => {
 //add going onto peoples profiles
 //followers system
 //add listTile for things, and other relevant ones to make more clear.
-//add camera swap button (make loading circle only ve in camera preview area (as well as error messages)
-//allow low res photos
 //camera settings like switching camera and flash mode
 //add error reporting for why camera failed
 //fix taking picture on website
@@ -171,6 +169,7 @@ app.listen(port, () => {
 //web verison should say when using device wider then tall and say not to use on desktop
 
 // - possible future features after release
+//allow low res photos
 //link accounts (for adding friends, not login)
 //link contacts
 //sign up other people incentive, like toaster premium, then tests if ip address or account has already been used for a code.
