@@ -20,7 +20,7 @@ const limiter = rateLimit({
 require('dotenv').config();
 
 const port = process.env.port;
-const clientVersion = "1.0.0+2";
+const clientVersion = "1.0.1+1";
 
 //setup app
 const app = express()
@@ -99,33 +99,35 @@ app.listen(port, () => {
 //all more data collected and what not should be checked on google play console
 
 //web fix
-//camera can't save to local on web (tested atleast on computer)
+//not using right camera
+//swapping not working
+//not tested yet
+//add option to use local files
 
 // - features to add before release
-//web sometimes fails to cache posts (to large error)
-//char limits to posts, ratings etc
-//account notices
-// //used or things like getting dev messages
-// //used for things like updates that have come out
 //report/warn bostions accont for bad name
-//add going onto peoples profiles
-//followers system
-//add listTile for things, and other relevant ones to make more clear.
 //camera settings like switching camera and flash mode
-//add error reporting for why camera failed
 //fix taking picture on website
 //add password autofill
 //make images that are more horonal work and not have errors, (crop work with more width as well instead of just more height)
-//make lazy loading lib collect data not when drawing item
-//display if you have or haven't rated a toast before clicking on it
-//display ratings on your profile, either with posts or another tab
-//block users
-//settings popups broken
 //admin delete posts and comments
+
+// - add right after release
+//web sometimes fails to cache posts (to large error)
+//account notices
+// //used or things like getting dev messages
+// //used for things like updates that have come out
+//add going onto peoples profiles
+//followers system
+//add listTile for things, and other relevant ones to make more clear.
+//make lazy loading lib collect data not when drawing item
+//block users
 //block swearing
 //add rules for swearing
-//test if email is valid
 //make reset password more clear how it works.
+//display ratings on your profile, either with posts or another tab
+
+
 
 // - security to add
 //hash reset password codes
@@ -167,6 +169,8 @@ app.listen(port, () => {
 //on token error test token and restart app
 //for popups like change bio, it should only remove menu after it succses instead of after failure to.
 //web verison should say when using device wider then tall and say not to use on desktop
+//test if email is valid
+
 
 // - possible future features after release
 //allow low res photos

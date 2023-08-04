@@ -274,6 +274,7 @@ class _CameraPageState extends State<CameraPage> {
                                     ),
                                   ),
                                 ),
+                                SizedBox(width: 8),
                                 Container(
                                   width: 50,
                                   height: 50,
