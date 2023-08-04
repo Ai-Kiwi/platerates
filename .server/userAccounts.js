@@ -6,6 +6,7 @@ const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
 const { versions } = require('sharp');
 const { userTimeout, userTimeoutTest } = require('./timeouts');
+const { testUsername } = require('./validInputTester');
 
 
 
@@ -67,9 +68,12 @@ router.post('/profile/settings/change', async (req, res) => {
           return res.status(408).send("please wait " + timeoutTime + " to change username");
         }
 
-        if (value.length > 25) {
-          console.log("username to large")
-          return res.status(400).send("username to large")
+        var usernameAllowed, usernameDeniedReason;
+        [usernameAllowed, usernameDeniedReason] = await testUsername(value);
+
+        if (usernameAllowed === false) {
+          console.log(usernameDeniedReason)
+          return res.status(400).send(usernameDeniedReason)
         }
 
         const collection = database.collection('user_data');
@@ -285,6 +289,14 @@ async function createUser(email,password,username){
       if(emailInUse===true){
         console.log("email already in use")
         return false;
+      }
+
+      var usernameAllowed, usernameDeniedReason;
+      [usernameAllowed, usernameDeniedReason] = await testUsername(value);
+
+      if (usernameAllowed === false) {
+        console.log(usernameDeniedReason)
+        return res.status(400).send(usernameDeniedReason)
       }
   
       //create userId and make sure no one has it

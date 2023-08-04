@@ -11,6 +11,7 @@ router.post('/report', async (req, res) => {
   try{
     const token = req.body.token;
     const reportItem = req.body.reportItem;
+    const reason = req.body.reason;
     [validToken, userId] = await testToken(token,req.headers['x-forwarded-for']);
     const reportsCollection = database.collection('reports');
 
@@ -50,6 +51,15 @@ router.post('/report', async (req, res) => {
         return res.status(404).send("item does not exist")
       }
 
+      if (reason.length > 1000){
+        console.log("reason to large");
+        return res.status(400).send("reason to large")
+      }
+      if (reason.length < 5){
+        console.log("reason to small");
+        return res.status(409).send("reason to small")
+      } 
+
 
       var reportId;
       while (true){
@@ -66,6 +76,7 @@ router.post('/report', async (req, res) => {
           item: rootItem,
           reporterId : userId,
           reportId: reportId,
+          reason : reason,
         }
       )
 

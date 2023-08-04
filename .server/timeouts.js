@@ -28,6 +28,35 @@ async function userTimeout(userId,timeoutAction,timeoutTime) {
 
 }
 
+async function userTimeoutLimit(userId,timeoutAction,maxTimeoutTime) {
+    var collection = database.collection('user_data');
+
+
+    var filterQuery = {};
+    filterQuery.userId = userId;
+    filterQuery.cooldowns = {};
+    filterQuery.cooldowns[timeoutAction] = {}
+    filterQuery.cooldowns[timeoutAction][$lt] = (timeoutTime * 1000) + Date.now();
+
+    var updateQuery = {};
+    updateQuery.cooldowns = {};
+    updateQuery.cooldowns[timeoutAction] = (timeoutTime * 1000) + Date.now();
+
+
+    let collectionUpdate = await collection.updateOne(
+        filterQuery,
+        { $set: updateQuery},
+    );
+
+    if (collectionUpdate.acknowledged === true){
+        console.log("updated timeout");
+        return [true];
+    }else{
+        console.log("failed to update timeout");
+        return [false];
+    }
+
+}
 
 async function userTimeoutTest(userId,timeoutAction) {
     console.log("user timeout test");
@@ -64,4 +93,5 @@ async function userTimeoutTest(userId,timeoutAction) {
 module.exports = {
     userTimeout:userTimeout,
     userTimeoutTest:userTimeoutTest,
+    userTimeoutLimit:userTimeoutLimit,
 };
