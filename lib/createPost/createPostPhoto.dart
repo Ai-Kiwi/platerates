@@ -5,6 +5,7 @@ import 'package:Toaster/libs/loadScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:image/image.dart' as img;
@@ -18,6 +19,7 @@ class _CameraPageState extends State<CameraPage> {
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   bool _isCameraReady = false;
+  int cameraIndex = 0;
 
   @override
   void initState() {
@@ -28,12 +30,54 @@ class _CameraPageState extends State<CameraPage> {
   Future<void> _initializeCamera() async {
     _cameras = await availableCameras();
     if (_cameras != null && _cameras!.isNotEmpty) {
-      _cameraController = CameraController(_cameras![0], ResolutionPreset.max);
+      _cameraController =
+          CameraController(_cameras![cameraIndex], ResolutionPreset.max);
       try {
         await _cameraController!.initialize().then((_) {
           setState(() {});
         });
-      } catch (e) {}
+      } catch (e) {
+        Fluttertoast.showToast(
+            msg: "failed loading camera",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    }
+    if (!mounted) return;
+    setState(() {
+      _isCameraReady = true;
+    });
+  }
+
+  Future<void> _swapCamera() async {
+    _isCameraReady = false;
+    cameraIndex += 1;
+    setState(() {});
+    if (cameraIndex > (_cameras!.length - 1)) {
+      cameraIndex = 0;
+    }
+    _cameras = await availableCameras();
+    if (_cameras != null && _cameras!.isNotEmpty) {
+      _cameraController =
+          CameraController(_cameras![cameraIndex], ResolutionPreset.max);
+      try {
+        await _cameraController!.initialize().then((_) {
+          setState(() {});
+        });
+      } catch (e) {
+        Fluttertoast.showToast(
+            msg: "failed loading camera",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
     }
     if (!mounted) return;
     setState(() {
@@ -58,25 +102,22 @@ class _CameraPageState extends State<CameraPage> {
       image = img.copyCrop(image,
           height: 1080, width: 1080, x: 0, y: (imgSize[3] - 1080) ~/ 2);
 
-      //if there is already a photo remove it
-      //if (await file.exists()) {
-      //  // If the file exists, delete it
-      //  try {
-      //    await file.delete();
-      //  } catch (err) {
-      //    print(err);
-      //    return "";
-      //  }
-      //}
-
       //await img.encodeJpgFile(filePath, image, quality: 100);
 
       List<int> finalImgSize = img.findTrim(image);
 
-      //if (finalImgSize[3] != 1080 || finalImgSize[4] != 1080) {
-      //  print("camera to low res");
-      //  return null;
-      //}
+      if (finalImgSize[3] != 1080 || finalImgSize[4] != 1080) {
+        print("camera to low resolstion");
+        Fluttertoast.showToast(
+            msg: "invalid camera resolstion",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        return null;
+      }
 
       final List<int> editedBytes = img.encodeJpg(image, quality: 100);
 
@@ -127,10 +168,6 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isCameraReady || _cameras == null || _cameras!.isEmpty) {
-      return LoadingScreen(toasterLogo: false);
-    }
-
     var size = MediaQuery.of(context).size.width;
     size = size -
         64; //really hacky work around, as image needs to be sqaure because there is padding on each side.
@@ -171,76 +208,183 @@ class _CameraPageState extends State<CameraPage> {
                           child: Container(
                             width: size,
                             height: size,
-                            child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                              child: OverflowBox(
-                                alignment: Alignment.center,
-                                child: FittedBox(
-                                  fit: BoxFit.fitWidth,
-                                  child: Container(
-                                    width: size,
-                                    height: size *
-                                        _cameraController!.value.aspectRatio,
-                                    child: CameraPreview(_cameraController!),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            child: displayCamera(
+                                cameraController: _cameraController,
+                                size: size,
+                                cameraReady: _isCameraReady,
+                                cameras: _cameras),
                           )),
                       const SizedBox(height: 16),
                       Padding(
                         //take photo button
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Container(
-                          width: double.infinity,
-                          height: 50.0,
-                          child: ElevatedButton(
-                            style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            )),
-                            onPressed: () async {
-                              final imagePath = await _takePicture();
+                            width: double.infinity,
+                            height: 50.0,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: OutlinedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                      )),
+                                      onPressed: () async {
+                                        final imagePath = await _takePicture();
 
-                              if (imagePath != null) {
-                                // You can handle the captured image path here, e.g., display it on a new page or save it.
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => CreatePostPage(
-                                            imageData: imagePath,
-                                          )),
-                                );
-                              } else {
-                                Alert(
-                                  context: context,
-                                  type: AlertType.error,
-                                  title: "error taking photo",
-                                  buttons: [
-                                    DialogButton(
-                                      child: Text(
-                                        "ok",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 20),
+                                        if (imagePath != null) {
+                                          // You can handle the captured image path here, e.g., display it on a new page or save it.
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CreatePostPage(
+                                                      imageData: imagePath,
+                                                    )),
+                                          );
+                                        } else {
+                                          Alert(
+                                            context: context,
+                                            type: AlertType.error,
+                                            title: "error taking photo",
+                                            buttons: [
+                                              DialogButton(
+                                                child: Text(
+                                                  "ok",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20),
+                                                ),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                width: 120,
+                                              )
+                                            ],
+                                          ).show();
+                                        }
+                                      },
+                                      child: const Text(
+                                        'Take photo',
+                                        style: TextStyle(fontSize: 18.0),
                                       ),
-                                      onPressed: () => Navigator.pop(context),
-                                      width: 120,
-                                    )
-                                  ],
-                                ).show();
-                              }
-                            },
-                            child: const Text(
-                              'Take photo',
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                          ),
-                        ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                      style: OutlinedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                      )),
+                                      onPressed: () async {
+                                        _swapCamera();
+                                      },
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.switch_camera,
+                                          size: 20,
+                                        ),
+                                      )),
+                                ),
+                              ],
+                            )
+
+                            //                            child: Row(
+                            //children: [
+                            //ElevatedButton(
+                            //  style: OutlinedButton.styleFrom(
+                            //      shape: RoundedRectangleBorder(
+                            //    borderRadius: BorderRadius.circular(15.0),
+                            //  )),
+                            //  onPressed: () async {
+                            //    final imagePath = await _takePicture();
+//
+                            //    if (imagePath != null) {
+                            //      // You can handle the captured image path here, e.g., display it on a new page or save it.
+                            //      Navigator.push(
+                            //        context,
+                            //        MaterialPageRoute(
+                            //            builder: (context) =>
+                            //                CreatePostPage(
+                            //                  imageData: imagePath,
+                            //                )),
+                            //      );
+                            //    } else {
+                            //      Alert(
+                            //        context: context,
+                            //        type: AlertType.error,
+                            //        title: "error taking photo",
+                            //        buttons: [
+                            //          DialogButton(
+                            //            child: Text(
+                            //              "ok",
+                            //              style: TextStyle(
+                            //                  color: Colors.white,
+                            //                  fontSize: 20),
+                            //            ),
+                            //            onPressed: () =>
+                            //                Navigator.pop(context),
+                            //            width: 120,
+                            //          )
+                            //        ],
+                            //      ).show();
+                            //    }
+                            //  },
+                            //  child: const Text(
+                            //    'Take photo',
+                            //    style: TextStyle(fontSize: 18.0),
+                            //  ),
+                            //),
+                            //],
+                            ), //),
                       ),
                       const SizedBox(height: 16),
                     ])))
       ])),
+    );
+  }
+}
+
+class displayCamera extends StatelessWidget {
+  final cameraController;
+  final size;
+  final cameraReady;
+  final cameras;
+
+  const displayCamera({
+    super.key,
+    required this.cameraController,
+    required this.size,
+    required this.cameraReady,
+    required this.cameras,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (!cameraReady || cameras == null || cameras!.isEmpty) {
+      return LoadingScreen(toasterLogo: false);
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      child: OverflowBox(
+        alignment: Alignment.center,
+        child: FittedBox(
+          fit: BoxFit.fitWidth,
+          child: Container(
+            width: size,
+            height: size * cameraController!.value.aspectRatio,
+            child: CameraPreview(cameraController!),
+          ),
+        ),
+      ),
     );
   }
 }
