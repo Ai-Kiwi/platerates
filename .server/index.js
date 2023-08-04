@@ -102,6 +102,7 @@ app.listen(port, () => {
 //camera can't save to local on web (tested atleast on computer)
 
 // - features to add before release
+//web sometimes fails to cache posts (to large error)
 //char limits to posts, ratings etc
 //account notices
 // //used or things like getting dev messages
