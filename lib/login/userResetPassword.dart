@@ -24,37 +24,74 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            decoration:
-                const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
-            child: Center(
-                child: Column(
-              children: <Widget>[
-                const SizedBox(height: 32.0),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
-                    "Reset Password",
-                    style: TextStyle(color: Colors.white, fontSize: 40),
+        body: Stack(alignment: Alignment.topLeft, children: <Widget>[
+      Container(
+          decoration: const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
+          child: Center(
+              child: Column(
+            children: <Widget>[
+              const SizedBox(height: 32.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  "Reset Password",
+                  style: TextStyle(color: Colors.white, fontSize: 40),
+                ),
+              ),
+              const Divider(
+                color: Color.fromARGB(255, 110, 110, 110),
+                thickness: 1.0,
+              ),
+              const SizedBox(height: 8.0),
+              Padding(
+                //email input feild
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextFormField(
+                  onChanged: (value) {
+                    setState(() {
+                      _email = value;
+                    });
+                  },
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: InputDecoration(
+                    labelText: 'Email Address',
+                    labelStyle: const TextStyle(
+                        color: Color.fromARGB(255, 200, 200, 200)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                      borderSide: const BorderSide(
+                          width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                      borderSide: const BorderSide(
+                          width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                      borderSide: BorderSide(
+                          width: 2, color: Theme.of(context).primaryColor),
+                    ),
+                    contentPadding: const EdgeInsets.all(16.0),
+                    fillColor: const Color.fromARGB(255, 40, 40, 40),
+                    filled: true,
                   ),
                 ),
-                const Divider(
-                  color: Color.fromARGB(255, 110, 110, 110),
-                  thickness: 1.0,
-                ),
-                const SizedBox(height: 8.0),
-                Padding(
-                  //email input feild
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextFormField(
+              ),
+              const SizedBox(height: 16.0),
+              Padding(
+                //password input feild
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextFormField(
                     onChanged: (value) {
                       setState(() {
-                        _email = value;
+                        _NewPassword = value;
                       });
                     },
+                    obscureText: true,
                     style: const TextStyle(color: Colors.white, fontSize: 20),
                     decoration: InputDecoration(
-                      labelText: 'Email Address',
+                      labelText: 'New Password',
                       labelStyle: const TextStyle(
                           color: Color.fromARGB(255, 200, 200, 200)),
                       border: OutlineInputBorder(
@@ -75,251 +112,166 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       contentPadding: const EdgeInsets.all(16.0),
                       fillColor: const Color.fromARGB(255, 40, 40, 40),
                       filled: true,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                Padding(
-                  //password input feild
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          _NewPassword = value;
-                        });
-                      },
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
-                      decoration: InputDecoration(
-                        labelText: 'New Password',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 200, 200, 200)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(
-                              width: 2, color: Theme.of(context).primaryColor),
-                        ),
-                        contentPadding: const EdgeInsets.all(16.0),
-                        fillColor: const Color.fromARGB(255, 40, 40, 40),
-                        filled: true,
-                      )),
-                ),
-                const SizedBox(height: 16.0),
-                Padding(
-                  //confirm password input feild
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          _confirmNewPassword = value;
-                        });
-                      },
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
-                      decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 200, 200, 200)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(
-                              width: 2, color: Theme.of(context).primaryColor),
-                        ),
-                        contentPadding: const EdgeInsets.all(16.0),
-                        fillColor: const Color.fromARGB(255, 40, 40, 40),
-                        filled: true,
-                      )),
-                ),
-                const SizedBox(height: 12.0),
-                Padding(
-                  //reset code feild
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextFormField(
-                      onChanged: (value) {
-                        setState(() {
-                          _resetCode = value;
-                        });
-                      },
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
-                      decoration: InputDecoration(
-                        labelText: 'Reset Code',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 200, 200, 200)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(
-                              width: 2, color: Theme.of(context).primaryColor),
-                        ),
-                        contentPadding: const EdgeInsets.all(16.0),
-                        fillColor: const Color.fromARGB(255, 40, 40, 40),
-                        filled: true,
-                      )),
-                ),
-                const SizedBox(height: 12.0),
-                Padding(
-                  //if to create reset code or use reset code
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
-                    width: double.infinity,
-                    child: ToggleSwitch(
-                      minWidth: double.infinity,
-                      cornerRadius: 15.0,
-                      initialLabelIndex: 0,
-                      totalSwitches: 2,
-                      centerText: true,
-                      activeFgColor: Colors.white,
-                      inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
-                      inactiveFgColor: Colors.white,
-                      labels: const ["create reset code", "use reset code"],
-                      onToggle: (index) {
-                        if (index! == 1) {
-                          _useResetCode = true;
-                        } else {
-                          _useResetCode = false;
-                        }
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12.0),
-                Padding(
-                  //login button
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 50.0,
-                    child: ElevatedButton(
-                      style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
+                    )),
+              ),
+              const SizedBox(height: 16.0),
+              Padding(
+                //confirm password input feild
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        _confirmNewPassword = value;
+                      });
+                    },
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      labelStyle: const TextStyle(
+                          color: Color.fromARGB(255, 200, 200, 200)),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15.0),
-                      )),
-                      onPressed: () async {
-                        if (_useResetCode == true) {
-                          final response = await http.post(
-                            Uri.parse("$serverDomain/login/reset-password"),
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                            },
-                            body: jsonEncode(<String, String>{
-                              'email': _email,
-                              'newPassword': _NewPassword,
-                              'resetCode': _resetCode,
-                            }),
-                          );
-                          if (_NewPassword != _confirmNewPassword) {
-                            Alert(
-                              context: context,
-                              type: AlertType.error,
-                              title: "passwords do not match",
-                              buttons: [
-                                DialogButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  width: 120,
-                                  child: const Text(
-                                    "ok",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                )
-                              ],
-                            ).show();
-                          } else {
-                            if (response.statusCode == 200) {
-                              // ignore: use_build_context_synchronously
-                              Alert(
-                                context: context,
-                                type: AlertType.success,
-                                title: "password changed",
-                                buttons: [
-                                  DialogButton(
-                                    width: 120,
-                                    child: const Text(
-                                      "ok",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-                                      Phoenix.rebirth(context);
-                                    },
-                                  )
-                                ],
-                              ).show();
-                            } else {
-                              Alert(
-                                context: context,
-                                type: AlertType.error,
-                                title: "error using reseting password code",
-                                desc: response.body,
-                                buttons: [
-                                  DialogButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    width: 120,
-                                    child: const Text(
-                                      "ok",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                  )
-                                ],
-                              ).show();
-                            }
-                          }
+                        borderSide: const BorderSide(
+                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: const BorderSide(
+                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: BorderSide(
+                            width: 2, color: Theme.of(context).primaryColor),
+                      ),
+                      contentPadding: const EdgeInsets.all(16.0),
+                      fillColor: const Color.fromARGB(255, 40, 40, 40),
+                      filled: true,
+                    )),
+              ),
+              const SizedBox(height: 12.0),
+              Padding(
+                //reset code feild
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        _resetCode = value;
+                      });
+                    },
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                    decoration: InputDecoration(
+                      labelText: 'Reset Code',
+                      labelStyle: const TextStyle(
+                          color: Color.fromARGB(255, 200, 200, 200)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: const BorderSide(
+                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: const BorderSide(
+                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                        borderSide: BorderSide(
+                            width: 2, color: Theme.of(context).primaryColor),
+                      ),
+                      contentPadding: const EdgeInsets.all(16.0),
+                      fillColor: const Color.fromARGB(255, 40, 40, 40),
+                      filled: true,
+                    )),
+              ),
+              const SizedBox(height: 12.0),
+              Padding(
+                //if to create reset code or use reset code
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                  width: double.infinity,
+                  child: ToggleSwitch(
+                    minWidth: double.infinity,
+                    cornerRadius: 15.0,
+                    initialLabelIndex: 0,
+                    totalSwitches: 2,
+                    centerText: true,
+                    activeFgColor: Colors.white,
+                    inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
+                    inactiveFgColor: Colors.white,
+                    labels: const ["create reset code", "use reset code"],
+                    onToggle: (index) {
+                      if (index! == 1) {
+                        _useResetCode = true;
+                      } else {
+                        _useResetCode = false;
+                      }
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              Padding(
+                //login button
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50.0,
+                  child: ElevatedButton(
+                    style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    )),
+                    onPressed: () async {
+                      if (_useResetCode == true) {
+                        final response = await http.post(
+                          Uri.parse("$serverDomain/login/reset-password"),
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                          },
+                          body: jsonEncode(<String, String>{
+                            'email': _email,
+                            'newPassword': _NewPassword,
+                            'resetCode': _resetCode,
+                          }),
+                        );
+                        if (_NewPassword != _confirmNewPassword) {
+                          Alert(
+                            context: context,
+                            type: AlertType.error,
+                            title: "passwords do not match",
+                            buttons: [
+                              DialogButton(
+                                onPressed: () => Navigator.pop(context),
+                                width: 120,
+                                child: const Text(
+                                  "ok",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                              )
+                            ],
+                          ).show();
                         } else {
-                          final response = await http.post(
-                            Uri.parse("$serverDomain/login/reset-password"),
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                            },
-                            body: jsonEncode(<String, String>{
-                              'email': _email,
-                            }),
-                          );
                           if (response.statusCode == 200) {
+                            // ignore: use_build_context_synchronously
                             Alert(
                               context: context,
                               type: AlertType.success,
-                              title: "reset password code created",
-                              desc: "check your emails",
+                              title: "password changed",
                               buttons: [
                                 DialogButton(
-                                  onPressed: () => Navigator.pop(context),
                                   width: 120,
                                   child: const Text(
                                     "ok",
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 20),
                                   ),
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    Phoenix.rebirth(context);
+                                  },
                                 )
                               ],
                             ).show();
@@ -327,7 +279,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             Alert(
                               context: context,
                               type: AlertType.error,
-                              title: "error creating reseting password code",
+                              title: "error using reseting password code",
                               desc: response.body,
                               buttons: [
                                 DialogButton(
@@ -343,15 +295,83 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                             ).show();
                           }
                         }
-                      },
-                      child: const Text(
-                        'reset password',
-                        style: TextStyle(fontSize: 18.0),
-                      ),
+                      } else {
+                        final response = await http.post(
+                          Uri.parse("$serverDomain/login/reset-password"),
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                          },
+                          body: jsonEncode(<String, String>{
+                            'email': _email,
+                          }),
+                        );
+                        if (response.statusCode == 200) {
+                          Alert(
+                            context: context,
+                            type: AlertType.success,
+                            title: "reset password code created",
+                            desc: "check your emails",
+                            buttons: [
+                              DialogButton(
+                                onPressed: () => Navigator.pop(context),
+                                width: 120,
+                                child: const Text(
+                                  "ok",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                              )
+                            ],
+                          ).show();
+                        } else {
+                          Alert(
+                            context: context,
+                            type: AlertType.error,
+                            title: "error creating reseting password code",
+                            desc: response.body,
+                            buttons: [
+                              DialogButton(
+                                onPressed: () => Navigator.pop(context),
+                                width: 120,
+                                child: const Text(
+                                  "ok",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                              )
+                            ],
+                          ).show();
+                        }
+                      }
+                    },
+                    child: const Text(
+                      'reset password',
+                      style: TextStyle(fontSize: 18.0),
                     ),
                   ),
                 ),
-              ],
-            ))));
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  "reset codes can be used once created and received from emails",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ))),
+      Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          child: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ))
+    ]));
   }
 }

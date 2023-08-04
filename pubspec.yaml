@@ -1,5 +1,5 @@
 name: Toaster
-description: A social media app for sharing pictures of toast.
+description: The place to be for sharing and rating toast pictures.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

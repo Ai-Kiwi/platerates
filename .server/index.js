@@ -102,6 +102,7 @@ app.listen(port, () => {
 //camera can't save to local on web (tested atleast on computer)
 
 // - features to add before release
+//char limits to posts, ratings etc
 //account notices
 // //used or things like getting dev messages
 // //used for things like updates that have come out
@@ -116,22 +117,16 @@ app.listen(port, () => {
 //fix taking picture on website
 //add password autofill
 //make images that are more horonal work and not have errors, (crop work with more width as well instead of just more height)
-//test caching is working on the website
 //make lazy loading lib collect data not when drawing item
 //display if you have or haven't rated a toast before clicking on it
 //display ratings on your profile, either with posts or another tab
-//add reasons for why posts were reported
-//add cache for user profiles
 //block users
 //settings popups broken
-//https://stackoverflow.com/questions/76527143/how-to-make-my-flutter-up-and-running-after-a-flutter-upgrade
-//no way to go back on pages for web 
 //admin delete posts and comments
 //block swearing
 //add rules for swearing
 //test if email is valid
 //make reset password more clear how it works.
-//stop tokens randomly clearing themselves.
 
 // - security to add
 //hash reset password codes

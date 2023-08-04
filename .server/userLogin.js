@@ -286,6 +286,7 @@ router.post('/login/reset-password', async (req, res) => {
     const resetCode = req.body.resetCode;
     const ipAddress = req.headers['x-forwarded-for'];
     const userCredentialsCollection = database.collection("user_credentials");
+    [tokenVaild, userId] = await testToken(token,req.headers['x-forwarded-for'])
     
     //fetch user data
     const userCredentials = await userCredentialsCollection.findOne({email: email});
@@ -354,8 +355,13 @@ router.post('/login/reset-password', async (req, res) => {
       //test for timeouts
       const [timeoutActive, timeoutTime] = await userTimeoutTest(userCredentials.userId,"create-reset-password-code");
       if (timeoutActive === true) {
+        //test if user is logged in as them, if they are lower timeout to 10 minutes
+        if (userCredentials.userId === userId && vaildToken) {
+          userTimeoutLimit(userCredentials.userId,"create-reset-password-code",60 * 10)
+        }
         console.log("reset password for user is timed out " + timeoutTime);
         return res.status(408).send("please wait " + timeoutTime + " to reset password");
+        
       }
 
 
@@ -384,7 +390,7 @@ router.post('/login/reset-password', async (req, res) => {
         );
 
         if (response.acknowledged === true) {
-          userTimeout(userCredentials.userId,"create-reset-password-code",60 * 60 * 24);
+          userTimeout(userCredentials.userId,"create-reset-password-code",60 * 60 * 24); //timeout for a day
           return res.status(200).send("created password reset code");
 
         }else{
