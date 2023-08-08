@@ -324,6 +324,7 @@ class _CreatePostState extends State<CreatePostPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16.0),
               ],
             )),
             Padding(
