@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Toaster/login/userResetPassword.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../libs/smoothTransitions.dart';
@@ -102,7 +103,8 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: SafeArea(
             child: Center(
-                child: Column(
+                child: AutofillGroup(
+                    child: Column(
           children: <Widget>[
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0),
@@ -260,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
 
                     if (correctLogin.success == true) {
                       //save login
-                      //TextInput.finishAutofillContext();
+                      TextInput.finishAutofillContext();
                       // ignore: use_build_context_synchronously
                       Navigator.pushReplacement(
                         context,
@@ -304,7 +306,6 @@ class _LoginPageState extends State<LoginPage> {
               child: const Text('Reset Password'),
             ),
             const Padding(
-                //login button
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: Text('by signing in you agree to our privacy policy',
                     style: TextStyle(
@@ -312,7 +313,6 @@ class _LoginPageState extends State<LoginPage> {
                       color: Colors.white70,
                     ))),
             const Padding(
-                //login button
                 padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
                 child: Text('view at https://toaster.aikiwi.dev/privacyPolicy',
                     style: TextStyle(
@@ -331,7 +331,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ],
-        ))));
+        )))));
   }
 }
 

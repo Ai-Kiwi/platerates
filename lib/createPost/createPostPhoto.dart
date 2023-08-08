@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Toaster/createPost/createPost.dart';
 import 'package:Toaster/libs/loadScreen.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -91,25 +92,37 @@ class _CameraPageState extends State<CameraPage> {
     super.dispose();
   }
 
-  Future<List<int>?> _resizePhoto(XFile file) async {
+  Future<List<int>?> _resizePhoto(inputImageData) async {
     try {
-      var image = img.decodeImage(await file.readAsBytes());
+      var image = img.decodeImage(inputImageData);
 
-      image = img.copyResize(image!, width: 1080);
+      List<int> startImgSize = img.findTrim(image!);
 
-      List<int> imgSize = img.findTrim(image);
+      //test if width or height is more
+      if (startImgSize[3] > startImgSize[2]) {
+        //image is taller
+        image = img.copyResize(image, width: 1080);
 
-      image = img.copyCrop(image,
-          height: 1080, width: 1080, x: 0, y: (imgSize[3] - 1080) ~/ 2);
+        List<int> imgSize = img.findTrim(image);
 
-      //await img.encodeJpgFile(filePath, image, quality: 100);
+        image = img.copyCrop(image,
+            height: 1080, width: 1080, x: 0, y: (imgSize[3] - 1080) ~/ 2);
+      } else {
+        //image is wider
+        image = img.copyResize(image, height: 1080);
+
+        List<int> imgSize = img.findTrim(image);
+
+        image = img.copyCrop(image,
+            height: 1080, width: 1080, x: (imgSize[2] - 1080) ~/ 2, y: 0);
+      }
 
       List<int> finalImgSize = img.findTrim(image);
 
-      if (finalImgSize[3] != 1080 || finalImgSize[4] != 1080) {
-        print("camera to low resolstion");
+      if (finalImgSize[3] != 1080 || finalImgSize[2] != 1080) {
+        print("photo to low resolstion");
         Fluttertoast.showToast(
-            msg: "invalid camera resolstion",
+            msg: "invalid photo resolstion",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 3,
@@ -154,7 +167,7 @@ class _CameraPageState extends State<CameraPage> {
       final image = await _cameraController!.takePicture();
       //print(image);
 
-      return await _resizePhoto(image);
+      return await _resizePhoto(await image.readAsBytes());
       //return "e";
       //} on CameraException {
       //  print("camera exception");
@@ -295,59 +308,68 @@ class _CameraPageState extends State<CameraPage> {
                                       )),
                                 ),
                               ],
-                            )
-
-                            //                            child: Row(
-                            //children: [
-                            //ElevatedButton(
-                            //  style: OutlinedButton.styleFrom(
-                            //      shape: RoundedRectangleBorder(
-                            //    borderRadius: BorderRadius.circular(15.0),
-                            //  )),
-                            //  onPressed: () async {
-                            //    final imagePath = await _takePicture();
-//
-                            //    if (imagePath != null) {
-                            //      // You can handle the captured image path here, e.g., display it on a new page or save it.
-                            //      Navigator.push(
-                            //        context,
-                            //        MaterialPageRoute(
-                            //            builder: (context) =>
-                            //                CreatePostPage(
-                            //                  imageData: imagePath,
-                            //                )),
-                            //      );
-                            //    } else {
-                            //      Alert(
-                            //        context: context,
-                            //        type: AlertType.error,
-                            //        title: "error taking photo",
-                            //        buttons: [
-                            //          DialogButton(
-                            //            child: Text(
-                            //              "ok",
-                            //              style: TextStyle(
-                            //                  color: Colors.white,
-                            //                  fontSize: 20),
-                            //            ),
-                            //            onPressed: () =>
-                            //                Navigator.pop(context),
-                            //            width: 120,
-                            //          )
-                            //        ],
-                            //      ).show();
-                            //    }
-                            //  },
-                            //  child: const Text(
-                            //    'Take photo',
-                            //    style: TextStyle(fontSize: 18.0),
-                            //  ),
-                            //),
-                            //],
-                            ), //),
+                            )),
                       ),
                       const SizedBox(height: 16),
-                    ])))
+                    ]))),
+        Padding(
+          //take photo button
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+          child: Container(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              )),
+              onPressed: () async {
+                try {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles();
+
+                  final imageCollected = (result!.files).first;
+
+                  final List<int>? imageData =
+                      await _resizePhoto(imageCollected.bytes!);
+
+                  if (imageData != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CreatePostPage(
+                                imageData: imageData!,
+                              )),
+                    );
+                  }
+                } catch (err) {
+                  Alert(
+                    context: context,
+                    type: AlertType.error,
+                    title: "error taking photo",
+                    buttons: [
+                      DialogButton(
+                        child: Text(
+                          "ok",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        width: 120,
+                      )
+                    ],
+                  ).show();
+
+                  print(err);
+                  return null;
+                }
+              },
+              child: const Text(
+                'Use local file instead',
+                style: TextStyle(fontSize: 18.0),
+              ),
+            ),
+          ),
+        ),
       ])),
     );
   }
