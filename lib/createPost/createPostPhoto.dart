@@ -1,13 +1,9 @@
-import 'dart:io';
-
 import 'package:Toaster/createPost/createPost.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:image/image.dart' as img;
 
@@ -317,11 +313,12 @@ class _CameraPageState extends State<CameraPage> {
                       await _resizePhoto(imageCollected.bytes!);
 
                   if (imageData != null) {
+                    // ignore: use_build_context_synchronously
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => CreatePostPage(
-                                imageData: imageData!,
+                                imageData: imageData,
                               )),
                     );
                   }
@@ -332,12 +329,12 @@ class _CameraPageState extends State<CameraPage> {
                     title: "error taking photo",
                     buttons: [
                       DialogButton(
-                        child: Text(
+                        onPressed: () => Navigator.pop(context),
+                        width: 120,
+                        child: const Text(
                           "ok",
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-                        onPressed: () => Navigator.pop(context),
-                        width: 120,
                       )
                     ],
                   ).show();
