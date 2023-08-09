@@ -5,6 +5,7 @@ import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:Toaster/login/userLogin.dart';
+import 'package:Toaster/postRating/userRating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,14 +16,18 @@ import '../main.dart';
 
 class PostItem extends StatefulWidget {
   final String postId;
-  const PostItem({super.key, required this.postId});
+  final bool clickable;
+
+  const PostItem({super.key, required this.postId, required this.clickable});
 
   @override
-  _PostItemState createState() => _PostItemState(postId);
+  _PostItemState createState() =>
+      _PostItemState(clickable: clickable, postId: postId);
 }
 
 class _PostItemState extends State<PostItem> {
   String postId;
+  final bool clickable;
   String title = "";
   String description = "";
   double rating = 0;
@@ -34,7 +39,7 @@ class _PostItemState extends State<PostItem> {
   var imageData;
   bool errorOccurred = false;
 
-  _PostItemState(this.postId);
+  _PostItemState({required this.postId, required this.clickable});
 
   Future<void> _collectData() async {
     var jsonData;
@@ -144,87 +149,70 @@ class _PostItemState extends State<PostItem> {
     } else {
       return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-          child: Container(
-              decoration: BoxDecoration(
-                  color: const Color.fromARGB(215, 40, 40, 40),
-                  borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(
-                      color: const Color.fromARGB(215, 45, 45, 45), width: 3)),
-              child: Column(children: <Widget>[
-                const SizedBox(height: 16.0),
-                //user logo and name
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                              width: 2,
-                              color: const Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        width: double.infinity,
-                        height: 35,
-                        child: Row(children: <Widget>[
-                          Flexible(
-                            child: Row(children: [
-                              const SizedBox(width: 4),
-                              UserAvatar(
-                                avatarImage: posterAvatar,
-                                size: 25,
-                                roundness: 7.5,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(posterName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                  )),
-                            ]),
+          child: GestureDetector(
+            child: Container(
+                decoration: BoxDecoration(
+                    color: const Color.fromARGB(215, 40, 40, 40),
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(
+                        color: const Color.fromARGB(215, 45, 45, 45),
+                        width: 3)),
+                child: Column(children: <Widget>[
+                  const SizedBox(height: 16.0),
+                  //user logo and name
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                                width: 2,
+                                color: const Color.fromARGB(255, 45, 45, 45)),
                           ),
-                          PostManageButton(
-                            posterUserId: posterUserId,
-                            postId: postId,
-                          ),
-                        ]))),
-                const SizedBox(height: 8.0),
-                Padding(
-                    // image
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        child: PostImage(
-                          imageData: imageData,
-                        ))),
-                const SizedBox(height: 8.0),
-                //input buttons
-                Row(children: <Widget>[
-                  // 2nd row of items
-                  const SizedBox(width: 16.0),
-                  //rate it button
-                  SizedBox(
-                    height: 25,
-                    child: TextButton(
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                            const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 1.0), // Adjust the padding values
-                          ),
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              const Color.fromARGB(255, 75, 75, 75)),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(smoothTransitions
-                              .slideUp(PostRatingList(postId: postId)));
-                          //Navigator.push(
-                          //    context,
-                          //    MaterialPageRoute(
-                          //        builder: (context) =>
-                          //            PostRatingList(postId: postId)));
-                        },
+                          width: double.infinity,
+                          height: 35,
+                          child: Row(children: <Widget>[
+                            Flexible(
+                              child: Row(children: [
+                                const SizedBox(width: 4),
+                                UserAvatar(
+                                  userId: posterUserId,
+                                  avatarImage: posterAvatar,
+                                  size: 25,
+                                  roundness: 7.5,
+                                  clickable: true,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(posterName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    )),
+                              ]),
+                            ),
+                            PostManageButton(
+                              posterUserId: posterUserId,
+                              postId: postId,
+                            ),
+                          ]))),
+                  const SizedBox(height: 8.0),
+                  Padding(
+                      // image
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                          child: PostImage(
+                            imageData: imageData,
+                          ))),
+                  const SizedBox(height: 8.0),
+                  //rating row
+                  Row(children: <Widget>[
+                    // 2nd row of items
+                    const SizedBox(width: 16.0),
+                    //rating display
+                    SizedBox(
+                        height: 25,
                         child: Row(
                           children: [
                             RatingBarIndicator(
@@ -234,74 +222,83 @@ class _PostItemState extends State<PostItem> {
                                 color: Colors.amber,
                               ),
                               itemCount: 5,
-                              itemSize: 15.0,
+                              itemSize: 20.0,
                               direction: Axis.horizontal,
                             ),
-                            Text(" ($ratingsAmount)")
+                            Text(
+                              " ($ratingsAmount)",
+                              style: TextStyle(color: Colors.white),
+                            )
                           ],
                         )),
-                  ),
-                  //display if you have rated yet
-                  Visibility(
-                      visible: !hasRated!,
-                      child: const Row(
-                        children: [
-                          SizedBox(width: 8),
-                          Text(
-                            "not rated yet",
-                            style: TextStyle(color: Colors.red, fontSize: 16),
-                          ),
-                        ],
-                      ))
-                ]),
-                const SizedBox(height: 8.0),
-                //title and desc
-                Padding(
-                  //title
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      border: Border.all(
-                          width: 2,
-                          color: const Color.fromARGB(255, 45, 45, 45)),
-                    ),
-                    child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(
-                          title,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 15),
-                        )),
-                  ),
-                ),
-                const SizedBox(height: 8.0),
-                Padding(
-                    //description
+                    //display if you have rated yet
+                    Visibility(
+                        visible: !hasRated!,
+                        child: const Row(
+                          children: [
+                            SizedBox(width: 8),
+                            Text(
+                              "not rated yet",
+                              style: TextStyle(color: Colors.red, fontSize: 16),
+                            ),
+                          ],
+                        ))
+                  ]),
+                  const SizedBox(height: 8.0),
+                  //title and desc
+                  Padding(
+                    //title
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Container(
-                        height: 100,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                              width: 2,
-                              color: const Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        child: ListView(
-                          children: [
-                            Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Text(
-                                  description,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 15),
-                                ))
-                          ],
-                        ))),
-                const SizedBox(height: 16.0),
-              ])));
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                        border: Border.all(
+                            width: 2,
+                            color: const Color.fromARGB(255, 45, 45, 45)),
+                      ),
+                      child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 15),
+                          )),
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Padding(
+                      //description
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Container(
+                          height: 100,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            border: Border.all(
+                                width: 2,
+                                color: const Color.fromARGB(255, 45, 45, 45)),
+                          ),
+                          child: ListView(
+                            children: [
+                              Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Text(
+                                    description,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                  ))
+                            ],
+                          ))),
+                  const SizedBox(height: 16.0),
+                ])),
+            onTap: () {
+              if (clickable == true) {
+                Navigator.of(context).push(
+                    smoothTransitions.slideUp(PostRatingList(postId: postId)));
+              }
+            },
+          ));
     }
   }
 }

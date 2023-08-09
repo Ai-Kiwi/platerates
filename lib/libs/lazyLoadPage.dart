@@ -170,6 +170,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
               if (itemsCollected[index - 1]["type"] == "post") {
                 return PostItem(
                   postId: itemsCollected[index - 1]["data"],
+                  clickable: true,
                 );
               } else if (itemsCollected[index - 1]["type"] == "rating") {
                 return userRating(

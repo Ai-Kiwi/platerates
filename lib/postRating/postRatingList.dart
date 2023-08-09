@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/lazyLoadPage.dart';
+import 'package:Toaster/posts/userPost.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -73,20 +74,24 @@ class _PostRatingListState extends State<PostRatingList> {
                 children: [
                   Expanded(
                     child: LazyLoadPage(
-                      widgetAddedToTop: const Center(
+                      widgetAddedToTop: Center(
                           child: Column(children: [
-                        Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 16),
-                            child: Text(
-                              "post ratings",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 40),
-                            )),
-                        Divider(
-                          color: Color.fromARGB(255, 110, 110, 110),
-                          thickness: 1.0,
-                        ),
+                        //const Padding(
+                        //    padding: EdgeInsets.symmetric(
+                        //        vertical: 16.0, horizontal: 16),
+                        //    child: Text(
+                        //      "post ratings",
+                        //      style:
+                        //          TextStyle(color: Colors.white, fontSize: 40),
+                        //    )),
+                        //const Divider(
+                        //  color: Color.fromARGB(255, 110, 110, 110),
+                        //  thickness: 1.0,
+                        //),
+                        PostItem(
+                          postId: rootItem,
+                          clickable: false,
+                        )
                       ])),
                       widgetAddedToEnd: const Center(
                         child: Padding(
@@ -115,6 +120,7 @@ class _PostRatingListState extends State<PostRatingList> {
                     ),
                   ),
                   Visibility(
+                      //menu for you to rate the post
                       visible: !hasRated,
                       child: Container(
                           decoration: const BoxDecoration(
