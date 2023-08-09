@@ -15,23 +15,25 @@ import '../login/userLogin.dart';
 
 class UserProfile extends StatefulWidget {
   final String? userId;
+  final bool openedOntopMenu;
 
-  UserProfile({
-    this.userId,
-  });
+  UserProfile({this.userId, required this.openedOntopMenu});
 
   @override
-  _UserProfileState createState() => _UserProfileState(userId: userId);
+  _UserProfileState createState() =>
+      _UserProfileState(userId: userId, openedOntopMenu: openedOntopMenu);
 }
 
 class _UserProfileState extends State<UserProfile> {
   final String? userId;
+  final bool openedOntopMenu;
+  String realUserId = "";
   bool _isLoading = true;
   bool _isAdminAccount = false;
   String userBio = "";
   String username = "";
 
-  _UserProfileState({required this.userId});
+  _UserProfileState({required this.userId, required this.openedOntopMenu});
 
   Future<void> _fetchProfile() async {
     final response = await http.post(
@@ -50,6 +52,7 @@ class _UserProfileState extends State<UserProfile> {
         userBio = fetchedData['bio'];
         username = fetchedData['username'];
         _isAdminAccount = fetchedData['administrator'];
+        realUserId = fetchedData['userId'];
       });
     } else {
       setState(() {
@@ -93,7 +96,8 @@ class _UserProfileState extends State<UserProfile> {
       );
     } else {
       return Scaffold(
-        body: LazyLoadPage(
+          body: Stack(alignment: Alignment.topLeft, children: <Widget>[
+        LazyLoadPage(
           urlToFetch: "/profile/posts",
           extraUrlData: {"userId": userId},
           widgetAddedToTop: Container(
@@ -125,6 +129,8 @@ class _UserProfileState extends State<UserProfile> {
                               //  ),
                               //),
                               UserAvatar(
+                                userId: realUserId,
+                                clickable: false,
                                 avatarImage: null,
                                 size: 100,
                                 roundness: 30,
@@ -136,7 +142,9 @@ class _UserProfileState extends State<UserProfile> {
                                       child: Text(
                                         username,
                                         style: const TextStyle(
-                                            color: Colors.white, fontSize: 25),
+                                            color: Color.fromARGB(
+                                                255, 170, 169, 169),
+                                            fontSize: 25),
                                       ))),
                             ]),
                       )),
@@ -349,7 +357,22 @@ class _UserProfileState extends State<UserProfile> {
                 )),
           ),
         ),
-      );
+        Visibility(
+            visible: openedOntopMenu,
+            child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )))
+      ]));
     }
   }
 }

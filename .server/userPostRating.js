@@ -305,15 +305,16 @@ router.post('/post/ratings', async (req, res) => {
   
         //extract start item data
         if (startPosPost) {
+          console.table(startPosPost);
           if (startPosPost.type === "rating" && !startPosPost.data){
-            console.log("invaild start post")
-            return res.status(400).send("invaild start post");
+            console.log("invaild start rating")
+            return res.status(400).send("invaild start rating");
           }
 
-          const startPosPostData = await postsCollection.findOne({ ratingId: startPosPost.data, rootItem : rootItem })
+          const startPosPostData = await postRatingsCollection.findOne({ ratingId: startPosPost.data, rootItem : rootItem })
           if (!startPosPostData){
-            console.log("invaild start post")
-            return res.status(400).send("invaild start post");
+            console.log("invaild start rating")
+            return res.status(400).send("invaild start rating");
           }
             
           startPosPostDate = startPosPostData.postDate;

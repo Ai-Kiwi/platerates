@@ -148,7 +148,7 @@ class MyHomePage extends StatefulWidget {
 List<Widget> pages = <Widget>[
   userFeed(),
   CameraPage(),
-  UserProfile(),
+  UserProfile(openedOntopMenu: false),
 ];
 
 class _MyHomePageState extends State<MyHomePage> {

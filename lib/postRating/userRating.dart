@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/postRating/postRatingList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -104,10 +105,18 @@ class _userRatingState extends State<userRating> {
         Row(
           //top feild
           children: [
-            const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
+            Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
                 child: Center(
-                  child: CircleAvatar(),
+                  //child: CircleAvatar(),
+                  child: UserAvatar(
+                    userId: posterUserId,
+                    avatarImage: null,
+                    size: 45,
+                    roundness: 25,
+                    clickable: true,
+                  ),
                 )),
             Expanded(
               //name and rating

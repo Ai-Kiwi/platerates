@@ -146,23 +146,6 @@ class _CameraPageState extends State<CameraPage> {
 
     if (_cameraController!.value.isTakingPicture) return null;
 
-    //final Directory extDir = await getApplicationDocumentsDirectory();
-    //final String dirPath = '${extDir.path}/';
-    //await Directory(dirPath).create(recursive: true);
-    //String filePath = '${dirPath}PostPicture.jpg';
-    //File pictureFile = File(filePath);
-
-    ////if there is already a photo remove it
-    //if (await pictureFile.exists()) {
-    //  // If the file exists, delete it
-    //  try {
-    //    await pictureFile.delete();
-    //  } catch (err) {
-    //    DebugConsole.log(err);
-    //    return "";
-    //  }
-    //}
-
     try {
       final image = await _cameraController!.takePicture();
       //print(image);
