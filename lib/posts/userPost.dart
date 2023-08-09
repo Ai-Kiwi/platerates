@@ -6,6 +6,7 @@ import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -439,10 +440,19 @@ class PostManageButton extends StatelessWidget {
           ).show();
         } else if (value == 'report') {
           reportSystem.reportItem(context, "post", postId);
+        } else if (value == 'copyId') {
+          Clipboard.setData(ClipboardData(text: posterUserId));
         }
       },
       itemBuilder: (BuildContext context) {
         return [
+          const PopupMenuItem<String>(
+            value: 'copyId',
+            child: Text(
+              'copy id to clipboard',
+              style: TextStyle(color: Color.fromARGB(255, 45, 45, 45)),
+            ),
+          ),
           const PopupMenuItem<String>(
             value: 'report',
             child: Text(

@@ -30,10 +30,6 @@ async function testUsername(username){
 
 
     return [true]
-    //test valid chars
-    //test username taken
-    //test leagh
-    //test if empty
 
   }catch(err){
     return [false, "unkown error"]
