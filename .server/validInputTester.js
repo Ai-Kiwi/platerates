@@ -13,7 +13,7 @@ async function testUsername(username){
       return [false,"username to large"]
     }
 
-    if (username.length > 3) {
+    if (username.length < 3) {
       return [false,"username to small"]
     }
 
