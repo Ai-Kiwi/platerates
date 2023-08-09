@@ -1,6 +1,6 @@
 const { createTestAccount } = require("nodemailer");
 const { generateRandomString } = require("./utilFunctions");
-const { createUser } = require("./userAccounts");
+const { createUser, banAccount } = require("./userAccounts");
 const express = require('express');
 const { testToken } = require("./userLogin");
 const { database } = require("./database");
@@ -106,6 +106,9 @@ router.post('/admin/banUser', async (req, res) => {
   console.log(" => admin creating user")
     try{
         const token = req.body.token;
+        const userIdBanning = req.body.userId;
+        const banReason = req.body.reason;
+        const banTime = req.body.time;
 
         var vaildToken, userId;
         [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
@@ -120,8 +123,18 @@ router.post('/admin/banUser', async (req, res) => {
                 return res.status(403).send("you are not an admin");
             }
 
+
+
+
+
             
-            
+            if (await banAccount(userIdBanning,parseInt(banTime),banReason)){
+                console.log("user banned");
+                return res.status(200).send("user banned");
+            }else{
+                console.log("user not banned");
+                return res.status(400).send("user not banned");
+            }
 
 
   

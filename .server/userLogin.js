@@ -128,7 +128,7 @@ router.post('/login', async (req, res) => {
     //look if account is banned
     if (userData.accountBanExpiryDate > Date.now()){
       console.log("account is banned")
-      return res.status(403).send(`account banned ${ millisecondsToTime( userData.accountBanExpiryDate - Date.now() ) }`);
+      return res.status(403).send(`account banned for ${ millisecondsToTime( userData.accountBanExpiryDate - Date.now() ) }\nReason: ${userData.accountBanReason}`);
     }
 
     //the way this works is abit werid so ima explain it.

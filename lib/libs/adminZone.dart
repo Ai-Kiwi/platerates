@@ -164,6 +164,140 @@ class _AdminZonePageState extends State<AdminZonePage> {
                               ]).show();
                         },
                       ),
+                      _AdminItem(
+                        settingIcon: Icons.remove,
+                        settingName: "ban user",
+                        ontap: () async {
+                          String accountUserId = "";
+                          String accountBanReason = "";
+                          String accountBanTime = "";
+
+                          Alert(
+                              context: context,
+                              title: "create user",
+                              content: Column(
+                                children: <Widget>[
+                                  TextField(
+                                    maxLengthEnforcement: MaxLengthEnforcement
+                                        .truncateAfterCompositionEnds,
+                                    decoration: const InputDecoration(
+                                      icon: Icon(Icons.account_circle),
+                                      labelText: 'userId',
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        accountUserId = value;
+                                      });
+                                    },
+                                  ),
+                                  TextField(
+                                    maxLengthEnforcement: MaxLengthEnforcement
+                                        .truncateAfterCompositionEnds,
+                                    decoration: const InputDecoration(
+                                      icon: Icon(Icons.account_circle),
+                                      labelText: 'reason',
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        accountBanReason = value;
+                                      });
+                                    },
+                                  ),
+                                  TextField(
+                                    maxLengthEnforcement: MaxLengthEnforcement
+                                        .truncateAfterCompositionEnds,
+                                    decoration: const InputDecoration(
+                                      icon: Icon(Icons.account_circle),
+                                      labelText: 'time (seconds)',
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        accountBanTime = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              buttons: [
+                                DialogButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    final response = await http.post(
+                                      Uri.parse("$serverDomain/admin/banUser"),
+                                      headers: <String, String>{
+                                        'Content-Type':
+                                            'application/json; charset=UTF-8',
+                                      },
+                                      body: jsonEncode(<String, String>{
+                                        'token': userManager.token,
+                                        "userId": accountUserId,
+                                        "reason": accountBanReason,
+                                        "time": accountBanTime,
+                                      }),
+                                    );
+                                    if (response.statusCode == 200) {
+                                      // ignore: use_build_context_synchronously
+                                      Alert(
+                                        context: context,
+                                        type: AlertType.success,
+                                        title: "user banned",
+                                        buttons: [
+                                          DialogButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            width: 120,
+                                            child: const Text(
+                                              "ok",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20),
+                                            ),
+                                          )
+                                        ],
+                                      ).show();
+                                    } else {
+                                      // ignore: use_build_context_synchronously
+                                      Alert(
+                                        context: context,
+                                        type: AlertType.error,
+                                        title: "failed banning user",
+                                        desc: response.body,
+                                        buttons: [
+                                          DialogButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            width: 120,
+                                            child: const Text(
+                                              "ok",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20),
+                                            ),
+                                          )
+                                        ],
+                                      ).show();
+                                    }
+                                  },
+                                  child: const Text(
+                                    "ban",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                ),
+                                DialogButton(
+                                  color: Colors.red,
+                                  child: const Text(
+                                    "cancel",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                )
+                              ]).show();
+                        },
+                      ),
                     ],
                   ))),
           Padding(
