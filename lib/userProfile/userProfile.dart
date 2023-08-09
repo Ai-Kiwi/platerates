@@ -291,8 +291,10 @@ class _UserProfileState extends State<UserProfile> {
                                         //    MaterialPageRoute(
                                         //        builder: (context) =>
                                         //            LoginPage()));
+                                        // ignore: use_build_context_synchronously
                                         Phoenix.rebirth(context);
                                       } else {
+                                        // ignore: use_build_context_synchronously
                                         Alert(
                                           context: context,
                                           type: AlertType.error,

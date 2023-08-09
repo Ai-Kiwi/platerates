@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/postRating/postRatingList.dart';
+import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/login/userLogin.dart';
-import 'package:Toaster/postRating/userRating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -381,7 +380,9 @@ class PostManageButton extends StatelessWidget {
                     }),
                   );
                   if (response.statusCode == 200) {
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context);
+                    // ignore: use_build_context_synchronously
                     Alert(
                       context: context,
                       type: AlertType.success,
@@ -399,6 +400,7 @@ class PostManageButton extends StatelessWidget {
                       ],
                     ).show();
                   } else {
+                    // ignore: use_build_context_synchronously
                     Alert(
                       context: context,
                       type: AlertType.error,

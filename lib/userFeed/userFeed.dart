@@ -10,9 +10,9 @@ class _UserFeedState extends State<userFeed> {
   @override
   Widget build(BuildContext context) {
     //final ThemeData theme = Theme.of(context);
-    return LazyLoadPage(
+    return const LazyLoadPage(
       urlToFetch: "/post/feed",
-      widgetAddedToTop: const Center(
+      widgetAddedToTop: Center(
           child: Column(children: [
         Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
@@ -25,7 +25,7 @@ class _UserFeedState extends State<userFeed> {
           thickness: 1.0,
         ),
       ])),
-      widgetAddedToEnd: const Center(
+      widgetAddedToEnd: Center(
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(
@@ -33,7 +33,7 @@ class _UserFeedState extends State<userFeed> {
               style: TextStyle(color: Colors.white, fontSize: 25),
             )),
       ),
-      widgetAddedToBlank: const Center(
+      widgetAddedToBlank: Center(
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(
