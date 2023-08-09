@@ -308,7 +308,7 @@ async function createUser(email,password,username){
       }
 
       var usernameAllowed, usernameDeniedReason;
-      [usernameAllowed, usernameDeniedReason] = await testUsername(value);
+      [usernameAllowed, usernameDeniedReason] = await testUsername(username);
 
       if (usernameAllowed === false) {
         console.log(usernameDeniedReason)
