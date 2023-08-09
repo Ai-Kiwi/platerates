@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/postRating/postRatingList.dart';
+import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
