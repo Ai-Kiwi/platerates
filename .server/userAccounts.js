@@ -7,8 +7,22 @@ const { generateRandomString } = require('./utilFunctions');
 const { versions } = require('sharp');
 const { userTimeout, userTimeoutTest } = require('./timeouts');
 const { testUsername } = require('./validInputTester');
+const { title } = require('process');
 
+async function sendNoticeToAccount(userId, text, title){
+  const collection = database.collection('account_notices');
+  const response = await collection.insertOne({
+    userId: userId,
+    title: title,
+    text: text,
+  });
 
+  if (response === true){
+    return true;
+  }else{
+    return false;
+  }
+}
 
 router.post('/profile/basicData', async (req, res) => {
   console.log(" => user fetching profile")
@@ -362,4 +376,5 @@ module.exports = {
     router:router,
     banAccount:banAccount,
     createUser:createUser,
+    sendNoticeToAccount:sendNoticeToAccount,
 };
