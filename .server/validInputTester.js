@@ -1,3 +1,5 @@
+const { database } = require('./database');
+
 async function testUsername(username){
   try{
     const allowedCharsPattern = /^[a-zA-Z0-9_.-]+$/;
