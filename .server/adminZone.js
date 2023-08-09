@@ -8,6 +8,26 @@ const { sendMail } = require("./mailsender");
 const router = express.Router();
 
 
+async function testUserAdmin(userId){
+    try{
+        var userDataCollectionollection = database.collection('user_data');
+        var userData = await userDataCollectionollection.findOne({ userId: userId}); 
+
+        if (userData === null){
+            return false
+        }else{
+            if (userData.administrator === true){
+                return true
+            }else{
+                return false
+            }
+        }
+    }catch(err){
+        return false
+    }
+}
+
+
 
 router.post('/admin/createUser', async (req, res) => {
     console.log(" => admin creating user")
@@ -22,8 +42,8 @@ router.post('/admin/createUser', async (req, res) => {
       
         if (vaildToken) { // user token is valid
 
-            var userDataCollectionollection = database.collection('user_data');
-            var userData = await userDataCollectionollection.findOne({ userId: userId}); 
+            var userDataCollection = database.collection('user_data');
+            var userData = await userDataCollection.findOne({ userId: userId}); 
 
             if (userData.administrator !== true) {
                 console.log("user not admin");
@@ -81,6 +101,44 @@ router.post('/admin/createUser', async (req, res) => {
   })
 
 
+
+router.post('/admin/banUser', async (req, res) => {
+  console.log(" => admin creating user")
+    try{
+        const token = req.body.token;
+
+        var vaildToken, userId;
+        [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+      
+        if (vaildToken) { // user token is valid
+
+            var userDataCollection = database.collection('user_data');
+            var userData = await userDataCollection.findOne({ userId: userId}); 
+
+            if (userData.administrator !== true) {
+                console.log("user not admin");
+                return res.status(403).send("you are not an admin");
+            }
+
+            
+            
+
+
+  
+
+
+    
+        }else{
+          console.log("user token is invaild");
+          return res.status(401).send("invaild token");
+        }
+    }catch(err){
+      console.log(err);
+      return res.status(500).send("server error")
+    }
+})
+
 module.exports = {
     router:router,
+    testUserAdmin:testUserAdmin,
 };

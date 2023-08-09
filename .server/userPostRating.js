@@ -4,6 +4,7 @@ const router = express.Router();
 const { database } = require('./database');
 const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
+const { testUserAdmin } = require('./adminZone');
 
 
 
@@ -60,7 +61,7 @@ router.post('/post/rating/delete', async (req, res) => {
         }
 
         //test if comment is your's
-        if (ratingData.ratingPosterId != userId){
+        if (ratingData.ratingPosterId != userId && await testUserAdmin(userId) === false){
           console.log("post not yours");
           return res.status(403).send("post not yours");
         }
