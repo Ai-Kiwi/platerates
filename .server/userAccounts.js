@@ -254,14 +254,15 @@ router.post('/profile/posts', async (req, res) => {
   }
 })
 
-async function banAccount(userId,time) {
+async function banAccount(userId,time,reason) {
   try{
     const collection = database.collection("user_credentials");
 
     const result = await collection.updateOne(
       { userId: userId },
       { $set: {
-        accountBanExpiryDate : Date.now() + time,
+        accountBanExpiryDate : Date.now() + (time * 1000),
+        accountBanReason : reason,
         tokenNotExpiredCode : generateRandomString(16),
         }
       }
