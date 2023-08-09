@@ -5,6 +5,7 @@ const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
 const sharp = require('sharp');
 const { userTimeout, userTimeoutTest } = require('./timeouts');
+const { testUserAdmin } = require('./adminZone');
 
 
 
@@ -206,7 +207,7 @@ router.post('/post/delete', async (req, res) => {
           return res.status(404).send("post not found");
         }
 
-        if (post.posterUserId === userId) {
+        if (post.posterUserId === userId || await testUserAdmin(userId) === true) {
           let deletedResponse = await collection.deleteOne({ postId: postId});
   
           if (deletedResponse.acknowledged === true) {
