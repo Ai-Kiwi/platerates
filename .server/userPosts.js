@@ -156,7 +156,8 @@ router.post('/post/data', async (req, res) => {
 
         const ratingsAmount = await postRatingsCollection.countDocuments({ "rootItem.data" : postId, "rootItem.type" : "post" });
 
-        const userRatingData = await postRatingsCollection.findOne({ "rootItem.data" : postId, "rootItem.type" : "post", userId : userId});
+        const userRatingData = await postRatingsCollection.findOne({ "rootItem.data" : postId, "rootItem.type" : "post", "ratingPosterId" : userId});
+        console.log(userRatingData);
         var requesterHasRated = false;
         if (userRatingData != null) {
           requesterHasRated = true;
