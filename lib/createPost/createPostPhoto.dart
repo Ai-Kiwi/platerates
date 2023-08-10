@@ -1,6 +1,7 @@
 import 'package:Toaster/createPost/createPost.dart';
 import 'package:Toaster/libs/loadScreen.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
+//import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -304,13 +305,18 @@ class _CameraPageState extends State<CameraPage> {
               )),
               onPressed: () async {
                 try {
-                  FilePickerResult? result =
-                      await FilePicker.platform.pickFiles();
+                  const XTypeGroup typeGroup = XTypeGroup(
+                    label: 'images',
+                    extensions: <String>['jpg', 'png'],
+                  );
 
-                  final imageCollected = (result!.files).first;
+                  //FilePickerResult? result =
+                  //    await FilePicker.platform.pickFiles();
+                  XFile? file = await openFile(
+                      acceptedTypeGroups: <XTypeGroup>[typeGroup]);
 
                   final List<int>? imageData =
-                      await _resizePhoto(imageCollected.bytes!);
+                      await _resizePhoto(await file?.readAsBytes());
 
                   if (imageData != null) {
                     // ignore: use_build_context_synchronously

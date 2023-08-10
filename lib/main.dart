@@ -153,6 +153,8 @@ List<Widget> pages = <Widget>[
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  double containerWidth = 200.0;
+  double containerHeight = 300.0;
 
   void _onItemSelected(int index) {
     setState(() {
