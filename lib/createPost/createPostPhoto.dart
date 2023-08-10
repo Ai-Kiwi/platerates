@@ -310,8 +310,6 @@ class _CameraPageState extends State<CameraPage> {
                     extensions: <String>['jpg', 'png'],
                   );
 
-                  //FilePickerResult? result =
-                  //    await FilePicker.platform.pickFiles();
                   XFile? file = await openFile(
                       acceptedTypeGroups: <XTypeGroup>[typeGroup]);
 

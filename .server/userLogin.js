@@ -284,6 +284,7 @@ router.post('/login/reset-password', async (req, res) => {
     const email = req.body.email;
     const newPassword = req.body.newPassword;
     const resetCode = req.body.resetCode;
+    const token = req.body.token;
     const ipAddress = req.headers['x-forwarded-for'];
     const userCredentialsCollection = database.collection("user_credentials");
     [tokenVaild, userId] = await testToken(token,req.headers['x-forwarded-for'])
