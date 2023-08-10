@@ -1,3 +1,5 @@
+const { database } = require('./database');
+
 async function testUsername(username){
   try{
     const allowedCharsPattern = /^[a-zA-Z0-9_.-]+$/;
@@ -13,7 +15,7 @@ async function testUsername(username){
       return [false,"username to large"]
     }
 
-    if (username.length > 3) {
+    if (username.length < 3) {
       return [false,"username to small"]
     }
 
@@ -21,10 +23,9 @@ async function testUsername(username){
 
     const collection = database.collection('user_data');
 
-    const usernameInUse = collection.findOne({username : username})
+    const usernameInUse = await collection.findOne({username : username})
 
-
-    if (usernameInUse === null) {
+    if (usernameInUse !== null) {
       return [false,"username already in use"]
     }
 
@@ -32,6 +33,7 @@ async function testUsername(username){
     return [true]
 
   }catch(err){
+    console.log(err)
     return [false, "unkown error"]
   }
 }

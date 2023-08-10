@@ -308,11 +308,12 @@ async function createUser(email,password,username){
       }
 
       var usernameAllowed, usernameDeniedReason;
-      [usernameAllowed, usernameDeniedReason] = await testUsername(value);
+      [usernameAllowed, usernameDeniedReason] = await testUsername(username);
 
       if (usernameAllowed === false) {
         console.log(usernameDeniedReason)
-        return res.status(400).send(usernameDeniedReason)
+        //return res.status(400).send(usernameDeniedReason)
+        return false
       }
   
       //create userId and make sure no one has it
