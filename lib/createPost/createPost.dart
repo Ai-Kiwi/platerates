@@ -64,15 +64,21 @@ class _CreatePostState extends State<CreatePostPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
-                        border: Border.all(
-                            color: Color.fromARGB(215, 45, 45, 45), width: 3)),
-                    width: double.infinity,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.memory(convertedImageData)),
-                  ),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          border: Border.all(
+                              color: Color.fromARGB(215, 45, 45, 45),
+                              width: 3)),
+                      width: double.infinity,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.memory(
+                              convertedImageData,
+                              fit: BoxFit.cover,
+                            )),
+                      )),
                 ),
                 const SizedBox(height: 16),
                 Padding(
