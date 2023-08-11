@@ -3,6 +3,7 @@ const router = express.Router();
 const { database } = require('./database');
 const { testToken } = require('./userLogin');
 const { generateRandomString } = require('./utilFunctions');
+const { sendMail } = require('./mailsender');
 
 
 
@@ -14,6 +15,7 @@ router.post('/report', async (req, res) => {
     const reason = req.body.reason;
     [validToken, userId] = await testToken(token,req.headers['x-forwarded-for']);
     const reportsCollection = database.collection('reports');
+    const userCredentialsCollection = database.collection('user_credentials')
 
     if (validToken){
 
@@ -81,6 +83,39 @@ router.post('/report', async (req, res) => {
       )
 
       if (response.acknowledged === true){
+        try{
+          const userCredentials = await userCredentialsCollection.findOne({userId:userId})
+
+
+
+          sendMail(
+          '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+          userCredentials.email,
+          "reported item",
+          "thank you for reporting an item on toaster, we will get back to you shortly with our response to your report."
+          );
+
+          sendMail(
+            '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+            "toaster@aikiwi.dev",
+            "reported item",
+            "RING RING! NEW ITEM HAS BEEN REPORTED!\nYOU BETTER GET ONTO THIS ASAP"
+          );
+
+
+        }catch (err){
+          console.log(err);
+        }
+
+
+
+
+
+
+
+
+
+
         console.log("reported");
         return res.status(201).send("reported")
       }else{

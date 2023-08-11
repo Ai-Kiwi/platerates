@@ -5,6 +5,7 @@ const express = require('express');
 const { testToken } = require("./userLogin");
 const { database } = require("./database");
 const { sendMail } = require("./mailsender");
+const { testUsername } = require("./validInputTester");
 const router = express.Router();
 
 
@@ -33,7 +34,6 @@ router.post('/admin/createUser', async (req, res) => {
     console.log(" => admin creating user")
       try{
         const token = req.body.token;
-        const postId = req.body.postId;
         const newAccountEmail = req.body.email;
         const newAccountUsername = req.body.username;
 
@@ -53,12 +53,21 @@ router.post('/admin/createUser', async (req, res) => {
             //test that username and email has a value
             if (newAccountEmail === null || newAccountEmail === undefined || newAccountEmail === "") {
                 console.log("email empty");
-                return res.status(200).send("email can't be nothing");   
+                return res.status(400).send("email can't be nothing");   
             }
             if (newAccountUsername === null || newAccountUsername === undefined || newAccountUsername === "") {
                 console.log("username empty");
-                return res.status(200).send("username can't be nothing");   
+                return res.status(400).send("username can't be nothing");   
             }
+
+            //test username
+            var usernameAllowed, usernameDeniedReason;
+            [usernameAllowed, usernameDeniedReason] = await testUsername(newAccountUsername);
+            if (usernameAllowed === false){
+                console.log("username input in valid");
+                return res.status(400).send(usernameDeniedReason);    
+            }
+
 
             //create password and send email
             const NewUserPassword = generateRandomString(16)
@@ -66,8 +75,23 @@ router.post('/admin/createUser', async (req, res) => {
                 '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
                 newAccountEmail,
                 "accepted into toaster beta",
-                `you have been accepted into toaster beta and your user account password is ${NewUserPassword} please change this as soon as you get into your toaster account for your security`
-            );
+                `
+Hi user,
+We're excited to announce that you've been accepted into the beta for Toaster! Toaster is an app all about sharing and rating toast. You can share your own toast and get ratings from other users.
+
+Your account has been created and you can log in at https://toaster.aikiwi.dev/. Your temporary password is ${NewUserPassword} please change this once logged in.
+
+We ask to once again remind you this is a beta and that bugs and issues will happen. Please reach out to us by email describing any bugs or suggestions you have, it helps alot! You can help us at toaster@aikiwi.dev.
+
+We hope you enjoy using Toaster! We're always looking for feedback, so please feel free to reach out to us with any questions or suggestions at toaster@aikiwi.dev.
+
+Welcome to the Toaster community! We're a welcoming community and we expect all users to treat each other with respect. Please be kind and helpful to other users, and avoid any behaviour that could be considered offensive or harmful.
+
+For any concerns about data handling you can find our privacy policy at https://toaster.aikiwi.dev/privacyPolicy and our data deletion instructions at https://toaster.aikiwi.dev/deleteData. 
+
+Thanks,
+The Toaster Team`
+                );
             if (emailData) {
                 //add user to database
                 const response = await createUser(newAccountEmail,NewUserPassword,newAccountUsername) 
