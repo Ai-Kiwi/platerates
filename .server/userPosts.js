@@ -79,7 +79,6 @@ router.post('/post/upload', async (req, res) => {
             width: 1080,
             height: 1080,
           };
-          console.log(width, height)
           if ((width === MAX_RESOLUTION.width && height === MAX_RESOLUTION.height) === false) {
             console.log("image resolution incorrect")
             return res.status(400).send('Image resolution is incorrect.');
