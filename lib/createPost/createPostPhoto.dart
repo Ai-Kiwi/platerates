@@ -1,6 +1,7 @@
 import 'package:Toaster/createPost/createPost.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/foundation.dart';
 //import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -181,6 +182,32 @@ class _CameraPageState extends State<CameraPage> {
           thickness: 1.0,
         ),
         const SizedBox(height: 8.0),
+        Visibility(
+            visible: kIsWeb,
+            child: Column(children: [
+              Padding(
+                  //closed beta reminder
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SizedBox(
+                      width: double.infinity,
+                      height: 60.0,
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 231, 38, 38),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: const Center(
+                              child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                                "You are using web version, currently the take photo function is buggy.\nto work around this please use the 'Use already captured photo' button below instead",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                )),
+                          ))))),
+              const SizedBox(height: 16.0),
+            ])),
         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -348,7 +375,7 @@ class _CameraPageState extends State<CameraPage> {
                 }
               },
               child: const Text(
-                'Use local file instead',
+                'Use already captured photo',
                 style: TextStyle(fontSize: 18.0),
               ),
             ),
