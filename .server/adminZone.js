@@ -71,11 +71,15 @@ router.post('/admin/createUser', async (req, res) => {
 
             //create password and send email
             const NewUserPassword = generateRandomString(16)
-            const emailData = await sendMail(
-                '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
-                newAccountEmail,
-                "accepted into toaster beta",
-                `
+
+            //add user to database
+            const response = await createUser(newAccountEmail,NewUserPassword,newAccountUsername) 
+            if (response === true) {
+                const emailData = await sendMail(
+                    '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+                    newAccountEmail,
+                    "accepted into toaster beta",
+                    `
 Hi user,
 We're excited to announce that you've been accepted into the beta for Toaster! Toaster is an app all about sharing and rating toast. You can share your own toast and get ratings from other users.
 
@@ -90,24 +94,19 @@ Welcome to the Toaster community! We're a welcoming community and we expect all 
 For any concerns about data handling you can find our privacy policy at https://toaster.aikiwi.dev/privacyPolicy and our data deletion instructions at https://toaster.aikiwi.dev/deleteData. 
 
 Thanks,
-The Toaster Team`
-                );
-            if (emailData) {
-                //add user to database
-                const response = await createUser(newAccountEmail,NewUserPassword,newAccountUsername) 
-                if (response === true) {
+The Toaster Team`);
+                if (emailData) {
                     console.log("user created");
                     return res.status(200).send("user created");   
                 }else{
-                    console.log("failed creating user");
-                    return res.status(500).send("failed creating user");
+                    console.log("failed sending email");
+                    return res.status(500).send("failed to send email");
                 }
-
-
             }else{
-                console.log("failed sending email");
-                return res.status(500).send("failed to send email");
+                console.log("failed creating user");
+                return res.status(500).send("failed creating user");
             }
+
 
 
   
