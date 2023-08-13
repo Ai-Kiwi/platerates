@@ -36,7 +36,7 @@ router.post('/search/users', async (req, res) => {
             startPosInfo = startPosPostData.creationDate;
           }
     
-          dataReturning = await collection.find({ shareMode: 'public', creationDate: { $lt: startPosInfo}}).sort({creationDate: -1}).limit(5).toArray();
+          dataReturning = await collection.find({ shareMode: 'public', creationDate: { $lt: startPosInfo}}).sort({creationDate: -1}).limit(15).toArray();
           var returnData = {}
           returnData["items"] = []
      
