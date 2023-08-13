@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/postRating/userRating.dart';
 import 'package:Toaster/posts/userPost.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
 import '../login/userLogin.dart';
+import '../userProfile/userProfile.dart';
 
 class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToTop;
@@ -176,6 +178,9 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
                 return userRating(
                   ratingId: itemsCollected[index - 1]["data"],
                 );
+              } else if (itemsCollected[index - 1]["type"] == "user") {
+                return SimpleUserProfileBar(
+                    userId: itemsCollected[index - 1]["data"]);
               }
             }
             return null;

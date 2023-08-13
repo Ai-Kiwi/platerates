@@ -18,8 +18,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   String _NewPassword = "";
   String _confirmNewPassword = "";
   String _email = "";
-  String _resetCode = "";
-  bool _useResetCode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -152,67 +150,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               ),
               const SizedBox(height: 12.0),
               Padding(
-                //reset code feild
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextFormField(
-                    onChanged: (value) {
-                      setState(() {
-                        _resetCode = value;
-                      });
-                    },
-                    style: const TextStyle(color: Colors.white, fontSize: 20),
-                    decoration: InputDecoration(
-                      labelText: 'Reset Code',
-                      labelStyle: const TextStyle(
-                          color: Color.fromARGB(255, 200, 200, 200)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: const BorderSide(
-                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: const BorderSide(
-                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: BorderSide(
-                            width: 2, color: Theme.of(context).primaryColor),
-                      ),
-                      contentPadding: const EdgeInsets.all(16.0),
-                      fillColor: const Color.fromARGB(255, 40, 40, 40),
-                      filled: true,
-                    )),
-              ),
-              const SizedBox(height: 12.0),
-              Padding(
-                //if to create reset code or use reset code
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Container(
-                  width: double.infinity,
-                  child: ToggleSwitch(
-                    minWidth: double.infinity,
-                    cornerRadius: 15.0,
-                    initialLabelIndex: 0,
-                    totalSwitches: 2,
-                    centerText: true,
-                    activeFgColor: Colors.white,
-                    inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
-                    inactiveFgColor: Colors.white,
-                    labels: const ["create reset code", "use reset code"],
-                    onToggle: (index) {
-                      if (index! == 1) {
-                        _useResetCode = true;
-                      } else {
-                        _useResetCode = false;
-                      }
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12.0),
-              Padding(
                 //login button
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: SizedBox(
@@ -224,77 +161,23 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       borderRadius: BorderRadius.circular(15.0),
                     )),
                     onPressed: () async {
-                      if (_useResetCode == true) {
-                        final response = await http.post(
-                          Uri.parse("$serverDomain/login/reset-password"),
-                          headers: <String, String>{
-                            'Content-Type': 'application/json; charset=UTF-8',
-                          },
-                          body: jsonEncode(<String, String>{
-                            'email': _email,
-                            'newPassword': _NewPassword,
-                            'resetCode': _resetCode,
-                          }),
-                        );
-                        if (_NewPassword != _confirmNewPassword) {
-                          Alert(
-                            context: context,
-                            type: AlertType.error,
-                            title: "passwords do not match",
-                            buttons: [
-                              DialogButton(
-                                onPressed: () => Navigator.pop(context),
-                                width: 120,
-                                child: const Text(
-                                  "ok",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                              )
-                            ],
-                          ).show();
-                        } else {
-                          if (response.statusCode == 200) {
-                            // ignore: use_build_context_synchronously
-                            Alert(
-                              context: context,
-                              type: AlertType.success,
-                              title: "password changed",
-                              buttons: [
-                                DialogButton(
-                                  width: 120,
-                                  child: const Text(
-                                    "ok",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                    Phoenix.rebirth(context);
-                                  },
-                                )
-                              ],
-                            ).show();
-                          } else {
-                            Alert(
-                              context: context,
-                              type: AlertType.error,
-                              title: "error using reseting password code",
-                              desc: response.body,
-                              buttons: [
-                                DialogButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  width: 120,
-                                  child: const Text(
-                                    "ok",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                )
-                              ],
-                            ).show();
-                          }
-                        }
+                      if (_NewPassword != _confirmNewPassword) {
+                        Alert(
+                          context: context,
+                          type: AlertType.error,
+                          title: "passwords do not match",
+                          buttons: [
+                            DialogButton(
+                              onPressed: () => Navigator.pop(context),
+                              width: 120,
+                              child: const Text(
+                                "ok",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
+                              ),
+                            )
+                          ],
+                        ).show();
                       } else {
                         final response = await http.post(
                           Uri.parse("$serverDomain/login/reset-password"),
@@ -303,13 +186,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           },
                           body: jsonEncode(<String, String>{
                             'email': _email,
+                            'newPassword': _NewPassword
                           }),
                         );
                         if (response.statusCode == 200) {
                           Alert(
                             context: context,
                             type: AlertType.success,
-                            title: "reset password code created",
+                            title: "reset password link created",
                             desc: "check your emails",
                             buttons: [
                               DialogButton(
@@ -327,7 +211,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           Alert(
                             context: context,
                             type: AlertType.error,
-                            title: "error creating reseting password code",
+                            title: "error creating reset password link",
                             desc: response.body,
                             buttons: [
                               DialogButton(
@@ -349,13 +233,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       style: TextStyle(fontSize: 18.0),
                     ),
                   ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16.0),
-                child: Text(
-                  "reset codes can be used once created and received from emails",
-                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ],

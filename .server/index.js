@@ -75,8 +75,9 @@ const userPosts = require("./userPosts");
 const userAccounts = require("./userAccounts");
 const userLogin = require("./userLogin");
 const userPostRating = require("./userPostRating");
-const report = require("./report.js")
-const adminZone = require("./adminZone")
+const report = require("./report.js");
+const adminZone = require("./adminZone");
+const search = require("./searchSystem");
 
 app.use('/', limiter)
 app.use('/', report.router);
@@ -84,7 +85,8 @@ app.use('/', userPosts.router);
 app.use('/', userPostRating.router);
 app.use('/', userAccounts.router);
 app.use('/', userLogin.router);
-app.use('/', adminZone.router)
+app.use('/', adminZone.router);
+app.use('/', search.router);
 
 app.listen(port, () => {
   console.log(`Toaster server listening on port ${port}`)

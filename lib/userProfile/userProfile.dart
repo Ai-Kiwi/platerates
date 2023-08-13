@@ -6,12 +6,88 @@ import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
+import '../libs/dataCollect.dart';
 import '../libs/smoothTransitions.dart';
 import '../libs/userAvatar.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
+
+class SimpleUserProfileBar extends StatefulWidget {
+  final String userId;
+
+  const SimpleUserProfileBar({required this.userId});
+
+  @override
+  _SimpleUserProfileBarState createState() =>
+      _SimpleUserProfileBarState(userId: userId);
+}
+
+class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
+  final String userId;
+  String username = "";
+
+  _SimpleUserProfileBarState({required this.userId});
+
+  Future<void> _collectData() async {
+    Map basicUserData = await dataCollect.getBasicUserData(userId, context);
+    setState(() {
+      username = basicUserData["username"];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //no idea why the hell the error happens but this if statement fixes it
+    if (mounted && username.isEmpty) {
+      _collectData();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.0),
+            border: Border.all(
+                width: 2, color: const Color.fromARGB(255, 45, 45, 45)),
+          ),
+          width: double.infinity,
+          height: 75,
+          child: GestureDetector(
+            child: Row(children: [
+              const SizedBox(width: 8),
+              UserAvatar(
+                  avatarImage: null,
+                  size: 50,
+                  roundness: 10,
+                  clickable: true,
+                  userId: userId),
+              const SizedBox(width: 8),
+              Text(
+                username,
+                style: TextStyle(color: Colors.white, fontSize: 25),
+              ),
+            ]),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserProfile(
+                          userId: userId,
+                          openedOntopMenu: true,
+                        )),
+              );
+            },
+          ),
+        ));
+  }
+}
 
 class UserProfile extends StatefulWidget {
   final String? userId;

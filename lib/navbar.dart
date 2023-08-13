@@ -37,6 +37,11 @@ class UserNavbar extends StatelessWidget {
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            activeIcon: Icon(Icons.search),
+            label: 'search',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.add_outlined),
             activeIcon: Icon(Icons.add),
             label: 'create',

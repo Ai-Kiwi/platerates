@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/loadScreen.dart';
+import 'package:Toaster/searchPage.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/foundation.dart';
@@ -147,6 +148,7 @@ class MyHomePage extends StatefulWidget {
 
 List<Widget> pages = <Widget>[
   userFeed(),
+  SearchPage(),
   CameraPage(),
   UserProfile(openedOntopMenu: false),
 ];

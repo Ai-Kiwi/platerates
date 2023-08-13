@@ -36,11 +36,11 @@ async function userTimeoutLimit(userId,timeoutAction,maxTimeoutTime) {
     filterQuery.userId = userId;
     filterQuery.cooldowns = {};
     filterQuery.cooldowns[timeoutAction] = {}
-    filterQuery.cooldowns[timeoutAction][$lt] = (timeoutTime * 1000) + Date.now();
+    filterQuery.cooldowns[timeoutAction][$lt] = (maxTimeoutTime * 1000) + Date.now();
 
     var updateQuery = {};
     updateQuery.cooldowns = {};
-    updateQuery.cooldowns[timeoutAction] = (timeoutTime * 1000) + Date.now();
+    updateQuery.cooldowns[timeoutAction] = (maxTimeoutTime * 1000) + Date.now();
 
 
     let collectionUpdate = await collection.updateOne(

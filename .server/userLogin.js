@@ -283,7 +283,6 @@ router.post('/login/reset-password', async (req, res) => {
   try{
     const email = req.body.email;
     const newPassword = req.body.newPassword;
-    const resetCode = req.body.resetCode;
     const token = req.body.token;
     const ipAddress = req.headers['x-forwarded-for'];
     const userCredentialsCollection = database.collection("user_credentials");
@@ -296,94 +295,62 @@ router.post('/login/reset-password', async (req, res) => {
       return res.status(404).send("user not found");
     }
 
+    //test if password is nothing
+    if (newPassword === null){
+      console.log("password is nothing");
+      return res.status(400).send("password is nothing");
+    }
 
-    //if it has a value then it must be 2nd request which is using code
-    //if it doesn't have a value then they must be 
-    if (resetCode) {
-      //test if code is valid
-      if (userCredentials.resetPassword.code !== resetCode) {
-        console.log("code invalid");
-        return res.status(400).send("code invalid");
-      }
-
-      //test if password is nothing
-      if (newPassword === null){
-        console.log("password is nothing");
-        return res.status(400).send("password is nothing");
-      }
-      
-
-      //test if code is expired
-      if (userCredentials.resetPassword.expireTime <= Date.now()) {
-        console.log("code expired");
-        return res.status(410).send("code expired");
-      }
-
-      //test if password is invalid
-      if (newPassword.length === 0 || newPassword.length > 32) {
-        console.log("password size invalid");
-        return res.status(400).send("password size invalid");
-      }
-      console.log(email)
-      console.log(newPassword)
-      //update password
-      const response = await updateUserPassword(email,newPassword);
-      if (response === true) {
-        //expire code
-        const response = await userCredentialsCollection.updateOne(
-          { userId: userCredentials.userId },
-          { $set: {
-            resetPassword : {
-              expireTime : 0,
-            }
-            }
-          }
-        );
-        if (response.acknowledged === false){
-          console.log("failed to remove code from usable");
-        }
-
-        console.log("changed password");
-        return res.status(200).send("password changed");
-
-      }else{
-        console.log("failed to change password");
-        return res.status(500).send("failed to change password");
-
-      }
-      
-    }else{
       //test for timeouts
-      const [timeoutActive, timeoutTime] = await userTimeoutTest(userCredentials.userId,"create-reset-password-code");
+      const [timeoutActive, timeoutTime] = await userTimeoutTest(userCredentials.userId,"reset-password");
       if (timeoutActive === true) {
         //test if user is logged in as them, if they are lower timeout to 10 minutes
-        if (userCredentials.userId === userId && vaildToken) {
-          userTimeoutLimit(userCredentials.userId,"create-reset-password-code",60 * 10)
-        }
+        //if (userCredentials.userId === userId && vaildToken) {
+        //  userTimeoutLimit(userCredentials.userId,"reset-password",60 * 10)
+        //}
         console.log("reset password for user is timed out " + timeoutTime);
         return res.status(408).send("please wait " + timeoutTime + " to reset password");
         
       }
 
+      //test if password is invalid
+      if (newPassword.length === 0 || newPassword.length > 64) {
+        console.log("password size invalid");
+        return res.status(400).send("password size invalid");
+      }
 
-      const resetPasswordCode = generateRandomString(8);
+
+      const resetPasswordCode = generateRandomString(64);
+      const resetPasswordUrl = `https://toaster.aikiwi.dev/reset-password?userId=${userCredentials.userId}&resetCode=${resetPasswordCode}`
 
       //send reset password
       console.log("sending email data")
       const emailData = await sendMail(
         '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
         email,
-        "Password reset code for toaster",
-        "Your one time toaster account password reset code from ip address " + ipAddress + " is " + resetPasswordCode + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
+        "Password reset for toaster",
+        "Your reset password request from ip address " + ipAddress + "\nclick on this link to reset password : " + resetPasswordUrl + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
 
       );
       if (emailData) {
+        const passwordSalt = crypto.randomBytes(16).toString('hex');
+        const hashedPassword = crypto.createHash("sha256")
+        .update(newPassword)
+        .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
+        .digest("hex");
+    
+        const tokenNotExpiedCode = generateRandomString(16);
+
+
         const expireTime = Date.now() + (1000 * 60 * 15) // expires in 15m 
         const response = await userCredentialsCollection.updateOne(
           { userId: userCredentials.userId },
           { $set: {
             resetPassword : {
               code : resetPasswordCode,
+              newPassword : hashedPassword,
+              newPasswordSalt :passwordSalt,
+              newTokenNotExpiredCode : tokenNotExpiedCode,
               expireTime : expireTime,
             }
             }
@@ -391,9 +358,8 @@ router.post('/login/reset-password', async (req, res) => {
         );
 
         if (response.acknowledged === true) {
-          userTimeout(userCredentials.userId,"create-reset-password-code",60 * 60 * 24); //timeout for a day
-          return res.status(200).send("created password reset code");
-
+          userTimeout(userCredentials.userId,"reset-password",60 * 60 * 3); //timeout for a day
+          return res.status(200).send("email reset password sent");
         }else{
           return res.status(500).send("server error");
         } 
@@ -402,13 +368,80 @@ router.post('/login/reset-password', async (req, res) => {
         console.log("failed sending email data");
         return res.status(500).send("server error");
       }
+
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error");
+  }
+})
+
+router.get('/reset-password', async (req, res) => {
+  const userId = req.query.userId;
+  const resetCode = req.query.resetCode;
+  const ipAddress = req.headers['x-forwarded-for'];
+  const userCredentialsCollection = database.collection("user_credentials");
+
+  try{
+    const userCredentials = await userCredentialsCollection.findOne({userId: userId});
+    if (userCredentials === null){
+      console.log("failed to find user");
+      return res.status(404).send("user not found");
     }
 
-}catch(err){
-  console.log(err);
-  return res.status(500).send("server error");
-}
-  
+    //test if code is valid
+    if (userCredentials.resetPassword.code !== resetCode) {
+      console.log("code invalid");
+      return res.status(400).send("code invalid");
+    }
+
+    //test if code is expired
+    if (userCredentials.resetPassword.expireTime <= Date.now()) {
+      console.log("code expired");
+      return res.status(410).send("code expired");
+    }
+
+    //update password
+    const response = await userCredentialsCollection.updateOne(
+      { userId: userCredentials.userId },
+        { $set: {
+          hashedPassword : userCredentials.resetPassword.newPassword,
+          passwordSalt : userCredentials.resetPassword.newPasswordSalt,
+          tokenNotExpiredCode : userCredentials.resetPassword.newTokenNotExpiredCode,
+          }
+        }
+    );
+    if (response.acknowledged === true) {
+      //expire code
+      const response = await userCredentialsCollection.updateOne(
+        { userId: userCredentials.userId },
+        { $set: {
+          resetPassword : {
+            expireTime : 0,
+          }
+          }
+        }
+      );
+      if (response.acknowledged === false){
+        console.log("failed to remove code from usable");
+      }
+
+      console.log("changed password");
+      return res.status(200).send("password changed\nYou can now close this page and login to your account");
+
+    }else{
+      console.log("failed to change password");
+      return res.status(500).send("failed to change password");
+
+    }
+
+    
+
+
+
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error");
+  }
 })
 
 module.exports = {
