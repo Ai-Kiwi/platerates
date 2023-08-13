@@ -336,7 +336,7 @@ router.post('/post/ratings', async (req, res) => {
           return res.status(403).send("root post not shared to you");
         }
 
-        const posts = await postRatingsCollection.find({ shareMode: 'public', creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({postDate: -1}).limit(5).toArray();
+        const posts = await postRatingsCollection.find({ shareMode: 'public', creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({postDate: 1}).limit(5).toArray();
 
         var returnData = {}
         returnData["items"] = []
