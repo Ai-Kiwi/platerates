@@ -9,16 +9,19 @@ const { millisecondsToTime, generateRandomString } = require("./utilFunctions");
 const { error } = require('console');
 const { sendMail } = require('./mailsender');
 const { userTimeout, userTimeoutTest } = require('./timeouts');
+const { cleanEmailAddress } = require('./validInputTester');
 
 
 if (fs.existsSync('private.key') === false) {
+  console.log("no key file making new")
   fs.writeFileSync('private.key',crypto.randomBytes(32))
 }
 const privateKey = fs.readFileSync('private.key'); 
 
 
-async function updateUserPassword(email, newPassword) {
+async function updateUserPassword(rawEmail, newPassword) {
   try {
+    const email = cleanEmailAddress(rawEmail);
     // Retrieve the user document using the email
     const collection = database.collection("user_credentials");
 
@@ -106,7 +109,7 @@ router.post('/login', async (req, res) => {
   console.log(" => user attempting login")
   try{
 
-    const userEmail = req.body.email;
+    const userEmail = cleanEmailAddress(req.body.email);
     const userPassword = req.body.password;
     const userIpAddress = req.headers['x-forwarded-for'];
 
@@ -281,7 +284,7 @@ router.post('/testToken', async (req, res) => {
 router.post('/login/reset-password', async (req, res) => {
   console.log(" => user creating reset password code");
   try{
-    const email = req.body.email;
+    const email = cleanEmailAddress(req.body.email);
     const newPassword = req.body.newPassword;
     const token = req.body.token;
     const ipAddress = req.headers['x-forwarded-for'];

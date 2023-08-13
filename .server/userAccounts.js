@@ -281,8 +281,9 @@ async function banAccount(userId,time,reason) {
   }
 }
 
-async function createUser(email,password,username){
+async function createUser(rawEmail,password,username){
     try{
+      const email = cleanEmailAddress(rawEmail);
       const userCredentialsCollection = database.collection("user_credentials");
       const userDataCollection = database.collection("user_data");
       const passwordSalt = crypto.randomBytes(16).toString('hex');
