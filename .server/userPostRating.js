@@ -306,7 +306,6 @@ router.post('/post/ratings', async (req, res) => {
   
         //extract start item data
         if (startPosPost) {
-          console.table(startPosPost);
           if (startPosPost.type === "rating" && !startPosPost.data){
             console.log("invaild start rating")
             return res.status(400).send("invaild start rating");
@@ -335,8 +334,6 @@ router.post('/post/ratings', async (req, res) => {
           console.log("root post not shared with you")
           return res.status(403).send("root post not shared to you");
         }
-
-        console.log(startPosPostDate)
 
         const posts = await postRatingsCollection.find({ shareMode: 'public', creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({creationDate: -1}).limit(5).toArray();
 
