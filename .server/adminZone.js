@@ -34,7 +34,7 @@ router.post('/admin/createUser', async (req, res) => {
     console.log(" => admin creating user")
       try{
         const token = req.body.token;
-        const newAccountEmail = req.body.email;
+        const newAccountEmail = cleanEmailAddress(req.body.email);
         const newAccountUsername = req.body.username;
 
         var vaildToken, userId;

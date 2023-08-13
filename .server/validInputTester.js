@@ -38,6 +38,21 @@ async function testUsername(username){
   }
 }
 
+function cleanEmailAddress(email){
+  let finalEmail = email
+
+  if (email === null){
+    return null
+  }
+  if (email === undefined){
+    return undefined
+  }
+
+  finalEmail = finalEmail.toLowerCase();
+  return finalEmail;
+}
+
 module.exports = {
   testUsername:testUsername,
+  cleanEmailAddress:cleanEmailAddress,
 };
