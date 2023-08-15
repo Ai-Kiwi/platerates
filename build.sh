@@ -2,8 +2,13 @@ cd /home/aikiwi/Projects/phoneApps/toaster/
 
 echo " # building web"
 flutter build web
+echo "done"
+/bin/sleep 2
+
 echo " # building apk"
 flutter build apk --release
+echo "done"
+/bin/sleep 2
 
 cd /home/aikiwi/Projects/phoneApps/toaster/.server/
 
@@ -24,6 +29,8 @@ echo " # clearing old docker image"
 sudo docker image rm toaster-server
 echo " # building docker image" 
 sudo docker build -t aikiwi1/toaster:latest . 
+echo "done"
+/bin/sleep 2
 echo " # logging into docker account" 
 sudo docker login
 echo " # pushing docker update"
