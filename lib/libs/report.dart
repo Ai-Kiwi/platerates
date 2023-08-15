@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../login/userLogin.dart';
 import '../main.dart';
+import 'errorHandler.dart';
 
 class ReportSystem {
   Future<void> reportItem(context, String postItemType, String postItem) async {
@@ -62,6 +63,8 @@ class ReportSystem {
                   ],
                 ).show();
               } else {
+                ErrorHandler.httpError(
+                    response.statusCode, response.body, context);
                 Alert(
                   context: context,
                   type: AlertType.error,

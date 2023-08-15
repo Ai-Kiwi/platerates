@@ -6,6 +6,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 //import 'package:toggle_switch/toggle_switch.dart';
 
+import '../libs/errorHandler.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
 
@@ -261,6 +262,8 @@ class _CreatePostState extends State<CreatePostPage> {
                                       ],
                                     ).show();
                                   } else {
+                                    ErrorHandler.httpError(response.statusCode,
+                                        response.body, context);
                                     Alert(
                                       context: context,
                                       type: AlertType.error,

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
+import '../libs/errorHandler.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
 
@@ -39,12 +40,12 @@ class _PostRatingListState extends State<PostRatingList> {
     );
 
     setState(() {
-      print(response.body);
       if (response.body == "you have already rated" ||
           response.body == "you can not rate your own post") {
         print(response.body);
         hasRated = true;
       } else {
+        ErrorHandler.httpError(response.statusCode, response.body, context);
         hasRated = false;
       }
     });
@@ -258,6 +259,10 @@ class _PostRatingListState extends State<PostRatingList> {
                                         ],
                                       ).show();
                                     } else {
+                                      ErrorHandler.httpError(
+                                          response.statusCode,
+                                          response.body,
+                                          context);
                                       Alert(
                                         context: context,
                                         type: AlertType.error,

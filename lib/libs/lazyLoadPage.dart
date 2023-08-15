@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import '../main.dart';
 import '../login/userLogin.dart';
 import '../userProfile/userProfile.dart';
+import 'errorHandler.dart';
 
 class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToTop;
@@ -103,6 +104,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
         }
       });
     } else {
+      ErrorHandler.httpError(response.statusCode, response.body, context);
       setState(() {
         Alert(
           context: context,
