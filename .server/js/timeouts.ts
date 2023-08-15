@@ -1,13 +1,14 @@
-const { database } = require('./database');
-const { millisecondsToTime } = require('./utilFunctions');
+import { database } from './database';
+import { millisecondsToTime } from './utilFunctions';
+import mongoDB from "mongodb";
+import { Request, Response } from "express";
 
 
 
+async function userTimeout(userId : string,timeoutAction : string,timeoutTime : number) {
+    var collection : mongoDB.Collection = database.collection('user_data');
 
-async function userTimeout(userId,timeoutAction,timeoutTime) {
-    var collection = database.collection('user_data');
-
-    var updateQuery = {};
+    let updateQuery: Record<string, any> = {};
     updateQuery.cooldowns = {};
     updateQuery.cooldowns[timeoutAction] = (timeoutTime * 1000) + Date.now();
 
@@ -19,26 +20,26 @@ async function userTimeout(userId,timeoutAction,timeoutTime) {
 
     if (collectionUpdate.acknowledged === true){
         console.log("updated timeout");
-        return [true];
+        return true;
     }else{
         console.log("failed to update timeout");
-        return [false];
+        return false;
     }
 
 
 }
 
-async function userTimeoutLimit(userId,timeoutAction,maxTimeoutTime) {
-    var collection = database.collection('user_data');
+async function userTimeoutLimit(userId : string,timeoutAction : string,maxTimeoutTime : number) {
+    let collection : mongoDB.Collection = database.collection('user_data');
 
 
-    var filterQuery = {};
+    let filterQuery : Record<string, any>  = {};
     filterQuery.userId = userId;
     filterQuery.cooldowns = {};
     filterQuery.cooldowns[timeoutAction] = {}
-    filterQuery.cooldowns[timeoutAction][$lt] = (maxTimeoutTime * 1000) + Date.now();
+    filterQuery.cooldowns[timeoutAction]['$lt'] = (maxTimeoutTime * 1000) + Date.now();
 
-    var updateQuery = {};
+    let updateQuery : Record<string, any> = {};
     updateQuery.cooldowns = {};
     updateQuery.cooldowns[timeoutAction] = (maxTimeoutTime * 1000) + Date.now();
 
@@ -50,15 +51,15 @@ async function userTimeoutLimit(userId,timeoutAction,maxTimeoutTime) {
 
     if (collectionUpdate.acknowledged === true){
         console.log("updated timeout");
-        return [true];
+        return true;
     }else{
         console.log("failed to update timeout");
-        return [false];
+        return false;
     }
 
 }
 
-async function userTimeoutTest(userId,timeoutAction) {
+async function userTimeoutTest(userId : string,timeoutAction : string) {
     console.log("user timeout test");
     var collection = database.collection('user_data');
 
@@ -67,31 +68,41 @@ async function userTimeoutTest(userId,timeoutAction) {
     //user data doesn't exist
     if (userData === null) {
         console.log("failed to get user data");
-        return [false];
+        return {
+            active : false
+        };
     }
 
     //item not created yet
     if (userData.cooldowns[timeoutAction] === undefined){
         console.log("timeout reason does not exist");
-        return [false];
+        return {
+            active : false
+        };
     }
 
     const timeoutLeft = millisecondsToTime(userData.cooldowns[timeoutAction]  - Date.now());
     //test if cooldown is active or not
     if ( userData.cooldowns[timeoutAction] >= Date.now() ) {
         console.log("user cooldown is active for " + timeoutLeft);
-        return [true, timeoutLeft ];
-    }else{
-        console.log("user cooldown is inactive");
-        return [false];
+        return {
+            active : false,
+            timeLeft : timeoutLeft
+        };
     }
+
+    console.log("user cooldown is inactive");
+    return {
+        active : false
+    };
+    
 
 }
 
 
 
-module.exports = {
-    userTimeout:userTimeout,
-    userTimeoutTest:userTimeoutTest,
-    userTimeoutLimit:userTimeoutLimit,
+export {
+    userTimeout,
+    userTimeoutTest,
+    userTimeoutLimit,
 };

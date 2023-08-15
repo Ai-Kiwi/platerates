@@ -1,38 +1,44 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const fs = require('fs');
-const safeCompare = require('safe-compare');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const { database } = require('./database');
-const { millisecondsToTime, generateRandomString } = require("./utilFunctions");
-const { error } = require('console');
-const { sendMail } = require('./mailsender');
-const { userTimeout, userTimeoutTest } = require('./timeouts');
-const { cleanEmailAddress } = require('./validInputTester');
+import fs from 'fs';
+import safeCompare from 'safe-compare';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import crypto, { privateEncrypt } from 'crypto';
+import { database } from './database';
+import { millisecondsToTime, generateRandomString } from "./utilFunctions";
+import { error } from 'console';
+import { sendMail } from './mailsender';
+import { userTimeout, userTimeoutTest } from './timeouts';
+import { cleanEmailAddress } from './validInputTester';
+import mongoDB from "mongodb";
+import { Request, Response } from "express";
+import { Store } from 'express-rate-limit';
+import { buffer } from 'stream/consumers';
 
+require('dotenv').config();
 
-if (fs.existsSync('private.key') === false) {
-  console.log("no key file making new")
-  fs.writeFileSync('private.key',crypto.randomBytes(32))
+const privateKeyRaw = process.env.loginKey;
+if (privateKeyRaw === undefined){
+  console.log(crypto.randomBytes(128).toString('base64')) //128 bit keys
+  error("no private key input")
 }
-const privateKey = fs.readFileSync('private.key'); 
+const privateKey : Buffer = Buffer.from(privateKeyRaw as string, 'base64');
 
 
-async function updateUserPassword(rawEmail, newPassword) {
+async function updateUserPassword(rawEmail : string, newPassword : string) {
   try {
-    const email = cleanEmailAddress(rawEmail);
+    const email : string = cleanEmailAddress(rawEmail) as string;
     // Retrieve the user document using the email
-    const collection = database.collection("user_credentials");
+    const collection : mongoDB.Collection = database.collection("user_credentials");
 
     // Generate a new hashed password
-    const passwordSalt = crypto.randomBytes(16).toString('hex');
-    const hashedPassword = crypto.createHash("sha256")
+    const passwordSalt : string = crypto.randomBytes(16).toString('hex');
+    const hashedPassword : string = crypto.createHash("sha256")
     .update(newPassword)
     .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
     .digest("hex");
 
-    const tokenNotExpiedCode = generateRandomString(16);
+    const tokenNotExpiedCode : string = generateRandomString(16);
     // Update the user document with the new hashed password
     let collectionUpdate = await collection.updateOne(
       { email: email },
@@ -55,48 +61,69 @@ async function updateUserPassword(rawEmail, newPassword) {
   }
 }
 
-async function testToken(token,ipAddress){
+async function testToken(token : string,ipAddress : string){
   try{
-    var decoded = "";
+    let decoded;
     try{
-      decoded = jwt.verify(token, privateKey);
+      decoded = jwt.verify(token, privateKey) as { userId: string, tokenNotExpiredCode: string, ipAddress: string } ;
     }catch (err){
       console.log(err);
-      return [false];
+      return {
+        valid: false,
+        userId: "",
+      };
     }
     if (decoded == null){
-      return [false]
+      return {
+        valid: false,
+        userId: "",
+      };
     };
 
-    const userId = decoded.userId;
+    const userId : string = decoded.userId;
 
     //get data from server
-    var collection = database.collection('user_credentials');
+    var collection : mongoDB.Collection = database.collection('user_credentials');
     const userData = await collection.findOne({ userId: userId });
 
     //make sure user exists
     if (userData === null){
       console.log("user doesn't exist");
-      return [false];
+      return {
+        valid: false,
+        userId: "",
+      };
     }
 
     //make sure token is not invald bcause of password reset
     if(decoded.tokenNotExpiredCode !== userData.tokenNotExpiredCode){
       console.log("invaild tokenNotExpiredCode");
-      return [false]; 
+      return {
+        valid: false,
+        userId: "",
+      };
     };
 
     //another test to make sure it is the same ip address
     if(decoded.ipAddress !== ipAddress){
       console.log("invaild ip address");
-      return [false];
+      return {
+        valid: false,
+        userId: "",
+      };
     };
 
-    return [true, userId];
+    return {
+      valid: true,
+      userId : userId
+    };
 
   }catch(err){
     console.log(err);
-    return [false];
+    return {      
+      valid: false,
+      userId: "",
+    };
   }
   
 }
@@ -111,11 +138,11 @@ router.post('/login', async (req, res) => {
 
     const userEmail = cleanEmailAddress(req.body.email);
     const userPassword = req.body.password;
-    const userIpAddress = req.headers['x-forwarded-for'];
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
     
     // get user info from database //
-    const collection = database.collection('user_credentials');
+    const collection : mongoDB.Collection = database.collection('user_credentials');
 
     const userData = await collection.findOne({ email: userEmail });
     //make sure it is vaild account lol
@@ -124,9 +151,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).send("invalid login credentials"); //incorrect login
     }
 
-    const hashedPassword = userData.hashedPassword;
-    const passwordSalt = userData.passwordSalt;
-    const userId = userData.userId;
+    const hashedPassword : string = userData.hashedPassword;
+    const passwordSalt : string = userData.passwordSalt;
+    const userId : string = userData.userId;
 
     //look if account is banned
     if (userData.accountBanExpiryDate > Date.now()){
@@ -166,7 +193,7 @@ router.post('/login', async (req, res) => {
     }
       
 
-    const hashedPasswordEntered = crypto.createHash("sha256")
+    const hashedPasswordEntered : string = crypto.createHash("sha256")
     .update(userPassword)
     .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
     .digest("hex");
@@ -174,7 +201,7 @@ router.post('/login', async (req, res) => {
     //if the username and password is the same
     if(safeCompare(hashedPasswordEntered,hashedPassword)){
       //should add a system for when it fails to sign, then again probs not needed
-      var token = jwt.sign({
+      let token : string = jwt.sign({
         userId : userId,
         ipAddress : userIpAddress,
         //token not expired code, used to make sure that user has not done password reset or anything
@@ -227,13 +254,15 @@ router.post('/login/logout', async (req, res) => {
   console.log(" => user log out")
     try{
       const token = req.body.token;
-      var vaildToken, userId;
-  
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
-    
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const vaildToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
+      
+      
       if (vaildToken) { // user token is valid
-        var collection = database.collection('user_credentials');
-        var posts;
+        var collection : mongoDB.Collection = database.collection('user_credentials');
 
         //fetch the user credentials
         const userCreds = await collection.findOne({ userId :  userId})
@@ -243,7 +272,7 @@ router.post('/login/logout', async (req, res) => {
         
         }
 
-        const newTokenNotExpiredCode = await generateRandomString(16);
+        const newTokenNotExpiredCode : string = await generateRandomString(16);
         const reponse = await collection.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode}})
         if (reponse.acknowledged === true){
           console.log("user logged out")
@@ -268,10 +297,14 @@ router.post('/login/logout', async (req, res) => {
 router.post('/testToken', async (req, res) => {
   console.log(" => user testing token")
   const token = req.body.token;
-  var tokenVaild, userId;
-  [tokenVaild, userId] = await testToken(token,req.headers['x-forwarded-for'])
+  const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
-  if(tokenVaild){
+
+  const result = await testToken(token,userIpAddress);
+  const vaildToken : boolean = result.valid;
+  const userId : string | undefined = result.userId;
+
+  if(vaildToken){
     console.log("vaild token");
     return res.status(200).send("vaild token");
   }else{
@@ -287,9 +320,12 @@ router.post('/login/reset-password', async (req, res) => {
     const email = cleanEmailAddress(req.body.email);
     const newPassword = req.body.newPassword;
     const token = req.body.token;
-    const ipAddress = req.headers['x-forwarded-for'];
+    const ipAddress : string = req.headers['x-forwarded-for'] as string;
     const userCredentialsCollection = database.collection("user_credentials");
-    [tokenVaild, userId] = await testToken(token,req.headers['x-forwarded-for'])
+    
+    //const testTokenResult = await testToken(token,ipAddress);
+    //const vaildToken : boolean = testTokenResult.valid;
+    //const userId = testTokenResult.userId;
     
     //fetch user data
     const userCredentials = await userCredentialsCollection.findOne({email: email});
@@ -304,74 +340,76 @@ router.post('/login/reset-password', async (req, res) => {
       return res.status(400).send("password is nothing");
     }
 
-      //test for timeouts
-      const [timeoutActive, timeoutTime] = await userTimeoutTest(userCredentials.userId,"reset-password");
-      if (timeoutActive === true) {
-        //test if user is logged in as them, if they are lower timeout to 10 minutes
-        //if (userCredentials.userId === userId && vaildToken) {
-        //  userTimeoutLimit(userCredentials.userId,"reset-password",60 * 10)
-        //}
-        console.log("reset password for user is timed out " + timeoutTime);
-        return res.status(408).send("please wait " + timeoutTime + " to reset password");
-        
-      }
+    //test for timeouts
+    const TimeoutTestresult = await userTimeoutTest(userCredentials.userId,"reset-password");
+    const timeoutActive : boolean = TimeoutTestresult.active;
+    const timeoutTime : string | undefined = TimeoutTestresult.timeLeft;
 
-      //test if password is invalid
-      if (newPassword.length === 0 || newPassword.length > 64) {
-        console.log("password size invalid");
-        return res.status(400).send("password size invalid");
-      }
+    if (timeoutActive === true) {
+      //test if user is logged in as them, if they are lower timeout to 10 minutes
+      //if (userCredentials.userId === userId && vaildToken) {
+      //  userTimeoutLimit(userCredentials.userId,"reset-password",60 * 10)
+      //}
+      console.log("reset password for user is timed out " + timeoutTime);
+      return res.status(408).send("please wait " + timeoutTime + " to reset password");
+      
+    }
+
+    //test if password is invalid
+    if (newPassword.length === 0 || newPassword.length > 64) {
+      console.log("password size invalid");
+      return res.status(400).send("password size invalid");
+    }
 
 
-      const resetPasswordCode = generateRandomString(64);
-      const resetPasswordUrl = `https://toaster.aikiwi.dev/reset-password?userId=${userCredentials.userId}&resetCode=${resetPasswordCode}`
+    const resetPasswordCode : string = generateRandomString(64);
+    const resetPasswordUrl : string = `https://toaster.aikiwi.dev/reset-password?userId=${userCredentials.userId}&resetCode=${resetPasswordCode}`
 
-      //send reset password
-      console.log("sending email data")
-      const emailData = await sendMail(
-        '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
-        email,
-        "Password reset for toaster",
-        "Your reset password request from ip address " + ipAddress + "\nclick on this link to reset password : " + resetPasswordUrl + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
-
-      );
-      if (emailData) {
-        const passwordSalt = crypto.randomBytes(16).toString('hex');
-        const hashedPassword = crypto.createHash("sha256")
-        .update(newPassword)
-        .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
-        .digest("hex");
+    //send reset password
+    console.log("sending email data")
+    const emailData = await sendMail(
+      '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+      email as string,
+      "Password reset for toaster",
+      "Your reset password request from ip address " + ipAddress + "\nclick on this link to reset password : " + resetPasswordUrl + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
     
-        const tokenNotExpiedCode = generateRandomString(16);
+    );
+    if (emailData) {
+      const passwordSalt : string = crypto.randomBytes(16).toString('hex');
+      const hashedPassword : string = crypto.createHash("sha256")
+      .update(newPassword)
+      .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
+      .digest("hex");
+  
+      const tokenNotExpiedCode : string = generateRandomString(16);
 
 
-        const expireTime = Date.now() + (1000 * 60 * 15) // expires in 15m 
-        const response = await userCredentialsCollection.updateOne(
-          { userId: userCredentials.userId },
-          { $set: {
-            resetPassword : {
-              code : resetPasswordCode,
-              newPassword : hashedPassword,
-              newPasswordSalt :passwordSalt,
-              newTokenNotExpiredCode : tokenNotExpiedCode,
-              expireTime : expireTime,
-            }
-            }
+      const expireTime : number = Date.now() + (1000 * 60 * 15) // expires in 15m 
+      const response = await userCredentialsCollection.updateOne(
+        { userId: userCredentials.userId },
+        { $set: {
+          resetPassword : {
+            code : resetPasswordCode,
+            newPassword : hashedPassword,
+            newPasswordSalt :passwordSalt,
+            newTokenNotExpiredCode : tokenNotExpiedCode,
+            expireTime : expireTime,
           }
-        );
+          }
+        }
+      );
 
-        if (response.acknowledged === true) {
-          userTimeout(userCredentials.userId,"reset-password",60 * 60 * 3); //timeout for a day
-          return res.status(200).send("email reset password sent");
-        }else{
-          return res.status(500).send("server error");
-        } 
-
+      if (response.acknowledged === true) {
+        userTimeout(userCredentials.userId,"reset-password",60 * 60 * 3); //timeout for a day
+        return res.status(200).send("email reset password sent");
       }else{
-        console.log("failed sending email data");
         return res.status(500).send("server error");
-      }
+      } 
 
+    }else{
+      console.log("failed sending email data");
+      return res.status(500).send("server error");
+    }
   }catch(err){
     console.log(err);
     return res.status(500).send("server error");
@@ -382,7 +420,7 @@ router.get('/reset-password', async (req, res) => {
   const userId = req.query.userId;
   const resetCode = req.query.resetCode;
   const ipAddress = req.headers['x-forwarded-for'];
-  const userCredentialsCollection = database.collection("user_credentials");
+  const userCredentialsCollection : mongoDB.Collection = database.collection("user_credentials");
 
   try{
     const userCredentials = await userCredentialsCollection.findOne({userId: userId});
@@ -447,8 +485,8 @@ router.get('/reset-password', async (req, res) => {
   }
 })
 
-module.exports = {
-    router: router,
-    testToken: testToken,
-    updateUserPassword: updateUserPassword,
+export {
+    router,
+    testToken,
+    updateUserPassword,
 };

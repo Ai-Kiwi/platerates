@@ -1,9 +1,12 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { database } = require('./database');
-const { testToken } = require('./userLogin');
-const { generateRandomString } = require('./utilFunctions');
-const { sendMail } = require('./mailsender');
+
+import mongoDB from "mongodb";
+import { Request, Response } from "express";
+import {database} from'./database';
+import {testToken} from'./userLogin';
+import {generateRandomString} from'./utilFunctions';
+import {sendMail} from'./mailsender';
 
 
 
@@ -12,14 +15,18 @@ router.post('/report', async (req, res) => {
   try{
     const token = req.body.token;
     const reportItem = req.body.reportItem;
-    const reason = req.body.reason;
-    [validToken, userId] = await testToken(token,req.headers['x-forwarded-for']);
-    const reportsCollection = database.collection('reports');
-    const userCredentialsCollection = database.collection('user_credentials')
+    const reason = req.body.reason as String;
+    const reportsCollection: mongoDB.Collection = database.collection('reports');
+    const userCredentialsCollection: mongoDB.Collection = database.collection('user_credentials')
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+    const result = await testToken(token,userIpAddress);
+    const validToken : boolean = result.valid;
+    const userId : string | undefined = result.userId;
 
     if (validToken){
 
-      var rootItem = {
+      let rootItem = {
         type: reportItem.type,
         data: reportItem.data
       }
@@ -31,14 +38,14 @@ router.post('/report', async (req, res) => {
         return res.status(409).send("already reported")
       }
 
-      var reportingItem;
+      let reportingItem;
 
       if (reportItem.type === "post"){
-        const postsollection = database.collection('posts');
-        reportingItem = await postsollection.findOne({postId : reportItem.data});
+        const postsCollection: mongoDB.Collection = database.collection('posts');
+        reportingItem = await postsCollection.findOne({postId : reportItem.data});
 
       }else if (reportItem.type === "post_rating"){
-        const postRatingsollection = database.collection('post_ratings');
+        const postRatingsollection: mongoDB.Collection = database.collection('post_ratings');
         reportingItem = await postRatingsollection.findOne({ratingId : reportItem.data});
 
       }else{
@@ -63,7 +70,7 @@ router.post('/report', async (req, res) => {
       } 
 
 
-      var reportId;
+      let reportId: string;
       while (true){
         reportId =  generateRandomString(16);
 
@@ -87,13 +94,14 @@ router.post('/report', async (req, res) => {
           const userCredentials = await userCredentialsCollection.findOne({userId:userId})
 
 
-
+          if (userCredentials !== null){
           sendMail(
-          '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
-          userCredentials.email,
-          "reported item",
-          "thank you for reporting an item on toaster, we will get back to you shortly with our response to your report."
-          );
+            '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+            userCredentials.email,
+            "reported item",
+            "thank you for reporting an item on toaster, we will get back to you shortly with our response to your report."
+            );
+          }
 
           sendMail(
             '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
@@ -107,24 +115,12 @@ router.post('/report', async (req, res) => {
           console.log(err);
         }
 
-
-
-
-
-
-
-
-
-
         console.log("reported");
         return res.status(201).send("reported")
       }else{
         console.log("failed reporting");
         return res.status(500).send("failed reporting")
       }
-
-
-
 
     }
   }catch(err){
@@ -133,6 +129,6 @@ router.post('/report', async (req, res) => {
   }
 })
 
-module.exports = {
-    router:router,
+export {
+  router,
 };

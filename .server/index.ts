@@ -1,10 +1,9 @@
-const express = require('express')
-var bodyParser = require('body-parser');
-const { banAccount, createUser } = require('./userAccounts');
-const { rateLimit } = require('express-rate-limit');
-const userPostRatings = require('./userPostRating');
-const path = require("path")
-const cors = require('cors');
+import { Request, Response } from "express";
+import express from "express";
+import { rateLimit} from 'express-rate-limit';
+import path from "path";
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 const limiter = rateLimit({
 	windowMs: 3 * 60 * 1000, // 3 minutes
@@ -12,15 +11,15 @@ const limiter = rateLimit({
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: 'Too many requests, please try again later.',
-  keyGenerator: (req) => {
-    return req.headers['x-forwarded-for'];
+  keyGenerator: (req: Request) => {
+    return req.headers['x-forwarded-for'] as string;
   },
 })
 
 require('dotenv').config();
 
-const port = process.env.port;
-const clientVersion = "1.0.5+1";
+const port: string = process.env.port || "3030";
+const clientVersion: string = "1.0.5+1";
 
 //setup app
 const app = express()
@@ -36,7 +35,7 @@ app.use(express.static(path.join(__dirname, 'web/')))
 
 
 //post for latest verison
-app.post("/latestVersion", async (req, res) => {
+app.post("/latestVersion", async (req : Request, res : Response) => {
   console.log(" => user fetching profile")
   try{
     return res.status(200).send(clientVersion)
@@ -46,47 +45,60 @@ app.post("/latestVersion", async (req, res) => {
   }
 })
 
-app.get("/deleteData", async (req, res) => {
+app.get("/deleteData", async (req : Request, res : Response) => {
   console.log(" => user delete data website")
   try{
-    return res.status(200).sendFile(__dirname + "/deleteData.html");
+    return res.status(200).sendFile(__dirname + "/pages/deleteData.html");
   }catch(err){
     console.log(err);
     return res.status(500).send("server error")
   }
 })
 
-app.get('/privacyPolicy', async (req, res) => {
+app.get('/privacyPolicy', async (req : Request, res : Response) => {
   console.log(" => user delete data website")
   try{
-    return res.status(200).sendFile(__dirname + "/privacyPolicy.html");
+    return res.status(200).sendFile(__dirname + "/pages/privacyPolicy.html");
   }catch(err){
     console.log(err);
     return res.status(500).send("server error")
   }
 })
+
+
+app.get('/toaster.apk', async (req : Request, res : Response) => {
+  console.log(" => user delete data website")
+  try{
+    return res.status(200).sendFile(__dirname + "/toaster.apk");
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
+
 
 
 
 //createUser("demouser@aikiwi.dev","xZb2VQyvgBV8#24axwVLaOHwDHzKv@az","demo user")
 
 
-const userPosts = require("./userPosts");
-const userAccounts = require("./userAccounts");
-const userLogin = require("./userLogin");
-const userPostRating = require("./userPostRating");
-const report = require("./report.js");
-const adminZone = require("./adminZone");
-const search = require("./searchSystem");
+import {router as userPostsRouter} from "./js/userPosts";
+import {router as userAccountsRouter} from "./js/userAccounts";
+import {router as userLoginRouter} from "./js/userLogin";
+import {router as userPostRatingRouter} from "./js/userPostRating";
+import {router as reportRouter} from "./js/report";
+import {router as adminZoneRouter} from "./js/adminZone";
+import {router as searchSystemRouter} from "./js/searchSystem";
 
 app.use('/', limiter)
-app.use('/', report.router);
-app.use('/', userPosts.router);
-app.use('/', userPostRating.router);
-app.use('/', userAccounts.router);
-app.use('/', userLogin.router);
-app.use('/', adminZone.router);
-app.use('/', search.router);
+app.use('/', userPostsRouter);
+app.use('/', userAccountsRouter);
+app.use('/', userLoginRouter);
+app.use('/', userPostRatingRouter);
+app.use('/', reportRouter);
+app.use('/', adminZoneRouter);
+app.use('/', searchSystemRouter);
 
 app.listen(port, () => {
   console.log(`Toaster server listening on port ${port}`)

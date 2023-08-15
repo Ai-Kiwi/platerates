@@ -1,15 +1,17 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { database } = require('./database');
-const { testToken } = require('./userLogin');
-const { generateRandomString } = require('./utilFunctions');
-const sharp = require('sharp');
-const { userTimeout, userTimeoutTest } = require('./timeouts');
-const { testUserAdmin } = require('./adminZone');
+import { database } from './database';
+import { testToken } from './userLogin';
+import { generateRandomString } from './utilFunctions';
+import sharp, { Sharp } from 'sharp';
+import { userTimeout, userTimeoutTest } from './timeouts';
+import { testUserAdmin } from './adminZone';
+import mongoDB from "mongodb";
+import { Request, Response } from "express";
+import { BlobOptions } from 'buffer';
 
 
-
-router.post('/post/upload', async (req, res) => {
+router.post('/post/upload', async (req : Request, res : Response) => {
     console.log(" => user uploading post");
     try{
       const token = req.body.token;
@@ -17,18 +19,20 @@ router.post('/post/upload', async (req, res) => {
       const description = req.body.description;
       const base64Image = req.body.image;
       const shareMode = req.body.shareMode;
-      var postId;
-      
-      var vaildToken = false;
-      var userId = "";
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for']);
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const vaildToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
+
+      let postId : string;
   
       if (vaildToken) {
-        var collection = database.collection('posts');
+        var collection : mongoDB.Collection = database.collection('posts');
   
         //loop over making sure post Id is not used
         while (true){
-          postId =  generateRandomString(16);
+          postId = generateRandomString(16);
   
           let postIdInUse = await collection.findOne({postId: postId});
           if (postIdInUse === null){
@@ -36,7 +40,10 @@ router.post('/post/upload', async (req, res) => {
           }
         }
 
-        const [timeoutActive, timeoutTime] = await userTimeoutTest(userId,"post_upload")
+        const userTimeoutTestResult = await userTimeoutTest(userId,"change_username");
+        const timeoutActive : boolean = userTimeoutTestResult.active;
+        const timeoutTime : string | undefined = userTimeoutTestResult.timeLeft;
+
         if (timeoutActive === true) {
           console.log("user is timed out for " + timeoutTime);
           return res.status(408).send('timed out for ' + timeoutTime);
@@ -70,10 +77,10 @@ router.post('/post/upload', async (req, res) => {
   
         //upload image
         try{
-          imageData = Buffer.from(base64Image, 'base64');
+          const imageData : Buffer = Buffer.from(base64Image, 'base64');
   
           //make sure image is right size
-          const imageMetadata = await sharp(imageData).metadata();
+          const imageMetadata : sharp.Metadata = await sharp(imageData).metadata();
           const { width, height } = imageMetadata;
           const MAX_RESOLUTION = {
             width: 1080,
@@ -99,7 +106,7 @@ router.post('/post/upload', async (req, res) => {
             postDate: Date.now(),
             shareMode: shareMode,
             postId: postId,
-            rating:0.0,
+            rating: 0.0,
           }
         )
         
@@ -127,19 +134,24 @@ router.post('/post/upload', async (req, res) => {
 
 
 
-router.post('/post/data', async (req, res) => {
+router.post('/post/data', async (req : Request, res : Response) => {
   console.log(" => user fetching post data")
     try{
       const token = req.body.token;
-      var vaildToken, userId;
-  
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
       const postId = req.body.postId;
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const vaildToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
+
+      
     
       if (vaildToken) { // user token is valid
-        var collection = database.collection('posts');
-        var userDataCollection = database.collection('user_data');
+        var collection : mongoDB.Collection = database.collection('posts');
+        var userDataCollection : mongoDB.Collection = database.collection('user_data');
         var itemData = await collection.findOne({postId: postId})
+        const postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
   
         if (itemData === null) {
           console.log("invaild post");
@@ -151,12 +163,12 @@ router.post('/post/data', async (req, res) => {
           return res.status(403).send("can't view post");
         }
 
-        const postRatingsCollection = database.collection('post_ratings');
+
 
         const ratingsAmount = await postRatingsCollection.countDocuments({ "rootItem.data" : postId, "rootItem.type" : "post" });
 
         const userRatingData = await postRatingsCollection.findOne({ "rootItem.data" : postId, "rootItem.type" : "post", "ratingPosterId" : userId});
-        var requesterHasRated = false;
+        let requesterHasRated : boolean = false;
         if (userRatingData != null) {
           requesterHasRated = true;
         }
@@ -194,12 +206,15 @@ router.post('/post/delete', async (req, res) => {
     try{
       const token = req.body.token;
       const postId = req.body.postId;
-      var vaildToken, userId;
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const vaildToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
     
       if (vaildToken) { // user token is valid
-        var collection = database.collection('posts');
-        var post = await collection.findOne({ postId: postId});
+        let collection : mongoDB.Collection = database.collection('posts');
+        let post = await collection.findOne({ postId: postId});
 
         if (post === null) {
           console.log("post not found")
@@ -239,14 +254,15 @@ router.post('/post/feed', async (req, res) => {
     try{
       const token = req.body.token;
       const startPosPost = req.body.startPosPost;
-      var startPosPostDate = 100000000000000
-      var vaildToken, userId;
-  
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+      let startPosPostDate: number = 100000000000000
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const vaildToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
     
       if (vaildToken) { // user token is valid
-        var collection = database.collection('posts');
-        var posts;
+        let collection : mongoDB.Collection = database.collection('posts');
   
         if (startPosPost) {
           if (startPosPost.type === "post" && !startPosPost.data){
@@ -263,25 +279,27 @@ router.post('/post/feed', async (req, res) => {
           startPosPostDate = startPosPostData.postDate;
         }
   
-        posts = await collection.find({ shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
-        var returnData = {}
-        returnData["items"] = []
+        const posts = await collection.find({ shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
+        let returnData = {
+          "items": [] as { type: string; data: string;}[]
+        }
    
         if (posts.length == 0) {
           console.log("nothing to fetch");
         }
   
         for (var i = 0; i < posts.length; i++) {
-          returnData["items"].push({
-            type : "post",
-            data : posts[i].postId
-          });
-          //Do something
+          if (posts[i].userId !== null) {
+            returnData["items"].push({
+              type : "post",
+              data : posts[i].postId,
+            });
+          }
         }
         
         console.log("returning posts");
         return res.status(200).json(returnData);
-  
+
       }else{
         console.log("invaild token");
         return res.status(401).send("invaild token");
@@ -294,6 +312,6 @@ router.post('/post/feed', async (req, res) => {
 
 
 
-module.exports = {
-    router:router,
+export {
+    router,
 };

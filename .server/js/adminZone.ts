@@ -1,18 +1,23 @@
-const { createTestAccount } = require("nodemailer");
-const { generateRandomString } = require("./utilFunctions");
-const { createUser, banAccount } = require("./userAccounts");
-const express = require('express');
-const { testToken } = require("./userLogin");
-const { database } = require("./database");
-const { sendMail } = require("./mailsender");
-const { testUsername } = require("./validInputTester");
-const router = express.Router();
+import mongoDB from "mongodb";
+import { cleanEmailAddress } from "./validInputTester";
+import { Request, Response } from "express";
+
+import nodemailer from "nodemailer";
+import { generateRandomString } from "./utilFunctions";
+import { createUser, banAccount } from "./userAccounts";
+import express from 'express';
+import { testToken } from "./userLogin";
+import { database } from "./database";
+import { sendMail } from "./mailsender";
+import { testUsername } from "./validInputTester";
+import { BlobOptions } from "buffer";
+const router: express.Router = express.Router();
 
 
-async function testUserAdmin(userId){
+async function testUserAdmin(userId: string){
     try{
-        var userDataCollectionollection = database.collection('user_data');
-        var userData = await userDataCollectionollection.findOne({ userId: userId}); 
+        const userDataCollectionollection: mongoDB.Collection = database.collection('user_data');
+        const userData = await userDataCollectionollection.findOne({ userId: userId}); 
 
         if (userData === null){
             return false
@@ -30,20 +35,28 @@ async function testUserAdmin(userId){
 
 
 
-router.post('/admin/createUser', async (req, res) => {
+router.post('/admin/createUser', async (req : Request, res : Response) => {
     console.log(" => admin creating user")
-      try{
+    try{
         const token = req.body.token;
         const newAccountEmail = cleanEmailAddress(req.body.email);
         const newAccountUsername = req.body.username;
 
-        var vaildToken, userId;
-        [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
-      
-        if (vaildToken) { // user token is valid
+        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
-            var userDataCollection = database.collection('user_data');
-            var userData = await userDataCollection.findOne({ userId: userId}); 
+        const result = await testToken(token,userIpAddress);
+        const validToken : boolean = result.valid;
+        const userId : string | undefined = result.userId;
+
+        if (validToken) { // user token is valid
+
+            let userDataCollection: mongoDB.Collection = database.collection('user_data');
+            let userData = await userDataCollection.findOne({ userId: userId}); 
+
+            if (userData === null) {
+                console.log("tokens user not found");
+                return res.status(500).send("tokens user not found");
+            }
 
             if (userData.administrator !== true) {
                 console.log("user not admin");
@@ -61,8 +74,12 @@ router.post('/admin/createUser', async (req, res) => {
             }
 
             //test username
-            var usernameAllowed, usernameDeniedReason;
-            [usernameAllowed, usernameDeniedReason] = await testUsername(newAccountUsername);
+            const testUsernameResult = await testUsername(newAccountUsername);
+            const usernameAllowed : boolean = testUsernameResult.valid;
+            const usernameDeniedReason : string = testUsernameResult.reason;
+
+
+
             if (usernameAllowed === false){
                 console.log("username input in valid");
                 return res.status(400).send(usernameDeniedReason);    
@@ -70,12 +87,12 @@ router.post('/admin/createUser', async (req, res) => {
 
 
             //create password and send email
-            const NewUserPassword = generateRandomString(16)
+            const NewUserPassword : string = generateRandomString(16)
 
             //add user to database
-            const response = await createUser(newAccountEmail,NewUserPassword,newAccountUsername) 
+            const response: boolean = await createUser(newAccountEmail,NewUserPassword,newAccountUsername) 
             if (response === true) {
-                const emailData = await sendMail(
+                const emailData: nodemailer.SentMessageInfo = await sendMail(
                     '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
                     newAccountEmail,
                     "accepted into toaster beta",
@@ -107,21 +124,15 @@ The Toaster Team`);
                 return res.status(500).send("failed creating user");
             }
 
-
-
-  
-
-
-    
         }else{
-          console.log("user token is invaild");
-          return res.status(401).send("invaild token");
+            console.log("user token is invaild");
+            return res.status(401).send("invaild token");
         }
-      }catch(err){
+    }catch(err){
         console.log(err);
         return res.status(500).send("server error")
-      }
-  })
+    }
+})
 
 
 
@@ -133,22 +144,26 @@ router.post('/admin/banUser', async (req, res) => {
         const banReason = req.body.reason;
         const banTime = req.body.time;
 
-        var vaildToken, userId;
-        [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
-      
-        if (vaildToken) { // user token is valid
+        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
-            var userDataCollection = database.collection('user_data');
+        const result = await testToken(token,userIpAddress);
+        const validToken : boolean = result.valid;
+        const userId : string | undefined = result.userId;
+      
+        if (validToken) { // user token is valid
+
+            var userDataCollection: mongoDB.Collection = database.collection('user_data');
             var userData = await userDataCollection.findOne({ userId: userId}); 
+
+            if (userData === null) {
+                console.log("tokens user not found");
+                return res.status(500).send("tokens user not found");
+            }
 
             if (userData.administrator !== true) {
                 console.log("user not admin");
                 return res.status(403).send("you are not an admin");
             }
-
-
-
-
 
             
             if (await banAccount(userIdBanning,parseInt(banTime),banReason)){
@@ -159,11 +174,6 @@ router.post('/admin/banUser', async (req, res) => {
                 return res.status(400).send("user not banned");
             }
 
-
-  
-
-
-    
         }else{
           console.log("user token is invaild");
           return res.status(401).send("invaild token");
@@ -174,7 +184,7 @@ router.post('/admin/banUser', async (req, res) => {
     }
 })
 
-module.exports = {
-    router:router,
-    testUserAdmin:testUserAdmin,
+export {
+    router,
+    testUserAdmin,
 };

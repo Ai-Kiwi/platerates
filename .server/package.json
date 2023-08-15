@@ -2,10 +2,11 @@
   "name": "toaster_app_backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "ts-node index.ts",
+    "dev": "nodemon index.ts",
+    "build": "tsc"
   },
   "author": "Ai-Kiwi",
   "license": "ISC",
@@ -24,5 +25,15 @@
   },
   "overrides": {
     "semver": "^7.5.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/node": "^20.4.10",
+    "@types/nodemailer": "^6.4.9",
+    "@types/safe-compare": "^1.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
   }
 }
