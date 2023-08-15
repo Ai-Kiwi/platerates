@@ -169,6 +169,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the screen dimensions
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    // Calculate the aspect ratio
+    double aspectRatio = screenHeight / screenWidth;
+
+    if (aspectRatio < 1.5) {
+      return DisplayErrorMessagePage(errorMessage: "screen to wide");
+    }
+
     return Scaffold(
         extendBody: true,
         body: Center(
