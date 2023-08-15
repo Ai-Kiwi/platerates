@@ -16,6 +16,9 @@ COPY build/ .
 #copys the web build into it
 COPY ./web/ ./web/
 
+#copy accross pages
+COPY ./pages/ ./pages/
+
 #copy over android build
 COPY ./app-release.apk ./toaster.apk
 
