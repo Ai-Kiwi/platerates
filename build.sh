@@ -16,6 +16,8 @@ sudo systemctl start docker
 
 #build typescript
 npm run build
+echo "done"
+/bin/sleep 2
 
 echo " # injecting builds"
 #after build finished bring over files for web and what not
