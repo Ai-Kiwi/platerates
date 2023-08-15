@@ -19,7 +19,7 @@ const limiter = rateLimit({
 require('dotenv').config();
 
 const port: string = process.env.port || "3030";
-const clientVersion: string = "1.0.5+1";
+const clientVersion: string = "1.0.6+1";
 
 //setup app
 const app = express()

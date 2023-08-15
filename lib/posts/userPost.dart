@@ -8,7 +8,6 @@ import 'package:Toaster/login/userLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import '../libs/errorHandler.dart';
@@ -69,14 +68,20 @@ class _PostItemState extends State<PostItem> {
           //delete so re gatherd
           jsonCache.remove('post-$postId');
           print(err);
-          Fluttertoast.showToast(
-              msg: "failed to cache post",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 3,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              'failed to cache post',
+              style: TextStyle(fontSize: 20, color: Colors.red),
+            ),
+          ));
+          //Fluttertoast.showToast(
+          //    msg: "failed to cache post",
+          //    toastLength: Toast.LENGTH_SHORT,
+          //    gravity: ToastGravity.CENTER,
+          //    timeInSecForIosWeb: 3,
+          //    backgroundColor: Colors.red,
+          //    textColor: Colors.white,
+          //    fontSize: 16.0);
         }
       } else {
         ErrorHandler.httpError(response.statusCode, response.body, context);
