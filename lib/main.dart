@@ -69,6 +69,8 @@ class MyApp extends StatelessWidget {
       );
       if (response.statusCode == 200) {
         if (response.body != '$version+$buildNumber') {
+          print('server : $response.body');
+          print('client : $version+$buildNumber');
           yield "client-out-of-date";
           return;
         }

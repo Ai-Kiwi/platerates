@@ -1,21 +1,22 @@
 
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { database } = require('./database');
-const { testToken } = require('./userLogin');
-const { generateRandomString } = require('./utilFunctions');
-const { testUserAdmin } = require('./adminZone');
+import { database } from './database';
+import { testToken } from './userLogin';
+import { generateRandomString } from './utilFunctions';
+import { testUserAdmin } from './adminZone';
+import mongoDB from "mongodb";
+import { Request, Response } from "express";
 
 
-
-async function updatePostRating(rootItem){
-  var postRatingsCollection = database.collection('post_ratings');
-  var postsCollection = database.collection('posts');
+async function updatePostRating(rootItem : {data : string, type : string}){
+  var postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
+  var postsCollection : mongoDB.Collection = database.collection('posts');
 
 
   const ratings = await postRatingsCollection.find({ "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).toArray();
 
-  var newRating = 0;
+  var newRating : number = 0;
 
   for (var i = 0; i < ratings.length; i++) {
     newRating += ratings[i].rating;
@@ -43,21 +44,21 @@ router.post('/post/rating/delete', async (req, res) => {
       const token = req.body.token;
       //const parentItem = req.body.parentItem; ------not yet added
       const ratingId = req.body.ratingId;
-      var vaildToken, userId;
-  
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const validToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
     
-      if (vaildToken) { // user token is valid
+      if (validToken) { // user token is valid
         var postsCollection = database.collection('posts');
         var postRatingsCollection = database.collection('post_ratings');
-        var posts;
 
         //fetch the post
         const ratingData = await postRatingsCollection.findOne({ ratingId :  ratingId})
         if (ratingData == null) {
           console.log("no post found");
           return res.status(404).send("no post found");
-        
         }
 
         //test if comment is your's
@@ -65,9 +66,6 @@ router.post('/post/rating/delete', async (req, res) => {
           console.log("post not yours");
           return res.status(403).send("post not yours");
         }
-
-
-
 
         const reponse = await postRatingsCollection.deleteOne({ratingId : ratingId})
         if (reponse.acknowledged === true){
@@ -80,12 +78,6 @@ router.post('/post/rating/delete', async (req, res) => {
           return res.status(500).send("failed to delete post");
 
         }
-        
-        
-
-
-
-
         
   
       }else{
@@ -107,14 +99,15 @@ router.post('/post/rating/data', async (req, res) => {
       //const parentItem = req.body.parentItem; ------not yet added
       const ratingId = req.body.ratingId;
       const shareMode = req.body.shareMode;
-      var vaildToken, userId;
-  
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const validToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
     
-      if (vaildToken) { // user token is valid
-        var postsCollection = database.collection('posts');
-        var postRatingsCollection = database.collection('post_ratings');
-        var posts;
+      if (validToken) { // user token is valid
+        const postsCollection : mongoDB.Collection = database.collection('posts');
+        const postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
 
         //fetch the post
         const ratingData = await postRatingsCollection.findOne({ ratingId :  ratingId})
@@ -179,14 +172,15 @@ router.post('/post/rating/upload', async (req, res) => {
       const rating = req.body.rating;
       const text = req.body.text;
       const shareMode = req.body.shareMode;
-      var vaildToken, userId;
-  
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const validToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
     
-      if (vaildToken) { // user token is valid
-        var postsCollection = database.collection('posts');
-        var postRatingsCollection = database.collection('post_ratings');
-        var posts;
+      if (validToken) { // user token is valid
+        const postsCollection : mongoDB.Collection = database.collection('posts');
+        const postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
 
         //extract root item info
         if (!rootItem) {
@@ -242,9 +236,9 @@ router.post('/post/rating/upload', async (req, res) => {
         }
 
         //upload id
-        var ratingId;
+        let ratingId : string;
         while (true){
-          ratingId =  generateRandomString(16);
+          ratingId = generateRandomString(16);
   
           let ratingIdInUse = await postRatingsCollection.findOne({ratingId: ratingId});
           if (ratingIdInUse === null){
@@ -274,7 +268,6 @@ router.post('/post/rating/upload', async (req, res) => {
           return res.status(500).send("failed uploading rating");
 
         }
-        
   
       }else{
         console.log("invaild token");
@@ -296,11 +289,13 @@ router.post('/post/ratings', async (req, res) => {
       const rootItem = req.body.rootItem;
       const startPosPost = req.body.startPosPost;
       var startPosPostDate = 100000000000000
-      var vaildToken, userId;
-  
-      [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const validToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
     
-      if (vaildToken) { // user token is valid
+      if (validToken) { // user token is valid
         var postsCollection = database.collection('posts');
         var postRatingsCollection = database.collection('post_ratings');
   
@@ -335,26 +330,27 @@ router.post('/post/ratings', async (req, res) => {
           return res.status(403).send("root post not shared to you");
         }
 
-        const posts = await postRatingsCollection.find({ shareMode: 'public', creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({creationDate: -1}).limit(5).toArray();
-
-        var returnData = {}
-        returnData["items"] = []
+        const dataReturning = await postRatingsCollection.find({ shareMode: 'public', creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({creationDate: -1}).limit(5).toArray();
+        let returnData = {
+          "items": [] as { type: string; data: string;}[]
+        }
    
-        if (posts.length == 0) {
+        if (dataReturning.length == 0) {
           console.log("nothing to fetch");
         }
-  
-        for (var i = 0; i < posts.length; i++) {
-          returnData["items"].push({
-            type : "rating",
-            data : posts[i].ratingId
-          });
-          //Do something
+
+
+        for (var i = 0; i < dataReturning.length; i++) {
+          if (dataReturning[i].userId !== null) {
+            returnData["items"].push({
+              type : "rating",
+              data : dataReturning[i].ratingId,
+            });
+          }
         }
         
         console.log("returning posts");
         return res.status(200).json(returnData);
-  
       }else{
         console.log("invaild token");
         return res.status(401).send("invaild token");
@@ -366,6 +362,6 @@ router.post('/post/ratings', async (req, res) => {
 })
 
   
-module.exports = {
-    router:router,
+export {
+    router,
 };

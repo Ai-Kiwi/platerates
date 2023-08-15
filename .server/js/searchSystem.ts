@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { database } = require('./database');
-const { testToken } = require('./userLogin');
-
+import { database } from './database';
+import { testToken } from './userLogin';
+import mongoDB from "mongodb";
+import { Request, Response } from "express";
 
 
 
@@ -12,14 +13,16 @@ router.post('/search/users', async (req, res) => {
         const searchText = req.body.searchText;
         const token = req.body.token;
         const startPosPost = req.body.startPosPost;
-        var startPosInfo = 100000000000000
-        var vaildToken, userId;
-    
-        [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+        let startPosInfo: number = 100000000000000
+
+        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+        const result = await testToken(token,userIpAddress);
+        const validToken : boolean = result.valid;
+        const userId : string | undefined = result.userId;
       
-        if (vaildToken) { // user token is valid
-          var collection = database.collection('user_data');
-          var dataReturning;
+        if (validToken) { // user token is valid
+          let collection: mongoDB.Collection = database.collection('user_data');
     
           if (startPosPost) {
             if (startPosPost.type === "user" && !startPosPost.data){
@@ -28,7 +31,7 @@ router.post('/search/users', async (req, res) => {
             }
   
             const startPosPostData = await collection.findOne({ userId: startPosPost.data })
-            if (!startPosPostData){
+            if (startPosPostData === null){
               console.log("invaild start user")
               return res.status(400).send("invaild start user");
             }
@@ -36,21 +39,23 @@ router.post('/search/users', async (req, res) => {
             startPosInfo = startPosPostData.creationDate;
           }
     
-          dataReturning = await collection.find({ shareMode: 'public', creationDate: { $lt: startPosInfo}}).sort({creationDate: -1}).limit(15).toArray();
-          var returnData = {}
-          returnData["items"] = []
+          const dataReturning = await collection.find({ shareMode: 'public', creationDate: { $lt: startPosInfo}}).sort({creationDate: -1}).limit(15).toArray();
+          let returnData = {
+            "items": [] as { type: string; data: string;}[]
+          }
      
           if (dataReturning.length == 0) {
             console.log("nothing to fetch");
           }
-    
+
+
           for (var i = 0; i < dataReturning.length; i++) {
-            returnData["items"].push({
-              type : "user",
-              data : dataReturning[i].userId,
-              username : dataReturning[i].username,
-            });
-            //Do something
+            if (dataReturning[i].userId !== null) {
+              returnData["items"].push({
+                type : "user",
+                data : dataReturning[i].userId,
+              });
+            }
           }
           
           console.log("returning users");
@@ -68,6 +73,6 @@ router.post('/search/users', async (req, res) => {
   
   
   
-  module.exports = {
-      router:router,
-  };
+export {
+  router,
+};

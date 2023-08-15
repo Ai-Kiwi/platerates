@@ -1,43 +1,47 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const crypto = require('crypto');
-const { database } = require('./database');
-const { testToken } = require('./userLogin');
-const { generateRandomString } = require('./utilFunctions');
-const { versions } = require('sharp');
-const { userTimeout, userTimeoutTest } = require('./timeouts');
-const { testUsername } = require('./validInputTester');
-const { title } = require('process');
+import crypto from 'crypto';
+import { database } from './database';
+import { testToken } from './userLogin';
+import { generateRandomString } from './utilFunctions';
+import { versions } from 'sharp';
+import { userTimeout, userTimeoutTest } from './timeouts';
+import { cleanEmailAddress, testUsername } from './validInputTester';
+import { title } from 'process';
+import mongoDB from "mongodb";
+import { Request, Response } from "express";
 
-async function sendNoticeToAccount(userId, text, title){
-  const collection = database.collection('account_notices');
+async function sendNoticeToAccount(userId : string, text : string, title : string){
+  const collection: mongoDB.Collection = database.collection('account_notices');
   const response = await collection.insertOne({
     userId: userId,
     title: title,
     text: text,
   });
 
-  if (response === true){
+  if (response.acknowledged === true){
     return true;
   }else{
     return false;
   }
 }
 
-router.post('/profile/basicData', async (req, res) => {
+router.post('/profile/basicData', async (req : Request, res : Response) => {
   console.log(" => user fetching profile")
   try{
     const token = req.body.token;
     const userId = req.body.userId;
-    var vaildToken;
-    var requesterUserId;
-    [vaildToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
-    const collection = database.collection('user_data');
+    const collection: mongoDB.Collection = database.collection('user_data');
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
-    if (vaildToken) { // user token is valid
+    const result = await testToken(token,userIpAddress);
+    const validToken : boolean = result.valid;
+    const requesterUserId : string | undefined = result.userId;
+
+    if (validToken) { // user token is valid
       const userData = await collection.findOne({ userId: userId })
       
-      if (userData === undefined || userData === null){
+      if (userData === null){
         console.log("failed as invaild user");
         return res.status(404).send("unkown user");
       }
@@ -62,35 +66,42 @@ router.post('/profile/basicData', async (req, res) => {
 
 
 
-router.post('/profile/settings/change', async (req, res) => {
+router.post('/profile/settings/change', async (req : Request, res : Response) => {
   console.log(" => user profile setting change")
   try{
     const token = req.body.token;
     const setting = req.body.setting;
     const value = req.body.value;
 
-    var vaildToken, userId;
-    [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+    const result = await testToken(token,userIpAddress);
+    const validToken : boolean = result.valid;
+    const userId : string | undefined = result.userId;
   
-    if (vaildToken) { // user token is valid
+    if (validToken) { // user token is valid
 
       if (setting === "username") {
         //test timeout
-        const [timeoutActive, timeoutTime] = await userTimeoutTest(userId,"change_username")
+        const userTimeoutTestResult = await userTimeoutTest(userId,"change_username");
+        const timeoutActive : boolean = userTimeoutTestResult.active;
+        const timeoutTime : string | undefined = userTimeoutTestResult.timeLeft;
+      
         if (timeoutActive === true) {
           console.log("username timed out " + timeoutTime);
           return res.status(408).send("please wait " + timeoutTime + " to change username");
         }
 
-        var usernameAllowed, usernameDeniedReason;
-        [usernameAllowed, usernameDeniedReason] = await testUsername(value);
+        const testUsernameResult = await testUsername(value);
+        const usernameAllowed : boolean = testUsernameResult.valid;
+        const usernameDeniedReason : string = testUsernameResult.reason;
 
         if (usernameAllowed === false) {
           console.log(usernameDeniedReason)
           return res.status(400).send(usernameDeniedReason)
         }
 
-        const collection = database.collection('user_data');
+        const collection: mongoDB.Collection = database.collection('user_data');
 
         const response = await collection.updateOne({userId: userId},{ $set: {username : value}}) 
 
@@ -114,7 +125,7 @@ router.post('/profile/settings/change', async (req, res) => {
             return res.status(400).send("bio to large")
           }
   
-          const collection = database.collection('user_data');
+          const collection: mongoDB.Collection = database.collection('user_data');
   
           const response = await collection.updateOne({userId: userId},{ $set: {bio : value}}) 
   
@@ -148,14 +159,19 @@ router.post('/profile/settings/change', async (req, res) => {
 
 
 
-router.post('/profile/data', async (req, res) => {
+router.post('/profile/data', async (req : Request, res : Response) => {
     console.log(" => user fetching profile")
     try{
       const token = req.body.token;
-      var userId = req.body.userId;
-      var validToken, requesterUserId;
-      [validToken, requesterUserId] = await testToken(token,req.headers['x-forwarded-for']);
-      const collection = database.collection('user_data');
+      let userId = req.body.userId;
+      const collection: mongoDB.Collection = database.collection('user_data');
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+      const result = await testToken(token,userIpAddress);
+      const validToken : boolean = result.valid;
+      const requesterUserId : string | undefined = result.userId;
+
+      
 
       if (validToken){
         
@@ -166,7 +182,7 @@ router.post('/profile/data', async (req, res) => {
       
         const userData = await collection.findOne({ userId: userId });
 
-        if (userData === undefined || userData === null){
+        if (userData === null){
           console.log("failed as invaild user");
           return res.status(404).send("unkown user");
         }
@@ -195,20 +211,22 @@ router.post('/profile/data', async (req, res) => {
     }
 })
 
-router.post('/profile/posts', async (req, res) => {
+router.post('/profile/posts', async (req : Request, res : Response) => {
   console.log(" => user fetching posts on profile")
   try{
     const token = req.body.token;
     const startPosPost = req.body.startPosPost;
     const fetchingUserId = req.body.userId;
-    var startPosPostDate = 100000000000000
+    let startPosPostDate = 100000000000000
 
-    var vaildToken, userId;
-    [vaildToken, userId] = await testToken(token,req.headers['x-forwarded-for'])
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+    const result = await testToken(token,userIpAddress);
+    const validToken : boolean = result.valid;
+    const userId : string | undefined = result.userId;
   
-    if (vaildToken) { // user token is valid
-      var collection = database.collection('posts');
-      var posts;
+    if (validToken) { // user token is valid
+      let collection = database.collection('posts');
 
       if (startPosPost) {
         if (startPosPost.type === "post" && !startPosPost.data){
@@ -225,22 +243,26 @@ router.post('/profile/posts', async (req, res) => {
         startPosPostDate = startPosPostData.postDate;
       }
 
-      posts = await collection.find({posterUserId : fetchingUserId, shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
-      var returnData = {}
-      returnData["items"] = []
-      
+      const posts = await collection.find({posterUserId : fetchingUserId, shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
+      var returnData = {
+        "items": [] as { type: string; data: string;}[]
+      }
+
+
       if (posts.length == 0) {
         console.log("nothing to fetch");
       }
 
-      for (var i = 0; i < posts.length; i++) {
-        returnData["items"].push({
-          type : "post",
-          data : posts[i].postId
-        });
-        //Do something
-      }
 
+      for (var i = 0; i < posts.length; i++) {
+        if (posts[i].userId !== null) {
+          returnData["items"].push({
+            type : "post",
+            data : posts[i].postId,
+          });
+        }
+      }
+      
       console.log("returning posts");
       return res.status(200).json(returnData);
 
@@ -254,9 +276,9 @@ router.post('/profile/posts', async (req, res) => {
   }
 })
 
-async function banAccount(userId,time,reason) {
+async function banAccount(userId : string,time : number,reason : string) {
   try{
-    const collection = database.collection("user_credentials");
+    const collection : mongoDB.Collection = database.collection("user_credentials");
 
     const result = await collection.updateOne(
       { userId: userId },
@@ -281,19 +303,19 @@ async function banAccount(userId,time,reason) {
   }
 }
 
-async function createUser(rawEmail,password,username){
+async function createUser(rawEmail : string,password : string, username : string){
     try{
       const email = cleanEmailAddress(rawEmail);
       const userCredentialsCollection = database.collection("user_credentials");
       const userDataCollection = database.collection("user_data");
-      const passwordSalt = crypto.randomBytes(16).toString('hex');
-      const hashedPassword = crypto.createHash("sha256")
+      const passwordSalt : string = crypto.randomBytes(16).toString('hex');
+      const hashedPassword : string = crypto.createHash("sha256")
       .update(password)
       .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
       .digest("hex");
   
       //make sure email is not in use
-      var emailInUse = true;
+      let emailInUse : boolean = true;
       try{
         const result = await userCredentialsCollection.findOne({ email: email })
         if (result === null){
@@ -308,8 +330,9 @@ async function createUser(rawEmail,password,username){
         return false;
       }
 
-      var usernameAllowed, usernameDeniedReason;
-      [usernameAllowed, usernameDeniedReason] = await testUsername(username);
+      const testUsernameResult = await testUsername(username);
+      const usernameAllowed : boolean = testUsernameResult.valid;
+      const usernameDeniedReason : string = testUsernameResult.reason;
 
       if (usernameAllowed === false) {
         console.log(usernameDeniedReason)
@@ -318,8 +341,8 @@ async function createUser(rawEmail,password,username){
       }
   
       //create userId and make sure no one has it
-      var userId = "";
-      var invaildUserId = true;
+      let userId : string = "";
+      let invaildUserId : boolean = true;
       while(invaildUserId){
         userId = generateRandomString(16);
         try{
@@ -364,6 +387,7 @@ async function createUser(rawEmail,password,username){
         return true;
       }else{
         console.log("failed creating account")
+        return false
       }
   
 
@@ -375,9 +399,10 @@ async function createUser(rawEmail,password,username){
   
 }
 
-module.exports = {
-    router:router,
-    banAccount:banAccount,
-    createUser:createUser,
-    sendNoticeToAccount:sendNoticeToAccount,
+export {
+    router,
+    banAccount,
+    createUser,
+    sendNoticeToAccount,
 };
+

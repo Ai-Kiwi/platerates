@@ -48,4 +48,4 @@ app.*.map.json
 .server/node_modules/
 .server/private.key
 .server/.env
-
+.server/build

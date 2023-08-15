@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -12,10 +12,10 @@ const transporter = nodemailer.createTransport({
 });
 
 // async..await is not allowed in global scope, must use a wrapper
-async function sendMail(from,to,subject,text) {
+async function sendMail(from : string,to : string,subject : string,text : string) {
     try{
         // send mail with defined transport object
-        const info = await transporter.sendMail({
+        const info: nodemailer.SentMessageInfo = await transporter.sendMail({
           from: from, // sender address
           to: to, // list of receivers
           subject: subject, // Subject line
@@ -30,6 +30,6 @@ async function sendMail(from,to,subject,text) {
     }
 }
 
-module.exports = {
-  sendMail:sendMail,
+export {
+  sendMail,
 };
