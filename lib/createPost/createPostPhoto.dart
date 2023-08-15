@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 //import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:image/image.dart' as img;
 
@@ -36,14 +35,11 @@ class _CameraPageState extends State<CameraPage> {
           setState(() {});
         });
       } catch (e) {
-        Fluttertoast.showToast(
-            msg: "failed loading camera",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 3,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+          'failed loading camera',
+          style: TextStyle(fontSize: 20, color: Colors.red),
+        )));
       }
     }
     if (!mounted) return;
@@ -68,14 +64,10 @@ class _CameraPageState extends State<CameraPage> {
           setState(() {});
         });
       } catch (e) {
-        Fluttertoast.showToast(
-            msg: "failed loading camera",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 3,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('failed loading camera',
+              style: TextStyle(fontSize: 20, color: Colors.red)),
+        ));
       }
     }
     if (!mounted) return;
@@ -119,14 +111,10 @@ class _CameraPageState extends State<CameraPage> {
 
       if (finalImgSize[3] != 1080 || finalImgSize[2] != 1080) {
         print("photo to low resolstion");
-        Fluttertoast.showToast(
-            msg: "invalid photo resolstion",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 3,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('invalid photo resolstion',
+              style: TextStyle(fontSize: 20, color: Colors.red)),
+        ));
         return null;
       }
 

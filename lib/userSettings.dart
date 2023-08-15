@@ -302,6 +302,44 @@ class _UserSettingsState extends State<UserSettings> {
                           launchUrl(Uri.parse("mailto:toaster@aikiwi.dev"));
                         },
                       ),
+                      SettingItem(
+                        settingIcon: Icons.download,
+                        settingName: "manually download phone app",
+                        ontap: () {
+                          Alert(
+                            context: context,
+                            title: "DANGER",
+                            desc:
+                                "because this is manual apk install to update you have to redownload from here. This is also limited for android only\nAre you sure you want to continue",
+                            buttons: [
+                              DialogButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  launchUrl(Uri.parse(
+                                      "https://toaster.aikiwi.dev/toaster.apk"));
+                                },
+                                color: Colors.green,
+                                child: const Text(
+                                  "yes",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                              ),
+                              DialogButton(
+                                color: Colors.red,
+                                child: const Text(
+                                  "cancel",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              )
+                            ],
+                          ).show();
+                        },
+                      ),
                       //launch();
 
                       //const Expanded(child: Center()),
