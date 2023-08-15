@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../main.dart';
 import '../login/userLogin.dart';
+import 'errorHandler.dart';
 
 class DataCollect {
   Future<Map> getBasicUserData(String userId, context) async {
@@ -32,6 +33,7 @@ class DataCollect {
         await jsonCache
             .refresh('basicUserData-$userId', {"data": response.body});
       } else {
+        ErrorHandler.httpError(response.statusCode, response.body, context);
         Alert(
           context: context,
           type: AlertType.error,

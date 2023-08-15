@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/errorHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -122,6 +123,10 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                         ],
                                       ).show();
                                     } else {
+                                      ErrorHandler.httpError(
+                                          response.statusCode,
+                                          response.body,
+                                          context);
                                       // ignore: use_build_context_synchronously
                                       Alert(
                                         context: context,
@@ -256,6 +261,10 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                         ],
                                       ).show();
                                     } else {
+                                      ErrorHandler.httpError(
+                                          response.statusCode,
+                                          response.body,
+                                          context);
                                       // ignore: use_build_context_synchronously
                                       Alert(
                                         context: context,

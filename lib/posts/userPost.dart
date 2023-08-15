@@ -11,6 +11,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
+import '../libs/errorHandler.dart';
 import '../libs/report.dart';
 import '../main.dart';
 
@@ -78,6 +79,7 @@ class _PostItemState extends State<PostItem> {
               fontSize: 16.0);
         }
       } else {
+        ErrorHandler.httpError(response.statusCode, response.body, context);
         Alert(
           context: context,
           type: AlertType.error,
@@ -401,6 +403,8 @@ class PostManageButton extends StatelessWidget {
                       ],
                     ).show();
                   } else {
+                    ErrorHandler.httpError(
+                        response.statusCode, response.body, context);
                     // ignore: use_build_context_synchronously
                     Alert(
                       context: context,

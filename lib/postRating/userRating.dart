@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../libs/dataCollect.dart';
+import '../libs/errorHandler.dart';
 import '../libs/report.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
@@ -53,6 +54,7 @@ class _userRatingState extends State<userRating> {
         jsonData = jsonDecode(response.body);
         await jsonCache.refresh('rating-$ratingId', {"data": response.body});
       } else {
+        ErrorHandler.httpError(response.statusCode, response.body, context);
         Alert(
           context: context,
           type: AlertType.error,
@@ -193,6 +195,8 @@ class _userRatingState extends State<userRating> {
                         ],
                       ).show();
                     } else {
+                      ErrorHandler.httpError(
+                          response.statusCode, response.body, context);
                       Alert(
                         context: context,
                         type: AlertType.error,

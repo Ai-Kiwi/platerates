@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../main.dart';
+import 'libs/errorHandler.dart';
 import 'libs/smoothTransitions.dart';
 import 'login/userLogin.dart';
 import 'login/userResetPassword.dart';
@@ -112,6 +113,10 @@ class _UserSettingsState extends State<UserSettings> {
                                         ],
                                       ).show();
                                     } else {
+                                      ErrorHandler.httpError(
+                                          response.statusCode,
+                                          response.body,
+                                          context);
                                       Alert(
                                         context: context,
                                         type: AlertType.error,
@@ -228,6 +233,10 @@ class _UserSettingsState extends State<UserSettings> {
                                         ],
                                       ).show();
                                     } else {
+                                      ErrorHandler.httpError(
+                                          response.statusCode,
+                                          response.body,
+                                          context);
                                       // ignore: use_build_context_synchronously
                                       Alert(
                                         context: context,

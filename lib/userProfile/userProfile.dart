@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../libs/dataCollect.dart';
+import '../libs/errorHandler.dart';
 import '../libs/smoothTransitions.dart';
 import '../libs/userAvatar.dart';
 import '../main.dart';
@@ -131,6 +132,7 @@ class _UserProfileState extends State<UserProfile> {
         realUserId = fetchedData['userId'];
       });
     } else {
+      ErrorHandler.httpError(response.statusCode, response.body, context);
       setState(() {
         Alert(
           context: context,
@@ -370,6 +372,10 @@ class _UserProfileState extends State<UserProfile> {
                                         // ignore: use_build_context_synchronously
                                         Phoenix.rebirth(context);
                                       } else {
+                                        ErrorHandler.httpError(
+                                            response.statusCode,
+                                            response.body,
+                                            context);
                                         // ignore: use_build_context_synchronously
                                         Alert(
                                           context: context,

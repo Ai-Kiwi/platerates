@@ -74,6 +74,7 @@ async function testToken(token : string,ipAddress : string){
       };
     }
     if (decoded == null){
+      console.log("decoded is null");
       return {
         valid: false,
         userId: "",
