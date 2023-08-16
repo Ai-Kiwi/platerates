@@ -48,7 +48,6 @@ app.post("/latestVersion", async (req : Request, res : Response) => {
 app.get("/deleteData", async (req : Request, res : Response) => {
   console.log(" => user delete data website")
   try{
-    return res.status(200).send( (await testUsername("rectumdismantler3271")).reason as string)
     return res.status(200).sendFile(__dirname + "/pages/deleteData.html");
   }catch(err){
     console.log(err);
@@ -91,7 +90,6 @@ import {router as userPostRatingRouter} from "./js/userPostRating";
 import {router as reportRouter} from "./js/report";
 import {router as adminZoneRouter} from "./js/adminZone";
 import {router as searchSystemRouter} from "./js/searchSystem";
-import { testUsername } from "./js/validInputTester";
 
 
 
