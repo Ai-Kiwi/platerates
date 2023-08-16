@@ -121,8 +121,8 @@ router.post('/post/upload', async (req : Request, res : Response) => {
         
   
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     
     }catch(err){
@@ -190,8 +190,8 @@ router.post('/post/data', async (req : Request, res : Response) => {
         });
   
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);
@@ -239,7 +239,7 @@ router.post('/post/delete', async (req, res) => {
   
       }else{
         console.log("user token is invaild");
-        return res.status(401).send("invaild token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);
@@ -301,8 +301,8 @@ router.post('/post/feed', async (req, res) => {
         return res.status(200).json(returnData);
 
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);

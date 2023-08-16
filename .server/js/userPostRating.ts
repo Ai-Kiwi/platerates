@@ -81,8 +81,8 @@ router.post('/post/rating/delete', async (req, res) => {
         
   
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);
@@ -152,8 +152,8 @@ router.post('/post/rating/data', async (req, res) => {
         
   
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);
@@ -270,8 +270,8 @@ router.post('/post/rating/upload', async (req, res) => {
         }
   
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);
@@ -352,8 +352,8 @@ router.post('/post/ratings', async (req, res) => {
         console.log("returning posts");
         return res.status(200).json(returnData);
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);

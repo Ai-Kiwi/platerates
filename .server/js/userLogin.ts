@@ -98,7 +98,7 @@ async function testToken(token : string,ipAddress : string){
 
     //make sure token is not invald bcause of password reset
     if(decoded.tokenNotExpiredCode !== userData.tokenNotExpiredCode){
-      console.log("invaild tokenNotExpiredCode");
+      console.log("invalid tokenNotExpiredCode");
       return {
         valid: false,
         userId: "",
@@ -285,8 +285,8 @@ router.post('/login/logout', async (req, res) => {
 
   
       }else{
-        console.log("invaild token");
-        return res.status(401).send("invaild token");
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
       }
     }catch(err){
       console.log(err);
@@ -309,8 +309,8 @@ router.post('/testToken', async (req, res) => {
     console.log("vaild token");
     return res.status(200).send("vaild token");
   }else{
-    console.log("invaild token");
-    return res.status(401).send("invaild token");
+    console.log("invalid token");
+    return res.status(401).send("invalid token");
   }
   
 })
