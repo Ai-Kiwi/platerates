@@ -282,7 +282,7 @@ class _userRatingState extends State<userRating> {
                       Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8.0, vertical: 8.0),
-                          child: Linkify(
+                          child: SelectableLinkify(
                             onOpen: (link) async {
                               if (!await launchUrl(Uri.parse(link.url))) {
                                 throw Exception('Could not launch ${link.url}');

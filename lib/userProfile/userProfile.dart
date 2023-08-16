@@ -242,7 +242,7 @@ class _UserProfileState extends State<UserProfile> {
                           child: ListView(children: <Widget>[
                             Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: Linkify(
+                                child: SelectableLinkify(
                                   onOpen: (link) async {
                                     if (!await launchUrl(Uri.parse(link.url))) {
                                       throw Exception(

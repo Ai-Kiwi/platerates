@@ -268,7 +268,7 @@ class _PostItemState extends State<PostItem> {
                       ),
                       child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: Linkify(
+                          child: SelectableLinkify(
                             onOpen: (link) async {
                               if (!await launchUrl(Uri.parse(link.url))) {
                                 throw Exception('Could not launch ${link.url}');
@@ -297,7 +297,7 @@ class _PostItemState extends State<PostItem> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.all(8),
-                                child: Linkify(
+                                child: SelectableLinkify(
                                   onOpen: (link) async {
                                     if (!await launchUrl(Uri.parse(link.url))) {
                                       throw Exception(
