@@ -5,9 +5,11 @@ import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../libs/dataCollect.dart';
 import '../libs/errorHandler.dart';
 import '../libs/smoothTransitions.dart';
@@ -240,8 +242,14 @@ class _UserProfileState extends State<UserProfile> {
                           child: ListView(children: <Widget>[
                             Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  userBio,
+                                child: Linkify(
+                                  onOpen: (link) async {
+                                    if (!await launchUrl(Uri.parse(link.url))) {
+                                      throw Exception(
+                                          'Could not launch ${link.url}');
+                                    }
+                                  },
+                                  text: userBio,
                                   style: const TextStyle(
                                       color: Color.fromARGB(255, 255, 255, 255),
                                       fontSize: 15),

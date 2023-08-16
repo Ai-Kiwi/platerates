@@ -7,9 +7,11 @@ import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import '../libs/errorHandler.dart';
 import '../libs/report.dart';
 import '../main.dart';
@@ -266,8 +268,13 @@ class _PostItemState extends State<PostItem> {
                       ),
                       child: Padding(
                           padding: const EdgeInsets.all(8),
-                          child: Text(
-                            title,
+                          child: Linkify(
+                            onOpen: (link) async {
+                              if (!await launchUrl(Uri.parse(link.url))) {
+                                throw Exception('Could not launch ${link.url}');
+                              }
+                            },
+                            text: title,
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 15),
                           )),
@@ -289,12 +296,19 @@ class _PostItemState extends State<PostItem> {
                           child: ListView(
                             children: [
                               Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Text(
-                                    description,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 15),
-                                  ))
+                                padding: EdgeInsets.all(8),
+                                child: Linkify(
+                                  onOpen: (link) async {
+                                    if (!await launchUrl(Uri.parse(link.url))) {
+                                      throw Exception(
+                                          'Could not launch ${link.url}');
+                                    }
+                                  },
+                                  text: description,
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 15),
+                                ),
+                              ),
                             ],
                           ))),
                   const SizedBox(height: 16.0),
