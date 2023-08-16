@@ -1,4 +1,4 @@
-BRANCH="new-ui"
+BRANCH="latest"
 
 #already know start dir
 
