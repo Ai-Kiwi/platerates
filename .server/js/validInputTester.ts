@@ -1,9 +1,17 @@
 import { database } from './database';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
+import { RegExpMatcher, TextCensor, englishDataset, englishRecommendedTransformers, } from 'obscenity';
+
 
 async function testUsername(username : string){
   try{
+    //const matcher = new RegExpMatcher({
+    //  ...englishDataset.build(),
+    //  ...englishRecommendedTransformers,
+    //});
+
+
     const allowedCharsPattern = /^[a-zA-Z0-9_.-]+$/;
     //spaces as well /[a-zA-Z0-9_.-]./;
 
@@ -41,6 +49,13 @@ async function testUsername(username : string){
       };
     }
 
+    //if (matcher.hasMatch( username ) === true) {
+    //  return {
+    //    valid: false,
+    //    reason : "username inappropriate"
+    //  };
+    //}
+
     return {
       valid: true,
       reason : "username valid"
@@ -54,6 +69,8 @@ async function testUsername(username : string){
     };
   }
 }
+
+
 
 function cleanEmailAddress(email : string){
   let finalEmail: string = email

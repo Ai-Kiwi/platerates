@@ -91,9 +91,7 @@ class _CreatePostState extends State<CreatePostPage> {
                       maxLengthEnforcement:
                           MaxLengthEnforcement.truncateAfterCompositionEnds,
                       onChanged: (value) {
-                        setState(() {
-                          _title = value;
-                        });
+                        _title = value;
                       },
                       style: const TextStyle(
                         color: Colors.white,
@@ -138,9 +136,7 @@ class _CreatePostState extends State<CreatePostPage> {
                             MaxLengthEnforcement.truncateAfterCompositionEnds,
                         maxLines: 5,
                         onChanged: (value) {
-                          setState(() {
-                            _description = value;
-                          });
+                          _description = value;
                         },
                         style: TextStyle(color: Colors.white, fontSize: 15),
                         decoration: InputDecoration(

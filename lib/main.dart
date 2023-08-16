@@ -12,22 +12,23 @@ import 'package:json_cache/json_cache.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+//import 'package:workmanager/workmanager.dart';
 import 'createPost/createPostPhoto.dart';
 import 'errorPages.dart';
-import 'libs/errorHandler.dart';
 import 'login/userLogin.dart';
 import 'navbar.dart';
 
-//add better loading system, should have a nice ui as well as handling for when it can't talk to the server
-
 String serverDomain = 'https://toaster.aikiwi.dev';
-late JsonCacheMem jsonCache;
 
-//make sure it is running the latest verison
-late String appName;
-late String packageName;
-late String version;
-late String buildNumber;
+//@pragma(
+//    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+//void callbackDispatcher() {
+//  Workmanager().executeTask((task, inputData) {
+//    print(
+//        "Native called background task: $backgroundTask"); //simpleTask will be emitted here.
+//    return Future.value(true);
+//  });
+//}
 
 void main() {
   //make sure something a rather to use app verison
@@ -37,11 +38,25 @@ void main() {
     serverDomain = 'http://192.168.0.157:3030';
   }
 
+  //Workmanager().initialize(
+  //    callbackDispatcher, // The top level function, aka callbackDispatcher
+  //    isInDebugMode:
+  //        true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
+  //    );
+  //Workmanager().registerOneOffTask("task-identifier", "simpleTask");
+
   runApp(Phoenix(child: const MyApp()));
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 }
+
+late JsonCacheMem jsonCache;
+//make sure it is running the latest verison
+late String appName;
+late String packageName;
+late String version;
+late String buildNumber;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
