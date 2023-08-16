@@ -26,7 +26,7 @@ cd ..
 #after build finished bring over files for web and what not
 #only done now and wihtout sys link as not wanted to be included in typescript
 cp -R ./build/web ./.server/web/
-cp ./build/app/outputs/flutter-apk/app-release.apk ./toaster/.server/app-release.apk
+cp ./build/app/outputs/flutter-apk/app-release.apk ./.server/app-release.apk
 
 
 
@@ -52,8 +52,8 @@ sudo docker images
 
 #clean up after finished
 echo " # cleaning up injected files" 
-rm -R /home/aikiwi/Projects/phoneApps/toaster/.server/web/
-rm /home/aikiwi/Projects/phoneApps/toaster/.server/app-release.apk
+rm -R ./web/
+rm ./app-release.apk
 
 echo "opening server updating docker install"
 firefox -new-tab "https://192.168.0.166:9443/"
