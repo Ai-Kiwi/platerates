@@ -53,8 +53,8 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
       });
 
     }else{
-      console.log("returned invaild token");
-      return res.status(401).send("invaild token");
+      console.log("returned invalid token");
+      return res.status(401).send("invalid token");
     
     }
     
@@ -201,8 +201,8 @@ router.post('/profile/data', async (req : Request, res : Response) => {
         });
 
       }else{
-        console.log("returned invaild token");
-        return res.status(401).send("invaild token");
+        console.log("returned invalid token");
+        return res.status(401).send("invalid token");
       }
       
     }catch(err){
@@ -267,8 +267,8 @@ router.post('/profile/posts', async (req : Request, res : Response) => {
       return res.status(200).json(returnData);
 
     }else{
-      console.log("invaild token")
-      return res.status(401).send("invaild token");
+      console.log("invalid token")
+      return res.status(401).send("invalid token");
     }
   }catch(err){
     console.log(err);

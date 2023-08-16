@@ -62,8 +62,8 @@ router.post('/search/users', async (req, res) => {
           return res.status(200).json(returnData);
     
         }else{
-          console.log("invaild token");
-          return res.status(401).send("invaild token");
+          console.log("invalid token");
+          return res.status(401).send("invalid token");
         }
       }catch(err){
         console.log(err);
