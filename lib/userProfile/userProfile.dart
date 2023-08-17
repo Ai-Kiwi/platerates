@@ -256,179 +256,188 @@ class _UserProfileState extends State<UserProfile> {
                                 ))
                           ]))),
                   Visibility(
+                      visible: userId == null,
                       child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8),
-                    //user settings box
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          height: 33,
-                          width: 75,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              textStyle: const TextStyle(fontSize: 15),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5.0, vertical: 1.0),
-                              backgroundColor:
-                                  const Color.fromARGB(255, 45, 45, 45),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                  smoothTransitions.slideUp(UserSettings()));
-                            },
-                            child: const Text("settings",
-                                style: TextStyle(
-                                    color: Color.fromARGB(210, 255, 255, 255),
-                                    fontWeight: FontWeight.normal)),
-                          ),
-                        ),
-                        Visibility(
-                            visible: _isAdminAccount,
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 8),
-                                SizedBox(
-                                  height: 33,
-                                  width: 95,
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      textStyle: const TextStyle(fontSize: 15),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5.0, vertical: 1.0),
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 45, 45, 45),
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                          smoothTransitions
-                                              .slideUp(AdminZonePage()));
-                                    },
-                                    child: const Text("admin zone",
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                210, 255, 255, 255),
-                                            fontWeight: FontWeight.normal)),
-                                  ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8),
+                        //user settings box
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              height: 33,
+                              width: 75,
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  textStyle: const TextStyle(fontSize: 15),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0, vertical: 1.0),
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 45, 45, 45),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
-                              ],
-                            )),
-                        Expanded(child: Center()),
-                        SizedBox(
-                          height: 33,
-                          width: 75,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              textStyle: const TextStyle(fontSize: 15),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 5.0, vertical: 1.0),
-                              backgroundColor:
-                                  const Color.fromARGB(255, 45, 45, 45),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                onPressed: () {
+                                  Navigator.of(context).push(smoothTransitions
+                                      .slideUp(UserSettings()));
+                                },
+                                child: const Text("settings",
+                                    style: TextStyle(
+                                        color:
+                                            Color.fromARGB(210, 255, 255, 255),
+                                        fontWeight: FontWeight.normal)),
+                              ),
                             ),
-                            onPressed: () {
-                              Alert(
-                                context: context,
-                                type: AlertType.info,
-                                title: "who would you like to logout?",
-                                desc:
-                                    "select which devices you wish to logout.",
-                                buttons: [
-                                  //DialogButton(
-                                  //  onPressed: () async {},
-                                  //  color: Colors.green,
-                                  //  child: const Text(
-                                  //    "this",
-                                  //    style: TextStyle(
-                                  //        color: Colors.white, fontSize: 20),
-                                  //  ),
-                                  //),
-                                  DialogButton(
-                                    color: Colors.green,
-                                    child: const Text(
-                                      "everyone",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-                                      final response = await http.post(
-                                        Uri.parse("$serverDomain/login/logout"),
-                                        headers: <String, String>{
-                                          'Content-Type':
-                                              'application/json; charset=UTF-8',
+                            Visibility(
+                                visible: _isAdminAccount,
+                                child: Row(
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    SizedBox(
+                                      height: 33,
+                                      width: 95,
+                                      child: TextButton(
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          textStyle:
+                                              const TextStyle(fontSize: 15),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0, vertical: 1.0),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 45, 45, 45),
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).push(
+                                              smoothTransitions
+                                                  .slideUp(AdminZonePage()));
                                         },
-                                        body: jsonEncode(<String, String>{
-                                          'token': userManager.token,
-                                        }),
-                                      );
-                                      if (response.statusCode == 200) {
-                                        //if true do nothing and then it will display
-                                        //Navigator.pop(context);
-                                        //Navigator.push(
-                                        //    context,
-                                        //    MaterialPageRoute(
-                                        //        builder: (context) =>
-                                        //            LoginPage()));
-                                        // ignore: use_build_context_synchronously
-                                        Phoenix.rebirth(context);
-                                      } else {
-                                        ErrorHandler.httpError(
-                                            response.statusCode,
-                                            response.body,
-                                            context);
-                                        // ignore: use_build_context_synchronously
-                                        Alert(
-                                          context: context,
-                                          type: AlertType.error,
-                                          title: "failed logging out",
-                                          desc: response.body,
-                                          buttons: [
-                                            DialogButton(
-                                              onPressed: () =>
-                                                  Navigator.pop(context),
-                                              width: 120,
-                                              child: const Text(
-                                                "ok",
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 20),
-                                              ),
-                                            )
-                                          ],
-                                        ).show();
-                                      }
-                                    },
-                                  ),
-                                  DialogButton(
-                                    color: Colors.red,
-                                    child: const Text(
-                                      "cancel",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
+                                        child: const Text("admin zone",
+                                            style: TextStyle(
+                                                color: Color.fromARGB(
+                                                    210, 255, 255, 255),
+                                                fontWeight: FontWeight.normal)),
+                                      ),
                                     ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                  )
-                                ],
-                              ).show();
-                            },
-                            child: const Text("logout",
-                                style: TextStyle(
-                                    color: Color.fromARGB(210, 255, 255, 255),
-                                    fontWeight: FontWeight.normal)),
-                          ),
+                                  ],
+                                )),
+                            Expanded(child: Center()),
+                            SizedBox(
+                              height: 33,
+                              width: 75,
+                              child: TextButton(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                  textStyle: const TextStyle(fontSize: 15),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0, vertical: 1.0),
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 45, 45, 45),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                onPressed: () {
+                                  Alert(
+                                    context: context,
+                                    type: AlertType.info,
+                                    title: "who would you like to logout?",
+                                    desc:
+                                        "select which devices you wish to logout.",
+                                    buttons: [
+                                      //DialogButton(
+                                      //  onPressed: () async {},
+                                      //  color: Colors.green,
+                                      //  child: const Text(
+                                      //    "this",
+                                      //    style: TextStyle(
+                                      //        color: Colors.white, fontSize: 20),
+                                      //  ),
+                                      //),
+                                      DialogButton(
+                                        color: Colors.green,
+                                        child: const Text(
+                                          "everyone",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          final response = await http.post(
+                                            Uri.parse(
+                                                "$serverDomain/login/logout"),
+                                            headers: <String, String>{
+                                              'Content-Type':
+                                                  'application/json; charset=UTF-8',
+                                            },
+                                            body: jsonEncode(<String, String>{
+                                              'token': userManager.token,
+                                            }),
+                                          );
+                                          if (response.statusCode == 200) {
+                                            //if true do nothing and then it will display
+                                            //Navigator.pop(context);
+                                            //Navigator.push(
+                                            //    context,
+                                            //    MaterialPageRoute(
+                                            //        builder: (context) =>
+                                            //            LoginPage()));
+                                            // ignore: use_build_context_synchronously
+                                            Phoenix.rebirth(context);
+                                          } else {
+                                            ErrorHandler.httpError(
+                                                response.statusCode,
+                                                response.body,
+                                                context);
+                                            // ignore: use_build_context_synchronously
+                                            Alert(
+                                              context: context,
+                                              type: AlertType.error,
+                                              title: "failed logging out",
+                                              desc: response.body,
+                                              buttons: [
+                                                DialogButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  width: 120,
+                                                  child: const Text(
+                                                    "ok",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20),
+                                                  ),
+                                                )
+                                              ],
+                                            ).show();
+                                          }
+                                        },
+                                      ),
+                                      DialogButton(
+                                        color: Colors.red,
+                                        child: const Text(
+                                          "cancel",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      )
+                                    ],
+                                  ).show();
+                                },
+                                child: const Text("logout",
+                                    style: TextStyle(
+                                        color:
+                                            Color.fromARGB(210, 255, 255, 255),
+                                        fontWeight: FontWeight.normal)),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )),
+                      )),
                 ],
               )),
           widgetAddedToEnd: const Center(

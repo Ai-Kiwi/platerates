@@ -100,7 +100,10 @@ router.post('/admin/createUser', async (req : Request, res : Response) => {
 Hi user,
 We're excited to announce that you've been accepted into the beta for Toaster! Toaster is an app all about sharing and rating toast. You can share your own toast and get ratings from other users.
 
-Your account has been created and you can log in at https://toaster.aikiwi.dev/. Your temporary password is ${NewUserPassword} please change this once logged in.
+Your account has been created and you can log in at https://toaster.aikiwi.dev/. Your temporary password is below please change this once logged in using reset password.
+
+   login email address : ${newAccountEmail}
+   temporary password : ${NewUserPassword}
 
 We ask to once again remind you this is a beta and that bugs and issues will happen. Please reach out to us by email describing any bugs or suggestions you have, it helps alot! You can help us at toaster@aikiwi.dev.
 
