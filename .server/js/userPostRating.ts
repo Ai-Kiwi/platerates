@@ -47,12 +47,7 @@ async function updatePostRating(rootItem : {data : string, type : string}){
       if (userPosts.length != 0) {
         userAvgRating = userAvgRating / userPosts.length;
       }
-
-      console.log(userAvgRating);
-      console.table(userPosts);
-
       const userDataResponse = await userDataCollection.updateOne({userId : userId},{ $set: {averagePostRating : userAvgRating}})
-      console.log(userDataResponse);
     }
 
 
