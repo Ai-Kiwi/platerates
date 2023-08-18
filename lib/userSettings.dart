@@ -296,7 +296,7 @@ class _UserSettingsState extends State<UserSettings> {
                         },
                       ),
                       SettingItem(
-                        settingIcon: Icons.lock,
+                        settingIcon: Icons.book,
                         settingName: "change log",
                         ontap: () {
                           launchUrl(Uri.parse(

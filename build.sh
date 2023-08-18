@@ -1,5 +1,7 @@
 BRANCH="latest"
 
+set -e
+
 #already know start dir
 
 echo " # building web"
