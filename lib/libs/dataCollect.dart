@@ -52,6 +52,7 @@ class DataCollect {
         ).show();
         return {
           "username": "",
+          "averagePostRating": "",
         };
       }
     }
@@ -59,6 +60,7 @@ class DataCollect {
     //as non of these have returned error it must have found data
     return {
       "username": jsonData["username"],
+      "averagePostRating": jsonData["averagePostRating"],
     };
   }
 }

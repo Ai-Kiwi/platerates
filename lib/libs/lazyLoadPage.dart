@@ -182,7 +182,8 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
                 );
               } else if (itemsCollected[index - 1]["type"] == "user") {
                 return SimpleUserProfileBar(
-                    userId: itemsCollected[index - 1]["data"]);
+                  userId: itemsCollected[index - 1]["data"],
+                );
               }
             }
             return null;

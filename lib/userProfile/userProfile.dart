@@ -7,6 +7,7 @@ import 'package:Toaster/userSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,6 +31,7 @@ class SimpleUserProfileBar extends StatefulWidget {
 class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   final String userId;
   String username = "";
+  double rating = 0;
 
   _SimpleUserProfileBarState({required this.userId});
 
@@ -37,6 +39,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
     Map basicUserData = await dataCollect.getBasicUserData(userId, context);
     setState(() {
       username = basicUserData["username"];
+      rating = basicUserData["averagePostRating"];
     });
   }
 
@@ -71,10 +74,27 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
                   clickable: true,
                   userId: userId),
               const SizedBox(width: 8),
-              Text(
-                username,
-                style: TextStyle(color: Colors.white, fontSize: 25),
-              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    username,
+                    style: TextStyle(color: Colors.white, fontSize: 25),
+                  ),
+                  RatingBarIndicator(
+                    rating: rating,
+                    itemBuilder: (context, index) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                    itemCount: 5,
+                    itemSize: 25.0,
+                    direction: Axis.horizontal,
+                  ),
+                ],
+              )
             ]),
             onTap: () {
               Navigator.push(

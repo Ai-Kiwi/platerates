@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-import '../libs/errorHandler.dart';
 import '../libs/smoothTransitions.dart';
 import '../main.dart';
 import 'package:http/http.dart' as http;

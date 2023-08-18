@@ -25,7 +25,7 @@ String serverDomain = 'https://toaster.aikiwi.dev';
 //void callbackDispatcher() {
 //  Workmanager().executeTask((task, inputData) {
 //    print(
-//        "Native called background task: $backgroundTask"); //simpleTask will be emitted here.
+//        "Native called background task: $task"); //simpleTask will be emitted here.
 //    return Future.value(true);
 //  });
 //}
@@ -103,6 +103,15 @@ class MyApp extends StatelessWidget {
       await userManager.loadTokenFromStoreage();
     }
 
+    //register notification handler
+    //Workmanager().registerPeriodicTask("1", "hourlyNotification",
+    //    frequency: Duration(seconds: 5),
+    //    existingWorkPolicy: ExistingWorkPolicy.replace,
+    //    inputData: {
+    //      "token": userManager.token,
+    //    });
+
+    //respond with if token is valid
     var loginStateData = await userManager.checkLoginState();
     if (loginStateData == true) {
       yield "valid-token";

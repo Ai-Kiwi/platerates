@@ -106,13 +106,13 @@ async function testToken(token : string,ipAddress : string){
     };
 
     //another test to make sure it is the same ip address
-    if(decoded.ipAddress !== ipAddress){
-      console.log("invaild ip address");
-      return {
-        valid: false,
-        userId: "",
-      };
-    };
+    //if(decoded.ipAddress !== ipAddress){
+    //  console.log("invaild ip address");
+    //  return {
+    //    valid: false,
+    //    userId: "",
+    //  };
+    //};
 
     return {
       valid: true,
