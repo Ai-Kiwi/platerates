@@ -65,6 +65,16 @@ app.get('/privacyPolicy', async (req : Request, res : Response) => {
   }
 })
 
+app.get('/changeLog', async (req : Request, res : Response) => {
+  console.log(" => user delete data website")
+  try{
+    return res.status(200).sendFile(__dirname + "/pages/changeLog.html");
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
 
 app.get('/toaster.apk', async (req : Request, res : Response) => {
   console.log(" => user delete data website")
