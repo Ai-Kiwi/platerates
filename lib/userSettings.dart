@@ -296,6 +296,14 @@ class _UserSettingsState extends State<UserSettings> {
                         },
                       ),
                       SettingItem(
+                        settingIcon: Icons.lock,
+                        settingName: "change log",
+                        ontap: () {
+                          launchUrl(Uri.parse(
+                              "https://toaster.aikiwi.dev/changeLog"));
+                        },
+                      ),
+                      SettingItem(
                         settingIcon: Icons.help,
                         settingName: "contact support",
                         ontap: () {
