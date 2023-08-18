@@ -25,9 +25,29 @@ class _SearchPageState extends State<SearchPage> {
         body: LazyLoadPage(
           urlToFetch: "/search/users",
           widgetAddedToBlank: Center(),
-          widgetAddedToEnd: Center(),
-          widgetAddedToTop: Center(),
+          widgetAddedToEnd: Center(
+            child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Text(
+                  "end of search",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                )),
+          ),
+          widgetAddedToTop: Center(
+              child: Column(children: [
+            Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: Text(
+                  "Users",
+                  style: TextStyle(color: Colors.white, fontSize: 40),
+                )),
+            Divider(
+              color: Color.fromARGB(255, 110, 110, 110),
+              thickness: 1.0,
+            ),
+          ])),
         ));
+
     //return Center();
   }
 }

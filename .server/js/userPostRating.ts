@@ -7,33 +7,63 @@ import { generateRandomString } from './utilFunctions';
 import { testUserAdmin } from './adminZone';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
+import { error } from 'console';
 
 
 async function updatePostRating(rootItem : {data : string, type : string}){
-  var postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
-  var postsCollection : mongoDB.Collection = database.collection('posts');
+  try{  
+    var postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
+    var postsCollection : mongoDB.Collection = database.collection('posts');
+    var userDataCollection : mongoDB.Collection = database.collection('user_data');
 
 
-  const ratings = await postRatingsCollection.find({ "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).toArray();
+    const ratings = await postRatingsCollection.find({ "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).toArray();
 
-  var newRating : number = 0;
+    var newRating : number = 0;
 
-  for (var i = 0; i < ratings.length; i++) {
-    newRating += ratings[i].rating;
-  }
+    for (var i = 0; i < ratings.length; i++) {
+      newRating += ratings[i].rating;
+    }
 
-  if (ratings.length != 0) {
-    newRating = newRating / ratings.length;
-  }
+    if (ratings.length != 0) {
+      newRating = newRating / ratings.length;
+    }
 
-  const response = await postsCollection.updateOne({postId : rootItem.data},{ $set: {rating : newRating}})
+    const response = await postsCollection.updateOne({postId : rootItem.data},{ $set: {rating : newRating}})
 
-  if (response.acknowledged === true) {
-    return true;
-  }else{
+    //update user rating
+    const perentPostInfo = await postsCollection.findOne({postId : rootItem.data})
+    if (perentPostInfo !== null) {
+      const userId : string = perentPostInfo.posterUserId;
+
+      const userPosts = await postsCollection.find({ posterUserId : userId }).toArray();
+
+      var userAvgRating : number = 0;
+
+      for (var i = 0; i < userPosts.length; i++) {
+        userAvgRating += userPosts[i].rating;
+      }
+
+      if (userPosts.length != 0) {
+        userAvgRating = userAvgRating / userPosts.length;
+      }
+
+      console.log(userAvgRating);
+      console.table(userPosts);
+
+      const userDataResponse = await userDataCollection.updateOne({userId : userId},{ $set: {averagePostRating : userAvgRating}})
+      console.log(userDataResponse);
+    }
+
+
+    if (response.acknowledged === true) {
+      return true;
+    }else{
+      return false;
+    }
+  }catch(err){
     return false;
   }
-
 }
 
 

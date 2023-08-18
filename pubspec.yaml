@@ -51,7 +51,7 @@ dependencies:
   url_launcher: ^6.1.12
   file_selector: ^1.0.0
   flutter_linkify: ^6.0.0
-  # workmanager: ^0.5.1
+  workmanager: ^0.5.1
 
 dev_dependencies:
   flutter_launcher_icons: "^0.13.1"

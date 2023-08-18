@@ -50,6 +50,7 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
       res.status(200).json({
         username: userData.username,
         userAvatar : userData.avatar,
+        averagePostRating : userData.averagePostRating | 0,
       });
 
     }else{
@@ -198,6 +199,7 @@ router.post('/profile/data', async (req : Request, res : Response) => {
           bio: userData.bio,
           administrator: userData.administrator,
           userId: userId,
+          averagePostRating : userData.averagePostRating | 0,
         });
 
       }else{
