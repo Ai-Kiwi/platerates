@@ -26,14 +26,14 @@ router.post('/search/users', async (req, res) => {
     
           if (startPosPost) {
             if (startPosPost.type === "user" && !startPosPost.data){
-              console.log("invaild start user")
-              return res.status(400).send("invaild start user");
+              console.log("invalid start user")
+              return res.status(400).send("invalid start user");
             }
   
             const startPosPostData = await collection.findOne({ userId: startPosPost.data })
             if (startPosPostData === null){
-              console.log("invaild start user")
-              return res.status(400).send("invaild start user");
+              console.log("invalid start user")
+              return res.status(400).send("invalid start user");
             }
               
             startPosInfo = startPosPostData.creationDate;

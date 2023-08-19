@@ -128,7 +128,7 @@ The Toaster Team`);
             }
 
         }else{
-            console.log("user token is invaild");
+            console.log("user token is invalid");
             return res.status(401).send("invalid token");
         }
     }catch(err){
@@ -178,7 +178,7 @@ router.post('/admin/banUser', async (req, res) => {
             }
 
         }else{
-          console.log("user token is invaild");
+          console.log("user token is invalid");
           return res.status(401).send("invalid token");
         }
     }catch(err){

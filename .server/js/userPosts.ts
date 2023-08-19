@@ -71,8 +71,8 @@ router.post('/post/upload', async (req : Request, res : Response) => {
         if (shareMode === "public") {
         }else if (shareMode === "friends"){
         }else{
-          console.log("invaild post share mode")
-          return res.status(400).send('Invaild share mode.');
+          console.log("invalid post share mode")
+          return res.status(400).send('invalid share mode.');
         }
   
         //upload image
@@ -154,8 +154,8 @@ router.post('/post/data', async (req : Request, res : Response) => {
         const postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
   
         if (itemData === null) {
-          console.log("invaild post");
-          return res.status(404).send("invaild post");
+          console.log("invalid post");
+          return res.status(404).send("invalid post");
         }
   
         if (itemData.shareMode !== 'public'){
@@ -238,7 +238,7 @@ router.post('/post/delete', async (req, res) => {
         }
   
       }else{
-        console.log("user token is invaild");
+        console.log("user token is invalid");
         return res.status(401).send("invalid token");
       }
     }catch(err){
@@ -266,14 +266,14 @@ router.post('/post/feed', async (req, res) => {
   
         if (startPosPost) {
           if (startPosPost.type === "post" && !startPosPost.data){
-            console.log("invaild start post")
-            return res.status(400).send("invaild start post");
+            console.log("invalid start post")
+            return res.status(400).send("invalid start post");
           }
 
           const startPosPostData = await collection.findOne({ postId: startPosPost.data })
           if (!startPosPostData){
-            console.log("invaild start post")
-            return res.status(400).send("invaild start post");
+            console.log("invalid start post")
+            return res.status(400).send("invalid start post");
           }
             
           startPosPostDate = startPosPostData.postDate;

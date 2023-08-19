@@ -42,7 +42,7 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
       const userData = await collection.findOne({ userId: userId })
       
       if (userData === null){
-        console.log("failed as invaild user");
+        console.log("failed as invalid user");
         return res.status(404).send("unkown user");
       }
 
@@ -184,7 +184,7 @@ router.post('/profile/data', async (req : Request, res : Response) => {
         const userData = await collection.findOne({ userId: userId });
 
         if (userData === null){
-          console.log("failed as invaild user");
+          console.log("failed as invalid user");
           return res.status(404).send("unkown user");
         }
 
@@ -233,13 +233,13 @@ router.post('/profile/posts', async (req : Request, res : Response) => {
       if (startPosPost) {
         if (startPosPost.type === "post" && !startPosPost.data){
           console.log("invalid start post");
-          return res.status(400).send("invaild start post");
+          return res.status(400).send("invalid start post");
         }
 
         const startPosPostData = await collection.findOne({ postId: startPosPost.data })
         if (!startPosPostData){
           console.log("invalid start post");
-          return res.status(400).send("invaild start post");
+          return res.status(400).send("invalid start post");
         }
           
         startPosPostDate = startPosPostData.postDate;
@@ -344,13 +344,13 @@ async function createUser(rawEmail : string,password : string, username : string
   
       //create userId and make sure no one has it
       let userId : string = "";
-      let invaildUserId : boolean = true;
-      while(invaildUserId){
+      let invalidUserId : boolean = true;
+      while(invalidUserId){
         userId = generateRandomString(16);
         try{
           const result = await userCredentialsCollection.findOne({ userId: userId })
           if (result === null){
-            invaildUserId = false;
+            invalidUserId = false;
           }
         }catch(err){
           console.log(err);
