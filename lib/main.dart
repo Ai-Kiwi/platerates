@@ -74,13 +74,13 @@ class MyApp extends StatelessWidget {
       print("cache expire time is null");
       await jsonCache.clear();
       await jsonCache
-          .refresh("expire-time", {"expireTime": DateTime.now().day + 7});
+          .refresh("expire-time", {"expireTime": DateTime.now().day});
     } else {
       if (expireTime["expireTime"] > (DateTime.now().day + 7)) {
         print("cache expire time has expired");
         await jsonCache.clear();
         await jsonCache
-            .refresh("expire-time", {"expireTime": DateTime.now().day + 7});
+            .refresh("expire-time", {"expireTime": DateTime.now().day});
       } else {
         print("cache expire time is still active");
       }
