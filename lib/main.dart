@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_cache/json_cache.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -63,9 +65,10 @@ class MyApp extends StatelessWidget {
 
   Stream<String> initializeApp() async* {
     //load in json cache stuff
-    final sharedPrefs = await SharedPreferences.getInstance();
-    jsonCache = JsonCacheMem(JsonCacheSharedPreferences(sharedPrefs));
-    jsonCache.clear();
+    await Hive.initFlutter();
+    final box =
+        await Hive.openBox<String>('appBox'); // it must be a Box<String>.
+    jsonCache = JsonCacheMem(JsonCacheHive(box));
 
     //setup verison stuff
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
