@@ -134,45 +134,14 @@ class _UserProfileState extends State<UserProfile> {
   _UserProfileState({required this.userId, required this.openedOntopMenu});
 
   Future<void> _fetchProfile() async {
-    final response = await http.post(
-      Uri.parse("$serverDomain/profile/data"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'token': userManager.token,
-        'userId': userId,
-      }),
-    );
-    if (response.statusCode == 200) {
-      setState(() {
-        var fetchedData = jsonDecode(response.body);
-        userBio = fetchedData['bio'];
-        username = fetchedData['username'];
-        _isAdminAccount = fetchedData['administrator'];
-        realUserId = fetchedData['userId'];
-      });
-    } else {
-      ErrorHandler.httpError(response.statusCode, response.body, context);
-      setState(() {
-        Alert(
-          context: context,
-          type: AlertType.error,
-          title: "failed fetching account data",
-          desc: response.body,
-          buttons: [
-            DialogButton(
-              onPressed: () => Navigator.pop(context),
-              width: 120,
-              child: const Text(
-                "ok",
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            )
-          ],
-        ).show();
-      });
-    }
+    var fetchedData = await dataCollect.getUserData(userId, context);
+    setState(() {
+      userBio = fetchedData['bio'];
+      username = fetchedData['username'];
+      _isAdminAccount = fetchedData['administrator'];
+      realUserId = fetchedData['userId'];
+    });
+
     _isLoading = false;
   }
 
