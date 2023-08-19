@@ -51,7 +51,7 @@ class _UserSettingsState extends State<UserSettings> {
                         thickness: 1.0,
                       ),
                       SettingItem(
-                        settingIcon: Icons.person_outline,
+                        settingIcon: Icons.person,
                         settingName: "username",
                         ontap: () {
                           String newUsername = "";
@@ -161,6 +161,14 @@ class _UserSettingsState extends State<UserSettings> {
                       SettingItem(
                         settingIcon: Icons.lock,
                         settingName: "password",
+                        ontap: () {
+                          Navigator.of(context).push(smoothTransitions
+                              .slideRight(ResetPasswordPage()));
+                        },
+                      ),
+                      SettingItem(
+                        settingIcon: Icons.person,
+                        settingName: "avatar",
                         ontap: () {
                           Navigator.of(context).push(smoothTransitions
                               .slideRight(ResetPasswordPage()));
