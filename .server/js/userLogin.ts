@@ -19,7 +19,7 @@ require('dotenv').config();
 
 const privateKeyRaw = process.env.loginKey;
 if (privateKeyRaw === undefined){
-  console.log(crypto.randomBytes(128).toString('base64')) //128 bit keys
+  console.log(crypto.randomBytes(512).toString('base64')) //128 bit keys
   error("no private key input")
 }
 const privateKey : Buffer = Buffer.from(privateKeyRaw as string, 'base64');
