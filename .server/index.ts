@@ -96,7 +96,7 @@ app.get('/toaster.apk', async (req : Request, res : Response) => {
 import {router as userPostsRouter} from "./js/userPosts";
 import {router as userAccountsRouter} from "./js/userAccounts";
 import {router as userLoginRouter} from "./js/userLogin";
-import {router as userPostRatingRouter} from "./js/userPostRating";
+import {router as userPostRatingRouter} from "./js/userRating";
 import {router as reportRouter} from "./js/report";
 import {router as adminZoneRouter} from "./js/adminZone";
 import {router as searchSystemRouter} from "./js/searchSystem";

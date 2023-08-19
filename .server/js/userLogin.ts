@@ -107,7 +107,7 @@ async function testToken(token : string,ipAddress : string){
 
     //another test to make sure it is the same ip address
     //if(decoded.ipAddress !== ipAddress){
-    //  console.log("invaild ip address");
+    //  console.log("invalid ip address");
     //  return {
     //    valid: false,
     //    userId: "",
@@ -148,7 +148,7 @@ router.post('/login', async (req, res) => {
     const userData = await collection.findOne({ email: userEmail });
     //make sure it is vaild account lol
     if (userData === null){
-      console.log("invaild credentials enterd")
+      console.log("invalid credentials enterd")
       return res.status(401).send("invalid login credentials"); //incorrect login
     }
 
@@ -242,7 +242,7 @@ router.post('/login', async (req, res) => {
         Error("failed to add user timeout to database");
       }
 
-      console.log("invaild login credentials");
+      console.log("invalid login credentials");
       return res.status(401).send("invalid login credentials"); //incorrect login
     }
   }catch(err){

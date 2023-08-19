@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/postRating/userRating.dart';
+import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:Toaster/posts/userPost.dart';
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -179,6 +179,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
               } else if (itemsCollected[index - 1]["type"] == "rating") {
                 return userRating(
                   ratingId: itemsCollected[index - 1]["data"],
+                  clickable: true,
                 );
               } else if (itemsCollected[index - 1]["type"] == "user") {
                 return SimpleUserProfileBar(
