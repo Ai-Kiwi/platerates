@@ -12,7 +12,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_cache/json_cache.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 //import 'package:workmanager/workmanager.dart';
 import 'createPost/createPostPhoto.dart';
@@ -69,6 +68,23 @@ class MyApp extends StatelessWidget {
     final box =
         await Hive.openBox<String>('appBox'); // it must be a Box<String>.
     jsonCache = JsonCacheMem(JsonCacheHive(box));
+
+    var expireTime = await jsonCache.value("expire-time");
+    if (expireTime == null) {
+      print("cache expire time is null");
+      await jsonCache.clear();
+      await jsonCache
+          .refresh("expire-time", {"expireTime": DateTime.now().day + 7});
+    } else {
+      if (expireTime["expireTime"] > (DateTime.now().day + 7)) {
+        print("cache expire time has expired");
+        await jsonCache.clear();
+        await jsonCache
+            .refresh("expire-time", {"expireTime": DateTime.now().day + 7});
+      } else {
+        print("cache expire time is still active");
+      }
+    }
 
     //setup verison stuff
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
