@@ -75,24 +75,24 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
                   userId: userId),
               const SizedBox(width: 8),
               Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 8),
+                  //const SizedBox(height: 8),
                   Text(
                     username,
                     style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
-                  RatingBarIndicator(
-                    rating: rating,
-                    itemBuilder: (context, index) => const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ),
-                    itemCount: 5,
-                    itemSize: 25.0,
-                    direction: Axis.horizontal,
-                  ),
+                  //RatingBarIndicator(
+                  //  rating: rating,
+                  //  itemBuilder: (context, index) => const Icon(
+                  //    Icons.star,
+                  //    color: Colors.amber,
+                  //  ),
+                  //  itemCount: 5,
+                  //  itemSize: 25.0,
+                  //  direction: Axis.horizontal,
+                  //),
                 ],
               )
             ]),
