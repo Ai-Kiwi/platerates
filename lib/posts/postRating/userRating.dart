@@ -22,7 +22,11 @@ class userRating extends StatefulWidget {
   final String ratingId;
   final bool clickable;
 
-  userRating({super.key, required this.ratingId, required this.clickable});
+  userRating({
+    super.key,
+    required this.ratingId,
+    required this.clickable,
+  });
 
   @override
   _userRatingState createState() =>
@@ -167,7 +171,7 @@ class _userRatingState extends State<userRating> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => PostRatingList(
+                                        builder: (context) => fullPagePost(
                                             postId: rootItem["data"])));
                               },
                               width: 120,
@@ -263,13 +267,11 @@ class _userRatingState extends State<userRating> {
                       color: Colors.white,
                     )),
                   ),
-                  Text(
-                    (childRatingsAmount ?? "").toString(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                    ),
-                  )
+                  Text((childRatingsAmount ?? "").toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                      )),
                 ],
               ),
 

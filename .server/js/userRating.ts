@@ -8,6 +8,7 @@ import { testUserAdmin } from './adminZone';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { error } from 'console';
+import { sendNotification } from './notificationSystem';
 
 
 async function updatePostRating(rootItem : {data : string, type : string}){
@@ -171,9 +172,6 @@ router.post('/post/rating/data', async (req, res) => {
 
         const childRatings = await postRatingsCollection.countDocuments({ "rootItem.data" : ratingId, "rootItem.type" : "rating" });
 
-
-
-        updatePostRating(rootItem);
         console.log("response sent")
         if (onlyUpdateChangeable === true) {
           return res.status(200).json({
@@ -294,6 +292,12 @@ router.post('/post/rating/upload', async (req, res) => {
             return res.status(400).send("invalid rating");
           }
 
+          sendNotification({
+            userId : rootItemData.posterUserId,
+            itemId : ratingId,
+            action : "user_rated_post"
+          });
+
           const postResponse = await postRatingsCollection.insertOne({
             rootItem : {"type": rootItem.type, "data": rootItem.data},
             ratingId: ratingId,
@@ -328,6 +332,12 @@ router.post('/post/rating/upload', async (req, res) => {
             console.log("root post not shared with user");
             return res.status(400).send("root post not shared to you");
           }
+
+          sendNotification({
+            userId : rootItemData.ratingPosterId,
+            itemId : ratingId,
+            action : "user_reply_post_rating"
+          });
 
           const postResponse = await postRatingsCollection.insertOne({
             rootItem : {"type": rootItem.type, "data": rootItem.data},

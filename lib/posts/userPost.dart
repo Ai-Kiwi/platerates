@@ -269,7 +269,7 @@ class _PostItemState extends State<PostItem> {
             onTap: () {
               if (clickable == true) {
                 Navigator.of(context).push(
-                    smoothTransitions.slideUp(PostRatingList(postId: postId)));
+                    smoothTransitions.slideUp(fullPagePost(postId: postId)));
               }
             },
           ));

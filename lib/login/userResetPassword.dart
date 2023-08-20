@@ -1,10 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
-import 'package:toggle_switch/toggle_switch.dart';
+//import 'package:toggle_switch/toggle_switch.dart';
 import '../libs/errorHandler.dart';
 import '../main.dart';
 

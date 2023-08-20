@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/userAvatar.dart';
+import 'package:Toaster/notifications/notificationBarItem.dart';
 import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:Toaster/posts/userPost.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
   Widget widgetAddedToBlank;
   ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
+  bool? perentRating = false;
   final double scrollDistence = 0.8;
   final String urlToFetch;
   var extraUrlData;
@@ -184,6 +186,10 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
               } else if (itemsCollected[index - 1]["type"] == "user") {
                 return SimpleUserProfileBar(
                   userId: itemsCollected[index - 1]["data"],
+                );
+              } else if (itemsCollected[index - 1]["type"] == "notification") {
+                return notificationBarItem(
+                  notificationData: itemsCollected[index - 1]["data"],
                 );
               }
             }
