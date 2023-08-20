@@ -33,6 +33,7 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
     const userId = req.body.userId;
     const collection: mongoDB.Collection = database.collection('user_data');
     const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+    const onlyUpdateChangeable = req.body.onlyUpdateChangeable;
 
     const result = await testToken(token,userIpAddress);
     const validToken : boolean = result.valid;
@@ -47,6 +48,13 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
       }
 
       console.log("sending basic data");
+      if (onlyUpdateChangeable === true) {
+        return res.status(200).json({
+          username: userData.username,
+          userAvatar : userData.avatar,
+          averagePostRating : userData.averagePostRating | 0,
+        });
+      }
       res.status(200).json({
         username: userData.username,
         userAvatar : userData.avatar,
@@ -167,6 +175,7 @@ router.post('/profile/data', async (req : Request, res : Response) => {
       let userId = req.body.userId;
       const collection: mongoDB.Collection = database.collection('user_data');
       const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+      const onlyUpdateChangeable = req.body.onlyUpdateChangeable;
 
       const result = await testToken(token,userIpAddress);
       const validToken : boolean = result.valid;
@@ -194,6 +203,14 @@ router.post('/profile/data', async (req : Request, res : Response) => {
         }
       
         console.log("returning profile data");
+        if (onlyUpdateChangeable === true) {
+          return res.status(200).json({
+            username: userData.username,
+            bio: userData.bio,
+            administrator: userData.administrator,
+            averagePostRating : userData.averagePostRating | 0,
+          });
+        }
         return res.status(200).json({
           username: userData.username,
           bio: userData.bio,

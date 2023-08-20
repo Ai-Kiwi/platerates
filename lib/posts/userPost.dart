@@ -44,73 +44,12 @@ class _PostItemState extends State<PostItem> {
   _PostItemState({required this.postId, required this.clickable});
 
   Future<void> _collectData() async {
-    var jsonData;
-    var extractedData = await jsonCache.value('post-$postId');
-    if (extractedData != null) {
-      jsonData = jsonDecode(extractedData["data"]);
-    }
-
-    if (jsonData == null) {
-      final response = await http.post(
-        Uri.parse("$serverDomain/post/data"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'token': userManager.token,
-          'postId': postId,
-        }),
-      );
-      if (response.statusCode == 200) {
-        //if true do nothing and then it will display
-        jsonData = jsonDecode(response.body);
-        try {
-          await jsonCache.refresh('post-$postId', {"data": response.body});
-        } catch (err) {
-          //delete so re gatherd
-          jsonCache.remove('post-$postId');
-          print(err);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              'failed to cache post',
-              style: TextStyle(fontSize: 20, color: Colors.red),
-            ),
-          ));
-          //Fluttertoast.showToast(
-          //    msg: "failed to cache post",
-          //    toastLength: Toast.LENGTH_SHORT,
-          //    gravity: ToastGravity.CENTER,
-          //    timeInSecForIosWeb: 3,
-          //    backgroundColor: Colors.red,
-          //    textColor: Colors.white,
-          //    fontSize: 16.0);
-        }
-      } else {
-        ErrorHandler.httpError(response.statusCode, response.body, context);
-        Alert(
-          context: context,
-          type: AlertType.error,
-          title: "failed fetching post data",
-          desc: response.body,
-          buttons: [
-            DialogButton(
-              onPressed: () => Navigator.pop(context),
-              width: 120,
-              child: const Text(
-                "ok",
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            )
-          ],
-        ).show();
-        return;
-      }
-    }
-
     //as non of these have returned error it must have found data
     try {
+      var jsonData = await dataCollect.getPostData(postId, context);
       Map basicUserData =
           await dataCollect.getBasicUserData(jsonData['posterId'], context);
+      dataCollect.updateBasicUserData(jsonData['posterId'], context);
       //print(basicUserData);
       setState(() {
         title = jsonData["title"];
@@ -123,6 +62,20 @@ class _PostItemState extends State<PostItem> {
         hasRated = bool.tryParse(jsonData['requesterRated']);
         errorOccurred = false;
       });
+      return;
+    } catch (err) {
+      print(err);
+      return;
+    }
+  }
+
+  Future<void> _collectDataAndUpdate() async {
+    //as non of these have returned error it must have found data
+    try {
+      await _collectData();
+      if (await dataCollect.updatePostData(postId, context) == true) {
+        await _collectData();
+      }
     } catch (err) {
       print(err);
     }
@@ -133,7 +86,7 @@ class _PostItemState extends State<PostItem> {
     super.initState();
     //no idea why the hell the error happens but this if statement fixes it
     if (mounted && title.isEmpty) {
-      _collectData();
+      _collectDataAndUpdate();
     }
   }
 
