@@ -4,8 +4,10 @@ import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 import '../libs/smoothTransitions.dart';
+import '../login/userLogin.dart';
+import '../main.dart';
 
 class notificationBarItem extends StatefulWidget {
   final notificationData;
@@ -26,6 +28,10 @@ class _notificationBarItemState extends State<notificationBarItem> {
 
   Future<void> fetchNotificationData() async {
     var jsonData = jsonDecode(notificationData);
+    var textColor = Colors.white;
+    if (jsonData['read'] == true) {
+      textColor = Colors.grey;
+    }
 
     if (jsonData['action'] == "user_rated_post") {
       var ratingData =
@@ -37,7 +43,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
       setState(() {
         insideData = Text(
           "${username} responded to your post",
-          style: const TextStyle(color: Colors.white, fontSize: 25),
+          style: TextStyle(color: textColor, fontSize: 25),
         );
       });
     } else if (jsonData['action'] == "user_reply_post_rating") {
@@ -51,7 +57,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
       setState(() {
         insideData = Text(
           "${username} responded to your rating",
-          style: const TextStyle(color: Colors.white, fontSize: 25),
+          style: TextStyle(color: textColor, fontSize: 25),
         );
       });
     }
@@ -95,6 +101,17 @@ class _notificationBarItemState extends State<notificationBarItem> {
                   Navigator.of(context).push(smoothTransitions
                       .slideUp(FullPageRating(ratingId: jsonData['itemId'])));
                 }
+
+                http.post(
+                  Uri.parse("$serverDomain/post/rating/delete"),
+                  headers: <String, String>{
+                    'Content-Type': 'application/json; charset=UTF-8',
+                  },
+                  body: jsonEncode(<String, String>{
+                    'token': userManager.token,
+                    'notificationId': jsonData['notificationId'],
+                  }),
+                );
               }
             }),
       ),
