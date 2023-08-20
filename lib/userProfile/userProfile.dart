@@ -43,12 +43,19 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
     });
   }
 
+  Future<void> _collectAndUpdateData() async {
+    await _collectData();
+    if (await dataCollect.updateBasicUserData(userId, context) == true) {
+      await _collectData();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     //no idea why the hell the error happens but this if statement fixes it
     if (mounted && username.isEmpty) {
-      _collectData();
+      _collectAndUpdateData();
     }
   }
 
@@ -145,10 +152,17 @@ class _UserProfileState extends State<UserProfile> {
     _isLoading = false;
   }
 
+  Future<void> _fetchAndUpdateProfile() async {
+    await _fetchProfile();
+    if (await dataCollect.updateUserData(userId, context) == true) {
+      await _fetchProfile();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _fetchProfile();
+    _fetchAndUpdateProfile();
   }
 
   @override

@@ -125,6 +125,7 @@ router.post('/post/rating/data', async (req, res) => {
       const ratingId = req.body.ratingId;
       const shareMode = req.body.shareMode;
       const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+      const onlyUpdateChangeable = req.body.onlyUpdateChangeable;
 
       const result = await testToken(token,userIpAddress);
       const validToken : boolean = result.valid;
@@ -174,6 +175,11 @@ router.post('/post/rating/data', async (req, res) => {
 
         updatePostRating(rootItem);
         console.log("response sent")
+        if (onlyUpdateChangeable === true) {
+          return res.status(200).json({
+            childRatingsAmount: childRatings,
+          });
+        }
         return res.status(200).json({
           rating : ratingData.rating,
           text : ratingData.text,

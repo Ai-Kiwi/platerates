@@ -40,53 +40,14 @@ class _userRatingState extends State<userRating> {
   var rootItem;
 
   Future<void> _collectData() async {
-    var jsonData;
-    var extractedData = await jsonCache.value('rating-$ratingId');
-    if (extractedData != null) {
-      jsonData = jsonDecode(extractedData["data"]);
-    }
-
-    if (jsonData == null) {
-      final response = await http.post(
-        Uri.parse("$serverDomain/post/rating/data"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'token': userManager.token,
-          'ratingId': ratingId,
-        }),
-      );
-      if (response.statusCode == 200) {
-        //if true do nothing and then it will display
-        jsonData = jsonDecode(response.body);
-        await jsonCache.refresh('rating-$ratingId', {"data": response.body});
-      } else {
-        ErrorHandler.httpError(response.statusCode, response.body, context);
-        Alert(
-          context: context,
-          type: AlertType.error,
-          title: "failed fetching rating data",
-          desc: response.body,
-          buttons: [
-            DialogButton(
-              onPressed: () => Navigator.pop(context),
-              width: 120,
-              child: const Text(
-                "ok",
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            )
-          ],
-        ).show();
-        return;
-      }
-    }
-
     //as non of these have returned error it must have found data
     try {
+      var jsonData = await dataCollect.getRatingData(ratingId, context);
       Map basicUserData = await dataCollect.getBasicUserData(
           jsonData['ratingPosterId'], context);
+      //send an update request could be done bett but is what it is rn
+      dataCollect.updateBasicUserData(jsonData['ratingPosterId'], context);
+
       setState(() {
         text = jsonData["text"];
         if (jsonData["rating"] != null) {
@@ -97,15 +58,24 @@ class _userRatingState extends State<userRating> {
         rootItem = jsonData['rootItem'];
         childRatingsAmount = jsonData['childRatingsAmount'];
       });
+      return;
     } catch (err) {
       print(err);
+      return;
+    }
+  }
+
+  Future<void> _collectAndUpdateData() async {
+    await _collectData();
+    if (await dataCollect.updateRatingData(ratingId, context) == true) {
+      await _collectData();
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _collectData();
+    _collectAndUpdateData();
   }
 
   _userRatingState({required this.ratingId, required this.clickable});

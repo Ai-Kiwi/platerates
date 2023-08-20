@@ -140,6 +140,7 @@ router.post('/post/data', async (req : Request, res : Response) => {
       const token = req.body.token;
       const postId = req.body.postId;
       const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+      const onlyUpdateChangeable = req.body.onlyUpdateChangeable;
 
       const result = await testToken(token,userIpAddress);
       const vaildToken : boolean = result.valid;
@@ -178,6 +179,13 @@ router.post('/post/data', async (req : Request, res : Response) => {
         }
 
         console.log("sending post data");
+        if (onlyUpdateChangeable === true) {
+          return res.status(200).json({
+            rating : itemData.rating,
+            ratingsAmount : `${ratingsAmount}`, // converts to string as client software pefers that
+            requesterRated :`${requesterHasRated}`,
+          });
+        }
         return res.status(200).json({
           title : itemData.title,
           description : itemData.description,

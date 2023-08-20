@@ -320,7 +320,7 @@ class _UserSettingsState extends State<UserSettings> {
                       ),
                       SettingItem(
                         settingIcon: Icons.download,
-                        settingName: "manually download phone app",
+                        settingName: "get app beta",
                         ontap: () {
                           Alert(
                             context: context,
