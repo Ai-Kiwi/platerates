@@ -101,9 +101,7 @@ import {router as userPostRatingRouter} from "./js/userRating";
 import {router as reportRouter} from "./js/report";
 import {router as adminZoneRouter} from "./js/adminZone";
 import {router as searchSystemRouter} from "./js/searchSystem";
-
-
-
+import {router as notificationSystem} from "./js/notificationSystem";
 
 
 
@@ -115,6 +113,7 @@ app.use('/', userPostRatingRouter);
 app.use('/', reportRouter);
 app.use('/', adminZoneRouter);
 app.use('/', searchSystemRouter);
+app.use('/', notificationSystem);
 
 app.listen(port, () => {
   console.log(`Toaster server listening on port ${port}`)

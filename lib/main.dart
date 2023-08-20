@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/loadScreen.dart';
+import 'package:Toaster/notifications/notificationPageList.dart';
 import 'package:Toaster/searchPage.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
@@ -196,6 +197,7 @@ List<Widget> pages = <Widget>[
   userFeed(),
   SearchPage(),
   CameraPage(),
+  notificationPageList(),
   UserProfile(openedOntopMenu: false),
 ];
 

@@ -47,6 +47,11 @@ class UserNavbar extends StatelessWidget {
             label: 'create',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            activeIcon: Icon(Icons.notifications),
+            label: 'notifications',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.person_outlined),
             activeIcon: Icon(Icons.person),
             label: 'profile',

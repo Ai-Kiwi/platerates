@@ -11,16 +11,16 @@ import '../libs/errorHandler.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
 
-class PostRatingList extends StatefulWidget {
+class fullPagePost extends StatefulWidget {
   final String postId;
 
-  const PostRatingList({super.key, required this.postId});
+  const fullPagePost({super.key, required this.postId});
 
   @override
   _PostRatingListState createState() => _PostRatingListState(rootItem: postId);
 }
 
-class _PostRatingListState extends State<PostRatingList> {
+class _PostRatingListState extends State<fullPagePost> {
   String uploadingRatingText = "";
   double uploadingRating = 5;
   String rootItem;
@@ -36,6 +36,9 @@ class _PostRatingListState extends State<PostRatingList> {
       body: jsonEncode({
         "token": userManager.token,
         "rootItem": {"type": "post", "data": rootItem},
+        "text":
+            "this shouldn't have uploaded, massive server error right here.",
+        "shareMode": "public",
       }),
     );
 
@@ -250,7 +253,7 @@ class _PostRatingListState extends State<PostRatingList> {
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          PostRatingList(
+                                                          fullPagePost(
                                                               postId:
                                                                   rootItem)));
                                             },
