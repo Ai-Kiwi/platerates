@@ -7,7 +7,7 @@ import { time } from "console";
 import { testToken } from "./userLogin";
 import { json } from 'node:stream/consumers';
 
-async function sendNotification(notificationData : {userId : string, action : string, itemId : string | undefined}){
+async function sendNotification(notificationData : {userId : string | undefined, action : string, itemId : string | undefined, receiverId : string}){
     try{
         const collection : mongoDB.Collection = database.collection("user_notifications");
         
@@ -26,7 +26,8 @@ async function sendNotification(notificationData : {userId : string, action : st
                 notificationId: notificationId,
                 action : notificationData.action,
                 itemId : notificationData.itemId,
-                receiverId : notificationData.userId,
+                receiverId : notificationData.receiverId,
+                userId : notificationData.userId,
                 read : false,
                 sentDate : Date.now(),
                 deviceReceived : false,
@@ -49,7 +50,8 @@ async function sendNotification(notificationData : {userId : string, action : st
                 notificationId: notificationId,
                 action : notificationData.action,
                 itemId : notificationData.itemId,
-                receiverId : notificationData.userId,
+                receiverId : notificationData.receiverId,
+                userId : notificationData.userId,
                 read : false,
                 sentDate : Date.now(),
                 deviceReceived : false,
@@ -72,7 +74,7 @@ async function sendNotification(notificationData : {userId : string, action : st
 
 
 router.post('/notification/list', async (req, res) => {
-    console.log(" => user searching")
+    console.log(" => user fetching notifications")
       try{
         const searchText = req.body.searchText;
         const token = req.body.token;
@@ -103,7 +105,7 @@ router.post('/notification/list', async (req, res) => {
             startPosInfo = startPosPostData.sentDate;
           }
     
-          const dataReturning = await collection.find({ sentDate: { $lt: startPosInfo}}).sort({sentDate : -1}).limit(15).toArray();
+          const dataReturning = await collection.find({ sentDate: { $lt: startPosInfo}, receiverId : userId}).sort({sentDate : -1}).limit(15).toArray();
           let returnData = {
             "items": [] as { type: string; data: string;}[]
           }
@@ -134,6 +136,56 @@ router.post('/notification/list', async (req, res) => {
         return res.status(500).send("server error");
       }
   })
+
+
+router.post('/notification/read', async (req, res) => {
+  console.log(" => user marking notification as read")
+    try{
+      const notificationId = req.body.notificationId;
+      const token = req.body.token;
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+      const result = await testToken(token,userIpAddress);
+      const validToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
+    
+      if (validToken) { // user token is valid
+        let collection: mongoDB.Collection = database.collection('user_notifications');
+  
+        let postFetching = await collection.findOne({notificationId : notificationId});
+
+        if (postFetching === null){
+          console.log("notification not found");
+          return res.status(404).send("notification not found");
+        }
+
+        if (postFetching.receiverId !== userId){
+          console.log("user doesn't own notification");
+          return res.status(403).send("notification not yours");
+        }
+
+
+        let markReadResponse = await collection.updateOne({notificationId : notificationId},{$set: {read : true}});
+
+        if (markReadResponse.acknowledged === true){
+          console.log("marked notification read");
+          return res.status(200).send("notification marked as read");
+        }else{
+          console.log("error marking read");
+          return res.status(200).send("error marking notification read");
+        }
+
+        
+
+  
+      }else{
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
+      }
+    }catch(err){
+      console.log(err);
+      return res.status(500).send("server error");
+    }
+})
 
 //scrollable notifications
 //view notification data

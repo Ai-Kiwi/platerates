@@ -40,7 +40,7 @@ class _userRatingState extends State<userRating> {
   String posterName = "";
   String posterUserId = "";
   double? rating;
-  double? childRatingsAmount;
+  int? childRatingsAmount;
   var rootItem;
 
   Future<void> _collectData() async {
@@ -55,7 +55,7 @@ class _userRatingState extends State<userRating> {
       setState(() {
         text = jsonData["text"];
         if (jsonData["rating"] != null) {
-          rating = double.parse('${jsonData["rating"]}');
+          rating = jsonData["rating"] + 0.0;
         }
         posterName = basicUserData['username'];
         posterUserId = jsonData['ratingPosterId'];
