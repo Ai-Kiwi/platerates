@@ -293,7 +293,7 @@ router.post('/post/rating/upload', async (req, res) => {
           }
 
           sendNotification({
-            receiverId : rootItemData.ratingPosterId,
+            receiverId : rootItemData.posterUserId,
             userId : userId,
             itemId : ratingId,
             action : "user_rated_post"

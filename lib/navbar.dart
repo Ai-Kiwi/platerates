@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class UserNavbar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onClicked;
+  final int notificationCount;
 
   const UserNavbar(
-      {super.key, required this.selectedIndex, required this.onClicked});
+      {super.key,
+      required this.selectedIndex,
+      required this.onClicked,
+      required this.notificationCount});
 
   @override
   Widget build(BuildContext context) {
@@ -30,24 +34,39 @@ class UserNavbar extends StatelessWidget {
         unselectedItemColor: Colors.white60,
         showUnselectedLabels: false,
         selectedItemColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             activeIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.search),
             activeIcon: Icon(Icons.search),
             label: 'search',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.add_outlined),
             activeIcon: Icon(Icons.add),
             label: 'create',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
+            icon: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(Icons.notifications),
+                Visibility(
+                  visible: notificationCount > 0,
+                  child: Text(
+                    "$notificationCount",
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             activeIcon: Icon(Icons.notifications),
             label: 'notifications',
           ),
