@@ -293,7 +293,8 @@ router.post('/post/rating/upload', async (req, res) => {
           }
 
           sendNotification({
-            userId : rootItemData.posterUserId,
+            receiverId : rootItemData.ratingPosterId,
+            userId : userId,
             itemId : ratingId,
             action : "user_rated_post"
           });
@@ -334,7 +335,8 @@ router.post('/post/rating/upload', async (req, res) => {
           }
 
           sendNotification({
-            userId : rootItemData.ratingPosterId,
+            receiverId : rootItemData.ratingPosterId,
+            userId : userId,
             itemId : ratingId,
             action : "user_reply_post_rating"
           });
@@ -419,12 +421,10 @@ router.post('/post/ratings', async (req, res) => {
         }
 
         let rootItemData;
-        console.log(rootItem.type)
         if (rootItem.type === "post") {
           rootItemData = await postsCollection.findOne({ postId : rootItem.data })
         }else if (rootItem.type === "rating") {
           rootItemData = await postRatingsCollection.findOne({ ratingId : rootItem.data })
-          console.log(rootItem.data)
         }else{
           console.log("unknown root item type");
           return res.status(400).send("unknown root item type");

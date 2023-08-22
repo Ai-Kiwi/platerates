@@ -38,7 +38,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
     Map basicUserData = await dataCollect.getBasicUserData(userId, context);
     setState(() {
       username = basicUserData["username"];
-      rating = basicUserData["averagePostRating"];
+      rating = basicUserData["averagePostRating"] + 0.0;
     });
   }
 

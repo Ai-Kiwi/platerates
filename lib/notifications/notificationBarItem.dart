@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/dataCollect.dart';
+import 'package:Toaster/libs/timeMaths.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:http/http.dart' as http;
+import 'package:rflutter_alert/rflutter_alert.dart';
 import '../libs/smoothTransitions.dart';
 import '../login/userLogin.dart';
 import '../main.dart';
@@ -25,9 +28,9 @@ class _notificationBarItemState extends State<notificationBarItem> {
     child: CircularProgressIndicator(),
   );
   var rootItem;
+  var jsonData;
 
   Future<void> fetchNotificationData() async {
-    var jsonData = jsonDecode(notificationData);
     var textColor = Colors.white;
     if (jsonData['read'] == true) {
       textColor = Colors.grey;
@@ -43,7 +46,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
       setState(() {
         insideData = Text(
           "${username} responded to your post",
-          style: TextStyle(color: textColor, fontSize: 25),
+          style: TextStyle(color: textColor, fontSize: 20),
         );
       });
     } else if (jsonData['action'] == "user_reply_post_rating") {
@@ -57,7 +60,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
       setState(() {
         insideData = Text(
           "${username} responded to your rating",
-          style: TextStyle(color: textColor, fontSize: 25),
+          style: TextStyle(color: textColor, fontSize: 20),
         );
       });
     }
@@ -65,6 +68,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
 
   @override
   void initState() {
+    jsonData = jsonDecode(notificationData);
     super.initState();
     fetchNotificationData();
   }
@@ -73,7 +77,6 @@ class _notificationBarItemState extends State<notificationBarItem> {
 
   @override
   Widget build(BuildContext context) {
-    var jsonData = jsonDecode(notificationData);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
       child: Container(
@@ -87,8 +90,20 @@ class _notificationBarItemState extends State<notificationBarItem> {
             child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: insideData),
-            onTap: () {
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: insideData,
+                    ),
+                    Text(
+                      timeMaths.shortFormatDuration(
+                          DateTime.now().millisecondsSinceEpoch -
+                              (jsonData['sentDate'] as int)),
+                      style: TextStyle(color: Colors.white, fontSize: 32),
+                    ),
+                  ],
+                )),
+            onTap: () async {
               if (rootItem != null) {
                 if (jsonData['action'] == "user_rated_post") {
                   Navigator.of(context).push(smoothTransitions
@@ -102,8 +117,8 @@ class _notificationBarItemState extends State<notificationBarItem> {
                       .slideUp(FullPageRating(ratingId: jsonData['itemId'])));
                 }
 
-                http.post(
-                  Uri.parse("$serverDomain/post/rating/delete"),
+                var response = await http.post(
+                  Uri.parse("$serverDomain/notification/read"),
                   headers: <String, String>{
                     'Content-Type': 'application/json; charset=UTF-8',
                   },
@@ -112,6 +127,28 @@ class _notificationBarItemState extends State<notificationBarItem> {
                     'notificationId': jsonData['notificationId'],
                   }),
                 );
+
+                if (response.statusCode == 200) {
+                  jsonData['read'] = true;
+                  fetchNotificationData();
+                } else {
+                  Alert(
+                    context: context,
+                    type: AlertType.error,
+                    title: "error marking notification read",
+                    desc: response.body,
+                    buttons: [
+                      DialogButton(
+                        child: Text(
+                          "ok",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        width: 120,
+                      )
+                    ],
+                  ).show();
+                }
               }
             }),
       ),

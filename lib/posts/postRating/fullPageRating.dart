@@ -96,7 +96,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                         topLeft: Radius.circular(30.0),
                         topRight: Radius.circular(30.0),
                       )),
-                      height: 233,
+                      height: 185,
                       width: double.infinity,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
