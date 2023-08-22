@@ -231,6 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: pages.elementAt(_selectedIndex),
         ),
         bottomNavigationBar: UserNavbar(
+          notificationCount: 0,
           selectedIndex: _selectedIndex,
           onClicked: _onItemSelected,
         ));

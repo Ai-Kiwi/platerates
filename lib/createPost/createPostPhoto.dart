@@ -35,11 +35,13 @@ class _CameraPageState extends State<CameraPage> {
           setState(() {});
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-          'failed loading camera',
-          style: TextStyle(fontSize: 20, color: Colors.red),
-        )));
+        try {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+            'failed loading camera',
+            style: TextStyle(fontSize: 20, color: Colors.red),
+          )));
+        } catch (e) {}
       }
     }
     if (!mounted) return;
