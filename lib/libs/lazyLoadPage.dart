@@ -89,22 +89,24 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
       body: jsonEncode(dataSending),
     );
     if (response.statusCode == 200) {
-      setState(() {
-        var fetchedData = jsonDecode(response.body);
-        var postData = fetchedData["items"];
-        if (fetchedData["items"].isEmpty) {
-          if (itemsCollected.isEmpty) {
-            itemsCollected.add("blank");
-          } else {
-            itemsCollected.add("end");
+      try {
+        setState(() {
+          var fetchedData = jsonDecode(response.body);
+          var postData = fetchedData["items"];
+          if (fetchedData["items"].isEmpty) {
+            if (itemsCollected.isEmpty) {
+              itemsCollected.add("blank");
+            } else {
+              itemsCollected.add("end");
+            }
+            return;
           }
-          return;
-        }
-        for (var post in postData) {
-          itemsCollected.add(post);
-          lastItem = post;
-        }
-      });
+          for (var post in postData) {
+            itemsCollected.add(post);
+            lastItem = post;
+          }
+        });
+      } catch (err) {}
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
       setState(() {
