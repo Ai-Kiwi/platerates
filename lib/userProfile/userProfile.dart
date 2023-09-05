@@ -5,6 +5,7 @@ import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:http/http.dart' as http;
@@ -74,11 +75,20 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
             child: Row(children: [
               const SizedBox(width: 8),
               UserAvatar(
-                  avatarImage: null,
-                  size: 50,
-                  roundness: 10,
-                  clickable: true,
-                  userId: userId),
+                avatarImage: null,
+                size: 50,
+                roundness: 10,
+                userId: userId,
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: '$userId'));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                      'copied user id to clipboard',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ));
+                },
+              ),
               const SizedBox(width: 8),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -211,10 +221,22 @@ class _UserProfileState extends State<UserProfile> {
                               //),
                               UserAvatar(
                                 userId: realUserId,
-                                clickable: false,
                                 avatarImage: null,
                                 size: 100,
                                 roundness: 30,
+                                onTap: () {
+                                  if (realUserId != null) {
+                                    Clipboard.setData(
+                                        ClipboardData(text: realUserId));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(
+                                        'copied user id to clipboard',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ));
+                                  }
+                                },
                               ),
                               Center(
                                   child: Padding(

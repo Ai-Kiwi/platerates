@@ -15,6 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../libs/errorHandler.dart';
 import '../libs/report.dart';
 import '../main.dart';
+import '../userProfile/userProfile.dart';
 
 class PostItem extends StatefulWidget {
   final String postId;
@@ -138,12 +139,19 @@ class _PostItemState extends State<PostItem> {
                               child: Row(children: [
                                 const SizedBox(width: 4),
                                 UserAvatar(
-                                  userId: posterUserId,
-                                  avatarImage: posterAvatar,
-                                  size: 25,
-                                  roundness: 7.5,
-                                  clickable: true,
-                                ),
+                                    userId: posterUserId,
+                                    avatarImage: posterAvatar,
+                                    size: 25,
+                                    roundness: 7.5,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => UserProfile(
+                                                userId: posterUserId,
+                                                openedOntopMenu: true)),
+                                      );
+                                    }),
                                 const SizedBox(width: 4),
                                 Text(posterName,
                                     style: const TextStyle(

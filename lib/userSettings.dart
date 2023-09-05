@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/accountInfoSettings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,110 +53,10 @@ class _UserSettingsState extends State<UserSettings> {
                       ),
                       SettingItem(
                         settingIcon: Icons.person,
-                        settingName: "username",
+                        settingName: "account info",
                         ontap: () {
-                          String newUsername = "";
-                          Alert(
-                              context: context,
-                              title: "Change username",
-                              desc:
-                                  "please note you can only change it once per week",
-                              content: Column(
-                                children: <Widget>[
-                                  TextField(
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.account_circle),
-                                      labelText: 'Username',
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        newUsername = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                              buttons: [
-                                DialogButton(
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                    final response = await http.post(
-                                      Uri.parse(
-                                          "$serverDomain/profile/settings/change"),
-                                      headers: <String, String>{
-                                        'Content-Type':
-                                            'application/json; charset=UTF-8',
-                                      },
-                                      body: jsonEncode(<String, String>{
-                                        'token': userManager.token,
-                                        "setting": "username",
-                                        "value": newUsername,
-                                      }),
-                                    );
-                                    if (response.statusCode == 200) {
-                                      // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.success,
-                                        title: "username changed",
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
-                                    } else {
-                                      ErrorHandler.httpError(
-                                          response.statusCode,
-                                          response.body,
-                                          context);
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.error,
-                                        title: "username change failed",
-                                        desc: response.body,
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
-                                    }
-                                  },
-                                  child: const Text(
-                                    "Change",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                ),
-                                DialogButton(
-                                  color: Colors.red,
-                                  child: const Text(
-                                    "cancel",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                )
-                              ]).show();
+                          Navigator.of(context).push(smoothTransitions
+                              .slideRight(const AccountInfoSettings()));
                         },
                       ),
                       SettingItem(
@@ -167,155 +68,11 @@ class _UserSettingsState extends State<UserSettings> {
                         },
                       ),
                       SettingItem(
-                        settingIcon: Icons.person,
-                        settingName: "avatar",
-                        ontap: () {
-                          Navigator.of(context).push(smoothTransitions
-                              .slideRight(ResetPasswordPage()));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.chat,
-                        settingName: "bio",
-                        ontap: () {
-                          String newBio = "";
-                          Alert(
-                              context: context,
-                              title: "Change bio",
-                              content: Column(
-                                children: <Widget>[
-                                  TextField(
-                                    maxLines: 5,
-                                    minLines: 3,
-                                    maxLength: 500,
-                                    maxLengthEnforcement: MaxLengthEnforcement
-                                        .truncateAfterCompositionEnds,
-                                    decoration: const InputDecoration(
-                                      icon: Icon(Icons.account_circle),
-                                      labelText: 'bio',
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        newBio = value;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                              buttons: [
-                                DialogButton(
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                    final response = await http.post(
-                                      Uri.parse(
-                                          "$serverDomain/profile/settings/change"),
-                                      headers: <String, String>{
-                                        'Content-Type':
-                                            'application/json; charset=UTF-8',
-                                      },
-                                      body: jsonEncode(<String, String>{
-                                        'token': userManager.token,
-                                        "setting": "bio",
-                                        "value": newBio,
-                                      }),
-                                    );
-                                    if (response.statusCode == 200) {
-                                      // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.success,
-                                        title: "bio changed",
-                                        desc: "refresh profile page to see",
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
-                                    } else {
-                                      ErrorHandler.httpError(
-                                          response.statusCode,
-                                          response.body,
-                                          context);
-                                      // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.error,
-                                        title: "bio change failed",
-                                        desc: response.body,
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
-                                    }
-                                  },
-                                  child: const Text(
-                                    "Change",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                ),
-                                DialogButton(
-                                  color: Colors.red,
-                                  child: const Text(
-                                    "cancel",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                )
-                              ]).show();
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.info,
-                        settingName: "licenses",
-                        ontap: () {
-                          Navigator.of(context).push(smoothTransitions
-                              .slideRight(const LicensePage()));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.lock,
-                        settingName: "privacy policy",
-                        ontap: () {
-                          launchUrl(Uri.parse(
-                              "https://toaster.aikiwi.dev/privacyPolicy"));
-                        },
-                      ),
-                      SettingItem(
                         settingIcon: Icons.book,
                         settingName: "change log",
                         ontap: () {
                           launchUrl(Uri.parse(
                               "https://toaster.aikiwi.dev/changeLog"));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.help,
-                        settingName: "contact support",
-                        ontap: () {
-                          launchUrl(Uri.parse("mailto:toaster@aikiwi.dev"));
                         },
                       ),
                       SettingItem(
@@ -356,6 +113,30 @@ class _UserSettingsState extends State<UserSettings> {
                           ).show();
                         },
                       ),
+                      SettingItem(
+                        settingIcon: Icons.lock,
+                        settingName: "privacy policy",
+                        ontap: () {
+                          launchUrl(Uri.parse(
+                              "https://toaster.aikiwi.dev/privacyPolicy"));
+                        },
+                      ),
+                      SettingItem(
+                        settingIcon: Icons.help,
+                        settingName: "contact support",
+                        ontap: () {
+                          launchUrl(Uri.parse("mailto:toaster@aikiwi.dev"));
+                        },
+                      ),
+                      SettingItem(
+                        settingIcon: Icons.info,
+                        settingName: "licenses",
+                        ontap: () {
+                          Navigator.of(context).push(smoothTransitions
+                              .slideRight(const LicensePage()));
+                        },
+                      ),
+
                       //launch();
 
                       //const Expanded(child: Center()),

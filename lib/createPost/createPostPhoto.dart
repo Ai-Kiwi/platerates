@@ -1,4 +1,5 @@
 import 'package:Toaster/createPost/createPost.dart';
+import 'package:Toaster/libs/imageUtils.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
@@ -84,51 +85,6 @@ class _CameraPageState extends State<CameraPage> {
     super.dispose();
   }
 
-  Future<List<int>?> _resizePhoto(inputImageData) async {
-    try {
-      var image = img.decodeImage(inputImageData);
-
-      List<int> startImgSize = img.findTrim(image!);
-
-      //test if width or height is more
-      if (startImgSize[3] > startImgSize[2]) {
-        //image is taller
-        image = img.copyResize(image, width: 1080);
-
-        List<int> imgSize = img.findTrim(image);
-
-        image = img.copyCrop(image,
-            height: 1080, width: 1080, x: 0, y: (imgSize[3] - 1080) ~/ 2);
-      } else {
-        //image is wider
-        image = img.copyResize(image, height: 1080);
-
-        List<int> imgSize = img.findTrim(image);
-
-        image = img.copyCrop(image,
-            height: 1080, width: 1080, x: (imgSize[2] - 1080) ~/ 2, y: 0);
-      }
-
-      List<int> finalImgSize = img.findTrim(image);
-
-      if (finalImgSize[3] != 1080 || finalImgSize[2] != 1080) {
-        print("photo to low resolstion");
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('invalid photo resolstion',
-              style: TextStyle(fontSize: 20, color: Colors.red)),
-        ));
-        return null;
-      }
-
-      final List<int> editedBytes = img.encodeJpg(image, quality: 100);
-
-      return editedBytes;
-    } catch (err) {
-      print(err);
-      return null;
-    }
-  }
-
   Future<List<int>?> _takePicture() async {
     if (!_isCameraReady || _cameraController == null) return null;
 
@@ -138,7 +94,7 @@ class _CameraPageState extends State<CameraPage> {
       final image = await _cameraController!.takePicture();
       //print(image);
 
-      return await _resizePhoto(await image.readAsBytes());
+      return await imageUtils.resizePhoto(await image.readAsBytes());
       //return "e";
       //} on CameraException {
       //  print("camera exception");
@@ -331,7 +287,7 @@ class _CameraPageState extends State<CameraPage> {
                       acceptedTypeGroups: <XTypeGroup>[typeGroup]);
 
                   final List<int>? imageData =
-                      await _resizePhoto(await file?.readAsBytes());
+                      await imageUtils.resizePhoto(await file?.readAsBytes());
 
                   if (imageData != null) {
                     // ignore: use_build_context_synchronously

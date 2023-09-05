@@ -92,14 +92,14 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
 
       if (setting === "username") {
         //test timeout
-        const userTimeoutTestResult = await userTimeoutTest(userId,"change_username");
-        const timeoutActive : boolean = userTimeoutTestResult.active;
-        const timeoutTime : string | undefined = userTimeoutTestResult.timeLeft;
-      
-        if (timeoutActive === true) {
-          console.log("username timed out " + timeoutTime);
-          return res.status(408).send("please wait " + timeoutTime + " to change username");
-        }
+        //const userTimeoutTestResult = await userTimeoutTest(userId,"change_username");
+        //const timeoutActive : boolean = userTimeoutTestResult.active;
+        //const timeoutTime : string | undefined = userTimeoutTestResult.timeLeft;
+        //
+        //if (timeoutActive === true) {
+        //  console.log("username timed out " + timeoutTime);
+        //  return res.status(408).send("please wait " + timeoutTime + " to change username");
+        //}
 
         const testUsernameResult = await testUsername(value);
         const usernameAllowed : boolean = testUsernameResult.valid;
@@ -116,7 +116,7 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
 
         if (response.acknowledged === true) {
           //update username
-          userTimeout(userId,"change_username", 60 * 60 * 24 * 7);
+          //userTimeout(userId,"change_username", 60 * 60 * 24 * 7);
           console.log("updated username");
           return res.status(200).send("updated username");
           
@@ -150,7 +150,10 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
           }
 
       } else if (setting === "avatar") {
-  
+        //stored on user data is the code to there avatar
+        //the code links to document in avatar data collection
+        //cache doesn't have update function as codes change not update already exist data on a code
+
         
           
 

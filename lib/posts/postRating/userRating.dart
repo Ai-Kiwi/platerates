@@ -17,6 +17,7 @@ import '../../libs/report.dart';
 import '../../libs/smoothTransitions.dart';
 import '../../main.dart';
 import '../../login/userLogin.dart';
+import '../../userProfile/userProfile.dart';
 
 class userRating extends StatefulWidget {
   final String ratingId;
@@ -104,7 +105,14 @@ class _userRatingState extends State<userRating> {
                       avatarImage: null,
                       size: 45,
                       roundness: 25,
-                      clickable: true,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => UserProfile(
+                                  userId: posterUserId, openedOntopMenu: true)),
+                        );
+                      },
                     ),
                   )),
               Expanded(
