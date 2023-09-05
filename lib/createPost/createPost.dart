@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/imageUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -31,12 +32,6 @@ class _CreatePostState extends State<CreatePostPage> {
   List<String> postNamings = ['public post', 'friend\'s only post'];
 
   _CreatePostState({required this.imageData});
-
-  Uint8List uintListToBytes(List<int> uintList) {
-    final buffer = Uint8List.fromList(uintList);
-    final byteData = ByteData.view(buffer.buffer);
-    return byteData.buffer.asUint8List();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +225,8 @@ class _CreatePostState extends State<CreatePostPage> {
                                       "description": _description,
                                       "shareMode":
                                           postCodeNames[shareModeSelected],
-                                      "image": base64Encode(
-                                          uintListToBytes(imageData)),
+                                      "image": base64Encode(imageUtils
+                                          .uintListToBytes(imageData)),
                                     }),
                                   );
 

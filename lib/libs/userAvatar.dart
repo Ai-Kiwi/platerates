@@ -7,15 +7,15 @@ class UserAvatar extends StatelessWidget {
   final double roundness;
   final double size;
   final String userId;
-  final bool clickable;
+  final VoidCallback onTap;
 
   const UserAvatar(
       {super.key,
       required this.avatarImage,
       required this.size,
       required this.roundness,
-      required this.clickable,
-      required this.userId});
+      required this.userId,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -53,22 +53,7 @@ class UserAvatar extends StatelessWidget {
                 ),
               )),
           onTap: () {
-            if (clickable == true) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        UserProfile(userId: userId, openedOntopMenu: true)),
-              );
-            } else {
-              Clipboard.setData(ClipboardData(text: userId));
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                  'copied user id to clipboard',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ));
-            }
+            onTap();
           },
         ),
       );
