@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { database } from './database';
 import { testToken } from './userLogin';
 import { generateRandomString } from './utilFunctions';
-import { versions } from 'sharp';
+import sharp, { Sharp } from 'sharp';
 import { userTimeout, userTimeoutTest } from './timeouts';
 import { cleanEmailAddress, testUsername } from './validInputTester';
 import { title } from 'process';
@@ -51,13 +51,13 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
       if (onlyUpdateChangeable === true) {
         return res.status(200).json({
           username: userData.username,
-          userAvatar : userData.avatar,
+          avatar : userData.avatar,
           averagePostRating : userData.averagePostRating | 0,
         });
       }
       res.status(200).json({
         username: userData.username,
-        userAvatar : userData.avatar,
+        avatar : userData.avatar,
         averagePostRating : userData.averagePostRating | 0,
       });
 
@@ -154,8 +154,72 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
         //the code links to document in avatar data collection
         //cache doesn't have update function as codes change not update already exist data on a code
 
-        
-          
+        //get data about image
+        try{
+          const imageData : Buffer = Buffer.from(value, 'base64');
+  
+          //make sure image is right size
+          const imageMetadata : sharp.Metadata = await sharp(imageData).metadata();
+          const { width, height } = imageMetadata;
+          const MAX_RESOLUTION = {
+            width: 1080,
+            height: 1080,
+          };
+          if ((width === MAX_RESOLUTION.width && height === MAX_RESOLUTION.height) === false) {
+            console.log("Avatar image resolution incorrect")
+            return res.status(400).send('avatar image resolution is incorrect.');
+          }
+  
+  
+        } catch (err) {
+          console.log(err)
+          return res.status(500).send('error saving avatar image');
+        }
+
+        var avatarsCollection : mongoDB.Collection = database.collection('user_avatars');
+        let avatarId: string | null = null;
+        while (true){
+          avatarId = generateRandomString(16);
+  
+          let avatarIdInUse = await avatarsCollection.findOne({avatarId: avatarId});
+          if (avatarIdInUse === null){
+            break
+          }
+        }
+
+        const userDataCollection: mongoDB.Collection = database.collection('user_data');
+        const userData = await userDataCollection.findOne({userId : userId})
+        if (userData){
+          avatarsCollection.deleteOne({avatarId : userData["avatar"]})
+        }
+
+        let response = await avatarsCollection.insertOne(
+          {
+            avatarId : avatarId,
+            imageData : value
+          }
+        )
+
+        if (response.acknowledged === true) {
+          let response = await userDataCollection.updateOne(
+            {userId : userId},
+            { $set: {
+              avatar : avatarId
+            }}
+            )
+
+
+          if (response.acknowledged === true) {
+            console.log("updated avatar");
+            return res.status(200).send("updated avatar");
+          }else{
+            console.log("failed to update avatar")
+            return res.status(500).send("failed to update avatar")
+          }
+        }else{
+          console.log("failed to update avatar")
+          return res.status(500).send("failed to update avatar")
+        }
 
       }else{
         console.log("unkown setting")
@@ -211,6 +275,7 @@ router.post('/profile/data', async (req : Request, res : Response) => {
             username: userData.username,
             bio: userData.bio,
             administrator: userData.administrator,
+            avatar : userData.avatar,
             averagePostRating : userData.averagePostRating | 0,
           });
         }
@@ -218,6 +283,7 @@ router.post('/profile/data', async (req : Request, res : Response) => {
           username: userData.username,
           bio: userData.bio,
           administrator: userData.administrator,
+          avatar : userData.avatar,
           userId: userId,
           averagePostRating : userData.averagePostRating | 0,
         });
@@ -231,6 +297,39 @@ router.post('/profile/data', async (req : Request, res : Response) => {
       console.log(err);
       return res.status(500).send("server error")
     }
+})
+
+router.post('/profile/avatar', async (req : Request, res : Response) => {
+  console.log(" => user fetching avatar")
+  try{
+    const token = req.body.token;
+    const avatarId = req.body.avatarId;
+
+    if (avatarId === null){
+      console.log("no value no user");
+      return res.status(200).send("no user no value");
+    }
+    
+    const collection: mongoDB.Collection = database.collection('user_avatars');
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+    
+    const avatarData = await collection.findOne({ avatarId: avatarId });
+    console.table(avatarData)
+    if (avatarData === null){
+      console.log("failed as invalid avatar");
+      return res.status(404).send("unkown user");
+    }
+    
+    console.log("returning profile data");
+    return res.status(200).json({
+      avatarId: avatarId,
+      imageData: avatarData.imageData,
+    });
+    
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
 })
 
 router.post('/profile/posts', async (req : Request, res : Response) => {

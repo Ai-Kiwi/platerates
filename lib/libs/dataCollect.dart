@@ -156,6 +156,14 @@ class DataCollect {
       'ratingId': ratingId,
     }, "$serverDomain/post/rating/data", 'rating-$ratingId', context);
   }
+
+  Future<Map> getAvatarData(String? avatarId, context) async {
+    print('sending $avatarId');
+    return getData({
+      'token': userManager.token,
+      'avatarId': avatarId,
+    }, "$serverDomain/profile/avatar", 'avatar-$avatarId', context);
+  }
 }
 
 DataCollect dataCollect = DataCollect();

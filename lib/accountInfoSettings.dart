@@ -27,13 +27,18 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   String _bio = '';
   String _startBio = '';
   bool _loading = true;
-  Uint8List? newUserImage;
+  List<int>? _userImage;
+  List<int>? _startUserImage;
 
   late String _realUserId;
 
   Future<void> _fetchAccountData() async {
     await dataCollect.updateUserData(null, context);
     var fetchedData = await dataCollect.getUserData(null, context);
+
+    Map avatarData =
+        await dataCollect.getAvatarData(fetchedData["avatar"], context);
+
     setState(() {
       _bio = fetchedData['bio'];
       _startBio = fetchedData['bio'];
@@ -44,6 +49,11 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
       _realUserId = fetchedData['userId'];
 
       _loading = false;
+
+      if (avatarData["imageData"] != null) {
+        _userImage = base64Decode(avatarData["imageData"]);
+        _startUserImage = _userImage;
+      }
     });
     return;
   }
@@ -117,10 +127,9 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                           padding: EdgeInsets.symmetric(vertical: 48.0),
                           child: Center(
                               child: UserAvatar(
-                            avatarImage: newUserImage,
+                            avatarImage: _userImage,
                             size: 200,
                             roundness: 200,
-                            userId: _realUserId,
                             onTap: () async {
                               const XTypeGroup typeGroup = XTypeGroup(
                                 label: 'images',
@@ -136,8 +145,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
 
                               setState(() {
                                 if (tempNewUserImage != null) {
-                                  newUserImage =
-                                      Uint8List.fromList(tempNewUserImage!);
+                                  _userImage = tempNewUserImage;
                                 }
                               });
                             },
@@ -251,23 +259,11 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                 ),
                               ));
 
-                              if (newUserImage != null) {
-                                Alert(
-                                  context: context,
-                                  type: AlertType.error,
-                                  title: "user profile changing not added yet",
-                                  buttons: [
-                                    DialogButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      width: 120,
-                                      child: const Text(
-                                        "ok",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                      ),
-                                    )
-                                  ],
-                                ).show();
+                              if (_userImage != _startUserImage) {
+                                await _changeSetting(
+                                    "avatar",
+                                    base64Encode(imageUtils.uintListToBytes(
+                                        Uint8List.fromList(_userImage!))));
                               }
                               if (_username != _startUsername) {
                                 await _changeSetting("username", _username);

@@ -43,6 +43,7 @@ class _userRatingState extends State<userRating> {
   double? rating;
   int? childRatingsAmount;
   var rootItem;
+  var posterAvatar;
 
   Future<void> _collectData() async {
     //as non of these have returned error it must have found data
@@ -53,6 +54,9 @@ class _userRatingState extends State<userRating> {
       //send an update request could be done bett but is what it is rn
       dataCollect.updateBasicUserData(jsonData['ratingPosterId'], context);
 
+      Map avatarData =
+          await dataCollect.getAvatarData(jsonData["avatar"], context);
+
       setState(() {
         text = jsonData["text"];
         if (jsonData["rating"] != null) {
@@ -62,6 +66,9 @@ class _userRatingState extends State<userRating> {
         posterUserId = jsonData['ratingPosterId'];
         rootItem = jsonData['rootItem'];
         childRatingsAmount = jsonData['childRatingsAmount'];
+        if (avatarData["imageData"] != null) {
+          posterAvatar = base64Decode(avatarData["imageData"]);
+        }
       });
       return;
     } catch (err) {
@@ -101,8 +108,7 @@ class _userRatingState extends State<userRating> {
                   child: Center(
                     //child: CircleAvatar(),
                     child: UserAvatar(
-                      userId: posterUserId,
-                      avatarImage: null,
+                      avatarImage: posterAvatar,
                       size: 45,
                       roundness: 25,
                       onTap: () {

@@ -64,35 +64,48 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   Stream<String> initializeApp() async* {
-    //load in json cache stuff
-    await Hive.initFlutter();
-    final box =
-        await Hive.openBox<String>('appBox'); // it must be a Box<String>.
-    jsonCache = JsonCacheMem(JsonCacheHive(box));
-
-    var expireTime = await jsonCache.value("expire-time");
-    if (expireTime == null) {
-      print("cache expire time is null");
-      await jsonCache.clear();
-      await jsonCache
-          .refresh("expire-time", {"expireTime": DateTime.now().day});
-    } else {
-      if (expireTime["expireTime"] < (DateTime.now().day - 7)) {
-        print("cache expire time has expired");
-        await jsonCache.clear();
-        await jsonCache
-            .refresh("expire-time", {"expireTime": DateTime.now().day});
-      } else {
-        print("cache expire time is still active");
-      }
-    }
-
     //setup verison stuff
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     appName = packageInfo.appName;
     packageName = packageInfo.packageName;
     version = packageInfo.version;
     buildNumber = packageInfo.buildNumber;
+
+    //load in json cache stuff
+    await Hive.initFlutter();
+    final box =
+        await Hive.openBox<String>('appBox'); // it must be a Box<String>.
+    jsonCache = JsonCacheMem(JsonCacheHive(box));
+
+    var expireTime = await jsonCache.value("expire-data");
+    if (expireTime == null) {
+      print("cache expire time is null");
+      await jsonCache.clear();
+      await jsonCache.refresh("expire-data", {
+        "expireTime": DateTime.now().day,
+        "clientVersion": '$version+$buildNumber'
+      });
+    } else {
+      if (expireTime["expireTime"] < (DateTime.now().day - 7)) {
+        print("cache expire time has expired");
+        await jsonCache.clear();
+        await jsonCache.refresh("expire-data", {
+          "expireTime": DateTime.now().day,
+          "clientVersion": '$version+$buildNumber'
+        });
+      } else {
+        if (expireTime["clientVersion"] != '$version+$buildNumber') {
+          print("cache version is old");
+          await jsonCache.clear();
+          await jsonCache.refresh("expire-data", {
+            "expireTime": DateTime.now().day,
+            "clientVersion": '$version+$buildNumber'
+          });
+        } else {
+          print("cache expire time is still active");
+        }
+      }
+    }
 
     //contact server and get verison
     try {
