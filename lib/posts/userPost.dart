@@ -51,6 +51,10 @@ class _PostItemState extends State<PostItem> {
       Map basicUserData =
           await dataCollect.getBasicUserData(jsonData['posterId'], context);
       dataCollect.updateBasicUserData(jsonData['posterId'], context);
+      print(basicUserData);
+      Map avatarData =
+          await dataCollect.getAvatarData(basicUserData["avatar"], context);
+
       //print(basicUserData);
       setState(() {
         title = jsonData["title"];
@@ -62,6 +66,9 @@ class _PostItemState extends State<PostItem> {
         ratingsAmount = int.parse(jsonData['ratingsAmount']);
         hasRated = bool.tryParse(jsonData['requesterRated']);
         errorOccurred = false;
+        if (avatarData["imageData"] != null) {
+          posterAvatar = base64Decode(avatarData["imageData"]);
+        }
       });
       return;
     } catch (err) {
@@ -139,7 +146,6 @@ class _PostItemState extends State<PostItem> {
                               child: Row(children: [
                                 const SizedBox(width: 4),
                                 UserAvatar(
-                                    userId: posterUserId,
                                     avatarImage: posterAvatar,
                                     size: 25,
                                     roundness: 7.5,

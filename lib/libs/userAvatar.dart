@@ -6,7 +6,6 @@ class UserAvatar extends StatelessWidget {
   final avatarImage;
   final double roundness;
   final double size;
-  final String userId;
   final VoidCallback onTap;
 
   const UserAvatar(
@@ -14,7 +13,6 @@ class UserAvatar extends StatelessWidget {
       required this.avatarImage,
       required this.size,
       required this.roundness,
-      required this.userId,
       required this.onTap});
 
   @override

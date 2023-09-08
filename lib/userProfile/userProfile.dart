@@ -32,14 +32,21 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   final String userId;
   String username = "";
   double rating = 0;
+  var posterAvatar;
 
   _SimpleUserProfileBarState({required this.userId});
 
   Future<void> _collectData() async {
     Map basicUserData = await dataCollect.getBasicUserData(userId, context);
+    Map avatarData =
+        await dataCollect.getAvatarData(basicUserData["avatar"], context);
+
     setState(() {
       username = basicUserData["username"];
       rating = basicUserData["averagePostRating"] + 0.0;
+      if (avatarData["imageData"] != null) {
+        posterAvatar = base64Decode(avatarData["imageData"]);
+      }
     });
   }
 
@@ -75,10 +82,9 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
             child: Row(children: [
               const SizedBox(width: 8),
               UserAvatar(
-                avatarImage: null,
+                avatarImage: posterAvatar,
                 size: 50,
                 roundness: 10,
-                userId: userId,
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: '$userId'));
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -146,16 +152,24 @@ class _UserProfileState extends State<UserProfile> {
   bool _isAdminAccount = false;
   String userBio = "";
   String username = "";
+  var posterAvatar;
 
   _UserProfileState({required this.userId, required this.openedOntopMenu});
 
   Future<void> _fetchProfile() async {
-    var fetchedData = await dataCollect.getUserData(userId, context);
+    Map fetchedData = await dataCollect.getUserData(userId, context);
+    Map avatarData =
+        await dataCollect.getAvatarData(fetchedData["avatar"], context);
+
     setState(() {
       userBio = fetchedData['bio'];
       username = fetchedData['username'];
       _isAdminAccount = fetchedData['administrator'];
       realUserId = fetchedData['userId'];
+      //posterAvatar = avatarData["imageData"];
+      if (avatarData["imageData"] != null) {
+        posterAvatar = base64Decode(avatarData["imageData"]);
+      }
     });
 
     _isLoading = false;
@@ -220,8 +234,7 @@ class _UserProfileState extends State<UserProfile> {
                               //  ),
                               //),
                               UserAvatar(
-                                userId: realUserId,
-                                avatarImage: null,
+                                avatarImage: posterAvatar,
                                 size: 100,
                                 roundness: 30,
                                 onTap: () {
