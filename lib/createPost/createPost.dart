@@ -87,15 +87,22 @@ class _CreatePostState extends State<CreatePostPage> {
                         color: Colors.white,
                         fontSize: 15,
                       ),
-                      decoration: InputDecoration(
-                          counterText: "",
-                          labelText: 'Title',
-                          labelStyle: const TextStyle(color: Colors.white),
-                          contentPadding: EdgeInsets.all(8.0),
-                          prefixIcon: Icon(
-                            Icons.text_fields,
-                            color: Colors.green,
-                          )),
+                      decoration: const InputDecoration(
+                        counterText: "",
+                        labelText: 'Title',
+                        labelStyle: TextStyle(color: Colors.white),
+                        contentPadding: EdgeInsets.all(8.0),
+                        prefixIcon: Icon(
+                          Icons.text_fields,
+                          color: Colors.green,
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -114,17 +121,24 @@ class _CreatePostState extends State<CreatePostPage> {
                         _description = value;
                       },
                       style: TextStyle(color: Colors.white, fontSize: 15),
-                      decoration: InputDecoration(
-                          counterText: "",
-                          labelText: 'description',
-                          labelStyle: const TextStyle(
-                            color: Colors.white,
-                          ),
-                          contentPadding: const EdgeInsets.all(16.0),
-                          prefixIcon: Icon(
-                            Icons.description,
-                            color: Colors.green,
-                          )),
+                      decoration: const InputDecoration(
+                        counterText: "",
+                        labelText: 'description',
+                        labelStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                        contentPadding: const EdgeInsets.all(16.0),
+                        prefixIcon: Icon(
+                          Icons.description,
+                          color: Colors.green,
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                        ),
+                      ),
                     ),
                   ),
                 ),
