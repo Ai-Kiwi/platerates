@@ -21,14 +21,19 @@ class UserAvatar extends StatelessWidget {
       return SizedBox(
           height: size,
           width: size,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(roundness),
-            child: Center(
-                child: Image.memory(
-              avatarImage,
-              width: double.infinity,
-              fit: BoxFit.fill,
-            )),
+          child: GestureDetector(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(roundness),
+              child: Center(
+                  child: Image.memory(
+                avatarImage,
+                width: double.infinity,
+                fit: BoxFit.fill,
+              )),
+            ),
+            onTap: () {
+              onTap();
+            },
           ));
     } else {
       return SizedBox(

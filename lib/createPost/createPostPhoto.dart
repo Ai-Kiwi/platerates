@@ -110,7 +110,7 @@ class _CameraPageState extends State<CameraPage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size.width;
     size = size -
-        64; //really hacky work around, as image needs to be sqaure because there is padding on each side.
+        32; //really hacky work around, as image needs to be sqaure because there is padding on each side.
 
     return Scaffold(
       backgroundColor: Color.fromRGBO(16, 16, 16, 1),
@@ -154,120 +154,109 @@ class _CameraPageState extends State<CameraPage> {
                           ))))),
               const SizedBox(height: 16.0),
             ])),
-        Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-                decoration: BoxDecoration(
-                    color: Color.fromARGB(215, 40, 40, 40),
-                    borderRadius: BorderRadius.circular(10.0),
-                    border: Border.all(
-                        color: Color.fromARGB(215, 45, 45, 45), width: 3)),
-                width: double.infinity,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 16),
-                      Padding(
-                          //photo display area
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Container(
-                            width: size,
-                            height: size,
-                            child: displayCamera(
-                                cameraController: _cameraController,
-                                size: size,
-                                cameraReady: _isCameraReady,
-                                cameras: _cameras),
-                          )),
-                      const SizedBox(height: 16),
-                      Padding(
-                        //take photo button
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Container(
-                            width: double.infinity,
-                            height: 50.0,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: 50,
-                                    child: ElevatedButton(
-                                      style: OutlinedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                      )),
-                                      onPressed: () async {
-                                        final imagePath = await _takePicture();
+        Container(
+            width: double.infinity,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 16),
+                  //photo display area
+                  Container(
+                    width: size,
+                    height: size,
+                    child: displayCamera(
+                        cameraController: _cameraController,
+                        size: size,
+                        cameraReady: _isCameraReady,
+                        cameras: _cameras),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    //take photo button
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Container(
+                        width: double.infinity,
+                        height: 50.0,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                height: 50,
+                                child: ElevatedButton(
+                                  style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  )),
+                                  onPressed: () async {
+                                    final imagePath = await _takePicture();
 
-                                        if (imagePath != null) {
-                                          // You can handle the captured image path here, e.g., display it on a new page or save it.
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CreatePostPage(
-                                                      imageData: imagePath,
-                                                    )),
-                                          );
-                                        } else {
-                                          Alert(
-                                            context: context,
-                                            type: AlertType.error,
-                                            title: "error taking photo",
-                                            buttons: [
-                                              DialogButton(
-                                                child: Text(
-                                                  "ok",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20),
-                                                ),
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                                width: 120,
-                                              )
-                                            ],
-                                          ).show();
-                                        }
-                                      },
-                                      child: const Text(
-                                        'Take photo',
-                                        style: TextStyle(fontSize: 18.0),
-                                      ),
-                                    ),
+                                    if (imagePath != null) {
+                                      // You can handle the captured image path here, e.g., display it on a new page or save it.
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                CreatePostPage(
+                                                  imageData: imagePath,
+                                                )),
+                                      );
+                                    } else {
+                                      Alert(
+                                        context: context,
+                                        type: AlertType.error,
+                                        title: "error taking photo",
+                                        buttons: [
+                                          DialogButton(
+                                            child: Text(
+                                              "ok",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 20),
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            width: 120,
+                                          )
+                                        ],
+                                      ).show();
+                                    }
+                                  },
+                                  child: const Text(
+                                    'Take photo',
+                                    style: TextStyle(fontSize: 18.0),
                                   ),
                                 ),
-                                SizedBox(width: 8),
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  child: ElevatedButton(
-                                      style: OutlinedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                      )),
-                                      onPressed: () async {
-                                        _swapCamera();
-                                      },
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.switch_camera,
-                                          size: 20,
-                                        ),
-                                      )),
-                                ),
-                              ],
-                            )),
-                      ),
-                      const SizedBox(height: 16),
-                    ]))),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Container(
+                              width: 50,
+                              height: 50,
+                              child: ElevatedButton(
+                                  style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  )),
+                                  onPressed: () async {
+                                    _swapCamera();
+                                  },
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.switch_camera,
+                                      size: 20,
+                                    ),
+                                  )),
+                            ),
+                          ],
+                        )),
+                  ),
+                  const SizedBox(height: 16),
+                ])),
         Padding(
-          //take photo button
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+          //use photo present button
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Container(
             width: double.infinity,
             height: 50,

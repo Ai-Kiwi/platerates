@@ -24,6 +24,9 @@ class _UserFeedState extends State<userFeed> {
           color: Color.fromARGB(255, 110, 110, 110),
           thickness: 1.0,
         ),
+        SizedBox(
+          height: 16,
+        )
       ])),
       widgetAddedToEnd: Center(
         child: Padding(
