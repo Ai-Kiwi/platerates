@@ -342,7 +342,7 @@ class displayCamera extends StatelessWidget {
     }
 
     return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
+      borderRadius: BorderRadius.all(Radius.circular(16)),
       child: OverflowBox(
         alignment: Alignment.center,
         child: FittedBox(
