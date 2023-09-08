@@ -36,121 +36,119 @@ class _UserSettingsState extends State<UserSettings> {
         body: Stack(alignment: Alignment.topLeft, children: <Widget>[
           SafeArea(
               top: false,
-              child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ListView(
-                    children: [
-                      const Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 8),
-                          child: Text(
-                            "   Settings",
-                            style: TextStyle(color: Colors.white, fontSize: 40),
-                          )),
-                      const Divider(
-                        color: Color.fromARGB(255, 110, 110, 110),
-                        thickness: 1.0,
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.person,
-                        settingName: "account info",
-                        ontap: () {
-                          Navigator.of(context).push(smoothTransitions
-                              .slideRight(const AccountInfoSettings()));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.lock,
-                        settingName: "password",
-                        ontap: () {
-                          Navigator.of(context).push(smoothTransitions
-                              .slideRight(ResetPasswordPage()));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.book,
-                        settingName: "change log",
-                        ontap: () {
-                          launchUrl(Uri.parse(
-                              "https://toaster.aikiwi.dev/changeLog"));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.download,
-                        settingName: "get app beta",
-                        ontap: () {
-                          Alert(
-                            context: context,
-                            title: "DANGER",
-                            desc:
-                                "because this is manual apk install to update you have to redownload from here. This is also limited for android only\nAre you sure you want to continue",
-                            buttons: [
-                              DialogButton(
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  launchUrl(Uri.parse(
-                                      "https://toaster.aikiwi.dev/toaster.apk"));
-                                },
-                                color: Colors.green,
-                                child: const Text(
-                                  "yes",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                              ),
-                              DialogButton(
-                                color: Colors.red,
-                                child: const Text(
-                                  "cancel",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              )
-                            ],
-                          ).show();
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.lock,
-                        settingName: "privacy policy",
-                        ontap: () {
-                          launchUrl(Uri.parse(
-                              "https://toaster.aikiwi.dev/privacyPolicy"));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.help,
-                        settingName: "contact support",
-                        ontap: () {
-                          launchUrl(Uri.parse("mailto:toaster@aikiwi.dev"));
-                        },
-                      ),
-                      SettingItem(
-                        settingIcon: Icons.info,
-                        settingName: "licenses",
-                        ontap: () {
-                          Navigator.of(context).push(smoothTransitions
-                              .slideRight(const LicensePage()));
-                        },
-                      ),
+              child: ListView(
+                children: [
+                  const Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+                      child: Text(
+                        "   Settings",
+                        style: TextStyle(color: Colors.white, fontSize: 40),
+                      )),
+                  const Divider(
+                    color: Color.fromARGB(255, 110, 110, 110),
+                    thickness: 1.0,
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.person,
+                    settingName: "account info",
+                    ontap: () {
+                      Navigator.of(context).push(smoothTransitions
+                          .slideRight(const AccountInfoSettings()));
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.lock,
+                    settingName: "password",
+                    ontap: () {
+                      Navigator.of(context).push(
+                          smoothTransitions.slideRight(ResetPasswordPage()));
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.book,
+                    settingName: "change log",
+                    ontap: () {
+                      launchUrl(
+                          Uri.parse("https://toaster.aikiwi.dev/changeLog"));
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.download,
+                    settingName: "get app beta",
+                    ontap: () {
+                      Alert(
+                        context: context,
+                        title: "DANGER",
+                        desc:
+                            "because this is manual apk install to update you have to redownload from here. This is also limited for android only\nAre you sure you want to continue",
+                        buttons: [
+                          DialogButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              launchUrl(Uri.parse(
+                                  "https://toaster.aikiwi.dev/toaster.apk"));
+                            },
+                            color: Colors.green,
+                            child: const Text(
+                              "yes",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          ),
+                          DialogButton(
+                            color: Colors.red,
+                            child: const Text(
+                              "cancel",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
+                      ).show();
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.lock,
+                    settingName: "privacy policy",
+                    ontap: () {
+                      launchUrl(Uri.parse(
+                          "https://toaster.aikiwi.dev/privacyPolicy"));
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.help,
+                    settingName: "contact support",
+                    ontap: () {
+                      launchUrl(Uri.parse("mailto:toaster@aikiwi.dev"));
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.info,
+                    settingName: "licenses",
+                    ontap: () {
+                      Navigator.of(context).push(
+                          smoothTransitions.slideRight(const LicensePage()));
+                    },
+                  ),
 
-                      //launch();
+                  //launch();
 
-                      //const Expanded(child: Center()),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 4),
-                        child: Center(
-                            child: Text("version $version build $buildNumber",
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                ))),
-                      ),
-                    ],
-                  ))),
+                  //const Expanded(child: Center()),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+                    child: Center(
+                        child: Text("version $version build $buildNumber",
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ))),
+                  ),
+                ],
+              )),
           Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
@@ -182,26 +180,22 @@ class SettingItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: InkWell(
           //change username
           onTap: ontap,
           child: Container(
-            decoration: BoxDecoration(
-                color: const Color.fromARGB(215, 40, 40, 40),
-                borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(
-                    color: const Color.fromARGB(215, 45, 45, 45), width: 3)),
             width: double.infinity,
-            height: 50,
-            child: Row(children: [
+            height: 40,
+            child:
+                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
               AspectRatio(
                   aspectRatio: 1,
                   child: Center(
                       child: Icon(
                     settingIcon,
                     color: Colors.white,
-                    size: 25,
+                    size: 30,
                   ))),
               Expanded(
                   child: Text(settingName,

@@ -69,22 +69,17 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
         child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.0),
-            border: Border.all(
-                width: 2, color: const Color.fromARGB(255, 45, 45, 45)),
-          ),
           width: double.infinity,
-          height: 75,
+          height: 50,
           child: GestureDetector(
             child: Row(children: [
               const SizedBox(width: 8),
               UserAvatar(
                 avatarImage: posterAvatar,
                 size: 50,
-                roundness: 10,
+                roundness: 50,
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: '$userId'));
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -100,21 +95,10 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  //const SizedBox(height: 8),
                   Text(
                     username,
                     style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
-                  //RatingBarIndicator(
-                  //  rating: rating,
-                  //  itemBuilder: (context, index) => const Icon(
-                  //    Icons.star,
-                  //    color: Colors.amber,
-                  //  ),
-                  //  itemCount: 5,
-                  //  itemSize: 25.0,
-                  //  direction: Axis.horizontal,
-                  //),
                 ],
               )
             ]),
@@ -215,39 +199,33 @@ class _UserProfileState extends State<UserProfile> {
                           horizontal: 16.0, vertical: 16),
                       child: SizedBox(
                         width: double.infinity,
-                        height: 100,
+                        height: 75,
                         child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              //Container(
-                              //  width: 100,
-                              //  height: 100,
-                              //  decoration: BoxDecoration(
-                              //      color: const Color.fromRGBO(16, 16, 16, 1),
-                              //      borderRadius: BorderRadius.circular(10.0),
-                              //      border: Border.all(
-                              //          color: const Color.fromARGB(
-                              //              215, 45, 45, 45),
-                              //          width: 3)),
-                              //  child: const Center(
-                              //    child: CircularProgressIndicator(),
-                              //  ),
-                              //),
                               UserAvatar(
                                 avatarImage: posterAvatar,
-                                size: 100,
-                                roundness: 30,
+                                size: 75,
+                                roundness: 75,
                                 onTap: () {
-                                  if (realUserId != null) {
-                                    Clipboard.setData(
-                                        ClipboardData(text: realUserId));
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                      content: Text(
-                                        'copied user id to clipboard',
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ));
+                                  if (userId != null) {
+                                    if (realUserId != null) {
+                                      Clipboard.setData(
+                                          ClipboardData(text: realUserId));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text(
+                                          'copied user id to clipboard',
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      ));
+                                    }
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => UserSettings()),
+                                    );
                                   }
                                 },
                               ),
@@ -258,9 +236,7 @@ class _UserProfileState extends State<UserProfile> {
                                       child: Text(
                                         username,
                                         style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 170, 169, 169),
-                                            fontSize: 25),
+                                            color: Colors.white, fontSize: 25),
                                       ))),
                             ]),
                       )),
@@ -270,211 +246,21 @@ class _UserProfileState extends State<UserProfile> {
                       child: Container(
                           height: 100,
                           width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.0),
-                            border: Border.all(
-                                width: 2,
-                                color: const Color.fromARGB(255, 45, 45, 45)),
-                          ),
                           child: ListView(children: <Widget>[
-                            Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: SelectableLinkify(
-                                  onOpen: (link) async {
-                                    if (!await launchUrl(Uri.parse(link.url))) {
-                                      throw Exception(
-                                          'Could not launch ${link.url}');
-                                    }
-                                  },
-                                  text: userBio,
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 255, 255, 255),
-                                      fontSize: 15),
-                                ))
+                            SelectableLinkify(
+                              onOpen: (link) async {
+                                if (!await launchUrl(Uri.parse(link.url))) {
+                                  throw Exception(
+                                      'Could not launch ${link.url}');
+                                }
+                              },
+                              text: userBio,
+                              style: const TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  fontSize: 15),
+                            )
                           ]))),
-                  Visibility(
-                      visible: userId == null,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8),
-                        //user settings box
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              height: 33,
-                              width: 75,
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  textStyle: const TextStyle(fontSize: 15),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 1.0),
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 45, 45, 45),
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                onPressed: () {
-                                  Navigator.of(context).push(smoothTransitions
-                                      .slideUp(UserSettings()));
-                                },
-                                child: const Text("settings",
-                                    style: TextStyle(
-                                        color:
-                                            Color.fromARGB(210, 255, 255, 255),
-                                        fontWeight: FontWeight.normal)),
-                              ),
-                            ),
-                            Visibility(
-                                visible: _isAdminAccount,
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: 8),
-                                    SizedBox(
-                                      height: 33,
-                                      width: 95,
-                                      child: TextButton(
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: Colors.white,
-                                          textStyle:
-                                              const TextStyle(fontSize: 15),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5.0, vertical: 1.0),
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 45, 45, 45),
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                              smoothTransitions
-                                                  .slideUp(AdminZonePage()));
-                                        },
-                                        child: const Text("admin zone",
-                                            style: TextStyle(
-                                                color: Color.fromARGB(
-                                                    210, 255, 255, 255),
-                                                fontWeight: FontWeight.normal)),
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                            Expanded(child: Center()),
-                            SizedBox(
-                              height: 33,
-                              width: 75,
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  textStyle: const TextStyle(fontSize: 15),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0, vertical: 1.0),
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 45, 45, 45),
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                onPressed: () {
-                                  Alert(
-                                    context: context,
-                                    type: AlertType.info,
-                                    title: "who would you like to logout?",
-                                    desc:
-                                        "select which devices you wish to logout.",
-                                    buttons: [
-                                      //DialogButton(
-                                      //  onPressed: () async {},
-                                      //  color: Colors.green,
-                                      //  child: const Text(
-                                      //    "this",
-                                      //    style: TextStyle(
-                                      //        color: Colors.white, fontSize: 20),
-                                      //  ),
-                                      //),
-                                      DialogButton(
-                                        color: Colors.green,
-                                        child: const Text(
-                                          "everyone",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        ),
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          final response = await http.post(
-                                            Uri.parse(
-                                                "$serverDomain/login/logout"),
-                                            headers: <String, String>{
-                                              'Content-Type':
-                                                  'application/json; charset=UTF-8',
-                                            },
-                                            body: jsonEncode(<String, String>{
-                                              'token': userManager.token,
-                                            }),
-                                          );
-                                          if (response.statusCode == 200) {
-                                            //if true do nothing and then it will display
-                                            //Navigator.pop(context);
-                                            //Navigator.push(
-                                            //    context,
-                                            //    MaterialPageRoute(
-                                            //        builder: (context) =>
-                                            //            LoginPage()));
-                                            // ignore: use_build_context_synchronously
-                                            Phoenix.rebirth(context);
-                                          } else {
-                                            ErrorHandler.httpError(
-                                                response.statusCode,
-                                                response.body,
-                                                context);
-                                            // ignore: use_build_context_synchronously
-                                            Alert(
-                                              context: context,
-                                              type: AlertType.error,
-                                              title: "failed logging out",
-                                              desc: response.body,
-                                              buttons: [
-                                                DialogButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                  width: 120,
-                                                  child: const Text(
-                                                    "ok",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 20),
-                                                  ),
-                                                )
-                                              ],
-                                            ).show();
-                                          }
-                                        },
-                                      ),
-                                      DialogButton(
-                                        color: Colors.red,
-                                        child: const Text(
-                                          "cancel",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      )
-                                    ],
-                                  ).show();
-                                },
-                                child: const Text("logout",
-                                    style: TextStyle(
-                                        color:
-                                            Color.fromARGB(210, 255, 255, 255),
-                                        fontWeight: FontWeight.normal)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
+                  SizedBox(height: 16)
                 ],
               )),
           widgetAddedToEnd: const Center(
@@ -508,7 +294,109 @@ class _UserProfileState extends State<UserProfile> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                )))
+                ))),
+        Align(
+          //logout
+          alignment: Alignment.topRight,
+          child: Visibility(
+              visible: userId == null,
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 32.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.settings,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserSettings()),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.logout,
+                          color: Colors.red,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          Alert(
+                            context: context,
+                            type: AlertType.info,
+                            title: "who would you like to logout?",
+                            desc: "select which devices you wish to logout.",
+                            buttons: [
+                              DialogButton(
+                                color: Colors.green,
+                                child: const Text(
+                                  "everyone",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  final response = await http.post(
+                                    Uri.parse("$serverDomain/login/logout"),
+                                    headers: <String, String>{
+                                      'Content-Type':
+                                          'application/json; charset=UTF-8',
+                                    },
+                                    body: jsonEncode(<String, String>{
+                                      'token': userManager.token,
+                                    }),
+                                  );
+                                  if (response.statusCode == 200) {
+                                    Phoenix.rebirth(context);
+                                  } else {
+                                    ErrorHandler.httpError(response.statusCode,
+                                        response.body, context);
+                                    Alert(
+                                      context: context,
+                                      type: AlertType.error,
+                                      title: "failed logging out",
+                                      desc: response.body,
+                                      buttons: [
+                                        DialogButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          width: 120,
+                                          child: const Text(
+                                            "ok",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20),
+                                          ),
+                                        )
+                                      ],
+                                    ).show();
+                                  }
+                                },
+                              ),
+                              DialogButton(
+                                color: Colors.red,
+                                child: const Text(
+                                  "cancel",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              )
+                            ],
+                          ).show();
+                        },
+                      )
+                    ],
+                  ))),
+        )
       ]));
     }
   }
