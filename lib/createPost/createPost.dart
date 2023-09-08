@@ -60,16 +60,11 @@ class _CreatePostState extends State<CreatePostPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15.0),
-                          border: Border.all(
-                              color: Color.fromARGB(215, 45, 45, 45),
-                              width: 3)),
                       width: double.infinity,
                       child: AspectRatio(
                         aspectRatio: 1,
                         child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(16),
                             child: Image.memory(
                               convertedImageData,
                               fit: BoxFit.cover,
@@ -93,29 +88,14 @@ class _CreatePostState extends State<CreatePostPage> {
                         fontSize: 15,
                       ),
                       decoration: InputDecoration(
-                        counterText: "",
-                        labelText: 'Title',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 200, 200, 200)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: const BorderSide(
-                              width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                          borderSide: BorderSide(
-                              width: 2, color: Theme.of(context).primaryColor),
-                        ),
-                        contentPadding: EdgeInsets.all(16.0),
-                        fillColor: const Color.fromARGB(255, 40, 40, 40),
-                        filled: true,
-                      ),
+                          counterText: "",
+                          labelText: 'Title',
+                          labelStyle: const TextStyle(color: Colors.white),
+                          contentPadding: EdgeInsets.all(8.0),
+                          prefixIcon: Icon(
+                            Icons.text_fields,
+                            color: Colors.green,
+                          )),
                     ),
                   ),
                 ),
@@ -125,43 +105,27 @@ class _CreatePostState extends State<CreatePostPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Container(
                     child: TextField(
-                        keyboardType: TextInputType.multiline,
-                        maxLength: 250,
-                        maxLengthEnforcement:
-                            MaxLengthEnforcement.truncateAfterCompositionEnds,
-                        maxLines: 5,
-                        onChanged: (value) {
-                          _description = value;
-                        },
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                        decoration: InputDecoration(
+                      keyboardType: TextInputType.multiline,
+                      maxLength: 250,
+                      maxLengthEnforcement:
+                          MaxLengthEnforcement.truncateAfterCompositionEnds,
+                      maxLines: 5,
+                      onChanged: (value) {
+                        _description = value;
+                      },
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                      decoration: InputDecoration(
                           counterText: "",
                           labelText: 'description',
                           labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 200, 200, 200),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: const BorderSide(
-                                width: 2,
-                                color: Color.fromARGB(255, 45, 45, 45)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: const BorderSide(
-                                width: 2,
-                                color: Color.fromARGB(255, 45, 45, 45)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(
-                                width: 2,
-                                color: Theme.of(context).primaryColor),
+                            color: Colors.white,
                           ),
                           contentPadding: const EdgeInsets.all(16.0),
-                          fillColor: const Color.fromARGB(255, 40, 40, 40),
-                          filled: true,
-                        )),
+                          prefixIcon: Icon(
+                            Icons.description,
+                            color: Colors.green,
+                          )),
+                    ),
                   ),
                 ),
                 //const SizedBox(height: 16.0),
