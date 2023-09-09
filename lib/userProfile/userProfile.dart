@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/adminZone.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
@@ -13,7 +12,6 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../libs/dataCollect.dart';
 import '../libs/errorHandler.dart';
-import '../libs/smoothTransitions.dart';
 import '../libs/userAvatar.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
@@ -306,6 +304,16 @@ class _UserProfileState extends State<UserProfile> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      Visibility(
+                          visible: _isAdminAccount,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.admin_panel_settings,
+                              color: Colors.red,
+                              size: 30,
+                            ),
+                            onPressed: () {},
+                          )),
                       IconButton(
                         icon: const Icon(
                           Icons.settings,
@@ -330,13 +338,23 @@ class _UserProfileState extends State<UserProfile> {
                           Alert(
                             context: context,
                             type: AlertType.info,
-                            title: "who would you like to logout?",
-                            desc: "select which devices you wish to logout.",
+                            title: "select devices to logout",
                             buttons: [
+                              DialogButton(
+                                color: Colors.red,
+                                child: const Text(
+                                  "cancel",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
                               DialogButton(
                                 color: Colors.green,
                                 child: const Text(
-                                  "everyone",
+                                  "all",
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 20),
                                 ),
@@ -357,39 +375,16 @@ class _UserProfileState extends State<UserProfile> {
                                   } else {
                                     ErrorHandler.httpError(response.statusCode,
                                         response.body, context);
-                                    Alert(
-                                      context: context,
-                                      type: AlertType.error,
-                                      title: "failed logging out",
-                                      desc: response.body,
-                                      buttons: [
-                                        DialogButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          width: 120,
-                                          child: const Text(
-                                            "ok",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                          ),
-                                        )
-                                      ],
-                                    ).show();
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                            content: Text(
+                                      'failed logging out',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.red),
+                                    )));
                                   }
                                 },
                               ),
-                              DialogButton(
-                                color: Colors.red,
-                                child: const Text(
-                                  "cancel",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              )
                             ],
                           ).show();
                         },

@@ -338,42 +338,20 @@ class PostManageButton extends StatelessWidget {
                     // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                     // ignore: use_build_context_synchronously
-                    Alert(
-                      context: context,
-                      type: AlertType.success,
-                      title: "post deleted",
-                      desc: "refresh page to see",
-                      buttons: [
-                        DialogButton(
-                          onPressed: () => Navigator.pop(context),
-                          width: 120,
-                          child: const Text(
-                            "ok",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        )
-                      ],
-                    ).show();
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                      'post deleted',
+                      style: TextStyle(fontSize: 20, color: Colors.red),
+                    )));
                   } else {
                     ErrorHandler.httpError(
                         response.statusCode, response.body, context);
                     // ignore: use_build_context_synchronously
-                    Alert(
-                      context: context,
-                      type: AlertType.error,
-                      title: "error deleteing post",
-                      desc: response.body,
-                      buttons: [
-                        DialogButton(
-                          onPressed: () => Navigator.pop(context),
-                          width: 120,
-                          child: const Text(
-                            "ok",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        )
-                      ],
-                    ).show();
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                      'failed deleting post',
+                      style: TextStyle(fontSize: 20, color: Colors.red),
+                    )));
                   }
                 },
                 color: Colors.green,

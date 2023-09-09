@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
@@ -11,22 +10,11 @@ import 'errorHandler.dart';
 class DataCollect {
   Future<void> reportError(
       String errorMessage, String dataGetting, context) async {
-    Alert(
-      context: context,
-      type: AlertType.error,
-      title: "failed getting $dataGetting",
-      desc: errorMessage,
-      buttons: [
-        DialogButton(
-          onPressed: () => Navigator.pop(context),
-          width: 120,
-          child: const Text(
-            "ok",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        )
-      ],
-    ).show();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+      'failed getting $dataGetting',
+      style: const TextStyle(fontSize: 20, color: Colors.red),
+    )));
   }
 
   Future<Map> getData(

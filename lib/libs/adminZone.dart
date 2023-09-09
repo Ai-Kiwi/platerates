@@ -104,49 +104,26 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                     );
                                     if (response.statusCode == 200) {
                                       // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.success,
-                                        title: "user created",
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        'user created',
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white),
+                                      )));
                                     } else {
                                       ErrorHandler.httpError(
                                           response.statusCode,
                                           response.body,
                                           context);
                                       // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.error,
-                                        title: "failed creating user",
-                                        desc: response.body,
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        'failed creating user',
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.red),
+                                      )));
                                     }
                                   },
                                   child: const Text(
@@ -242,49 +219,26 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                     );
                                     if (response.statusCode == 200) {
                                       // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.success,
-                                        title: "user banned",
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        'user banned',
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.red),
+                                      )));
                                     } else {
                                       ErrorHandler.httpError(
                                           response.statusCode,
                                           response.body,
                                           context);
                                       // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.error,
-                                        title: "failed banning user",
-                                        desc: response.body,
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        'failed banning user',
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.red),
+                                      )));
                                     }
                                   },
                                   child: const Text(

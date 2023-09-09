@@ -210,67 +210,32 @@ class _CreatePostState extends State<CreatePostPage> {
 
                                   if (response.statusCode == 201) {
                                     // ignore: use_build_context_synchronously
-                                    Alert(
-                                      context: context,
-                                      type: AlertType.success,
-                                      title: "post uploaded",
-                                      buttons: [
-                                        DialogButton(
-                                          width: 120,
-                                          child: const Text(
-                                            "ok",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                          ),
-                                          onPressed: () => {
-                                            Navigator.pop(context),
-                                            Navigator.pop(context)
-                                          },
-                                        )
-                                      ],
-                                    ).show();
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                            content: Text(
+                                      'post uploaded',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    )));
                                   } else {
                                     ErrorHandler.httpError(response.statusCode,
                                         response.body, context);
-                                    Alert(
-                                      context: context,
-                                      type: AlertType.error,
-                                      title: "error uploading post",
-                                      desc: response.body,
-                                      buttons: [
-                                        DialogButton(
-                                          child: Text(
-                                            "ok",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.pop(context),
-                                          width: 120,
-                                        )
-                                      ],
-                                    ).show();
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                            content: Text(
+                                      'error uploading post',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.red),
+                                    )));
                                   }
                                 } catch (err) {
-                                  Alert(
-                                    context: context,
-                                    type: AlertType.error,
-                                    title: "unkown error contacting server",
-                                    buttons: [
-                                      DialogButton(
-                                        width: 120,
-                                        child: const Text(
-                                          "ok",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        ),
-                                        onPressed: () => Navigator.pop(context),
-                                      )
-                                    ],
-                                  ).show();
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                          content: Text(
+                                    'unkown error contacting server',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.red),
+                                  )));
                                 }
                               },
                               color: Colors.green,

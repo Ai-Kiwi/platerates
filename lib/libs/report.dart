@@ -47,40 +47,19 @@ class ReportSystem {
                 }),
               );
               if (response.statusCode == 201) {
-                Alert(
-                  context: context,
-                  type: AlertType.success,
-                  title: "post reported",
-                  buttons: [
-                    DialogButton(
-                      onPressed: () => Navigator.pop(context),
-                      width: 120,
-                      child: const Text(
-                        "ok",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    )
-                  ],
-                ).show();
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text(
+                  'post reported',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                )));
               } else {
                 ErrorHandler.httpError(
                     response.statusCode, response.body, context);
-                Alert(
-                  context: context,
-                  type: AlertType.error,
-                  title: "failed reporting post",
-                  desc: response.body,
-                  buttons: [
-                    DialogButton(
-                      onPressed: () => Navigator.pop(context),
-                      width: 120,
-                      child: const Text(
-                        "ok",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    )
-                  ],
-                ).show();
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text(
+                  'failed reporting post',
+                  style: TextStyle(fontSize: 20, color: Colors.red),
+                )));
               }
             },
             child: const Text(

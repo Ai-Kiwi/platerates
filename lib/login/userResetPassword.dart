@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 //import 'package:toggle_switch/toggle_switch.dart';
 import '../libs/errorHandler.dart';
@@ -162,22 +161,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     )),
                     onPressed: () async {
                       if (_NewPassword != _confirmNewPassword) {
-                        Alert(
-                          context: context,
-                          type: AlertType.error,
-                          title: "passwords do not match",
-                          buttons: [
-                            DialogButton(
-                              onPressed: () => Navigator.pop(context),
-                              width: 120,
-                              child: const Text(
-                                "ok",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                            )
-                          ],
-                        ).show();
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                content: Text(
+                          'passwords don\'t match',
+                          style: TextStyle(fontSize: 20, color: Colors.red),
+                        )));
                       } else {
                         final response = await http.post(
                           Uri.parse("$serverDomain/login/reset-password"),
@@ -190,43 +179,21 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           }),
                         );
                         if (response.statusCode == 200) {
-                          Alert(
-                            context: context,
-                            type: AlertType.success,
-                            title: "reset password link created",
-                            desc: "check your emails",
-                            buttons: [
-                              DialogButton(
-                                onPressed: () => Navigator.pop(context),
-                                width: 120,
-                                child: const Text(
-                                  "ok",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                              )
-                            ],
-                          ).show();
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                                  content: Text(
+                            'created reset password link, check emails',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          )));
                         } else {
                           ErrorHandler.httpError(
                               response.statusCode, response.body, context);
-                          Alert(
-                            context: context,
-                            type: AlertType.error,
-                            title: "error creating reset password link",
-                            desc: response.body,
-                            buttons: [
-                              DialogButton(
-                                onPressed: () => Navigator.pop(context),
-                                width: 120,
-                                child: const Text(
-                                  "ok",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                              )
-                            ],
-                          ).show();
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                                  content: Text(
+                            'failed creating reset password link',
+                            style: TextStyle(fontSize: 20, color: Colors.red),
+                          )));
                         }
                       }
                     },
