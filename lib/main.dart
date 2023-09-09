@@ -16,7 +16,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:http/http.dart' as http;
 //import 'package:workmanager/workmanager.dart';
 import 'createPost/createPostPhoto.dart';
-import 'errorPages.dart';
+import 'pageNotices.dart';
 import 'login/userLogin.dart';
 import 'navbar.dart';
 
@@ -190,7 +190,7 @@ class MyApp extends StatelessWidget {
                   } else if (snapshot.data == "client-out-of-date") {
                     //  //client is out of date
                     return DisplayErrorMessagePage(
-                        errorMessage: "client out of date");
+                        errorMessage: "client-out-of-date");
                   } else {
                     // User is not logged in, navigate to login page
                     return const LoginPage();

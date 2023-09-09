@@ -53,6 +53,7 @@ dependencies:
   flutter_linkify: ^6.0.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  install_plugin: ^2.1.0
   #workmanager: ^0.5.1
 
 dev_dependencies:
