@@ -64,6 +64,7 @@ class _PostItemState extends State<PostItem> {
         posterName = basicUserData["username"];
         posterUserId = jsonData['posterId'];
         ratingsAmount = int.parse(jsonData['ratingsAmount']);
+        // ignore: sdk_version_since
         hasRated = bool.tryParse(jsonData['requesterRated']);
         errorOccurred = false;
         if (avatarData["imageData"] != null) {

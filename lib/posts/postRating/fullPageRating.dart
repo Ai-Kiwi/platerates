@@ -5,7 +5,6 @@ import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:rflutter_alert/rflutter_alert.dart';
 import '../../libs/errorHandler.dart';
 import '../../login/userLogin.dart';
 import '../../main.dart';

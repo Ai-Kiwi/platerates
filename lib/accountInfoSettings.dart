@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:file_selector/file_selector.dart';
@@ -11,7 +10,6 @@ import 'libs/errorHandler.dart';
 import 'libs/imageUtils.dart';
 import 'login/userLogin.dart';
 import 'main.dart';
-import 'package:image/image.dart' as img;
 
 class AccountInfoSettings extends StatefulWidget {
   const AccountInfoSettings({super.key});
@@ -106,39 +104,71 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
             child: Stack(alignment: Alignment.topLeft, children: <Widget>[
           Center(
               //make sure on pc it's not to wide
-              child: Container(
+              child: SizedBox(
                   width: 650,
                   child: Center(
                       child: AutofillGroup(
                           child: ListView(
                     children: <Widget>[
                       Padding(
-                          padding: EdgeInsets.symmetric(vertical: 48.0),
+                          padding: const EdgeInsets.symmetric(vertical: 48.0),
                           child: Center(
-                              child: UserAvatar(
-                            avatarImage: _userImage,
-                            size: 200,
-                            roundness: 200,
-                            onTap: () async {
-                              const XTypeGroup typeGroup = XTypeGroup(
-                                label: 'images',
-                                extensions: <String>['jpg', 'png'],
-                              );
+                            child: SizedBox(
+                                width: 200,
+                                height: 200,
+                                child: Stack(
+                                  children: [
+                                    UserAvatar(
+                                      avatarImage: _userImage,
+                                      size: 200,
+                                      roundness: 200,
+                                      onTap: () async {
+                                        const XTypeGroup typeGroup = XTypeGroup(
+                                          label: 'images',
+                                          extensions: <String>['jpg', 'png'],
+                                        );
 
-                              XFile? file = await openFile(
-                                  acceptedTypeGroups: <XTypeGroup>[typeGroup]);
+                                        XFile? file = await openFile(
+                                            acceptedTypeGroups: <XTypeGroup>[
+                                              typeGroup
+                                            ]);
 
-                              final List<int>? tempNewUserImage =
-                                  await imageUtils
-                                      .resizePhoto(await file?.readAsBytes());
+                                        final List<int>? tempNewUserImage =
+                                            await imageUtils.resizePhoto(
+                                                await file?.readAsBytes());
 
-                              setState(() {
-                                if (tempNewUserImage != null) {
-                                  _userImage = tempNewUserImage;
-                                }
-                              });
-                            },
-                          ))),
+                                        setState(() {
+                                          if (tempNewUserImage != null) {
+                                            _userImage = tempNewUserImage;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0, vertical: 16.0),
+                                        child: Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            color: Colors.grey[800],
+                                          ),
+                                          child: Icon(
+                                            Icons.edit,
+                                            size:
+                                                20, // Adjust the size of the icon
+                                            color: Colors.grey[300],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )),
+                          )),
                       //const Divider(
                       //  color: Color.fromARGB(255, 110, 110, 110),
                       //  thickness: 1.0,
@@ -157,31 +187,17 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                           autofillHints: const [AutofillHints.email],
                           style: const TextStyle(
                               color: Colors.white, fontSize: 20),
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'username',
-                            labelStyle: const TextStyle(
+                            labelStyle: TextStyle(
                                 color: Color.fromARGB(255, 200, 200, 200)),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: const BorderSide(
-                                  width: 2,
-                                  color: Color.fromARGB(255, 45, 45, 45)),
+                            contentPadding: const EdgeInsets.all(8.0),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: const BorderSide(
-                                  width: 2,
-                                  color: Color.fromARGB(255, 45, 45, 45)),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                              borderSide: BorderSide(
-                                  width: 2,
-                                  color: Theme.of(context).primaryColor),
-                            ),
-                            contentPadding: const EdgeInsets.all(16.0),
-                            fillColor: const Color.fromARGB(255, 40, 40, 40),
-                            filled: true,
                           ),
                         ),
                       ),
@@ -190,42 +206,29 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                         //password input feild
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: TextFormField(
-                            onChanged: (value) {
-                              setState(() {
-                                _bio = value;
-                              });
-                            },
-                            initialValue: _bio,
-                            autofillHints: const [AutofillHints.password],
-                            maxLines: 5,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 20),
-                            decoration: InputDecoration(
-                              labelText: 'bio',
-                              labelStyle: const TextStyle(
-                                  color: Color.fromARGB(255, 200, 200, 200)),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                                borderSide: const BorderSide(
-                                    width: 2,
-                                    color: Color.fromARGB(255, 45, 45, 45)),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                                borderSide: const BorderSide(
-                                    width: 2,
-                                    color: Color.fromARGB(255, 45, 45, 45)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.0),
-                                borderSide: BorderSide(
-                                    width: 2,
-                                    color: Theme.of(context).primaryColor),
-                              ),
-                              contentPadding: const EdgeInsets.all(16.0),
-                              fillColor: const Color.fromARGB(255, 40, 40, 40),
-                              filled: true,
-                            )),
+                          onChanged: (value) {
+                            setState(() {
+                              _bio = value;
+                            });
+                          },
+                          initialValue: _bio,
+                          autofillHints: const [AutofillHints.password],
+                          maxLines: 5,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 20),
+                          decoration: const InputDecoration(
+                            labelText: 'bio',
+                            labelStyle: TextStyle(
+                                color: Color.fromARGB(255, 200, 200, 200)),
+                            contentPadding: const EdgeInsets.all(8.0),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 16.0),
                       Padding(
@@ -241,7 +244,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                             )),
                             onPressed: () async {
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
+                                  .showSnackBar(const SnackBar(
                                 content: Text(
                                   'saving info...',
                                   style: TextStyle(fontSize: 20),
@@ -262,7 +265,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                               }
                               // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
+                                  .showSnackBar(const SnackBar(
                                       content: Text(
                                 'changed settings',
                                 style: TextStyle(
