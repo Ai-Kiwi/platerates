@@ -58,8 +58,8 @@ class _notificationBarItemState extends State<notificationBarItem> {
           children: [
             UserAvatar(
               avatarImage: image,
-              size: 35,
-              roundness: 35,
+              size: 45,
+              roundness: 45,
               onTap: () {},
             ),
             const SizedBox(width: 8),
@@ -92,8 +92,8 @@ class _notificationBarItemState extends State<notificationBarItem> {
           children: [
             UserAvatar(
               avatarImage: image,
-              size: 35,
-              roundness: 35,
+              size: 45,
+              roundness: 45,
               onTap: () {},
             ),
             const SizedBox(width: 8),
