@@ -208,17 +208,15 @@ class _UserProfileState extends State<UserProfile> {
                                 roundness: 75,
                                 onTap: () {
                                   if (userId != null) {
-                                    if (realUserId != null) {
-                                      Clipboard.setData(
-                                          ClipboardData(text: realUserId));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text(
-                                          'copied user id to clipboard',
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                      ));
-                                    }
+                                    Clipboard.setData(
+                                        ClipboardData(text: realUserId));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content: Text(
+                                        'copied user id to clipboard',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ));
                                   } else {
                                     Navigator.push(
                                       context,

@@ -1,15 +1,5 @@
-import 'dart:convert';
-
 import 'package:Toaster/libs/lazyLoadPage.dart';
-import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:http/http.dart' as http;
-import 'package:rflutter_alert/rflutter_alert.dart';
-import '../../libs/errorHandler.dart';
-import '../../login/userLogin.dart';
-import '../../main.dart';
 
 class notificationPageList extends StatefulWidget {
   const notificationPageList({super.key});
