@@ -37,7 +37,8 @@ class _CameraPageState extends State<CameraPage> {
         });
       } catch (e) {
         try {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
               content: Text(
             'failed loading camera',
             style: TextStyle(fontSize: 20, color: Colors.red),
@@ -67,7 +68,8 @@ class _CameraPageState extends State<CameraPage> {
           setState(() {});
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('failed loading camera',
               style: TextStyle(fontSize: 20, color: Colors.red)),
         ));
@@ -119,7 +121,7 @@ class _CameraPageState extends State<CameraPage> {
   @override
   Widget build(BuildContext context) {
     if (_takingPhoto == true) {
-      return Scaffold(
+      return const Scaffold(
           backgroundColor: Color.fromRGBO(16, 16, 16, 1),
           body: Center(
             child: CircularProgressIndicator(),
@@ -193,13 +195,13 @@ class _CameraPageState extends State<CameraPage> {
                   Padding(
                     //take photo button
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Container(
+                    child: SizedBox(
                         width: double.infinity,
                         height: 50.0,
                         child: Row(
                           children: [
                             Expanded(
-                              child: Container(
+                              child: SizedBox(
                                 width: double.infinity,
                                 height: 50,
                                 child: ElevatedButton(
@@ -212,6 +214,7 @@ class _CameraPageState extends State<CameraPage> {
 
                                     if (imagePath != null) {
                                       // You can handle the captured image path here, e.g., display it on a new page or save it.
+                                      // ignore: use_build_context_synchronously
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -221,6 +224,7 @@ class _CameraPageState extends State<CameraPage> {
                                                 )),
                                       );
                                     } else {
+                                      // ignore: use_build_context_synchronously
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text(
@@ -237,8 +241,8 @@ class _CameraPageState extends State<CameraPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 8),
-                            Container(
+                            const SizedBox(width: 8),
+                            SizedBox(
                               width: 50,
                               height: 50,
                               child: ElevatedButton(
@@ -264,7 +268,7 @@ class _CameraPageState extends State<CameraPage> {
         Padding(
           //use photo present button
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Container(
+          child: SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
