@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                 Center(
                     //make sure on pc it's not to wide
                     child: Container(
-                        width: 650,
+                        width: 500,
                         height: double.infinity,
                         child: Center(
                             child: AutofillGroup(
@@ -119,9 +119,9 @@ class _LoginPageState extends State<LoginPage> {
                             Text(
                               "Login",
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 40),
+                                  TextStyle(color: Colors.white, fontSize: 60),
                             ),
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: 48.0),
                             Padding(
                               //email input feild
                               padding:
@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                                   labelStyle: const TextStyle(
                                       color:
                                           Color.fromARGB(255, 200, 200, 200)),
-                                  contentPadding: const EdgeInsets.all(16.0),
+                                  contentPadding: const EdgeInsets.all(8.0),
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(color: Colors.white),
                                   ),
@@ -170,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                                     labelStyle: const TextStyle(
                                         color:
                                             Color.fromARGB(255, 200, 200, 200)),
-                                    contentPadding: const EdgeInsets.all(16.0),
+                                    contentPadding: const EdgeInsets.all(8.0),
                                     enabledBorder: UnderlineInputBorder(
                                       borderSide:
                                           BorderSide(color: Colors.white),
@@ -190,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                               child: const Text('Reset Password'),
                             ),
-                            const SizedBox(height: 16.0),
+                            const SizedBox(height: 8.0),
                             Padding(
                               //login button
                               padding:
@@ -247,6 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 96.0),
                           ],
                         ))))),
                 Align(
