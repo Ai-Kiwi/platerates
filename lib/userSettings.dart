@@ -1,15 +1,9 @@
-import 'dart:convert';
-
 import 'package:Toaster/accountInfoSettings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:rflutter_alert/rflutter_alert.dart';
 import '../main.dart';
-import 'libs/errorHandler.dart';
 import 'libs/smoothTransitions.dart';
-import 'login/userLogin.dart';
 import 'login/userResetPassword.dart';
 
 class UserSettings extends StatefulWidget {
@@ -77,38 +71,8 @@ class _UserSettingsState extends State<UserSettings> {
                     settingIcon: Icons.download,
                     settingName: "get app beta",
                     ontap: () {
-                      Alert(
-                        context: context,
-                        title: "DANGER",
-                        desc:
-                            "because this is manual apk install to update you have to redownload from here. This is also limited for android only\nAre you sure you want to continue",
-                        buttons: [
-                          DialogButton(
-                            onPressed: () async {
-                              Navigator.pop(context);
-                              launchUrl(Uri.parse(
-                                  "https://toaster.aikiwi.dev/toaster.apk"));
-                            },
-                            color: Colors.green,
-                            child: const Text(
-                              "yes",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                          ),
-                          DialogButton(
-                            color: Colors.red,
-                            child: const Text(
-                              "cancel",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          )
-                        ],
-                      ).show();
+                      launchUrl(
+                          Uri.parse("https://toaster.aikiwi.dev/toaster.apk"));
                     },
                   ),
                   SettingItem(

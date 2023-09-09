@@ -5,7 +5,6 @@ import 'package:Toaster/libs/userAvatar.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import 'libs/dataCollect.dart';
 import 'libs/errorHandler.dart';
@@ -75,22 +74,12 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
       // ignore: use_build_context_synchronously
-      Alert(
-        context: context,
-        type: AlertType.error,
-        title: "bio change failed",
-        desc: response.body,
-        buttons: [
-          DialogButton(
-            onPressed: () => Navigator.pop(context),
-            width: 120,
-            child: const Text(
-              "ok",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          )
-        ],
-      ).show();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        'failed changing $setting',
+        style: TextStyle(fontSize: 20, color: Colors.red),
+      )));
+
       return;
     }
   }
@@ -272,22 +261,13 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                 await _changeSetting("bio", _bio);
                               }
                               // ignore: use_build_context_synchronously
-                              Alert(
-                                context: context,
-                                type: AlertType.success,
-                                title: "account info changed",
-                                buttons: [
-                                  DialogButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    width: 120,
-                                    child: const Text(
-                                      "ok",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 20),
-                                    ),
-                                  )
-                                ],
-                              ).show();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      content: Text(
+                                'changed settings',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              )));
                             },
                             child: const Text(
                               'change info',

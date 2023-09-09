@@ -200,23 +200,12 @@ class _userRatingState extends State<userRating> {
                       } else {
                         ErrorHandler.httpError(
                             response.statusCode, response.body, context);
-                        Alert(
-                          context: context,
-                          type: AlertType.error,
-                          title: "error deleteing rating",
-                          desc: response.body,
-                          buttons: [
-                            DialogButton(
-                              onPressed: () => Navigator.pop(context),
-                              width: 120,
-                              child: const Text(
-                                "ok",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                            )
-                          ],
-                        ).show();
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                content: Text(
+                          'failed deleting rating',
+                          style: TextStyle(fontSize: 20, color: Colors.red),
+                        )));
                       }
                     } else if (value == 'report') {
                       reportSystem.reportItem(context, "post_rating", ratingId);

@@ -1,11 +1,9 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/notifications/notificationBarItem.dart';
 import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:Toaster/posts/userPost.dart';
 import 'package:flutter/material.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
 import '../login/userLogin.dart';
@@ -110,22 +108,11 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
       setState(() {
-        Alert(
-          context: context,
-          type: AlertType.error,
-          title: "an error occurred while getting new items",
-          desc: response.body,
-          buttons: [
-            DialogButton(
-              onPressed: () => Navigator.pop(context),
-              width: 120,
-              child: const Text(
-                "ok",
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            )
-          ],
-        ).show();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+          'failed getting new items',
+          style: TextStyle(fontSize: 20, color: Colors.red),
+        )));
       });
     }
     _isLoading = false;

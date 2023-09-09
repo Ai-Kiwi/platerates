@@ -4,7 +4,6 @@ import 'package:Toaster/login/userResetPassword.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../libs/smoothTransitions.dart';
 import '../main.dart';
@@ -219,25 +218,13 @@ class _LoginPageState extends State<LoginPage> {
                                       );
                                     } else {
                                       // ignore: use_build_context_synchronously
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.error,
-                                        title: "login failed",
-                                        desc: correctLogin.error,
-                                        buttons: [
-                                          DialogButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                            child: const Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          )
-                                        ],
-                                      ).show();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        'login failed',
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.red),
+                                      )));
                                     }
                                   },
                                   child: const Text(

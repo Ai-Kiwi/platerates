@@ -172,55 +172,31 @@ class _fullPageRatingState extends State<FullPageRating> {
                                 );
 
                                 if (response.statusCode == 201) {
-                                  Alert(
-                                    context: context,
-                                    type: AlertType.success,
-                                    title: "uploaded comment",
-                                    buttons: [
-                                      DialogButton(
-                                        child: Text(
-                                          "ok",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        ),
-                                        onPressed: () async {
-                                          await jsonCache
-                                              .remove('rating-$rootItem');
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      FullPageRating(
-                                                          ratingId: rootItem)));
-                                        },
-                                        width: 120,
-                                      )
-                                    ],
-                                  ).show();
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                          content: Text(
+                                    'created comment',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.red),
+                                  )));
+
+                                  await jsonCache.remove('rating-$rootItem');
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FullPageRating(
+                                              ratingId: rootItem)));
                                 } else {
                                   ErrorHandler.httpError(response.statusCode,
                                       response.body, context);
-                                  Alert(
-                                    context: context,
-                                    type: AlertType.error,
-                                    title: "error uploading comment",
-                                    desc: response.body,
-                                    buttons: [
-                                      DialogButton(
-                                        child: Text(
-                                          "ok",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 20),
-                                        ),
-                                        onPressed: () => Navigator.pop(context),
-                                        width: 120,
-                                      )
-                                    ],
-                                  ).show();
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                          content: Text(
+                                    'failed creating comment',
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.red),
+                                  )));
                                 }
                               },
                               child: const Text(

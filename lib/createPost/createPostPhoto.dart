@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 //import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:image/image.dart' as img;
 
 class CameraPage extends StatefulWidget {
@@ -203,24 +202,13 @@ class _CameraPageState extends State<CameraPage> {
                                                 )),
                                       );
                                     } else {
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.error,
-                                        title: "error taking photo",
-                                        buttons: [
-                                          DialogButton(
-                                            child: Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                          )
-                                        ],
-                                      ).show();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                        'error taking photo',
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.red),
+                                      )));
                                     }
                                   },
                                   child: const Text(
@@ -289,21 +277,11 @@ class _CameraPageState extends State<CameraPage> {
                     );
                   }
                 } catch (err) {
-                  Alert(
-                    context: context,
-                    type: AlertType.error,
-                    title: "error taking photo",
-                    buttons: [
-                      DialogButton(
-                        onPressed: () => Navigator.pop(context),
-                        width: 120,
-                        child: const Text(
-                          "ok",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                      )
-                    ],
-                  ).show();
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text(
+                    'error taking photo',
+                    style: TextStyle(fontSize: 20, color: Colors.red),
+                  )));
 
                   print(err);
                   return null;

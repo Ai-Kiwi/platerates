@@ -39,6 +39,7 @@ class _imageUtils {
 
       if (finalImgSize[3] != 1080 || finalImgSize[2] != 1080) {
         print("photo to low resolstion");
+
         //ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         //  content: Text('invalid photo resolstion',
         //      style: TextStyle(fontSize: 20, color: Colors.red)),

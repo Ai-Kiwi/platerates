@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
-import 'package:rflutter_alert/rflutter_alert.dart';
 import '../libs/errorHandler.dart';
 import '../main.dart';
 import '../login/userLogin.dart';
@@ -232,59 +231,37 @@ class _PostRatingListState extends State<fullPagePost> {
                                     );
 
                                     if (response.statusCode == 201) {
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.success,
-                                        title: "uploaded rating",
-                                        buttons: [
-                                          DialogButton(
-                                            child: Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                            onPressed: () async {
-                                              await jsonCache
-                                                  .remove('post-$rootItem');
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          fullPagePost(
-                                                              postId:
-                                                                  rootItem)));
-                                            },
-                                            width: 120,
-                                          )
-                                        ],
-                                      ).show();
+                                      // ignore: use_build_context_synchronously
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text('uploaded rating',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white)),
+                                      ));
+                                      await jsonCache.remove('post-$rootItem');
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.pop(context);
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  fullPagePost(
+                                                      postId: rootItem)));
                                     } else {
+                                      // ignore: use_build_context_synchronously
                                       ErrorHandler.httpError(
                                           response.statusCode,
                                           response.body,
                                           context);
-                                      Alert(
-                                        context: context,
-                                        type: AlertType.error,
-                                        title: "error uploading rating",
-                                        desc: response.body,
-                                        buttons: [
-                                          DialogButton(
-                                            child: Text(
-                                              "ok",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            width: 120,
-                                          )
-                                        ],
-                                      ).show();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text('error uploading rating',
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: Colors.white)),
+                                      ));
                                     }
                                   },
                                   child: const Text(
@@ -298,17 +275,18 @@ class _PostRatingListState extends State<fullPagePost> {
                 ],
               ))),
       Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 30,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ))
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        child: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.white,
+            size: 30,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      )
     ]));
   }
 }
