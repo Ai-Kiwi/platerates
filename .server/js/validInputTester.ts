@@ -2,7 +2,7 @@ import { database } from './database';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { RegExpMatcher, TextCensor, englishDataset, englishRecommendedTransformers, } from 'obscenity';
-
+import validator from 'validator';
 
 async function testUsername(username : string){
   try{
@@ -73,7 +73,7 @@ async function testUsername(username : string){
 
 
 function cleanEmailAddress(email : string){
-  let finalEmail: string = email
+  let finalEmail: string | false = email
 
   if (email === null){
     return null
@@ -81,9 +81,14 @@ function cleanEmailAddress(email : string){
   if (email === undefined){
     return undefined
   }
+  if (validator.isEmail(email))
 
-  finalEmail = finalEmail.toLowerCase();
-  return finalEmail;
+  finalEmail = validator.normalizeEmail(email);
+  if (finalEmail === false){
+    return null
+  }else{
+    return finalEmail;
+  }
 }
 
 export {
