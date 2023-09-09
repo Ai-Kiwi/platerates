@@ -33,12 +33,12 @@ class _UserSettingsState extends State<UserSettings> {
               child: ListView(
                 children: [
                   const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
-                      child: Text(
-                        "   Settings",
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Center(
+                          child: Text(
+                        "Settings",
                         style: TextStyle(color: Colors.white, fontSize: 40),
-                      )),
+                      ))),
                   const Divider(
                     color: Color.fromARGB(255, 110, 110, 110),
                     thickness: 1.0,
@@ -151,31 +151,33 @@ class SettingItem extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: 40,
-            child:
-                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              AspectRatio(
-                  aspectRatio: 1,
-                  child: Center(
-                      child: Icon(
-                    settingIcon,
-                    color: Colors.white,
-                    size: 30,
-                  ))),
-              Expanded(
-                  child: Text(settingName,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        color: Colors.white,
-                      ))),
-              const AspectRatio(
-                  aspectRatio: 1,
-                  child: Center(
-                      child: Icon(
-                    Icons.arrow_right_rounded,
-                    color: Colors.white60,
-                    size: 35,
-                  ))),
-            ]),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AspectRatio(
+                    aspectRatio: 1,
+                    child: Center(
+                        child: Icon(
+                      settingIcon,
+                      color: Colors.white,
+                      size: 30,
+                    ))),
+                Expanded(
+                    child: Text(settingName,
+                        style: const TextStyle(
+                          fontSize: 25,
+                          color: Colors.white,
+                        ))),
+                const AspectRatio(
+                    aspectRatio: 1,
+                    child: Center(
+                        child: Icon(
+                      Icons.arrow_right_rounded,
+                      color: Colors.white60,
+                      size: 35,
+                    ))),
+              ],
+            ),
           ),
         ));
   }

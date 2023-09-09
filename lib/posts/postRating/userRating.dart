@@ -49,13 +49,11 @@ class _userRatingState extends State<userRating> {
     //as non of these have returned error it must have found data
     try {
       var jsonData = await dataCollect.getRatingData(ratingId, context);
+      // ignore: use_build_context_synchronously
       Map basicUserData = await dataCollect.getBasicUserData(
           jsonData['ratingPosterId'], context);
-      //send an update request could be done bett but is what it is rn
-      dataCollect.updateBasicUserData(jsonData['ratingPosterId'], context);
-
       Map avatarData =
-          await dataCollect.getAvatarData(jsonData["avatar"], context);
+          await dataCollect.getAvatarData(basicUserData["avatar"], context);
 
       setState(() {
         text = jsonData["text"];
@@ -79,7 +77,8 @@ class _userRatingState extends State<userRating> {
 
   Future<void> _collectAndUpdateData() async {
     await _collectData();
-    if (await dataCollect.updateRatingData(ratingId, context) == true) {
+    if (await dataCollect.updateRatingData(ratingId, context) == true ||
+        dataCollect.updateBasicUserData(posterUserId, context) == true) {
       await _collectData();
     }
   }

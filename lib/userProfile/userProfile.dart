@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/adminZone.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
@@ -312,7 +313,13 @@ class _UserProfileState extends State<UserProfile> {
                               color: Colors.red,
                               size: 30,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AdminZonePage()),
+                              );
+                            },
                           )),
                       IconButton(
                         icon: const Icon(

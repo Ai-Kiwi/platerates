@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/timeMaths.dart';
+import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
   );
   var rootItem;
   var jsonData;
+  var userImage;
 
   Future<void> fetchNotificationData() async {
     var textColor = Colors.white;
@@ -43,10 +45,31 @@ class _notificationBarItemState extends State<notificationBarItem> {
       var userData = await dataCollect.getBasicUserData(
           ratingData['ratingPosterId'], context);
       var username = userData['username'] as String;
+
+      userImage = await dataCollect.getAvatarData(userData["avatar"], context);
+      var image;
+      if (userImage["imageData"] != null) {
+        image = base64Decode(userImage["imageData"]);
+      }
+
       setState(() {
-        insideData = Text(
-          "${username} responded to your post",
-          style: TextStyle(color: textColor, fontSize: 20),
+        insideData = Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            UserAvatar(
+              avatarImage: image,
+              size: 35,
+              roundness: 35,
+              onTap: () {},
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+                child: Text(
+              "${username} responded to your post",
+              style: TextStyle(color: textColor, fontSize: 20),
+            )),
+          ],
         );
       });
     } else if (jsonData['action'] == "user_reply_post_rating") {
@@ -57,10 +80,30 @@ class _notificationBarItemState extends State<notificationBarItem> {
           ratingData['ratingPosterId'], context);
       var username = userData['username'] as String;
 
+      userImage = await dataCollect.getAvatarData(userData["avatar"], context);
+      var image;
+      if (userImage["imageData"] != null) {
+        image = base64Decode(userImage["imageData"]);
+      }
+
       setState(() {
-        insideData = Text(
-          "${username} responded to your rating",
-          style: TextStyle(color: textColor, fontSize: 20),
+        insideData = Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            UserAvatar(
+              avatarImage: image,
+              size: 35,
+              roundness: 35,
+              onTap: () {},
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+                child: Text(
+              "${username} responded to your rating",
+              style: TextStyle(color: textColor, fontSize: 20),
+            )),
+          ],
         );
       });
     }
@@ -78,31 +121,23 @@ class _notificationBarItemState extends State<notificationBarItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-              width: 2, color: const Color.fromARGB(255, 45, 45, 45)),
-        ),
         width: double.infinity,
         child: GestureDetector(
-            child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: insideData,
-                    ),
-                    Text(
-                      timeMaths.shortFormatDuration(
-                          DateTime.now().millisecondsSinceEpoch -
-                              (jsonData['sentDate'] as int)),
-                      style: TextStyle(color: Colors.white, fontSize: 32),
-                    ),
-                  ],
-                )),
+            child: Row(
+              children: [
+                Expanded(
+                  child: insideData,
+                ),
+                Text(
+                  timeMaths.shortFormatDuration(
+                      DateTime.now().millisecondsSinceEpoch -
+                          (jsonData['sentDate'] as int)),
+                  style: TextStyle(color: Colors.white, fontSize: 32),
+                ),
+              ],
+            ),
             onTap: () async {
               if (rootItem != null) {
                 if (jsonData['action'] == "user_rated_post") {
