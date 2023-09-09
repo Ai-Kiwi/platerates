@@ -18,6 +18,7 @@ class _CameraPageState extends State<CameraPage> {
   List<CameraDescription>? _cameras;
   bool _isCameraReady = false;
   int cameraIndex = 0;
+  bool _takingPhoto = false;
 
   @override
   void initState() {
@@ -85,6 +86,10 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<List<int>?> _takePicture() async {
+    setState(() {
+      _takingPhoto = true;
+    });
+
     if (!_isCameraReady || _cameraController == null) return null;
 
     if (_cameraController!.value.isTakingPicture) return null;
@@ -93,6 +98,9 @@ class _CameraPageState extends State<CameraPage> {
       final image = await _cameraController!.takePicture();
       //print(image);
 
+      setState(() {
+        _takingPhoto = false;
+      });
       return await imageUtils.resizePhoto(await image.readAsBytes());
       //return "e";
       //} on CameraException {
@@ -101,12 +109,23 @@ class _CameraPageState extends State<CameraPage> {
       //}
     } catch (err) {
       print(err);
+      setState(() {
+        _takingPhoto = false;
+      });
       return null;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_takingPhoto == true) {
+      return Scaffold(
+          backgroundColor: Color.fromRGBO(16, 16, 16, 1),
+          body: Center(
+            child: CircularProgressIndicator(),
+          ));
+    }
+
     var size = MediaQuery.of(context).size.width;
     size = size -
         32; //really hacky work around, as image needs to be sqaure because there is padding on each side.
