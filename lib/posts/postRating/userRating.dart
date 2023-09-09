@@ -281,28 +281,18 @@ class _userRatingState extends State<userRating> {
               Flexible(
                   //text for rating
                   child: Container(
-                      decoration: BoxDecoration(
-                          color: const Color.fromRGBO(16, 16, 16, 1),
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                              color: const Color.fromARGB(215, 45, 45, 45),
-                              width: 3)),
                       height: 150,
                       child: ListView(children: [
-                        Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 8.0),
-                            child: SelectableLinkify(
-                              onOpen: (link) async {
-                                if (!await launchUrl(Uri.parse(link.url))) {
-                                  throw Exception(
-                                      'Could not launch ${link.url}');
-                                }
-                              },
-                              text: text,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 15),
-                            ))
+                        SelectableLinkify(
+                          onOpen: (link) async {
+                            if (!await launchUrl(Uri.parse(link.url))) {
+                              throw Exception('Could not launch ${link.url}');
+                            }
+                          },
+                          text: text,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 15),
+                        )
                       ])))
             ],
           ),
