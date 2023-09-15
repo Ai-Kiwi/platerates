@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "36306452091",
+    "project_id": "toaster-378805",
+    "storage_bucket": "toaster-378805.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36306452091:android:2e9f9a345b3d72983eecde",
+        "android_client_info": {
+          "package_name": "dev.aikiwi.toaster"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD38Ko9F3bLTDe0BGnCE7YVhwCRYqEDi90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

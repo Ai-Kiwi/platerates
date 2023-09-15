@@ -4,6 +4,7 @@ import { rateLimit} from 'express-rate-limit';
 import path from "path";
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import firebase from 'firebase-admin'
 
 const limiter = rateLimit({
 	//windowMs: 3 * 60 * 1000, // 3 minutes
@@ -89,7 +90,11 @@ app.get('/toaster.apk', async (req : Request, res : Response) => {
 
 
 
+const adminData = require("./adminKeys.json")
 
+firebase.initializeApp({
+  credential: firebase.credential.cert(adminData),
+});
 
 //createUser("demouser@aikiwi.dev","xZb2VQyvgBV8#24axwVLaOHwDHzKv@az","demo user")
 

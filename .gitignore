@@ -49,3 +49,6 @@ app.*.map.json
 .server/private.key
 .server/.env
 .server/build
+
+#firebase
+.server/adminKeys.json

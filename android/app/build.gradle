@@ -22,6 +22,11 @@ if (flutterVersionName == null) {
 }
 
 apply plugin: 'com.android.application'
+// START: FlutterFire Configuration
+//apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms:google-services:4.3.10'
+
+// END: FlutterFire Configuration
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
@@ -39,6 +44,8 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -58,6 +65,7 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
    // signingConfigs {
@@ -82,4 +90,9 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    //classpath 'com.android.tools.build:gradle:4.2.2'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    //fix some crashing issue or something with notfcations
+    implementation 'androidx.window:window:1.0.0'
+    implementation 'androidx.window:window-java:1.0.0'
 }

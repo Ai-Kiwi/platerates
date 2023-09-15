@@ -17,8 +17,8 @@ class DataCollect {
     )));
   }
 
-  Future<Map> getData(
-      Map headers, String url, String cacheCode, context) async {
+  Future<Map> getData(Map headers, String url, String cacheCode, context,
+      bool expectError) async {
     try {
       var jsonData;
       var extractedData = await jsonCache.value(cacheCode);
@@ -40,7 +40,9 @@ class DataCollect {
           await jsonCache.refresh(cacheCode, {"data": response.body});
         } else {
           ErrorHandler.httpError(response.statusCode, response.body, context);
-          reportError(response.body, "data", context);
+          if (expectError == false) {
+            reportError(response.body, "data", context);
+          }
           return {};
         }
       }
@@ -53,8 +55,8 @@ class DataCollect {
     }
   }
 
-  Future<bool> updateData(
-      Map headers, String url, String cacheCode, context) async {
+  Future<bool> updateData(Map headers, String url, String cacheCode, context,
+      bool expectError) async {
     var dataUpdated = false;
     var headersUsing = headers;
     headersUsing['onlyUpdateChangeable'] = true;
@@ -65,8 +67,8 @@ class DataCollect {
         },
         body: jsonEncode(headers));
     if (response.statusCode == 200) {
-      var inputData =
-          await dataCollect.getData(headers, url, cacheCode, context);
+      var inputData = await dataCollect.getData(
+          headers, url, cacheCode, context, expectError);
 
       var jsonData = jsonDecode(response.body);
 
@@ -80,7 +82,9 @@ class DataCollect {
       await jsonCache.refresh(cacheCode, {"data": jsonEncode(inputData)});
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
-      reportError(response.body, "updated data", context);
+      if (expectError == false) {
+        reportError(response.body, "updated data", context);
+      }
       return false;
     }
     if (dataUpdated == true) {
@@ -89,68 +93,73 @@ class DataCollect {
     return dataUpdated;
   }
 
-  Future<Map> getBasicUserData(String userId, context) async {
+  Future<Map> getBasicUserData(String userId, context, expectError) async {
     return getData({
       'token': userManager.token,
       "userId": userId,
-    }, "$serverDomain/profile/basicData", 'basicUserData-$userId', context);
+    }, "$serverDomain/profile/basicData", 'basicUserData-$userId', context,
+        expectError);
   }
 
-  Future<bool> updateBasicUserData(String? userId, context) async {
+  Future<bool> updateBasicUserData(String? userId, context, expectError) async {
     return updateData({
       'token': userManager.token,
       'userId': userId,
-    }, "$serverDomain/profile/basicData", 'basicUserData-$userId', context);
+    }, "$serverDomain/profile/basicData", 'basicUserData-$userId', context,
+        expectError);
   }
 
-  Future<Map> getUserData(String? userId, context) async {
+  Future<Map> getUserData(String? userId, context, expectError) async {
     return getData({
       'token': userManager.token,
       'userId': userId,
-    }, "$serverDomain/profile/data", 'userData-$userId', context);
+    }, "$serverDomain/profile/data", 'userData-$userId', context, expectError);
   }
 
-  Future<bool> updateUserData(String? userId, context) async {
+  Future<bool> updateUserData(String? userId, context, expectError) async {
     return updateData({
       'token': userManager.token,
       'userId': userId,
-    }, "$serverDomain/profile/data", 'userData-$userId', context);
+    }, "$serverDomain/profile/data", 'userData-$userId', context, expectError);
   }
 
-  Future<Map> getPostData(String? postId, context) async {
+  Future<Map> getPostData(String? postId, context, expectError) async {
     return getData({
       'token': userManager.token,
       'postId': postId,
-    }, "$serverDomain/post/data", 'post-$postId', context);
+    }, "$serverDomain/post/data", 'post-$postId', context, expectError);
   }
 
-  Future<bool> updatePostData(String? postId, context) async {
+  Future<bool> updatePostData(String? postId, context, expectError) async {
     return updateData({
       'token': userManager.token,
       'postId': postId,
-    }, "$serverDomain/post/data", 'post-$postId', context);
+    }, "$serverDomain/post/data", 'post-$postId', context, expectError);
   }
 
-  Future<Map> getRatingData(String? ratingId, context) async {
+  Future<Map> getRatingData(String? ratingId, context, expectError) async {
     return getData({
       'token': userManager.token,
       'ratingId': ratingId,
-    }, "$serverDomain/post/rating/data", 'rating-$ratingId', context);
+    }, "$serverDomain/post/rating/data", 'rating-$ratingId', context,
+        expectError);
   }
 
-  Future<bool> updateRatingData(String? ratingId, context) async {
+  Future<bool> updateRatingData(String? ratingId, context, expectError) async {
     return updateData({
       'token': userManager.token,
       'ratingId': ratingId,
-    }, "$serverDomain/post/rating/data", 'rating-$ratingId', context);
+    }, "$serverDomain/post/rating/data", 'rating-$ratingId', context,
+        expectError);
   }
 
-  Future<Map> getAvatarData(String? avatarId, context) async {
+  Future<Map> getAvatarData(String? avatarId, context, expectError) async {
     print('sending $avatarId');
     return getData({
       'token': userManager.token,
       'avatarId': avatarId,
-    }, "$serverDomain/profile/avatar", 'avatar-$avatarId', context);
+    }, "$serverDomain/profile/avatar", 'avatar-$avatarId', context,
+        expectError);
   }
 }
 

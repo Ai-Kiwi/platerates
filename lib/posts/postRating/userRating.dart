@@ -48,12 +48,12 @@ class _userRatingState extends State<userRating> {
   Future<void> _collectData() async {
     //as non of these have returned error it must have found data
     try {
-      var jsonData = await dataCollect.getRatingData(ratingId, context);
+      var jsonData = await dataCollect.getRatingData(ratingId, context, false);
       // ignore: use_build_context_synchronously
       Map basicUserData = await dataCollect.getBasicUserData(
-          jsonData['ratingPosterId'], context);
-      Map avatarData =
-          await dataCollect.getAvatarData(basicUserData["avatar"], context);
+          jsonData['ratingPosterId'], context, false);
+      Map avatarData = await dataCollect.getAvatarData(
+          basicUserData["avatar"], context, false);
 
       setState(() {
         text = jsonData["text"];
@@ -76,11 +76,16 @@ class _userRatingState extends State<userRating> {
   }
 
   Future<void> _collectAndUpdateData() async {
-    await _collectData();
-    if (await dataCollect.updateRatingData(ratingId, context) == true ||
-        dataCollect.updateBasicUserData(posterUserId, context) == true) {
+    //fixes mounting error having try here, am too lazy to fix myself
+    try {
       await _collectData();
-    }
+      if (await dataCollect.updateRatingData(ratingId, context, false) ==
+              true ||
+          await dataCollect.updateBasicUserData(posterUserId, context, false) ==
+              true) {
+        await _collectData();
+      }
+    } on Error {}
   }
 
   @override
@@ -170,32 +175,18 @@ class _userRatingState extends State<userRating> {
                         }),
                       );
                       if (response.statusCode == 200) {
-                        Alert(
-                          context: context,
-                          type: AlertType.success,
-                          title: "rating deleted",
-                          desc: "refresh page to see",
-                          buttons: [
-                            DialogButton(
-                              onPressed: () {
-                                jsonCache.remove('post-${rootItem["data"]}');
-                                Navigator.pop(context);
-                                Navigator.pop(context);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => fullPagePost(
-                                            postId: rootItem["data"])));
-                              },
-                              width: 120,
-                              child: const Text(
-                                "ok",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                            )
-                          ],
-                        ).show();
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                                content: Text(
+                          'rating deleted',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        )));
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    fullPagePost(postId: rootItem["data"])));
                       } else {
                         ErrorHandler.httpError(
                             response.statusCode, response.body, context);

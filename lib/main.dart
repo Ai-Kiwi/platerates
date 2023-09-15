@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/loadScreen.dart';
+import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/notifications/notificationPageList.dart';
 import 'package:Toaster/searchPage.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
@@ -8,13 +9,13 @@ import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_cache/json_cache.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:http/http.dart' as http;
-//import 'package:workmanager/workmanager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'createPost/createPostPhoto.dart';
 import 'pageNotices.dart';
 import 'login/userLogin.dart';
@@ -22,30 +23,14 @@ import 'navbar.dart';
 
 String serverDomain = 'https://toaster.aikiwi.dev';
 
-//@pragma(
-//    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
-//void callbackDispatcher() {
-//  Workmanager().executeTask((task, inputData) {
-//    print(
-//        "Native called background task: $task"); //simpleTask will be emitted here.
-//    return Future.value(true);
-//  });
-//}
-
 void main() {
   //make sure something a rather to use app verison
+
   WidgetsFlutterBinding.ensureInitialized();
 
   if (kDebugMode == true) {
     serverDomain = 'http://192.168.0.157:3030';
   }
-
-  //Workmanager().initialize(
-  //    callbackDispatcher, // The top level function, aka callbackDispatcher
-  //    isInDebugMode:
-  //        true // If enabled it will post a notification whenever the task is running. Handy for debugging tasks
-  //    );
-  //Workmanager().registerOneOffTask("task-identifier", "simpleTask");
 
   runApp(Phoenix(child: const MyApp()));
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -136,13 +121,20 @@ class MyApp extends StatelessWidget {
       await userManager.loadTokenFromStoreage();
     }
 
-    //register notification handler
-    //Workmanager().registerPeriodicTask("1", "hourlyNotification",
-    //    frequency: Duration(seconds: 5),
-    //    existingWorkPolicy: ExistingWorkPolicy.replace,
-    //    inputData: {
-    //      "token": userManager.token,
-    //    });
+    await initNotificationHandler(); //also handles firebase
+
+    //load notfcation stuff if opened
+    var sharedPrefs = await SharedPreferences.getInstance();
+
+    var notData = sharedPrefs.getString('notificationOnBootData');
+    print("noti thingy is $notData");
+    if (notData != null) {
+      if (notData != '') {
+        openNotificationOnBootData = notData;
+        print("loaded ");
+        sharedPrefs.setString('notificationOnBootData', '');
+      }
+    }
 
     //respond with if token is valid
     var loginStateData = await userManager.checkLoginState();
@@ -214,6 +206,16 @@ List<Widget> pages = <Widget>[
   UserProfile(openedOntopMenu: false),
 ];
 
+Future<void> testNotificationOnBootData(context) async {
+  if (openNotificationOnBootData != "") {
+    openNotification(openNotificationOnBootData, context);
+
+    openNotificationOnBootData = "";
+    var sharedPrefs = await SharedPreferences.getInstance();
+    sharedPrefs.setString('notificationOnBootData', '');
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   double containerWidth = 200.0;
@@ -238,6 +240,9 @@ class _MyHomePageState extends State<MyHomePage> {
       return DisplayErrorMessagePage(errorMessage: "screen to wide");
     }
 
+    //see if notifcation has been clicked and if so display it
+    testNotificationOnBootData(context);
+
     return Scaffold(
         extendBody: true,
         body: Center(
@@ -250,3 +255,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ));
   }
 }
+
+//export PATH="$PATH":"$HOME/.pub-cache/bin"
+//flutterfire
