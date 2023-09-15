@@ -47,13 +47,13 @@ class _PostItemState extends State<PostItem> {
   Future<void> _collectData() async {
     //as non of these have returned error it must have found data
     try {
-      var jsonData = await dataCollect.getPostData(postId, context);
-      Map basicUserData =
-          await dataCollect.getBasicUserData(jsonData['posterId'], context);
-      dataCollect.updateBasicUserData(jsonData['posterId'], context);
+      var jsonData = await dataCollect.getPostData(postId, context, false);
+      Map basicUserData = await dataCollect.getBasicUserData(
+          jsonData['posterId'], context, false);
+      dataCollect.updateBasicUserData(jsonData['posterId'], context, false);
       print(basicUserData);
-      Map avatarData =
-          await dataCollect.getAvatarData(basicUserData["avatar"], context);
+      Map avatarData = await dataCollect.getAvatarData(
+          basicUserData["avatar"], context, false);
 
       //print(basicUserData);
       setState(() {
@@ -82,7 +82,7 @@ class _PostItemState extends State<PostItem> {
     //as non of these have returned error it must have found data
     try {
       await _collectData();
-      if (await dataCollect.updatePostData(postId, context) == true) {
+      if (await dataCollect.updatePostData(postId, context, false) == true) {
         await _collectData();
       }
     } catch (err) {

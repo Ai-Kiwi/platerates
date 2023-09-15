@@ -46,6 +46,7 @@ async function updateUserPassword(rawEmail : string, newPassword : string) {
         hashedPassword: hashedPassword,
         passwordSalt: passwordSalt,
         tokenNotExpiredCode: tokenNotExpiedCode,
+        deviceNotificationTokens : []
       }}
       );
     
@@ -274,7 +275,7 @@ router.post('/login/logout', async (req, res) => {
         }
 
         const newTokenNotExpiredCode : string = await generateRandomString(16);
-        const reponse = await collection.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode}})
+        const reponse = await collection.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode, deviceNotificationTokens : []}})
         if (reponse.acknowledged === true){
           console.log("user logged out")
           return res.status(200).send("user logged out");
@@ -449,6 +450,7 @@ router.get('/reset-password', async (req, res) => {
           hashedPassword : userCredentials.resetPassword.newPassword,
           passwordSalt : userCredentials.resetPassword.newPasswordSalt,
           tokenNotExpiredCode : userCredentials.resetPassword.newTokenNotExpiredCode,
+          deviceNotificationTokens : []
           }
         }
     );

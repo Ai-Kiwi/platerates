@@ -30,11 +30,11 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   late String _realUserId;
 
   Future<void> _fetchAccountData() async {
-    await dataCollect.updateUserData(null, context);
-    var fetchedData = await dataCollect.getUserData(null, context);
+    await dataCollect.updateUserData(null, context, false);
+    var fetchedData = await dataCollect.getUserData(null, context, false);
 
     Map avatarData =
-        await dataCollect.getAvatarData(fetchedData["avatar"], context);
+        await dataCollect.getAvatarData(fetchedData["avatar"], context, false);
 
     setState(() {
       _bio = fetchedData['bio'];

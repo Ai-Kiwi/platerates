@@ -36,9 +36,10 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   _SimpleUserProfileBarState({required this.userId});
 
   Future<void> _collectData() async {
-    Map basicUserData = await dataCollect.getBasicUserData(userId, context);
-    Map avatarData =
-        await dataCollect.getAvatarData(basicUserData["avatar"], context);
+    Map basicUserData =
+        await dataCollect.getBasicUserData(userId, context, false);
+    Map avatarData = await dataCollect.getAvatarData(
+        basicUserData["avatar"], context, false);
 
     setState(() {
       username = basicUserData["username"];
@@ -51,7 +52,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
 
   Future<void> _collectAndUpdateData() async {
     await _collectData();
-    if (await dataCollect.updateBasicUserData(userId, context) == true) {
+    if (await dataCollect.updateBasicUserData(userId, context, false) == true) {
       await _collectData();
     }
   }
@@ -140,9 +141,9 @@ class _UserProfileState extends State<UserProfile> {
   _UserProfileState({required this.userId, required this.openedOntopMenu});
 
   Future<void> _fetchProfile() async {
-    Map fetchedData = await dataCollect.getUserData(userId, context);
+    Map fetchedData = await dataCollect.getUserData(userId, context, false);
     Map avatarData =
-        await dataCollect.getAvatarData(fetchedData["avatar"], context);
+        await dataCollect.getAvatarData(fetchedData["avatar"], context, false);
 
     setState(() {
       userBio = fetchedData['bio'];
@@ -160,7 +161,7 @@ class _UserProfileState extends State<UserProfile> {
 
   Future<void> _fetchAndUpdateProfile() async {
     await _fetchProfile();
-    if (await dataCollect.updateUserData(userId, context) == true) {
+    if (await dataCollect.updateUserData(userId, context, false) == true) {
       await _fetchProfile();
     }
   }
