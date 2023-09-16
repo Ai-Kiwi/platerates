@@ -21,20 +21,16 @@ class notificationBarItem extends StatefulWidget {
 
 class _notificationBarItemState extends State<notificationBarItem> {
   final notificationData;
-  Widget insideData = const Center(
-    child: CircularProgressIndicator(),
-  );
   var rootItem;
   var jsonData;
-  var userImage;
+
+  var userImageData;
+  var notificationText = "";
+  var notificationTextColor = Colors.white;
+  var itemDeleted = false;
 
   Future<void> fetchNotificationData() async {
     try {
-      var textColor = Colors.white;
-      if (jsonData['read'] == true) {
-        textColor = Colors.grey;
-      }
-
       if (jsonData['action'] == "user_rated_post") {
         var ratingData =
             await dataCollect.getRatingData(jsonData['itemId'], context, true);
@@ -43,32 +39,19 @@ class _notificationBarItemState extends State<notificationBarItem> {
             ratingData['ratingPosterId'], context, true);
         var username = userData['username'] as String;
 
-        userImage =
+        var userImage =
             await dataCollect.getAvatarData(userData["avatar"], context, true);
-        var image;
-        if (userImage["imageData"] != null) {
-          image = base64Decode(userImage["imageData"]);
-        }
 
         setState(() {
-          insideData = Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              UserAvatar(
-                avatarImage: image,
-                size: 45,
-                roundness: 45,
-                onTap: () {},
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: Text(
-                "${username} responded to your post",
-                style: TextStyle(color: textColor, fontSize: 20),
-              )),
-            ],
-          );
+          if (userImage["imageData"] != null) {
+            userImageData = base64Decode(userImage["imageData"]);
+          }
+          notificationText = "${username} responded to your post";
+          if (jsonData['read'] == false) {
+            notificationTextColor = Colors.white;
+          } else {
+            notificationTextColor = Colors.grey;
+          }
         });
       } else if (jsonData['action'] == "user_reply_post_rating") {
         var ratingData =
@@ -78,38 +61,25 @@ class _notificationBarItemState extends State<notificationBarItem> {
             ratingData['ratingPosterId'], context, true);
         var username = userData['username'] as String;
 
-        userImage =
+        var userImage =
             await dataCollect.getAvatarData(userData["avatar"], context, true);
-        var image;
-        if (userImage["imageData"] != null) {
-          image = base64Decode(userImage["imageData"]);
-        }
 
         setState(() {
-          insideData = Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              UserAvatar(
-                avatarImage: image,
-                size: 45,
-                roundness: 45,
-                onTap: () {},
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: Text(
-                "${username} responded to your rating",
-                style: TextStyle(color: textColor, fontSize: 20),
-              )),
-            ],
-          );
+          if (userImage["imageData"] != null) {
+            userImageData = base64Decode(userImage["imageData"]);
+          }
+          notificationText = "${username} responded to your rating";
+          if (jsonData['read'] == false) {
+            notificationTextColor = Colors.white;
+          } else {
+            notificationTextColor = Colors.grey;
+          }
         });
       }
     } catch (err) {
       if (jsonData['read'] == false) {
         //invalid noti and not read so should contact server to mark as read
-        var response = await http.post(
+        await http.post(
           Uri.parse("$serverDomain/notification/read"),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -122,24 +92,9 @@ class _notificationBarItemState extends State<notificationBarItem> {
       }
       if (mounted) {
         setState(() {
-          insideData = Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              UserAvatar(
-                avatarImage: null,
-                size: 45,
-                roundness: 45,
-                onTap: () {},
-              ),
-              const SizedBox(width: 8),
-              const Expanded(
-                  child: Text(
-                "item deleted",
-                style: TextStyle(color: Colors.red, fontSize: 20),
-              )),
-            ],
-          );
+          itemDeleted = true;
+          notificationText = "item deleted";
+          notificationTextColor = Colors.red;
         });
       }
     }
@@ -164,22 +119,42 @@ class _notificationBarItemState extends State<notificationBarItem> {
             child: Row(
               children: [
                 Expanded(
-                  child: insideData,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      UserAvatar(
+                        avatarImage: userImageData,
+                        size: 45,
+                        roundness: 45,
+                        onTap: () {},
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                          child: Text(
+                        notificationText,
+                        style: TextStyle(
+                            color: notificationTextColor, fontSize: 20),
+                      )),
+                    ],
+                  ),
                 ),
                 Text(
                   timeMaths.shortFormatDuration(
                       DateTime.now().millisecondsSinceEpoch -
                           (jsonData['sentDate'] as int)),
-                  style: TextStyle(color: Colors.white, fontSize: 32),
+                  style: TextStyle(color: notificationTextColor, fontSize: 32),
                 ),
               ],
             ),
             onTap: () async {
-              jsonData = await openNotification(notificationData, context);
-              setState(() {
-                jsonData = jsonData;
-              });
-              fetchNotificationData();
+              if (itemDeleted == false) {
+                jsonData = await openNotification(notificationData, context);
+                setState(() {
+                  jsonData = jsonData;
+                });
+                fetchNotificationData();
+              }
             }),
       ),
     );

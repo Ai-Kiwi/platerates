@@ -176,7 +176,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                                           content: Text(
                                     'created comment',
                                     style: TextStyle(
-                                        fontSize: 20, color: Colors.red),
+                                        fontSize: 20, color: Colors.white),
                                   )));
 
                                   await jsonCache.remove('rating-$rootItem');

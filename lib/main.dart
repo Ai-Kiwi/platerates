@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
@@ -9,7 +10,6 @@ import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_cache/json_cache.dart';
@@ -61,6 +61,11 @@ class MyApp extends StatelessWidget {
     final box =
         await Hive.openBox<String>('appBox'); // it must be a Box<String>.
     jsonCache = JsonCacheMem(JsonCacheHive(box));
+
+    final BUILD_BRANCH = Platform.environment['BUILD_BRANCH'];
+
+    print("build branch is below");
+    print(BUILD_BRANCH);
 
     var expireTime = await jsonCache.value("expire-data");
     if (expireTime == null) {
@@ -216,6 +221,8 @@ Future<void> testNotificationOnBootData(context) async {
   }
 }
 
+var updateUnreadNotificationCount;
+
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   double containerWidth = 200.0;
@@ -225,6 +232,39 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    updateUnreadNotificationCount = _updateUnreadNotificationCount;
+    updateUnreadNotificationCount();
+  }
+
+  int unreadNotificationCount = 0;
+
+  Future<void> _updateUnreadNotificationCount() async {
+    var response = await http.post(
+      Uri.parse("$serverDomain/notification/unreadCount"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'token': userManager.token,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      var jsonData = jsonDecode(response.body);
+
+      if (mounted) {
+        setState(() {
+          unreadNotificationCount = jsonData['unreadCount'];
+        });
+      }
+    }
   }
 
   @override
@@ -249,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: pages.elementAt(_selectedIndex),
         ),
         bottomNavigationBar: UserNavbar(
-          notificationCount: 0,
+          notificationCount: unreadNotificationCount,
           selectedIndex: _selectedIndex,
           onClicked: _onItemSelected,
         ));
