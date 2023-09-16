@@ -295,6 +295,46 @@ router.post('/notification/read', async (req, res) => {
     }
 })
 
+router.post('/notification/unreadCount', async (req, res) => {
+  console.log(" => user marking notification as read")
+    try{
+      const token = req.body.token;
+      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+      const result = await testToken(token,userIpAddress);
+      const validToken : boolean = result.valid;
+      const userId : string | undefined = result.userId;
+    
+      if (validToken) { // user token is valid
+        let collection: mongoDB.Collection = database.collection('user_notifications');
+  
+        let unreadCount = await collection.countDocuments({read : false, receiverId : userId});
+
+        //console.log(unreadCount);
+
+        if (unreadCount != null){
+          console.log("marked notification read");
+          return res.status(200).json({
+            unreadCount : unreadCount
+          });
+        }else{
+          console.log("error marking read");
+          return res.status(400).send("error getting notifications count");
+        }
+
+        
+
+  
+      }else{
+        console.log("invalid token");
+        return res.status(401).send("invalid token");
+      }
+    }catch(err){
+      console.log(err);
+      return res.status(500).send("server error");
+    }
+})
+
+
 //scrollable notifications
 //view notification data
 //phone get notfcations to send

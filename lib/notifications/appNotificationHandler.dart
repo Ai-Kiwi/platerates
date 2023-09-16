@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:Toaster/firebase_options.dart';
@@ -7,7 +6,6 @@ import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:Toaster/main.dart';
-import 'package:Toaster/notifications/notificationBarItem.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -78,6 +76,8 @@ Future<void> sendNotification(
   } else {
     print("error failed to find channelId $channelId");
   }
+
+  updateUnreadNotificationCount();
 }
 
 Future<void> informServerNotificationToken(String? token) async {
@@ -86,7 +86,7 @@ Future<void> informServerNotificationToken(String? token) async {
   }
 
   if (token != null) {
-    var response = await http.post(
+    await http.post(
       Uri.parse("$serverDomain/notification/updateDeviceToken"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -234,6 +234,8 @@ Future<Map> openNotification(notificationData, context) async {
       style: TextStyle(fontSize: 20, color: Colors.red),
     )));
   }
+
+  updateUnreadNotificationCount();
 
   return jsonData;
 }

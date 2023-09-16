@@ -342,7 +342,7 @@ class PostManageButton extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text(
                       'post deleted',
-                      style: TextStyle(fontSize: 20, color: Colors.red),
+                      style: TextStyle(fontSize: 20, color: Colors.white),
                     )));
                   } else {
                     ErrorHandler.httpError(

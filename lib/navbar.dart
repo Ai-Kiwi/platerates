@@ -51,21 +51,34 @@ class UserNavbar extends StatelessWidget {
             label: 'create',
           ),
           BottomNavigationBarItem(
-            icon: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(Icons.notifications),
-                Visibility(
-                  visible: notificationCount > 0,
-                  child: Text(
-                    "$notificationCount",
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontSize: 15,
+            icon: FittedBox(
+              child: Stack(
+                alignment: Alignment.topLeft,
+                children: [
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Icon(Icons.notifications),
+                  ),
+                  Visibility(
+                    visible: notificationCount > 0.9,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.red),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(
+                          "$notificationCount",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             activeIcon: Icon(Icons.notifications),
             label: 'notifications',

@@ -98,235 +98,140 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
-        body: SafeArea(
-            bottom: true,
-            top: true,
-            child: Stack(
-              children: [
-                Center(
-                    //make sure on pc it's not to wide
-                    child: Container(
-                        width: 500,
-                        height: double.infinity,
-                        child: Center(
-                            child: AutofillGroup(
-                                child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              "Login",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 60),
+      backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
+      body: SafeArea(
+          bottom: true,
+          top: true,
+          child: Center(
+              //make sure on pc it's not to wide
+              child: SizedBox(
+                  width: 500,
+                  height: double.infinity,
+                  child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(height: 48.0),
+                          const Text(
+                            "Login",
+                            style: TextStyle(color: Colors.white, fontSize: 60),
+                          ),
+                          const SizedBox(height: 48.0),
+                          Padding(
+                            //email input feild
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: TextFormField(
+                              onChanged: (value) {
+                                setState(() {
+                                  _username = value;
+                                });
+                              },
+                              autofillHints: const [AutofillHints.email],
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 20),
+                              decoration: const InputDecoration(
+                                labelText: 'Email Address',
+                                labelStyle: TextStyle(
+                                    color: Color.fromARGB(255, 200, 200, 200)),
+                                contentPadding: EdgeInsets.all(8.0),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                              ),
                             ),
-                            const SizedBox(height: 48.0),
-                            Padding(
-                              //email input feild
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: TextFormField(
+                          ),
+                          const SizedBox(height: 16.0),
+                          Padding(
+                            //password input feild
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: TextFormField(
                                 onChanged: (value) {
                                   setState(() {
-                                    _username = value;
+                                    _password = value;
                                   });
                                 },
-                                autofillHints: const [AutofillHints.email],
+                                autofillHints: const [AutofillHints.password],
+                                obscureText: true,
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 20),
-                                decoration: InputDecoration(
-                                  labelText: 'Email Address',
-                                  labelStyle: const TextStyle(
+                                decoration: const InputDecoration(
+                                  labelText: 'Password',
+                                  labelStyle: TextStyle(
                                       color:
                                           Color.fromARGB(255, 200, 200, 200)),
-                                  contentPadding: const EdgeInsets.all(8.0),
+                                  contentPadding: EdgeInsets.all(8.0),
                                   enabledBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(color: Colors.white),
                                   ),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(color: Colors.green),
                                   ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            Padding(
-                              //password input feild
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: TextFormField(
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _password = value;
-                                    });
-                                  },
-                                  autofillHints: const [AutofillHints.password],
-                                  obscureText: true,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                  decoration: InputDecoration(
-                                    labelText: 'Password',
-                                    labelStyle: const TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 200, 200, 200)),
-                                    contentPadding: const EdgeInsets.all(8.0),
-                                    enabledBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.green),
-                                    ),
-                                  )),
-                            ),
-                            const SizedBox(height: 8.0),
-                            TextButton(
-                              // reset password
-                              onPressed: () {
-                                Navigator.of(context).push(smoothTransitions
-                                    .slideUp(const ResetPasswordPage()));
-                              },
-                              child: const Text('Reset Password'),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Padding(
-                              //login button
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 50.0,
-                                child: ElevatedButton(
-                                  style: OutlinedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  )),
-                                  onPressed: () async {
-                                    LoginResponse correctLogin =
-                                        await userManager.loginUser(
-                                            _username, _password);
-
-                                    if (correctLogin.success == true) {
-                                      //save login
-                                      TextInput.finishAutofillContext();
-                                      // ignore: use_build_context_synchronously
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => MyHomePage()),
-                                      );
-                                    } else {
-                                      // ignore: use_build_context_synchronously
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                        'login failed',
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.red),
-                                      )));
-                                    }
-                                  },
-                                  child: const Text(
-                                    'Log in',
-                                    style: TextStyle(fontSize: 18.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 96.0),
-                          ],
-                        ))))),
-                Align(
-                  alignment: AlignmentDirectional.topStart,
-                  child: Column(children: [
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Padding(
-                      //closed beta reminder
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50.0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 231, 38, 38),
-                            borderRadius: BorderRadius.circular(10.0),
+                                )),
                           ),
-                          child: const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text(
-                                  "Toaster is currently in a closed beta. Please contact the owner to request access to the closed beta.",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  )),
-                            ),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            // reset password
+                            onPressed: () {
+                              Navigator.of(context).push(smoothTransitions
+                                  .slideUp(const ResetPasswordPage()));
+                            },
+                            child: const Text('Reset Password'),
                           ),
-                        ),
-                      ),
-                    ),
-                    //warning about running on web
-                    Visibility(
-                        visible: kIsWeb,
-                        child: Column(children: [
-                          const SizedBox(height: 16.0),
+                          const SizedBox(height: 8.0),
                           Padding(
-                              //closed beta reminder
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: SizedBox(
-                                  width: double.infinity,
-                                  height: 50.0,
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                        color: const Color.fromARGB(
-                                            255, 231, 38, 38),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      child: const Center(
-                                          child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: Text(
-                                            "You are using web version which is poorly optimised and not recommend, please use phone app for best experience",
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            )),
-                                      ))))),
-                        ])),
-                  ]),
-                ),
-                const Align(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  child: Column(children: [
-                    Expanded(child: Center()),
-                    Text('by signing in you agree to our privacy policy',
-                        style: TextStyle(
-                          fontStyle: FontStyle.normal,
-                          color: Colors.white70,
-                        )),
-                    SizedBox(height: 2),
-                    Text('view at https://toaster.aikiwi.dev/privacyPolicy',
-                        style: TextStyle(
-                          fontStyle: FontStyle.normal,
-                          color: Colors.white70,
-                        )),
-                    SizedBox(height: 8),
-                    Text(
-                      'contact support at toaster@aikiwi.dev',
-                      style: TextStyle(
-                          fontStyle: FontStyle.normal, color: Colors.white70),
-                    ),
-                    SizedBox(height: 8),
-                  ]),
-                )
-              ],
-            )));
+                            //login button
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50.0,
+                              child: ElevatedButton(
+                                style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                )),
+                                onPressed: () async {
+                                  LoginResponse correctLogin = await userManager
+                                      .loginUser(_username, _password);
+
+                                  if (correctLogin.success == true) {
+                                    //save login
+                                    TextInput.finishAutofillContext();
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MyHomePage()),
+                                    );
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                            content: Text(
+                                      'login failed',
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.red),
+                                    )));
+                                  }
+                                },
+                                child: const Text(
+                                  'Log in',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ))))),
+    );
   }
 }
 
