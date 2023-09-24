@@ -64,9 +64,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                   labelText: 'username',
                                 ),
                                 onChanged: (value) {
-                                  setState(() {
-                                    accountUsername = value;
-                                  });
+                                  accountUsername = value;
                                 },
                               ),
                               TextField(
@@ -77,9 +75,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                   labelText: 'email',
                                 ),
                                 onChanged: (value) {
-                                  setState(() {
-                                    accountEmail = value;
-                                  });
+                                  accountEmail = value;
                                 },
                               ),
                             ],
@@ -163,9 +159,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                   labelText: 'userId',
                                 ),
                                 onChanged: (value) {
-                                  setState(() {
-                                    accountUserId = value;
-                                  });
+                                  accountUserId = value;
                                 },
                               ),
                               TextField(
@@ -176,9 +170,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                   labelText: 'reason',
                                 ),
                                 onChanged: (value) {
-                                  setState(() {
-                                    accountBanReason = value;
-                                  });
+                                  accountBanReason = value;
                                 },
                               ),
                               TextField(
@@ -189,9 +181,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                   labelText: 'time (seconds)',
                                 ),
                                 onChanged: (value) {
-                                  setState(() {
-                                    accountBanTime = value;
-                                  });
+                                  accountBanTime = value;
                                 },
                               ),
                             ],

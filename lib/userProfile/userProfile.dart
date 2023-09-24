@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/adminZone.dart';
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/userSettings.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../libs/dataCollect.dart';
@@ -82,12 +84,8 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
                 roundness: 50,
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: '$userId'));
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                      'copied user id to clipboard',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ));
+                  openAlert(
+                      "info", "copied user id to clipboard", null, context);
                 },
               ),
               const SizedBox(width: 8),
@@ -194,50 +192,226 @@ class _UserProfileState extends State<UserProfile> {
                   const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
               child: Column(
                 children: [
-                  Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 16),
+                  Visibility(
+                      visible: userId == null,
                       child: SizedBox(
-                        width: double.infinity,
-                        height: 75,
-                        child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          height: 30,
+                          child: Center(
+                              child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              UserAvatar(
-                                avatarImage: posterAvatar,
-                                size: 75,
-                                roundness: 75,
-                                onTap: () {
-                                  if (userId != null) {
-                                    Clipboard.setData(
-                                        ClipboardData(text: realUserId));
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content: Text(
-                                        'copied user id to clipboard',
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ));
-                                  } else {
+                              Visibility(
+                                visible: _isAdminAccount,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.admin_panel_settings,
+                                    color: Colors.red,
+                                    size: 30,
+                                  ),
+                                  onPressed: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => UserSettings()),
+                                          builder: (context) =>
+                                              AdminZonePage()),
                                     );
-                                  }
+                                  },
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.settings,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => UserSettings()),
+                                  );
                                 },
                               ),
-                              Center(
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16.0, horizontal: 16),
-                                      child: Text(
-                                        username,
-                                        style: const TextStyle(
-                                            color: Colors.white, fontSize: 25),
-                                      ))),
-                            ]),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.logout,
+                                  color: Colors.red,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  openAlert("logout", "null", null, context);
+                                },
+                              ),
+                              SizedBox(width: 16),
+                            ],
+                          )))),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 100,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            UserAvatar(
+                              avatarImage: posterAvatar,
+                              size: 100,
+                              roundness: 100,
+                              onTap: () {
+                                if (userId != null) {
+                                  Clipboard.setData(
+                                      ClipboardData(text: realUserId));
+                                  openAlert(
+                                      "info",
+                                      "copied user id to clipboard",
+                                      null,
+                                      context);
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => UserSettings()),
+                                  );
+                                }
+                              },
+                            ),
+                            Expanded(
+                                child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          '${NumberFormat.compact(
+                                            locale: "en_US",
+                                          ).format(534125)}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Followers",
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          '${NumberFormat.compact(
+                                            locale: "en_US",
+                                          ).format(58925)}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Following",
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          '${NumberFormat.compact(
+                                            locale: "en_US",
+                                          ).format(1413)}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Posts",
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text(
+                                          '${NumberFormat.compact(
+                                            locale: "en_US",
+                                          ).format(2836)}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Ratings",
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  //follow button
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 25.0,
+                                    child: ElevatedButton(
+                                      style: OutlinedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      )),
+                                      onPressed: () async {
+                                        print("user clicked follow button");
+                                      },
+                                      child: const Text(
+                                        'follow',
+                                        style: TextStyle(fontSize: 16.0),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )),
+                          ],
+                        ),
                       )),
+                  Align(
+                    alignment: AlignmentDirectional.topStart,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        username,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 25),
+                      ),
+                    ),
+                  ),
                   Padding(
                       //description
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -254,11 +428,10 @@ class _UserProfileState extends State<UserProfile> {
                               },
                               text: userBio,
                               style: const TextStyle(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  fontSize: 15),
+                                  color: Colors.grey, fontSize: 15),
                             )
                           ]))),
-                  SizedBox(height: 16)
+                  SizedBox(height: 16),
                 ],
               )),
           widgetAddedToEnd: const Center(
@@ -293,111 +466,6 @@ class _UserProfileState extends State<UserProfile> {
                     Navigator.pop(context);
                   },
                 ))),
-        Align(
-          //logout
-          alignment: Alignment.topRight,
-          child: Visibility(
-              visible: userId == null,
-              child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 32.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Visibility(
-                          visible: _isAdminAccount,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.admin_panel_settings,
-                              color: Colors.red,
-                              size: 30,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AdminZonePage()),
-                              );
-                            },
-                          )),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.settings,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => UserSettings()),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.logout,
-                          color: Colors.red,
-                          size: 30,
-                        ),
-                        onPressed: () {
-                          Alert(
-                            context: context,
-                            type: AlertType.info,
-                            title: "select devices to logout",
-                            buttons: [
-                              DialogButton(
-                                color: Colors.red,
-                                child: const Text(
-                                  "cancel",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                              DialogButton(
-                                color: Colors.green,
-                                child: const Text(
-                                  "all",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  final response = await http.post(
-                                    Uri.parse("$serverDomain/login/logout"),
-                                    headers: <String, String>{
-                                      'Content-Type':
-                                          'application/json; charset=UTF-8',
-                                    },
-                                    body: jsonEncode(<String, String>{
-                                      'token': userManager.token,
-                                    }),
-                                  );
-                                  if (response.statusCode == 200) {
-                                    Phoenix.rebirth(context);
-                                  } else {
-                                    ErrorHandler.httpError(response.statusCode,
-                                        response.body, context);
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                            content: Text(
-                                      'failed logging out',
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.red),
-                                    )));
-                                  }
-                                },
-                              ),
-                            ],
-                          ).show();
-                        },
-                      )
-                    ],
-                  ))),
-        )
       ]));
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,11 +11,7 @@ import 'errorHandler.dart';
 class DataCollect {
   Future<void> reportError(
       String errorMessage, String dataGetting, context) async {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-      'failed getting $dataGetting',
-      style: const TextStyle(fontSize: 20, color: Colors.red),
-    )));
+    openAlert("error", "failed getting $dataGetting", null, context);
   }
 
   Future<Map> getData(Map headers, String url, String cacheCode, context,
@@ -159,6 +156,23 @@ class DataCollect {
       'token': userManager.token,
       'avatarId': avatarId,
     }, "$serverDomain/profile/avatar", 'avatar-$avatarId', context,
+        expectError);
+  }
+
+  Future<Map> getChatRoomData(String? chatRoomId, context, expectError) async {
+    return getData({
+      'token': userManager.token,
+      'chatRoomId': chatRoomId,
+    }, "$serverDomain/chat/roomData", 'chatRoomId-$chatRoomId', context,
+        expectError);
+  }
+
+  Future<bool> updateChatRoomData(
+      String? chatRoomId, context, expectError) async {
+    return updateData({
+      'token': userManager.token,
+      'chatRoomId': chatRoomId,
+    }, "$serverDomain/chat/roomData", 'chatRoomId-$chatRoomId', context,
         expectError);
   }
 }

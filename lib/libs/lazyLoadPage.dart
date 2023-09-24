@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:Toaster/chat/chatList.dart';
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/notifications/notificationBarItem.dart';
 import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:Toaster/posts/userPost.dart';
@@ -107,13 +109,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
       } catch (err) {}
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
-      setState(() {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-          'failed getting new items',
-          style: TextStyle(fontSize: 20, color: Colors.red),
-        )));
-      });
+      openAlert("error", "failed getting new items", null, context);
     }
     _isLoading = false;
   }
@@ -179,6 +175,10 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
               } else if (itemsCollected[index - 1]["type"] == "notification") {
                 return notificationBarItem(
                   notificationData: itemsCollected[index - 1]["data"],
+                );
+              } else if (itemsCollected[index - 1]["type"] == "chat_room") {
+                return chatBarItem(
+                  chatItem: itemsCollected[index - 1]["data"],
                 );
               }
             }

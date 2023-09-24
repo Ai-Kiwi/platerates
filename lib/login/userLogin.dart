@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/login/userResetPassword.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -126,9 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                                 const EdgeInsets.symmetric(horizontal: 16.0),
                             child: TextFormField(
                               onChanged: (value) {
-                                setState(() {
-                                  _username = value;
-                                });
+                                _username = value;
                               },
                               autofillHints: const [AutofillHints.email],
                               style: const TextStyle(
@@ -153,28 +151,26 @@ class _LoginPageState extends State<LoginPage> {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 16.0),
                             child: TextFormField(
-                                onChanged: (value) {
-                                  setState(() {
-                                    _password = value;
-                                  });
-                                },
-                                autofillHints: const [AutofillHints.password],
-                                obscureText: true,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                                decoration: const InputDecoration(
-                                  labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 200, 200, 200)),
-                                  contentPadding: EdgeInsets.all(8.0),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white),
-                                  ),
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.green),
-                                  ),
-                                )),
+                              onChanged: (value) {
+                                _password = value;
+                              },
+                              autofillHints: const [AutofillHints.password],
+                              obscureText: true,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 20),
+                              decoration: const InputDecoration(
+                                labelText: 'Password',
+                                labelStyle: TextStyle(
+                                    color: Color.fromARGB(255, 200, 200, 200)),
+                                contentPadding: EdgeInsets.all(8.0),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.green),
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 8.0),
                           TextButton(
@@ -203,6 +199,12 @@ class _LoginPageState extends State<LoginPage> {
                                       .loginUser(_username, _password);
 
                                   if (correctLogin.success == true) {
+                                    //clear cache
+                                    await jsonCache.clear();
+                                    await jsonCache.refresh("expire-data", {
+                                      "expireTime": DateTime.now().day,
+                                      "clientVersion": '$version+$buildNumber'
+                                    });
                                     //save login
                                     TextInput.finishAutofillContext();
                                     // ignore: use_build_context_synchronously
@@ -213,13 +215,8 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   } else {
                                     // ignore: use_build_context_synchronously
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                            content: Text(
-                                      'login failed',
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.red),
-                                    )));
+                                    openAlert("error", "invalid login",
+                                        correctLogin.error, context);
                                   }
                                 },
                                 child: const Text(

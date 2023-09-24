@@ -8,7 +8,6 @@ import { userTimeout, userTimeoutTest } from './timeouts';
 import { testUserAdmin } from './adminZone';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
-import { BlobOptions } from 'buffer';
 
 
 router.post('/post/upload', async (req : Request, res : Response) => {

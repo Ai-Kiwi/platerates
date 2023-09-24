@@ -25,6 +25,8 @@ const clientVersion: string = "1.1.0+1";
 
 //setup app
 const app = express()
+const expressWs = require('express-ws')(app);
+
 app.use(bodyParser.json({ limit: '2mb' }))       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
@@ -107,6 +109,7 @@ import {router as reportRouter} from "./js/report";
 import {router as adminZoneRouter} from "./js/adminZone";
 import {router as searchSystemRouter} from "./js/searchSystem";
 import {router as notificationSystem} from "./js/notificationSystem";
+import {router as chatSystem} from "./js/chatSystem"; 
 
 
 
@@ -119,6 +122,7 @@ app.use('/', reportRouter);
 app.use('/', adminZoneRouter);
 app.use('/', searchSystemRouter);
 app.use('/', notificationSystem);
+app.use('/', chatSystem);
 
 app.listen(port, () => {
   console.log(`Toaster server listening on port ${port}`)

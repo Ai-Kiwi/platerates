@@ -179,9 +179,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: TextFormField(
                           onChanged: (value) {
-                            setState(() {
-                              _username = value;
-                            });
+                            _username = value;
                           },
                           initialValue: _username,
                           autofillHints: const [AutofillHints.email],
@@ -207,9 +205,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: TextFormField(
                           onChanged: (value) {
-                            setState(() {
-                              _bio = value;
-                            });
+                            _bio = value;
                           },
                           initialValue: _bio,
                           autofillHints: const [AutofillHints.password],

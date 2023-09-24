@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:flutter/material.dart';
@@ -107,9 +108,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                                   .truncateAfterCompositionEnds,
                               maxLines: 5,
                               onChanged: (value) {
-                                setState(() {
-                                  uploadingRatingText = value;
-                                });
+                                uploadingRatingText = value;
                               },
                               style: const TextStyle(
                                   color: Colors.white, fontSize: 15),
@@ -171,13 +170,9 @@ class _fullPageRatingState extends State<FullPageRating> {
                                 );
 
                                 if (response.statusCode == 201) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          content: Text(
-                                    'created comment',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  )));
+                                  // ignore: use_build_context_synchronously
+                                  openAlert("success", "created comment", null,
+                                      context);
 
                                   await jsonCache.remove('rating-$rootItem');
                                   Navigator.pop(context);
@@ -187,15 +182,12 @@ class _fullPageRatingState extends State<FullPageRating> {
                                           builder: (context) => FullPageRating(
                                               ratingId: rootItem)));
                                 } else {
+                                  // ignore: use_build_context_synchronously
                                   ErrorHandler.httpError(response.statusCode,
                                       response.body, context);
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          content: Text(
-                                    'failed creating comment',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.red),
-                                  )));
+                                  // ignore: use_build_context_synchronously
+                                  openAlert("error", "failed creating comments",
+                                      null, context);
                                 }
                               },
                               child: const Text(

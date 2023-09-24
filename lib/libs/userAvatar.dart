@@ -46,6 +46,7 @@ class UserAvatar extends StatelessWidget {
                   color: const Color.fromARGB(255, 45, 45, 45),
                 ),
                 borderRadius: BorderRadius.all(Radius.circular(roundness)),
+                color: const Color.fromARGB(255, 15, 15, 15),
               ),
               child: Center(
                 child: Icon(

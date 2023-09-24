@@ -314,7 +314,6 @@ router.post('/profile/avatar', async (req : Request, res : Response) => {
     const userIpAddress : string = req.headers['x-forwarded-for'] as string;
     
     const avatarData = await collection.findOne({ avatarId: avatarId });
-    console.table(avatarData)
     if (avatarData === null){
       console.log("failed as invalid avatar");
       return res.status(404).send("unkown user");
