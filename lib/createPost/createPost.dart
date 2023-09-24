@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/imageUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -211,32 +212,20 @@ class _CreatePostState extends State<CreatePostPage> {
                                   if (response.statusCode == 201) {
                                     Navigator.pop(context);
                                     // ignore: use_build_context_synchronously
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                            content: Text(
-                                      'post uploaded',
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.white),
-                                    )));
+                                    openAlert("success", "created post", null,
+                                        context);
                                   } else {
                                     ErrorHandler.httpError(response.statusCode,
                                         response.body, context);
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                            content: Text(
-                                      'error uploading post',
-                                      style: TextStyle(
-                                          fontSize: 20, color: Colors.red),
-                                    )));
+                                    openAlert("error", "error uploading post",
+                                        null, context);
                                   }
                                 } catch (err) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          content: Text(
-                                    'unkown error contacting server',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.red),
-                                  )));
+                                  openAlert(
+                                      "error",
+                                      "unkown error contacting serer",
+                                      null,
+                                      context);
                                 }
                               },
                               color: Colors.green,

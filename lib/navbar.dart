@@ -41,9 +41,9 @@ class UserNavbar extends StatelessWidget {
             label: 'Home',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            activeIcon: Icon(Icons.search),
-            label: 'search',
+            icon: Icon(Icons.chat_bubble_outline),
+            activeIcon: Icon(Icons.chat_bubble),
+            label: 'chat',
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.add_outlined),
@@ -57,7 +57,7 @@ class UserNavbar extends StatelessWidget {
                 children: [
                   const Align(
                     alignment: Alignment.center,
-                    child: Icon(Icons.notifications),
+                    child: Icon(Icons.notifications_outlined),
                   ),
                   Visibility(
                     visible: notificationCount > 0.9,

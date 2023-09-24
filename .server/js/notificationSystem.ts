@@ -3,9 +3,7 @@ const router = express.Router();
 import { database } from "./database";
 import mongoDB from "mongodb";
 import { generateRandomString } from "./utilFunctions";
-import { time } from "console";
 import { testToken } from "./userLogin";
-import { json } from 'node:stream/consumers';
 import firebase from 'firebase-admin'
 
 // Create a list containing up to 500 registration tokens.
@@ -137,7 +135,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
 
             if (response.acknowledged === true){
               const notificationDataFromDatabase = await collection.findOne({ notificationId: notificationId })
-              sendNotificationToDevices(`toast rating`,`${await fetchUsername(notificationData.userId!)} rated your toast`,`userRating`,[notificationData.receiverId], JSON.stringify(notificationDataFromDatabase))
+              sendNotificationToDevices(`toast rating`,`${await fetchUsername(notificationData.userId!)} rated your toast`,`userRating`,[notificationData.receiverId], notificationId)
               console.log("sent notification");
             }else{
               console.log("failed sending notification");
@@ -163,7 +161,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
 
             if (response.acknowledged === true){
               const notificationDataFromDatabase = await collection.findOne({ notificationId: notificationId })
-              sendNotificationToDevices(`message reply`,`${await fetchUsername(notificationData.userId!)} replied to you`,`userComment`,[notificationData.receiverId], JSON.stringify(notificationDataFromDatabase))
+              sendNotificationToDevices(`message reply`,`${await fetchUsername(notificationData.userId!)} replied to you`,`userComment`,[notificationData.receiverId], notificationId)
               console.log("sent notification");
             }else{
               console.log("failed sending notification");
@@ -342,5 +340,6 @@ router.post('/notification/unreadCount', async (req, res) => {
 
 export {
     router,
-    sendNotification
+    sendNotification,
+    sendNotificationToDevices,
 }

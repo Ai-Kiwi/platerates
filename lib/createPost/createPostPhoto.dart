@@ -1,4 +1,5 @@
 import 'package:Toaster/createPost/createPost.dart';
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/imageUtils.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:file_selector/file_selector.dart';
@@ -37,11 +38,7 @@ class _CameraPageState extends State<CameraPage> {
       } catch (e) {
         try {
           // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text(
-            'failed loading camera',
-            style: TextStyle(fontSize: 20, color: Colors.red),
-          )));
+          openAlert("error", "failed loading camera", null, context);
         } catch (e) {}
       }
     }
@@ -68,10 +65,7 @@ class _CameraPageState extends State<CameraPage> {
         });
       } catch (e) {
         // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('failed loading camera',
-              style: TextStyle(fontSize: 20, color: Colors.red)),
-        ));
+        openAlert("error", "failed loading camera", null, context);
       }
     }
     if (!mounted) return;
@@ -224,13 +218,8 @@ class _CameraPageState extends State<CameraPage> {
                                       );
                                     } else {
                                       // ignore: use_build_context_synchronously
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                        'error taking photo',
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.red),
-                                      )));
+                                      openAlert("error", "error loading camera",
+                                          null, context);
                                     }
                                   },
                                   child: const Text(
@@ -299,11 +288,8 @@ class _CameraPageState extends State<CameraPage> {
                     );
                   }
                 } catch (err) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text(
-                    'error taking photo',
-                    style: TextStyle(fontSize: 20, color: Colors.red),
-                  )));
+                  // ignore: use_build_context_synchronously
+                  openAlert("error", "error taking photo", null, context);
 
                   print(err);
                   return null;

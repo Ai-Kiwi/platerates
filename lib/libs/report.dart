@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -47,19 +48,11 @@ class ReportSystem {
                 }),
               );
               if (response.statusCode == 201) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text(
-                  'post reported',
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                )));
+                openAlert("success", "post reported", null, context);
               } else {
                 ErrorHandler.httpError(
                     response.statusCode, response.body, context);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text(
-                  'failed reporting post',
-                  style: TextStyle(fontSize: 20, color: Colors.red),
-                )));
+                openAlert("error", "failed reporting post", null, context);
               }
             },
             child: const Text(

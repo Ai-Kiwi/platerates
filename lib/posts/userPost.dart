@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/libs/userAvatar.dart';
@@ -339,20 +340,13 @@ class PostManageButton extends StatelessWidget {
                     // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                     // ignore: use_build_context_synchronously
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                      'post deleted',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    )));
+                    openAlert("success", "post deleted", null, context);
                   } else {
+                    // ignore: use_build_context_synchronously
                     ErrorHandler.httpError(
                         response.statusCode, response.body, context);
                     // ignore: use_build_context_synchronously
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                      'failed deleting post',
-                      style: TextStyle(fontSize: 20, color: Colors.red),
-                    )));
+                    openAlert("error", "failed deleting post", null, context);
                   }
                 },
                 color: Colors.green,

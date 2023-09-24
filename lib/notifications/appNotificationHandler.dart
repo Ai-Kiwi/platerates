@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:Toaster/firebase_options.dart';
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/login/userLogin.dart';
@@ -65,13 +66,20 @@ Future<void> sendNotification(
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker');
+  } else if (channelId == "newMessage") {
+    androidNotificationDetails =
+        AndroidNotificationDetails(channelId, "new message",
+            //following stuff makes sure it plays sound and what not
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
   }
 
   if (androidNotificationDetails != null) {
     NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
     await flutterLocalNotificationsPlugin.show(
-        Random().nextInt(10000), title, description, notificationDetails,
+        Random().nextInt(1000000), title, description, notificationDetails,
         payload: openData);
   } else {
     print("error failed to find channelId $channelId");
@@ -228,11 +236,7 @@ Future<Map> openNotification(notificationData, context) async {
   if (response.statusCode == 200) {
     jsonData['read'] = true;
   } else {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text(
-      'error marking notification read',
-      style: TextStyle(fontSize: 20, color: Colors.red),
-    )));
+    openAlert("error", "failed marking notification read", null, context);
   }
 
   updateUnreadNotificationCount();

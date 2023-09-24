@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:Toaster/chat/chatList.dart';
+import 'package:Toaster/chat/openChat.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/notifications/notificationPageList.dart';
@@ -22,6 +23,7 @@ import 'login/userLogin.dart';
 import 'navbar.dart';
 
 String serverDomain = 'https://toaster.aikiwi.dev';
+String serverWebsocketDomain = 'wss://toaster.aikiwi.dev';
 
 void main() {
   //make sure something a rather to use app verison
@@ -30,6 +32,7 @@ void main() {
 
   if (kDebugMode == true) {
     serverDomain = 'http://192.168.0.157:3030';
+    serverWebsocketDomain = 'ws://192.168.0.157:3030';
   }
 
   runApp(Phoenix(child: const MyApp()));
@@ -62,11 +65,7 @@ class MyApp extends StatelessWidget {
         await Hive.openBox<String>('appBox'); // it must be a Box<String>.
     jsonCache = JsonCacheMem(JsonCacheHive(box));
 
-    final BUILD_BRANCH = Platform.environment['BUILD_BRANCH'];
-
-    print("build branch is below");
-    print(BUILD_BRANCH);
-
+    //if I change reset data this also needs to be changed in login script as well as logout script in alerts
     var expireTime = await jsonCache.value("expire-data");
     if (expireTime == null) {
       print("cache expire time is null");
@@ -165,7 +164,10 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
             title: 'Toaster',
             theme: ThemeData(
-                primaryColor: Colors.green, primarySwatch: Colors.green),
+              primaryColor: Colors.green,
+              primarySwatch: Colors.green,
+              dialogBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
+            ),
             home: StreamBuilder<String>(
               stream: initializeApp(),
               builder: (context, snapshot) {
@@ -205,7 +207,7 @@ class MyHomePage extends StatefulWidget {
 
 List<Widget> pages = <Widget>[
   userFeed(),
-  SearchPage(),
+  FullPageChatList(),
   CameraPage(),
   notificationPageList(),
   UserProfile(openedOntopMenu: false),

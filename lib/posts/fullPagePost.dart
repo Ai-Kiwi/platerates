@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/posts/userPost.dart';
 import 'package:flutter/material.dart';
@@ -149,9 +150,7 @@ class _PostRatingListState extends State<fullPagePost> {
                                   color: Colors.amber,
                                 ),
                                 onRatingUpdate: (rating) {
-                                  setState(() {
-                                    uploadingRating = rating;
-                                  });
+                                  uploadingRating = rating;
                                 },
                               ),
                               SizedBox(height: 8),
@@ -162,9 +161,7 @@ class _PostRatingListState extends State<fullPagePost> {
                                       .truncateAfterCompositionEnds,
                                   maxLines: 5,
                                   onChanged: (value) {
-                                    setState(() {
-                                      uploadingRatingText = value;
-                                    });
+                                    uploadingRatingText = value;
                                   },
                                   style: const TextStyle(
                                       color: Colors.white, fontSize: 15),
@@ -232,13 +229,8 @@ class _PostRatingListState extends State<fullPagePost> {
 
                                     if (response.statusCode == 201) {
                                       // ignore: use_build_context_synchronously
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text('uploaded rating',
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.white)),
-                                      ));
+                                      openAlert("success", "uploaded rating",
+                                          null, context);
                                       await jsonCache.remove('post-$rootItem');
                                       // ignore: use_build_context_synchronously
                                       Navigator.pop(context);
@@ -255,13 +247,12 @@ class _PostRatingListState extends State<fullPagePost> {
                                           response.statusCode,
                                           response.body,
                                           context);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text('error uploading rating',
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.white)),
-                                      ));
+                                      // ignore: use_build_context_synchronously
+                                      openAlert(
+                                          "error",
+                                          "failed uploading rating",
+                                          null,
+                                          context);
                                     }
                                   },
                                   child: const Text(

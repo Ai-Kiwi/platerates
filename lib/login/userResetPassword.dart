@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:toggle_switch/toggle_switch.dart';
@@ -45,109 +46,76 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextFormField(
                   onChanged: (value) {
-                    setState(() {
-                      _email = value;
-                    });
+                    _email = value;
                   },
+                  autofillHints: const [AutofillHints.password],
+                  obscureText: true,
                   style: const TextStyle(color: Colors.white, fontSize: 20),
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email Address',
-                    labelStyle: const TextStyle(
-                        color: Color.fromARGB(255, 200, 200, 200)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                      borderSide: const BorderSide(
-                          width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+                    contentPadding: EdgeInsets.all(8.0),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                      borderSide: const BorderSide(
-                          width: 2, color: Color.fromARGB(255, 45, 45, 45)),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                      borderSide: BorderSide(
-                          width: 2, color: Theme.of(context).primaryColor),
-                    ),
-                    contentPadding: const EdgeInsets.all(16.0),
-                    fillColor: const Color.fromARGB(255, 40, 40, 40),
-                    filled: true,
                   ),
                 ),
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 24.0),
               Padding(
                 //password input feild
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextFormField(
-                    onChanged: (value) {
-                      setState(() {
-                        _NewPassword = value;
-                      });
-                    },
-                    obscureText: true,
-                    style: const TextStyle(color: Colors.white, fontSize: 20),
-                    decoration: InputDecoration(
-                      labelText: 'New Password',
-                      labelStyle: const TextStyle(
-                          color: Color.fromARGB(255, 200, 200, 200)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: const BorderSide(
-                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: const BorderSide(
-                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: BorderSide(
-                            width: 2, color: Theme.of(context).primaryColor),
-                      ),
-                      contentPadding: const EdgeInsets.all(16.0),
-                      fillColor: const Color.fromARGB(255, 40, 40, 40),
-                      filled: true,
-                    )),
+                  onChanged: (value) {
+                    _NewPassword = value;
+                  },
+                  autofillHints: const [AutofillHints.password],
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: const InputDecoration(
+                    labelText: 'New Password',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+                    contentPadding: EdgeInsets.all(8.0),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 16.0),
               Padding(
                 //confirm password input feild
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TextFormField(
-                    onChanged: (value) {
-                      setState(() {
-                        _confirmNewPassword = value;
-                      });
-                    },
-                    obscureText: true,
-                    style: const TextStyle(color: Colors.white, fontSize: 20),
-                    decoration: InputDecoration(
-                      labelText: 'Confirm Password',
-                      labelStyle: const TextStyle(
-                          color: Color.fromARGB(255, 200, 200, 200)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: const BorderSide(
-                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: const BorderSide(
-                            width: 2, color: Color.fromARGB(255, 45, 45, 45)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                        borderSide: BorderSide(
-                            width: 2, color: Theme.of(context).primaryColor),
-                      ),
-                      contentPadding: const EdgeInsets.all(16.0),
-                      fillColor: const Color.fromARGB(255, 40, 40, 40),
-                      filled: true,
-                    )),
+                  onChanged: (value) {
+                    _confirmNewPassword = value;
+                  },
+                  autofillHints: const [AutofillHints.password],
+                  obscureText: true,
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm Password',
+                    labelStyle:
+                        TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+                    contentPadding: EdgeInsets.all(8.0),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.green),
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 12.0),
+              const SizedBox(height: 16.0),
               Padding(
                 //login button
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -161,12 +129,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     )),
                     onPressed: () async {
                       if (_NewPassword != _confirmNewPassword) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                                content: Text(
-                          'passwords don\'t match',
-                          style: TextStyle(fontSize: 20, color: Colors.red),
-                        )));
+                        openAlert(
+                            "error", "passwords don't match", null, context);
                       } else {
                         final response = await http.post(
                           Uri.parse("$serverDomain/login/reset-password"),
@@ -179,21 +143,22 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           }),
                         );
                         if (response.statusCode == 200) {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                                  content: Text(
-                            'created reset password link, check emails',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          )));
+                          // ignore: use_build_context_synchronously
+                          openAlert(
+                              "success",
+                              "created reset password link, check emails",
+                              null,
+                              context);
                         } else {
+                          // ignore: use_build_context_synchronously
                           ErrorHandler.httpError(
                               response.statusCode, response.body, context);
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                                  content: Text(
-                            'failed creating reset password link',
-                            style: TextStyle(fontSize: 20, color: Colors.red),
-                          )));
+                          // ignore: use_build_context_synchronously
+                          openAlert(
+                              "error",
+                              "failed creating reset password link",
+                              null,
+                              context);
                         }
                       }
                     },

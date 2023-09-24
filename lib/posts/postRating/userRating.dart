@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
@@ -174,12 +175,7 @@ class _userRatingState extends State<userRating> {
                         }),
                       );
                       if (response.statusCode == 200) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                                content: Text(
-                          'rating deleted',
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        )));
+                        openAlert("error", "rating deleted", null, context);
                         Navigator.pop(context);
                         Navigator.push(
                             context,
@@ -189,12 +185,8 @@ class _userRatingState extends State<userRating> {
                       } else {
                         ErrorHandler.httpError(
                             response.statusCode, response.body, context);
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                                content: Text(
-                          'failed deleting rating',
-                          style: TextStyle(fontSize: 20, color: Colors.red),
-                        )));
+                        openAlert(
+                            "error", "failed deleting rating", null, context);
                       }
                     } else if (value == 'report') {
                       reportSystem.reportItem(context, "post_rating", ratingId);
