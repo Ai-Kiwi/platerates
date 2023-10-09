@@ -115,14 +115,9 @@ class _userRatingState extends State<userRating> {
                       avatarImage: posterAvatar,
                       size: 45,
                       roundness: 25,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UserProfile(
-                                  userId: posterUserId, openedOntopMenu: true)),
-                        );
-                      },
+                      onTapFunction: 'openProfile',
+                      context: context,
+                      userId: posterUserId,
                     ),
                   )),
               Expanded(
@@ -175,7 +170,8 @@ class _userRatingState extends State<userRating> {
                         }),
                       );
                       if (response.statusCode == 200) {
-                        openAlert("error", "rating deleted", null, context);
+                        openAlert(
+                            "error", "rating deleted", null, context, null);
                         Navigator.pop(context);
                         Navigator.push(
                             context,
@@ -185,8 +181,8 @@ class _userRatingState extends State<userRating> {
                       } else {
                         ErrorHandler.httpError(
                             response.statusCode, response.body, context);
-                        openAlert(
-                            "error", "failed deleting rating", null, context);
+                        openAlert("error", "failed deleting rating", null,
+                            context, null);
                       }
                     } else if (value == 'report') {
                       reportSystem.reportItem(context, "post_rating", ratingId);
@@ -264,7 +260,7 @@ class _userRatingState extends State<userRating> {
                   //text for rating
                   child: Container(
                       height: 150,
-                      child: ListView(children: [
+                      child: ListView(padding: EdgeInsets.zero, children: [
                         SelectableLinkify(
                           onOpen: (link) async {
                             if (!await launchUrl(Uri.parse(link.url))) {

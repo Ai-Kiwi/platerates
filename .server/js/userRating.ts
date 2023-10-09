@@ -1,7 +1,7 @@
 
 import express from 'express';
 const router = express.Router();
-import { database } from './database';
+import { databases } from './database';
 import { testToken } from './userLogin';
 import { generateRandomString } from './utilFunctions';
 import { testUserAdmin } from './adminZone';
@@ -13,12 +13,7 @@ import { sendNotification } from './notificationSystem';
 
 async function updatePostRating(rootItem : {data : string, type : string}){
   try{  
-    var postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
-    var postsCollection : mongoDB.Collection = database.collection('posts');
-    var userDataCollection : mongoDB.Collection = database.collection('user_data');
-
-
-    const ratings = await postRatingsCollection.find({ "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).toArray();
+    const ratings = await databases.post_ratings.find({ "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).toArray();
 
     var newRating : number = 0;
 
@@ -30,14 +25,14 @@ async function updatePostRating(rootItem : {data : string, type : string}){
       newRating = newRating / ratings.length;
     }
 
-    const response = await postsCollection.updateOne({postId : rootItem.data},{ $set: {rating : newRating}})
+    const response = await databases.posts.updateOne({postId : rootItem.data},{ $set: {rating : newRating}})
 
     //update user rating
-    const perentPostInfo = await postsCollection.findOne({postId : rootItem.data})
+    const perentPostInfo = await databases.posts.findOne({postId : rootItem.data})
     if (perentPostInfo !== null) {
       const userId : string = perentPostInfo.posterUserId;
 
-      const userPosts = await postsCollection.find({ posterUserId : userId }).toArray();
+      const userPosts = await databases.posts.find({ posterUserId : userId }).toArray();
 
       var userAvgRating : number = 0;
 
@@ -48,7 +43,7 @@ async function updatePostRating(rootItem : {data : string, type : string}){
       if (userPosts.length != 0) {
         userAvgRating = userAvgRating / userPosts.length;
       }
-      const userDataResponse = await userDataCollection.updateOne({userId : userId},{ $set: {averagePostRating : userAvgRating}})
+      const userDataResponse = await databases.user_data.updateOne({userId : userId},{ $set: {averagePostRating : userAvgRating}})
     }
 
 
@@ -77,11 +72,9 @@ router.post('/post/rating/delete', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (validToken) { // user token is valid
-        var postsCollection = database.collection('posts');
-        var postRatingsCollection = database.collection('post_ratings');
 
         //fetch the post
-        const ratingData = await postRatingsCollection.findOne({ ratingId :  ratingId})
+        const ratingData = await databases.post_ratings.findOne({ ratingId :  ratingId})
         if (ratingData == null) {
           console.log("no post found");
           return res.status(404).send("no post found");
@@ -93,7 +86,7 @@ router.post('/post/rating/delete', async (req, res) => {
           return res.status(403).send("post not yours");
         }
 
-        const reponse = await postRatingsCollection.deleteOne({ratingId : ratingId})
+        const reponse = await databases.post_ratings.deleteOne({ratingId : ratingId})
         if (reponse.acknowledged === true){
           console.log("post deleted")
           updatePostRating(ratingData.rootItem);
@@ -133,11 +126,9 @@ router.post('/post/rating/data', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (validToken) { // user token is valid
-        const postsCollection : mongoDB.Collection = database.collection('posts');
-        const postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
 
         //fetch the post
-        const ratingData = await postRatingsCollection.findOne({ ratingId :  ratingId})
+        const ratingData = await databases.post_ratings.findOne({ ratingId :  ratingId})
         if (ratingData == null) {
           console.log("failed to find post");
           return res.status(404).send("no post found");
@@ -152,25 +143,16 @@ router.post('/post/rating/data', async (req, res) => {
         }
         let rootItemData;
         if (rootItem.type === "post"){
-          rootItemData = await postsCollection.findOne({ postId : rootItem.data })
+          rootItemData = await databases.posts.findOne({ postId : rootItem.data })
         }else if (rootItem.type === "rating"){
-          rootItemData = await postRatingsCollection.findOne({ ratingId : rootItem.data })
+          rootItemData = await databases.post_ratings.findOne({ ratingId : rootItem.data })
         }
         if (!rootItemData){
           console.log("root item is invalid");
           return res.status(400).send("invalid root post");
         }
-        if (rootItemData.shareMode != "public") {
-          console.log("post is not public")
-          return res.status(400).send("root post not shared to you");
-        }
 
-        if (ratingData.shareMode != "public") {
-          console.log("rating is not public")
-          return res.status(400).send("rating not shared to you");
-        }
-
-        const childRatings = await postRatingsCollection.countDocuments({ "rootItem.data" : ratingId, "rootItem.type" : "rating" });
+        const childRatings = await databases.post_ratings.countDocuments({ "rootItem.data" : ratingId, "rootItem.type" : "rating" });
 
         console.log("response sent")
         if (onlyUpdateChangeable === true) {
@@ -218,12 +200,6 @@ router.post('/post/rating/upload', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (validToken) { // user token is valid
-        const postsCollection : mongoDB.Collection = database.collection('posts');
-        const postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
-
-
-        
-
         //extract root item info
         if (!rootItem) {
           console.log("no root item");
@@ -245,7 +221,7 @@ router.post('/post/rating/upload', async (req, res) => {
         while (true){
           ratingId = generateRandomString(16);
         
-          let ratingIdInUse = await postRatingsCollection.findOne({ratingId: ratingId});
+          let ratingIdInUse = await databases.post_ratings.findOne({ratingId: ratingId});
           if (ratingIdInUse === null){
             break
           }
@@ -260,18 +236,14 @@ router.post('/post/rating/upload', async (req, res) => {
 
         if (rootItem.type === "post"){
           console.log("root is post");
-          const rootItemData = await postsCollection.findOne({ postId : rootItem.data })
+          const rootItemData = await databases.posts.findOne({ postId : rootItem.data })
           if (!rootItemData){
             console.log("invalid root item");
             return res.status(400).send("invalid root post");
           }
-          if (rootItemData.shareMode != "public") {
-            console.log("root post not shared with user");
-            return res.status(400).send("root post not shared to you");
-          }
 
           //test if they have already commented
-          const alreadyExistComment = await postRatingsCollection.findOne({ ratingPosterId :  userId, rootItem : {type: rootItem.type, data: rootItem.data},})
+          const alreadyExistComment = await databases.post_ratings.findOne({ ratingPosterId :  userId, rootItem : {type: rootItem.type, data: rootItem.data},})
           if (alreadyExistComment) {
             console.log("you have already rated");
             return res.status(400).send("you have already rated");
@@ -299,7 +271,7 @@ router.post('/post/rating/upload', async (req, res) => {
             action : "user_rated_post"
           });
 
-          const postResponse = await postRatingsCollection.insertOne({
+          const postResponse = await databases.post_ratings.insertOne({
             rootItem : {"type": rootItem.type, "data": rootItem.data},
             ratingId: ratingId,
             text: text,
@@ -324,14 +296,10 @@ router.post('/post/rating/upload', async (req, res) => {
 
         }else if (rootItem.type === "rating"){
           console.log("root is rating");
-          const rootItemData = await postRatingsCollection.findOne({ ratingId : rootItem.data })
+          const rootItemData = await databases.post_ratings.findOne({ ratingId : rootItem.data })
           if (!rootItemData){
             console.log("invalid root item");
             return res.status(400).send("invalid root post");
-          }
-          if (rootItemData.shareMode != "public") {
-            console.log("root post not shared with user");
-            return res.status(400).send("root post not shared to you");
           }
 
           sendNotification({
@@ -341,7 +309,7 @@ router.post('/post/rating/upload', async (req, res) => {
             action : "user_reply_post_rating"
           });
 
-          const postResponse = await postRatingsCollection.insertOne({
+          const postResponse = await databases.post_ratings.insertOne({
             rootItem : {"type": rootItem.type, "data": rootItem.data},
             ratingId: ratingId,
             text: text,
@@ -395,8 +363,6 @@ router.post('/post/ratings', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (validToken) { // user token is valid
-        var postsCollection = database.collection('posts');
-        var postRatingsCollection = database.collection('post_ratings');
   
         //extract start item data
         if (startPosPost) {
@@ -405,7 +371,7 @@ router.post('/post/ratings', async (req, res) => {
             return res.status(400).send("invalid start item");
           }
 
-          const startPosPostData = await postRatingsCollection.findOne({ ratingId: startPosPost.data, rootItem : rootItem })
+          const startPosPostData = await databases.post_ratings.findOne({ ratingId: startPosPost.data, rootItem : rootItem })
           if (!startPosPostData){
             console.log("invalid start item")
             return res.status(400).send("invalid start item");
@@ -422,9 +388,9 @@ router.post('/post/ratings', async (req, res) => {
 
         let rootItemData;
         if (rootItem.type === "post") {
-          rootItemData = await postsCollection.findOne({ postId : rootItem.data })
+          rootItemData = await databases.posts.findOne({ postId : rootItem.data })
         }else if (rootItem.type === "rating") {
-          rootItemData = await postRatingsCollection.findOne({ ratingId : rootItem.data })
+          rootItemData = await databases.post_ratings.findOne({ ratingId : rootItem.data })
         }else{
           console.log("unknown root item type");
           return res.status(400).send("unknown root item type");
@@ -434,11 +400,7 @@ router.post('/post/ratings', async (req, res) => {
           console.log("invalid root item");
           return res.status(400).send("invalid root post");
         }
-        if (rootItemData.shareMode != "public") {
-          console.log("root item not shared with you")
-          return res.status(403).send("root item not shared to you");
-        }
-        const dataReturning = await postRatingsCollection.find({ shareMode: 'public', creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({creationDate: -1}).limit(5).toArray();
+        const dataReturning = await databases.post_ratings.find({ creationDate: { $lt: startPosPostDate}, "rootItem.data" : rootItem.data, "rootItem.type" : rootItem.type }).sort({creationDate: -1}).limit(5).toArray();
         let returnData = {
           "items": [] as { type: string; data: string;}[]
         }

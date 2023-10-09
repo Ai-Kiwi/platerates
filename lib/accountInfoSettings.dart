@@ -122,7 +122,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                       avatarImage: _userImage,
                                       size: 200,
                                       roundness: 200,
-                                      onTap: () async {
+                                      customFunction: () async {
                                         const XTypeGroup typeGroup = XTypeGroup(
                                           label: 'images',
                                           extensions: <String>['jpg', 'png'],
@@ -143,6 +143,8 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                           }
                                         });
                                       },
+                                      onTapFunction: 'customFunction',
+                                      context: context,
                                     ),
                                     Align(
                                       alignment: Alignment.topRight,

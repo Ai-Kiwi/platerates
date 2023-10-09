@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { database } from './database';
+import { databases } from './database';
 import { testToken } from './userLogin';
 import { generateRandomString } from './utilFunctions';
 import sharp, { Sharp } from 'sharp';
@@ -26,14 +26,12 @@ router.post('/post/upload', async (req : Request, res : Response) => {
 
       let postId : string;
   
-      if (vaildToken) {
-        var collection : mongoDB.Collection = database.collection('posts');
-  
+      if (vaildToken) {  
         //loop over making sure post Id is not used
         while (true){
           postId = generateRandomString(16);
   
-          let postIdInUse = await collection.findOne({postId: postId});
+          let postIdInUse = await databases.posts.findOne({postId: postId});
           if (postIdInUse === null){
             break
           }
@@ -66,14 +64,6 @@ router.post('/post/upload', async (req : Request, res : Response) => {
           return res.status(400).send('description is empty.');
         }
   
-        //make sure user has perms to view it
-        if (shareMode === "public") {
-        }else if (shareMode === "friends"){
-        }else{
-          console.log("invalid post share mode")
-          return res.status(400).send('invalid share mode.');
-        }
-  
         //upload image
         try{
           const imageData : Buffer = Buffer.from(base64Image, 'base64');
@@ -96,7 +86,7 @@ router.post('/post/upload', async (req : Request, res : Response) => {
           return res.status(500).send('error saving image');
         }
   
-        let response = await collection.insertOne(
+        let response = await databases.posts.insertOne(
           {
             posterUserId: userId,
             title: title,
@@ -148,26 +138,18 @@ router.post('/post/data', async (req : Request, res : Response) => {
       
     
       if (vaildToken) { // user token is valid
-        var collection : mongoDB.Collection = database.collection('posts');
-        var userDataCollection : mongoDB.Collection = database.collection('user_data');
-        var itemData = await collection.findOne({postId: postId})
-        const postRatingsCollection : mongoDB.Collection = database.collection('post_ratings');
+        var itemData = await databases.posts.findOne({postId: postId})
   
         if (itemData === null) {
           console.log("invalid post");
           return res.status(404).send("invalid post");
         }
-  
-        if (itemData.shareMode !== 'public'){
-          console.log("user can't view post");
-          return res.status(403).send("can't view post");
-        }
 
 
 
-        const ratingsAmount = await postRatingsCollection.countDocuments({ "rootItem.data" : postId, "rootItem.type" : "post" });
+        const ratingsAmount = await databases.post_ratings.countDocuments({ "rootItem.data" : postId, "rootItem.type" : "post" });
 
-        const userRatingData = await postRatingsCollection.findOne({ "rootItem.data" : postId, "rootItem.type" : "post", "ratingPosterId" : userId});
+        const userRatingData = await databases.post_ratings.findOne({ "rootItem.data" : postId, "rootItem.type" : "post", "ratingPosterId" : userId});
         let requesterHasRated : boolean = false;
         if (userRatingData != null) {
           requesterHasRated = true;
@@ -220,8 +202,7 @@ router.post('/post/delete', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (vaildToken) { // user token is valid
-        let collection : mongoDB.Collection = database.collection('posts');
-        let post = await collection.findOne({ postId: postId});
+        let post = await databases.posts.findOne({ postId: postId});
 
         if (post === null) {
           console.log("post not found")
@@ -229,7 +210,7 @@ router.post('/post/delete', async (req, res) => {
         }
 
         if (post.posterUserId === userId || await testUserAdmin(userId) === true) {
-          let deletedResponse = await collection.deleteOne({ postId: postId});
+          let deletedResponse = await databases.posts.deleteOne({ postId: postId});
   
           if (deletedResponse.acknowledged === true) {
             console.log("post deleted");
@@ -269,15 +250,13 @@ router.post('/post/feed', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (vaildToken) { // user token is valid
-        let collection : mongoDB.Collection = database.collection('posts');
-  
         if (startPosPost) {
           if (startPosPost.type === "post" && !startPosPost.data){
             console.log("invalid start post")
             return res.status(400).send("invalid start post");
           }
 
-          const startPosPostData = await collection.findOne({ postId: startPosPost.data })
+          const startPosPostData = await databases.posts.findOne({ postId: startPosPost.data })
           if (!startPosPostData){
             console.log("invalid start post")
             return res.status(400).send("invalid start post");
@@ -286,7 +265,7 @@ router.post('/post/feed', async (req, res) => {
           startPosPostDate = startPosPostData.postDate;
         }
   
-        const posts = await collection.find({ shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
+        const posts = await databases.posts.find({ postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
         let returnData = {
           "items": [] as { type: string; data: string;}[]
         }

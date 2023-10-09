@@ -1,3 +1,5 @@
+import 'package:Toaster/libs/alertSystem.dart';
+import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,40 +7,64 @@ class UserAvatar extends StatelessWidget {
   final avatarImage;
   final double roundness;
   final double size;
-  final VoidCallback onTap;
+  final String? onTapFunction;
+  final VoidCallback? customFunction;
+  final context;
+  final userId;
 
   const UserAvatar(
       {super.key,
       required this.avatarImage,
       required this.size,
       required this.roundness,
-      required this.onTap});
+      required this.onTapFunction,
+      this.customFunction,
+      this.context,
+      this.userId});
+
+  Future<void> _handleUserClick() async {
+    if (onTapFunction == "openProfile") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                UserProfile(userId: userId, openedOntopMenu: true)),
+      );
+    } else if (onTapFunction == "copyUserId") {
+      if (userId != null) {
+        Clipboard.setData(ClipboardData(text: userId));
+        openAlert("info", "copied user id to clipboard", null, context, null);
+      }
+    } else if (onTapFunction == "customFunction") {
+      customFunction!();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     if (avatarImage != null) {
       return SizedBox(
-          height: size,
-          width: size,
-          child: GestureDetector(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(roundness),
-              child: Center(
-                  child: Image.memory(
-                avatarImage,
-                width: double.infinity,
-                fit: BoxFit.fill,
-              )),
-            ),
-            onTap: () {
-              onTap();
-            },
-          ));
+        height: size,
+        width: size,
+        child: GestureDetector(
+          onTap: onTapFunction != null ? _handleUserClick : null,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(roundness),
+            child: Center(
+                child: Image.memory(
+              avatarImage,
+              width: double.infinity,
+              fit: BoxFit.fill,
+            )),
+          ),
+        ),
+      );
     } else {
       return SizedBox(
         height: size,
         width: size,
         child: GestureDetector(
+          onTap: onTapFunction != null ? _handleUserClick : null,
           child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -55,9 +81,6 @@ class UserAvatar extends StatelessWidget {
                   color: Colors.grey[500],
                 ),
               )),
-          onTap: () {
-            onTap();
-          },
         ),
       );
     }

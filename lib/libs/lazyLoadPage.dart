@@ -17,19 +17,19 @@ class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToEnd;
   final Widget widgetAddedToBlank;
   final String urlToFetch;
-  final extraUrlData;
+  final Map<dynamic, dynamic>? extraUrlData;
 
   const LazyLoadPage({
-    super.key,
+    Key? key,
     required this.widgetAddedToTop,
     required this.urlToFetch,
     required this.widgetAddedToEnd,
     required this.widgetAddedToBlank,
     this.extraUrlData,
-  });
+  }) : super(key: key);
 
   @override
-  State<LazyLoadPage> createState() => _LazyLoadPageState(
+  State<LazyLoadPage> createState() => LazyLoadPageState(
         widgetAddedToTop: widgetAddedToTop,
         urlToFetch: urlToFetch,
         extraUrlData: extraUrlData,
@@ -38,7 +38,7 @@ class LazyLoadPage extends StatefulWidget {
       );
 }
 
-class _LazyLoadPageState extends State<LazyLoadPage> {
+class LazyLoadPageState extends State<LazyLoadPage> {
   Widget widgetAddedToTop;
   Widget widgetAddedToEnd;
   Widget widgetAddedToBlank;
@@ -47,9 +47,9 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
   bool? perentRating = false;
   final double scrollDistence = 0.8;
   final String urlToFetch;
-  var extraUrlData;
+  final Map<dynamic, dynamic>? extraUrlData;
 
-  _LazyLoadPageState({
+  LazyLoadPageState({
     required this.widgetAddedToTop,
     required this.urlToFetch,
     required this.widgetAddedToEnd,
@@ -62,7 +62,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
 
   Future<void> _fetchItems() async {
     //test if they have reached the end
-    if (itemsCollected.length > 0) {
+    if (itemsCollected.isNotEmpty) {
       if (itemsCollected[itemsCollected.length - 1] == "end" ||
           itemsCollected[itemsCollected.length - 1] == "blank") {
         return;
@@ -109,7 +109,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
       } catch (err) {}
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
-      openAlert("error", "failed getting new items", null, context);
+      openAlert("error", "failed getting new items", null, context, null);
     }
     _isLoading = false;
   }
@@ -122,9 +122,13 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
     }
   }
 
-  void updateChildWidget(String newState) {
+  void updateChildWidget() {
+    print("set sate for top end item");
     setState(() {
-      widgetAddedToTop = widgetAddedToTop;
+      var oldState = widgetAddedToTop;
+      widgetAddedToTop = const Center();
+      widgetAddedToTop = oldState;
+      itemsCollected = itemsCollected;
       widgetAddedToEnd = widgetAddedToEnd;
     });
   }
@@ -148,6 +152,7 @@ class _LazyLoadPageState extends State<LazyLoadPage> {
       decoration: const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
       child: Center(
         child: ListView.builder(
+          padding: EdgeInsets.zero,
           controller: _scrollController,
           itemCount: itemsCollected.length + 1,
           itemBuilder: (context, index) {

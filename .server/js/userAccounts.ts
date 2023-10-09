@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import crypto from 'crypto';
-import { database } from './database';
+import { databases } from './database';
 import { testToken } from './userLogin';
 import { generateRandomString } from './utilFunctions';
 import sharp, { Sharp } from 'sharp';
@@ -12,7 +12,7 @@ import mongoDB from "mongodb";
 import { Request, Response } from "express";
 
 async function sendNoticeToAccount(userId : string, text : string, title : string){
-  const collection: mongoDB.Collection = database.collection('account_notices');
+  const collection: mongoDB.Collection = databases.account_notices.collection('account_notices');
   const response = await collection.insertOne({
     userId: userId,
     title: title,
@@ -31,7 +31,6 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
   try{
     const token = req.body.token;
     const userId = req.body.userId;
-    const collection: mongoDB.Collection = database.collection('user_data');
     const userIpAddress : string = req.headers['x-forwarded-for'] as string;
     const onlyUpdateChangeable = req.body.onlyUpdateChangeable;
 
@@ -40,7 +39,7 @@ router.post('/profile/basicData', async (req : Request, res : Response) => {
     const requesterUserId : string | undefined = result.userId;
 
     if (validToken) { // user token is valid
-      const userData = await collection.findOne({ userId: userId })
+      const userData = await databases.user_data.findOne({ userId: userId })
       
       if (userData === null){
         console.log("failed as invalid user");
@@ -110,9 +109,7 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
           return res.status(400).send(usernameDeniedReason)
         }
 
-        const collection: mongoDB.Collection = database.collection('user_data');
-
-        const response = await collection.updateOne({userId: userId},{ $set: {username : value}}) 
+        const response = await databases.user_data.updateOne({userId: userId},{ $set: {username : value}}) 
 
         if (response.acknowledged === true) {
           //update username
@@ -134,9 +131,7 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
             return res.status(400).send("bio to large")
           }
   
-          const collection: mongoDB.Collection = database.collection('user_data');
-  
-          const response = await collection.updateOne({userId: userId},{ $set: {bio : value}}) 
+          const response = await databases.user_data.updateOne({userId: userId},{ $set: {bio : value}}) 
   
           if (response.acknowledged === true) {
             //update username
@@ -176,24 +171,22 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
           return res.status(500).send('error saving avatar image');
         }
 
-        var avatarsCollection : mongoDB.Collection = database.collection('user_avatars');
         let avatarId: string | null = null;
         while (true){
           avatarId = generateRandomString(16);
   
-          let avatarIdInUse = await avatarsCollection.findOne({avatarId: avatarId});
+          let avatarIdInUse = await databases.user_avatars.findOne({avatarId: avatarId});
           if (avatarIdInUse === null){
             break
           }
         }
 
-        const userDataCollection: mongoDB.Collection = database.collection('user_data');
-        const userData = await userDataCollection.findOne({userId : userId})
+        const userData = await databases.user_data.findOne({userId : userId})
         if (userData){
-          avatarsCollection.deleteOne({avatarId : userData["avatar"]})
+          databases.user_avatars.deleteOne({avatarId : userData["avatar"]})
         }
 
-        let response = await avatarsCollection.insertOne(
+        let response = await databases.user_avatars.insertOne(
           {
             avatarId : avatarId,
             imageData : value
@@ -201,7 +194,7 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
         )
 
         if (response.acknowledged === true) {
-          let response = await userDataCollection.updateOne(
+          let response = await databases.user_avatars.updateOne(
             {userId : userId},
             { $set: {
               avatar : avatarId
@@ -240,7 +233,6 @@ router.post('/profile/data', async (req : Request, res : Response) => {
     try{
       const token = req.body.token;
       let userId = req.body.userId;
-      const collection: mongoDB.Collection = database.collection('user_data');
       const userIpAddress : string = req.headers['x-forwarded-for'] as string;
       const onlyUpdateChangeable = req.body.onlyUpdateChangeable;
 
@@ -257,17 +249,23 @@ router.post('/profile/data', async (req : Request, res : Response) => {
           userId = requesterUserId;
         }
       
-        const userData = await collection.findOne({ userId: userId });
+        const userData = await databases.user_data.findOne({ userId: userId });
 
         if (userData === null){
           console.log("failed as invalid user");
           return res.status(404).send("unkown user");
         }
 
-        if (userData.shareMode != "public") {
-          console.log("no perms to view profile");
-          return res.status(403).send("no perms to view profile");
+        //test if following
+        var followData = await databases.user_follows.findOne({follower : requesterUserId, followee : userId})
+        var followingUser = false
+        if (followData != null) {
+          followingUser = true;
         }
+        const followersCount = await databases.user_follows.countDocuments({ followee : userId })
+        const followingCount = await databases.user_follows.countDocuments({ follower : userId })
+        const postCount = await databases.posts.countDocuments({ posterUserId : userId })
+        const ratingCount = await databases.post_ratings.countDocuments({ratingPosterId : userId })
       
         console.log("returning profile data");
         if (onlyUpdateChangeable === true) {
@@ -277,6 +275,14 @@ router.post('/profile/data', async (req : Request, res : Response) => {
             administrator: userData.administrator,
             avatar : userData.avatar,
             averagePostRating : userData.averagePostRating | 0,
+            followersCount : followersCount,
+            followingCount : followingCount,  
+            postCount : postCount,  
+            ratingCount : ratingCount,
+            relativeViewerData : {
+              following : followingUser,
+            },
+
           });
         }
         return res.status(200).json({
@@ -286,6 +292,13 @@ router.post('/profile/data', async (req : Request, res : Response) => {
           avatar : userData.avatar,
           userId: userId,
           averagePostRating : userData.averagePostRating | 0,
+          followersCount : followersCount,
+          followingCount : followingCount,  
+          postCount : postCount,  
+          ratingCount : ratingCount,
+          relativeViewerData : {
+            following : followingUser,
+          },
         });
 
       }else{
@@ -310,10 +323,9 @@ router.post('/profile/avatar', async (req : Request, res : Response) => {
       return res.status(200).send("no user no value");
     }
     
-    const collection: mongoDB.Collection = database.collection('user_avatars');
     const userIpAddress : string = req.headers['x-forwarded-for'] as string;
     
-    const avatarData = await collection.findOne({ avatarId: avatarId });
+    const avatarData = await databases.user_avatars.findOne({ avatarId: avatarId });
     if (avatarData === null){
       console.log("failed as invalid avatar");
       return res.status(404).send("unkown user");
@@ -346,15 +358,13 @@ router.post('/profile/posts', async (req : Request, res : Response) => {
     const userId : string | undefined = result.userId;
   
     if (validToken) { // user token is valid
-      let collection = database.collection('posts');
-
       if (startPosPost) {
         if (startPosPost.type === "post" && !startPosPost.data){
           console.log("invalid start post");
           return res.status(400).send("invalid start post");
         }
 
-        const startPosPostData = await collection.findOne({ postId: startPosPost.data })
+        const startPosPostData = await databases.posts.findOne({ postId: startPosPost.data })
         if (!startPosPostData){
           console.log("invalid start post");
           return res.status(400).send("invalid start post");
@@ -363,7 +373,7 @@ router.post('/profile/posts', async (req : Request, res : Response) => {
         startPosPostDate = startPosPostData.postDate;
       }
 
-      const posts = await collection.find({posterUserId : fetchingUserId, shareMode: 'public', postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
+      const posts = await databases.posts.find({posterUserId : fetchingUserId, postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
       var returnData = {
         "items": [] as { type: string; data: string;}[]
       }
@@ -396,11 +406,89 @@ router.post('/profile/posts', async (req : Request, res : Response) => {
   }
 })
 
+router.post('/profile/follow', async (req : Request, res : Response) => {
+  console.log(" => user following/unfollowing user")
+  try{
+    const token = req.body.token;
+    const tryingToFollow = req.body.following;
+    const followingUserId = req.body.userId;
+
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+    const result = await testToken(token,userIpAddress);
+    const validToken : boolean = result.valid;
+    const userId : string | undefined = result.userId;
+  
+    if (validToken) { // user token is valid
+      
+      //make sure not trying to follow themselfs
+      if (userId === followingUserId){
+        console.log("can't follow yourselfs")
+        return res.status(409).send("can't follow yourselfs");
+      }
+
+      //add part to make sure user exists
+
+
+      //look if already following
+      let userFollowItem = await databases.user_follows.findOne({ followee : followingUserId, follower :  userId})
+      let alreadyFollowing = false;
+      if (userFollowItem !== null) {
+        alreadyFollowing = true;
+      }
+
+      //if you are trying to follow them or unfollow them
+      if (tryingToFollow == true){
+
+        if (alreadyFollowing === true){
+          console.log("already following")
+          return res.status(409).send("already following");
+        }else{
+          const response = await databases.user_follows.insertOne({ 
+            followee : followingUserId, 
+            follower :  userId
+          })
+          if (response.acknowledged === true){
+            console.log("started following");
+            return res.status(200).send("started following")
+          }else{
+            console.log("failed to create item in database");
+            return res.status(500).send("server error")
+          }
+        }
+
+
+      }else{
+        if (alreadyFollowing === true){
+          const response = await databases.user_follows.deleteOne({ 
+            followee : followingUserId, 
+            follower :  userId
+          })
+          if (response.acknowledged === true){
+            console.log("removed follow");
+            return res.status(200).send("removed follow")
+          }else{
+            console.log("failed to create item in database");
+            return res.status(500).send("server error")
+          }
+        }else{
+          console.log("already not following")
+          return res.status(409).send("already not following");
+        }
+      }
+    }else{
+      console.log("invalid token")
+      return res.status(401).send("invalid token");
+    }
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
 async function banAccount(userId : string,time : number,reason : string) {
   try{
-    const collection : mongoDB.Collection = database.collection("user_credentials");
-
-    const result = await collection.updateOne(
+    const result = await databases.user_credentials.updateOne(
       { userId: userId },
       { $set: {
         accountBanExpiryDate : Date.now() + (time * 1000),
@@ -426,8 +514,6 @@ async function banAccount(userId : string,time : number,reason : string) {
 async function createUser(rawEmail : string,password : string, username : string){
     try{
       const email = cleanEmailAddress(rawEmail);
-      const userCredentialsCollection = database.collection("user_credentials");
-      const userDataCollection = database.collection("user_data");
       const passwordSalt : string = crypto.randomBytes(16).toString('hex');
       const hashedPassword : string = crypto.createHash("sha256")
       .update(password)
@@ -437,7 +523,7 @@ async function createUser(rawEmail : string,password : string, username : string
       //make sure email is not in use
       let emailInUse : boolean = true;
       try{
-        const result = await userCredentialsCollection.findOne({ email: email })
+        const result = await databases.user_credentials.findOne({ email: email })
         if (result === null){
           emailInUse = false;
         }
@@ -466,7 +552,7 @@ async function createUser(rawEmail : string,password : string, username : string
       while(invalidUserId){
         userId = generateRandomString(16);
         try{
-          const result = await userCredentialsCollection.findOne({ userId: userId })
+          const result = await databases.user_credentials.findOne({ userId: userId })
           if (result === null){
             invalidUserId = false;
           }
@@ -477,7 +563,7 @@ async function createUser(rawEmail : string,password : string, username : string
      
       var tokenNotExpiredCode = generateRandomString(16);
   
-      const userCredentialsOutput = await userCredentialsCollection.insertOne(
+      const userCredentialsOutput = await databases.user_credentials.insertOne(
         {
           userId: userId,
           email: email,
@@ -489,7 +575,7 @@ async function createUser(rawEmail : string,password : string, username : string
           tokenNotExpiedCode: tokenNotExpiredCode,
         }
       )
-      const userDataOutput = await userDataCollection.insertOne(
+      const userDataOutput = await databases.user_data.insertOne(
         {
           userId: userId,
           username: username,
@@ -498,8 +584,6 @@ async function createUser(rawEmail : string,password : string, username : string
           cooldowns: {},
           administrator: false,
           creationDate: Date.now(),
-          privateAccount: false,
-          shareMode: "public",
         }
       )
       if (userCredentialsOutput.acknowledged === true && userDataOutput.acknowledged === true){

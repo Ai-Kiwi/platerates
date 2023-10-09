@@ -4,7 +4,6 @@ import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/imageUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 //import 'package:toggle_switch/toggle_switch.dart';
 
@@ -182,72 +181,55 @@ class _CreatePostState extends State<CreatePostPage> {
                         borderRadius: BorderRadius.circular(15.0),
                       )),
                       onPressed: () async {
-                        Alert(
-                          context: context,
-                          type: AlertType.warning,
-                          title: "Are you sure you want to post this?",
-                          buttons: [
-                            DialogButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
+                        openAlert(
+                            "yes_or_no",
+                            "Are you sure you want to post this?",
+                            null,
+                            context, {
+                          "yes": () async {
+                            Navigator.pop(context);
 
-                                try {
-                                  final response = await http.post(
-                                    Uri.parse("$serverDomain/post/upload"),
-                                    headers: <String, String>{
-                                      'Content-Type':
-                                          'application/json; charset=UTF-8',
-                                    },
-                                    body: jsonEncode({
-                                      "token": userManager.token,
-                                      "title": _title,
-                                      "description": _description,
-                                      "shareMode":
-                                          postCodeNames[shareModeSelected],
-                                      "image": base64Encode(imageUtils
-                                          .uintListToBytes(imageData)),
-                                    }),
-                                  );
+                            try {
+                              final response = await http.post(
+                                Uri.parse("$serverDomain/post/upload"),
+                                headers: <String, String>{
+                                  'Content-Type':
+                                      'application/json; charset=UTF-8',
+                                },
+                                body: jsonEncode({
+                                  "token": userManager.token,
+                                  "title": _title,
+                                  "description": _description,
+                                  "shareMode": postCodeNames[shareModeSelected],
+                                  "image": base64Encode(
+                                      imageUtils.uintListToBytes(imageData)),
+                                }),
+                              );
 
-                                  if (response.statusCode == 201) {
-                                    Navigator.pop(context);
-                                    // ignore: use_build_context_synchronously
-                                    openAlert("success", "created post", null,
-                                        context);
-                                  } else {
-                                    ErrorHandler.httpError(response.statusCode,
-                                        response.body, context);
-                                    openAlert("error", "error uploading post",
-                                        null, context);
-                                  }
-                                } catch (err) {
-                                  openAlert(
-                                      "error",
-                                      "unkown error contacting serer",
-                                      null,
-                                      context);
-                                }
-                              },
-                              color: Colors.green,
-                              child: const Text(
-                                "Yes",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                            ),
-                            DialogButton(
-                              color: Colors.red,
-                              child: const Text(
-                                "No",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                              onPressed: () {
+                              if (response.statusCode == 201) {
                                 Navigator.pop(context);
-                              },
-                            )
-                          ],
-                        ).show();
+                                // ignore: use_build_context_synchronously
+                                openAlert("success", "created post", null,
+                                    context, null);
+                              } else {
+                                ErrorHandler.httpError(response.statusCode,
+                                    response.body, context);
+                                openAlert("error", "error uploading post", null,
+                                    context, null);
+                              }
+                            } catch (err) {
+                              openAlert(
+                                  "error",
+                                  "unkown error contacting serer",
+                                  null,
+                                  context,
+                                  null);
+                            }
+                          },
+                          "no": () {
+                            Navigator.pop(context);
+                          },
+                        });
                       },
                       child: const Text(
                         'Upload post',

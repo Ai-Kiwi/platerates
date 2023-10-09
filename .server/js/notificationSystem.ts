@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { database } from "./database";
+import { databases } from "./database";
 import mongoDB from "mongodb";
 import { generateRandomString } from "./utilFunctions";
 import { testToken } from "./userLogin";
@@ -12,14 +12,12 @@ import firebase from 'firebase-admin'
 
 async function sendNotificationToDevices(title : String, body : String, channelId : String, userIds : Array<String>, notificationId : String | undefined) {
   console.log("sending notifications to devices")
-
-  const collection: mongoDB.Collection = database.collection('user_data');
   
   const registrationTokens : Array<String> = [];
   
   let i = 0;
   while (i < userIds.length) {
-    const avatarData = await collection.findOne({ userId: userIds[i] });
+    const avatarData = await databases.user_data.findOne({ userId: userIds[i] });
     
     if (avatarData !== null){
       if (avatarData!.deviceNotificationTokens !== null){
@@ -63,9 +61,7 @@ async function sendNotificationToDevices(title : String, body : String, channelI
 
 
 async function fetchUsername(userId : string){
-  const collection: mongoDB.Collection = database.collection('user_data');
-
-  const userData = await collection.findOne({ userId: userId });
+  const userData = await databases.user_data.findOne({ userId: userId });
 
   if (userData != null) {
     return userData.username
@@ -89,9 +85,7 @@ router.post('/notification/updateDeviceToken', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (validToken) { // user token is valid
-        const userDataCollection : mongoDB.Collection = database.collection('user_data');
-
-        const response = await userDataCollection.updateOne({userId : userId},{ $set: {deviceNotificationTokens : [newToken]}});
+        const response = await databases.user_data.updateOne({userId : userId},{ $set: {deviceNotificationTokens : [newToken]}});
 
         console.log("updated")
         return res.status(200).send("updated token");
@@ -109,20 +103,18 @@ router.post('/notification/updateDeviceToken', async (req, res) => {
 
 async function sendNotification(notificationData : {userId : string | undefined, action : string, itemId : string | undefined, receiverId : string}){
     try{
-        const collection : mongoDB.Collection = database.collection("user_notifications");
-        
         let notificationId;
         while (true){
             notificationId = generateRandomString(16);
 
-            let notificationIdInUse = await collection.findOne({notificationId: notificationId});
+            let notificationIdInUse = await databases.user_notifications.findOne({notificationId: notificationId});
             if (notificationIdInUse === null){
               break
             }
         }
 
         if (notificationData.action === "user_rated_post") {
-            const response = await collection.insertOne({
+            const response = await databases.user_notifications.insertOne({
                 notificationId: notificationId,
                 action : notificationData.action,
                 itemId : notificationData.itemId,
@@ -134,7 +126,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
             })
 
             if (response.acknowledged === true){
-              const notificationDataFromDatabase = await collection.findOne({ notificationId: notificationId })
+              const notificationDataFromDatabase = await databases.user_notifications.findOne({ notificationId: notificationId })
               sendNotificationToDevices(`toast rating`,`${await fetchUsername(notificationData.userId!)} rated your toast`,`userRating`,[notificationData.receiverId], notificationId)
               console.log("sent notification");
             }else{
@@ -148,7 +140,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
         //    })
         //
         }else if (notificationData.action === "user_reply_post_rating") {
-            const response = await collection.insertOne({
+            const response = await databases.user_notifications.insertOne({
                 notificationId: notificationId,
                 action : notificationData.action,
                 itemId : notificationData.itemId,
@@ -160,7 +152,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
             })
 
             if (response.acknowledged === true){
-              const notificationDataFromDatabase = await collection.findOne({ notificationId: notificationId })
+              const notificationDataFromDatabase = await databases.user_notifications.findOne({ notificationId: notificationId })
               sendNotificationToDevices(`message reply`,`${await fetchUsername(notificationData.userId!)} replied to you`,`userComment`,[notificationData.receiverId], notificationId)
               console.log("sent notification");
             }else{
@@ -192,8 +184,6 @@ router.post('/notification/list', async (req, res) => {
         const userId : string | undefined = result.userId;
       
         if (validToken) { // user token is valid
-          let collection: mongoDB.Collection = database.collection('user_notifications');
-    
           if (startPosPost) {
             if (startPosPost.type === "notification" && !startPosPost.data){
               console.log("invalid start notification")
@@ -202,7 +192,7 @@ router.post('/notification/list', async (req, res) => {
             //unlike others data is a json object and has noti data in there
             const notificationData = JSON.parse(startPosPost.data);
 
-            const startPosPostData = await collection.findOne({ notificationId: notificationData.notificationId })
+            const startPosPostData = await databases.user_notifications.findOne({ notificationId: notificationData.notificationId })
             if (startPosPostData === null){
               console.log("invalid start notification")
               return res.status(400).send("invalid start notification");
@@ -211,7 +201,7 @@ router.post('/notification/list', async (req, res) => {
             startPosInfo = startPosPostData.sentDate;
           }
     
-          const dataReturning = await collection.find({ sentDate: { $lt: startPosInfo}, receiverId : userId}).sort({sentDate : -1}).limit(15).toArray();
+          const dataReturning = await databases.user_notifications.find({ sentDate: { $lt: startPosInfo}, receiverId : userId}).sort({sentDate : -1}).limit(15).toArray();
           let returnData = {
             "items": [] as { type: string; data: string;}[]
           }
@@ -255,9 +245,7 @@ router.post('/notification/read', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (validToken) { // user token is valid
-        let collection: mongoDB.Collection = database.collection('user_notifications');
-  
-        let postFetching = await collection.findOne({notificationId : notificationId});
+        let postFetching = await databases.user_notifications.findOne({notificationId : notificationId});
 
         if (postFetching === null){
           console.log("notification not found");
@@ -270,7 +258,7 @@ router.post('/notification/read', async (req, res) => {
         }
 
 
-        let markReadResponse = await collection.updateOne({notificationId : notificationId},{$set: {read : true}});
+        let markReadResponse = await databases.user_notifications.updateOne({notificationId : notificationId},{$set: {read : true}});
 
         if (markReadResponse.acknowledged === true){
           console.log("marked notification read");
@@ -303,9 +291,7 @@ router.post('/notification/unreadCount', async (req, res) => {
       const userId : string | undefined = result.userId;
     
       if (validToken) { // user token is valid
-        let collection: mongoDB.Collection = database.collection('user_notifications');
-  
-        let unreadCount = await collection.countDocuments({read : false, receiverId : userId});
+        let unreadCount = await databases.user_notifications.countDocuments({read : false, receiverId : userId});
 
         //console.log(unreadCount);
 

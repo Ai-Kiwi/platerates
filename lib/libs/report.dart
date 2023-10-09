@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../login/userLogin.dart';
@@ -12,6 +13,7 @@ class ReportSystem {
   Future<void> reportItem(context, String postItemType, String postItem) async {
     String reportReason = "";
     Alert(
+        style: alertStyle,
         context: context,
         title: "report",
         content: Column(
@@ -21,8 +23,15 @@ class ReportSystem {
                   MaxLengthEnforcement.truncateAfterCompositionEnds,
               maxLength: 1000,
               decoration: const InputDecoration(
-                icon: Icon(Icons.account_circle),
+                icon: Icon(Icons.account_circle, color: Colors.white),
                 labelText: 'reason',
+                labelStyle: TextStyle(color: Colors.white),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                ),
               ),
               onChanged: (value) {
                 reportReason = value;
@@ -48,11 +57,12 @@ class ReportSystem {
                 }),
               );
               if (response.statusCode == 201) {
-                openAlert("success", "post reported", null, context);
+                openAlert("success", "post reported", null, context, null);
               } else {
                 ErrorHandler.httpError(
                     response.statusCode, response.body, context);
-                openAlert("error", "failed reporting post", null, context);
+                openAlert(
+                    "error", "failed reporting post", null, context, null);
               }
             },
             child: const Text(

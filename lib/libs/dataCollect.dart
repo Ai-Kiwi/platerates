@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
@@ -11,7 +10,7 @@ import 'errorHandler.dart';
 class DataCollect {
   Future<void> reportError(
       String errorMessage, String dataGetting, context) async {
-    openAlert("error", "failed getting $dataGetting", null, context);
+    openAlert("error", "failed getting $dataGetting", null, context, null);
   }
 
   Future<Map> getData(Map headers, String url, String cacheCode, context,

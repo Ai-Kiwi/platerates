@@ -22,6 +22,7 @@ class _notificationPageListState extends State<notificationPageList> {
         urlToFetch: "/notification/list",
         widgetAddedToTop: Center(
             child: Column(children: [
+          SizedBox(height: 32),
           Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
               child: Text(

@@ -4,7 +4,7 @@ import fs from 'fs';
 import safeCompare from 'safe-compare';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import crypto, { privateEncrypt } from 'crypto';
-import { database } from './database';
+import { databases } from './database';
 import { millisecondsToTime, generateRandomString } from "./utilFunctions";
 import { error } from 'console';
 import { sendMail } from './mailsender';
@@ -29,7 +29,6 @@ async function updateUserPassword(rawEmail : string, newPassword : string) {
   try {
     const email : string = cleanEmailAddress(rawEmail) as string;
     // Retrieve the user document using the email
-    const collection : mongoDB.Collection = database.collection("user_credentials");
 
     // Generate a new hashed password
     const passwordSalt : string = crypto.randomBytes(16).toString('hex');
@@ -40,7 +39,7 @@ async function updateUserPassword(rawEmail : string, newPassword : string) {
 
     const tokenNotExpiedCode : string = generateRandomString(16);
     // Update the user document with the new hashed password
-    let collectionUpdate = await collection.updateOne(
+    let collectionUpdate = await databases.user_credentials.updateOne(
       { email: email },
       { $set: {
         hashedPassword: hashedPassword,
@@ -85,8 +84,7 @@ async function testToken(token : string,ipAddress : string){
     const userId : string = decoded.userId;
 
     //get data from server
-    var collection : mongoDB.Collection = database.collection('user_credentials');
-    const userData = await collection.findOne({ userId: userId });
+    const userData = await databases.user_credentials.findOne({ userId: userId });
 
     //make sure user exists
     if (userData === null){
@@ -144,9 +142,7 @@ router.post('/login', async (req, res) => {
 
     
     // get user info from database //
-    const collection : mongoDB.Collection = database.collection('user_credentials');
-
-    const userData = await collection.findOne({ email: userEmail });
+    const userData = await databases.user_credentials.findOne({ email: userEmail });
     //make sure it is vaild account lol
     if (userData === null){
       console.log("invalid credentials enterd")
@@ -225,7 +221,7 @@ router.post('/login', async (req, res) => {
       const resetCounterTime = Date.now() + (Math.pow(1.250,recentAttemptNumber) * 15)  * 1000;
 
       //save to mongodb
-      let updatedTimeout = await collection.updateOne(
+      let updatedTimeout = await databases.user_credentials.updateOne(
         { email: userEmail },
         { $set: {
           failedLoginAttemptInfo: {
@@ -264,10 +260,9 @@ router.post('/login/logout', async (req, res) => {
       
       
       if (vaildToken) { // user token is valid
-        var collection : mongoDB.Collection = database.collection('user_credentials');
 
         //fetch the user credentials
-        const userCreds = await collection.findOne({ userId :  userId})
+        const userCreds = await databases.user_credentials.findOne({ userId :  userId})
         if (userCreds === null) {
           console.log("no user found");
           return res.status(404).send("no user found");
@@ -275,7 +270,7 @@ router.post('/login/logout', async (req, res) => {
         }
 
         const newTokenNotExpiredCode : string = await generateRandomString(16);
-        const reponse = await collection.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode, deviceNotificationTokens : []}})
+        const reponse = await databases.user_credentials.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode, deviceNotificationTokens : []}})
         if (reponse.acknowledged === true){
           console.log("user logged out")
           return res.status(200).send("user logged out");
@@ -323,14 +318,13 @@ router.post('/login/reset-password', async (req, res) => {
     const newPassword = req.body.newPassword;
     const token = req.body.token;
     const ipAddress : string = req.headers['x-forwarded-for'] as string;
-    const userCredentialsCollection = database.collection("user_credentials");
     
     //const testTokenResult = await testToken(token,ipAddress);
     //const vaildToken : boolean = testTokenResult.valid;
     //const userId = testTokenResult.userId;
     
     //fetch user data
-    const userCredentials = await userCredentialsCollection.findOne({email: email});
+    const userCredentials = await databases.user_credentials.findOne({email: email});
     if (userCredentials === null){
       console.log("failed to find user");
       return res.status(404).send("user not found");
@@ -387,7 +381,7 @@ router.post('/login/reset-password', async (req, res) => {
 
 
       const expireTime : number = Date.now() + (1000 * 60 * 15) // expires in 15m 
-      const response = await userCredentialsCollection.updateOne(
+      const response = await databases.user_credentials.updateOne(
         { userId: userCredentials.userId },
         { $set: {
           resetPassword : {
@@ -422,10 +416,9 @@ router.get('/reset-password', async (req, res) => {
   const userId = req.query.userId;
   const resetCode = req.query.resetCode;
   const ipAddress = req.headers['x-forwarded-for'];
-  const userCredentialsCollection : mongoDB.Collection = database.collection("user_credentials");
 
   try{
-    const userCredentials = await userCredentialsCollection.findOne({userId: userId});
+    const userCredentials = await databases.user_credentials.findOne({userId: userId});
     if (userCredentials === null){
       console.log("failed to find user");
       return res.status(404).send("user not found");
@@ -444,7 +437,7 @@ router.get('/reset-password', async (req, res) => {
     }
 
     //update password
-    const response = await userCredentialsCollection.updateOne(
+    const response = await databases.user_credentials.updateOne(
       { userId: userCredentials.userId },
         { $set: {
           hashedPassword : userCredentials.resetPassword.newPassword,
@@ -456,7 +449,7 @@ router.get('/reset-password', async (req, res) => {
     );
     if (response.acknowledged === true) {
       //expire code
-      const response = await userCredentialsCollection.updateOne(
+      const response = await databases.user_credentials.updateOne(
         { userId: userCredentials.userId },
         { $set: {
           resetPassword : {

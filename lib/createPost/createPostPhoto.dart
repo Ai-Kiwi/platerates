@@ -38,7 +38,7 @@ class _CameraPageState extends State<CameraPage> {
       } catch (e) {
         try {
           // ignore: use_build_context_synchronously
-          openAlert("error", "failed loading camera", null, context);
+          openAlert("error", "failed loading camera", null, context, null);
         } catch (e) {}
       }
     }
@@ -65,7 +65,7 @@ class _CameraPageState extends State<CameraPage> {
         });
       } catch (e) {
         // ignore: use_build_context_synchronously
-        openAlert("error", "failed loading camera", null, context);
+        openAlert("error", "failed loading camera", null, context, null);
       }
     }
     if (!mounted) return;
@@ -219,7 +219,7 @@ class _CameraPageState extends State<CameraPage> {
                                     } else {
                                       // ignore: use_build_context_synchronously
                                       openAlert("error", "error loading camera",
-                                          null, context);
+                                          null, context, null);
                                     }
                                   },
                                   child: const Text(
@@ -289,7 +289,7 @@ class _CameraPageState extends State<CameraPage> {
                   }
                 } catch (err) {
                   // ignore: use_build_context_synchronously
-                  openAlert("error", "error taking photo", null, context);
+                  openAlert("error", "error taking photo", null, context, null);
 
                   print(err);
                   return null;
