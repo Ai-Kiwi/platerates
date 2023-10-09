@@ -216,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                                   } else {
                                     // ignore: use_build_context_synchronously
                                     openAlert("error", "invalid login",
-                                        correctLogin.error, context);
+                                        correctLogin.error, context, null);
                                   }
                                 },
                                 child: const Text(

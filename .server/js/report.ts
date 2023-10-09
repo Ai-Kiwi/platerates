@@ -3,10 +3,10 @@ const router = express.Router();
 
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
-import {database} from'./database';
-import {testToken} from'./userLogin';
-import {generateRandomString} from'./utilFunctions';
-import {sendMail} from'./mailsender';
+import { databases } from'./database';
+import { testToken } from'./userLogin';
+import { generateRandomString } from'./utilFunctions';
+import { sendMail } from'./mailsender';
 
 
 
@@ -16,8 +16,6 @@ router.post('/report', async (req, res) => {
     const token = req.body.token;
     const reportItem = req.body.reportItem;
     const reason = req.body.reason as String;
-    const reportsCollection: mongoDB.Collection = database.collection('reports');
-    const userCredentialsCollection: mongoDB.Collection = database.collection('user_credentials')
     const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
     const result = await testToken(token,userIpAddress);
@@ -32,7 +30,7 @@ router.post('/report', async (req, res) => {
       }
 
       //test if item already reported
-      const userReportItem = await reportsCollection.findOne({item : rootItem, reporterId : userId})
+      const userReportItem = await databases.reports.findOne({item : rootItem, reporterId : userId})
       if (userReportItem !== null) {
         console.log("already reported");
         return res.status(409).send("already reported")
@@ -41,12 +39,10 @@ router.post('/report', async (req, res) => {
       let reportingItem;
 
       if (reportItem.type === "post"){
-        const postsCollection: mongoDB.Collection = database.collection('posts');
-        reportingItem = await postsCollection.findOne({postId : reportItem.data});
+        reportingItem = await databases.posts.findOne({postId : reportItem.data});
 
       }else if (reportItem.type === "post_rating"){
-        const postRatingsollection: mongoDB.Collection = database.collection('post_ratings');
-        reportingItem = await postRatingsollection.findOne({ratingId : reportItem.data});
+        reportingItem = await databases.post_ratings.findOne({ratingId : reportItem.data});
 
       }else{
         console.log("unkown type");
@@ -74,13 +70,13 @@ router.post('/report', async (req, res) => {
       while (true){
         reportId =  generateRandomString(16);
 
-        let postIdInUse = await reportsCollection.findOne({reportId: reportId});
+        let postIdInUse = await databases.reports.findOne({reportId: reportId});
         if (postIdInUse === null){
           break
         }
       }
 
-      const response = await reportsCollection.insertOne(
+      const response = await databases.reports.insertOne(
         {
           item: rootItem,
           reporterId : userId,
@@ -91,7 +87,7 @@ router.post('/report', async (req, res) => {
 
       if (response.acknowledged === true){
         try{
-          const userCredentials = await userCredentialsCollection.findOne({userId:userId})
+          const userCredentials = await databases.user_credentials.findOne({userId:userId})
 
 
           if (userCredentials !== null){

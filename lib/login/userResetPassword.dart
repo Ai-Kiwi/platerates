@@ -129,8 +129,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     )),
                     onPressed: () async {
                       if (_NewPassword != _confirmNewPassword) {
-                        openAlert(
-                            "error", "passwords don't match", null, context);
+                        openAlert("error", "passwords don't match", null,
+                            context, null);
                       } else {
                         final response = await http.post(
                           Uri.parse("$serverDomain/login/reset-password"),
@@ -148,7 +148,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               "success",
                               "created reset password link, check emails",
                               null,
-                              context);
+                              context,
+                              null);
                         } else {
                           // ignore: use_build_context_synchronously
                           ErrorHandler.httpError(
@@ -158,7 +159,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               "error",
                               "failed creating reset password link",
                               null,
-                              context);
+                              context,
+                              null);
                         }
                       }
                     },

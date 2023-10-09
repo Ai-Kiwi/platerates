@@ -35,6 +35,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
           widgetAddedToTop: Center(
               child: Column(children: [
+            SizedBox(height: 32),
             Padding(
                 padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
                 child: Text(

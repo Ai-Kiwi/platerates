@@ -17,4 +17,18 @@ const mongodb_client = new MongoClient(mongodb_url, {
 mongodb_client.connect()
 const database = mongodb_client.db(mongoDB_dataBase);
 
-export { database };
+const databases = {
+  user_data : database.collection('user_data'),
+  chat_rooms : database.collection('chat_rooms'),
+  chat_messages : database.collection('chat_messages'),
+  user_notifications : database.collection('user_notifications'),
+  reports : database.collection('reports'),
+  user_credentials : database.collection('user_credentials'),
+  posts : database.collection('posts'),
+  post_ratings : database.collection('post_ratings'),
+  account_notices : database.collection('account_notices'),
+  user_avatars : database.collection('user_avatars'),
+  user_follows : database.collection('user_follows'),
+}
+
+export { databases }; //add database

@@ -1,4 +1,4 @@
-import { database } from './database';
+import { databases } from './database';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { RegExpMatcher, TextCensor, englishDataset, englishRecommendedTransformers, } from 'obscenity';
@@ -38,9 +38,7 @@ async function testUsername(username : string){
       };
     }
 
-    const collection: mongoDB.Collection = database.collection('user_data');
-
-    const usernameInUse = await collection.findOne({username : username})
+    const usernameInUse = await databases.user_data.findOne({username : username})
 
     if (usernameInUse !== null) {
       return {

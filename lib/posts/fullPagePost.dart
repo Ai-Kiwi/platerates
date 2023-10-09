@@ -80,6 +80,7 @@ class _PostRatingListState extends State<fullPagePost> {
                     child: LazyLoadPage(
                       widgetAddedToTop: Center(
                           child: Column(children: [
+                        SizedBox(height: 32),
                         //const Padding(
                         //    padding: EdgeInsets.symmetric(
                         //        vertical: 16.0, horizontal: 16),
@@ -230,7 +231,7 @@ class _PostRatingListState extends State<fullPagePost> {
                                     if (response.statusCode == 201) {
                                       // ignore: use_build_context_synchronously
                                       openAlert("success", "uploaded rating",
-                                          null, context);
+                                          null, context, null);
                                       await jsonCache.remove('post-$rootItem');
                                       // ignore: use_build_context_synchronously
                                       Navigator.pop(context);
@@ -252,7 +253,8 @@ class _PostRatingListState extends State<fullPagePost> {
                                           "error",
                                           "failed uploading rating",
                                           null,
-                                          context);
+                                          context,
+                                          null);
                                     }
                                   },
                                   child: const Text(

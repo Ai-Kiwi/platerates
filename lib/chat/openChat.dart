@@ -54,8 +54,7 @@ class topUserBar extends StatelessWidget {
     if (privateChat == false) {
       return Container(
         height: 25,
-        child: const Center(
-            child: Text("shouldn't be possible for this to be a group")),
+        child: const Center(child: Text("groups not added yet")),
       );
     } else {
       return Container(
@@ -78,8 +77,10 @@ class topUserBar extends StatelessWidget {
             toasterUserAvatar.UserAvatar(
               avatarImage: chatImage,
               size: 35,
-              onTap: () {},
               roundness: 35,
+              onTapFunction: 'openProfile',
+              context: context,
+              userId: otherUserId,
             ),
             const SizedBox(width: 8),
             Text(
@@ -160,17 +161,21 @@ class _fullPageChatState extends State<FullPageChat> {
             privateChat = jsonData["data"]["privateChat"];
             if (privateChat == true) {
               privateChatOtherUser = jsonData["data"]["privateChatOtherUser"];
-              dataGathered = true;
+
               Map fetchedData = await dataCollect.getUserData(
                   privateChatOtherUser, context, false);
-              groupName = fetchedData["username"];
+
               Map avatarData = await dataCollect.getAvatarData(
                   fetchedData["avatar"], context, false);
+              setState(() {
+                dataGathered = true;
+                groupName = fetchedData["username"];
 
-              //posterAvatar = avatarData["imageData"];
-              if (avatarData["imageData"] != null) {
-                groupImage = base64Decode(avatarData["imageData"]);
-              }
+                //posterAvatar = avatarData["imageData"];
+                if (avatarData["imageData"] != null) {
+                  groupImage = base64Decode(avatarData["imageData"]);
+                }
+              });
             }
           }
         } catch (err) {

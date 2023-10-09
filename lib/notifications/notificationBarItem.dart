@@ -29,6 +29,8 @@ class _notificationBarItemState extends State<notificationBarItem> {
   var notificationTextColor = Colors.white;
   var itemDeleted = false;
 
+  String? notificationCreaterId;
+
   Future<void> fetchNotificationData() async {
     try {
       if (jsonData['action'] == "user_rated_post") {
@@ -37,6 +39,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
         rootItem = ratingData['rootItem'];
         var userData = await dataCollect.getBasicUserData(
             ratingData['ratingPosterId'], context, true);
+        notificationCreaterId = ratingData['ratingPosterId'];
         var username = userData['username'] as String;
 
         var userImage =
@@ -59,6 +62,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
         rootItem = ratingData['rootItem'];
         var userData = await dataCollect.getBasicUserData(
             ratingData['ratingPosterId'], context, true);
+        notificationCreaterId = ratingData['ratingPosterId'];
         var username = userData['username'] as String;
 
         var userImage =
@@ -127,7 +131,9 @@ class _notificationBarItemState extends State<notificationBarItem> {
                         avatarImage: userImageData,
                         size: 45,
                         roundness: 45,
-                        onTap: () {},
+                        onTapFunction: null,
+                        context: context,
+                        userId: notificationCreaterId,
                       ),
                       const SizedBox(width: 8),
                       Expanded(

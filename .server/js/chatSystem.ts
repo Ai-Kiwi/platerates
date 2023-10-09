@@ -2,7 +2,7 @@ import express from "express";
 import { generateRandomString } from "./utilFunctions";
 import { testToken } from "./userLogin";
 const router = express.Router();
-import { database } from "./database";
+import { databases } from "./database";
 import mongoDB, { Int32 } from "mongodb";
 import { Request, Response } from "express";
 import { sendNotification, sendNotificationToDevices } from "./notificationSystem";
@@ -44,9 +44,7 @@ router.ws('/chatWs', function(ws, req) {
                 wsClients[connectionId].userId = userId;
                 
                 //attempt to join the chat room
-                let collection: mongoDB.Collection = database.collection('chat_rooms');
-
-                let chatRoomData = await collection.findOne({ chatRoomId: jsonData["chatRoomId"], users: { $all: [userId] } })
+                let chatRoomData = await databases.chat_rooms.findOne({ chatRoomId: jsonData["chatRoomId"], users: { $all: [userId] } })
 
                 if (chatRoomData != null){
                     wsClients[connectionId].chatRoomId = jsonData["chatRoomId"];
@@ -92,12 +90,10 @@ router.ws('/chatWs', function(ws, req) {
                 ws.close();
             }
         }else if (jsonData["request"] == "send_message") {
-            let collection: mongoDB.Collection = database.collection('chat_messages');
-
             var messageId;
             while (true) {
                 messageId = generateRandomString(16);
-                const dataBaseMessage = await collection.findOne({messageId : messageId});
+                const dataBaseMessage = await databases.chat_messages.findOne({messageId : messageId});
                 if (dataBaseMessage === null){
                     break;
                 }
@@ -131,15 +127,12 @@ router.ws('/chatWs', function(ws, req) {
 
 
 
-            const messageDatabaseResponse = await collection.insertOne(dataSending)
+            const messageDatabaseResponse = await databases.chat_messages.insertOne(dataSending)
 
             if (messageDatabaseResponse.acknowledged === true){
                 if (wsClients[connectionId].chatRoomId){
-                  let collection: mongoDB.Collection = database.collection('chat_rooms');
-                  let userDataCollection: mongoDB.Collection = database.collection('user_data');
-
-                  let chatRoomData = await collection.findOne({ chatRoomId: wsClients[connectionId].chatRoomId})
-                  let chatSenderUserData = await userDataCollection.findOne({ userId: wsClients[connectionId].userId})
+                  let chatRoomData = await databases.chat_rooms.findOne({ chatRoomId: wsClients[connectionId].chatRoomId})
+                  let chatSenderUserData = await databases.user_data.findOne({ userId: wsClients[connectionId].userId})
 
 
 
@@ -176,9 +169,7 @@ router.ws('/chatWs', function(ws, req) {
             
 
         }else if (jsonData["request"] == "past_messages") {
-            let collection: mongoDB.Collection = database.collection('chat_messages');
-
-            const messages = await collection.find({ chatRoomId: wsClients[connectionId].chatRoomId, sendTime: { $lt: jsonData["pastItemDate"]}}).sort({sendTime: -1}).limit(25).toArray();
+            const messages = await databases.chat_messages.find({ chatRoomId: wsClients[connectionId].chatRoomId, sendTime: { $lt: jsonData["pastItemDate"]}}).sort({sendTime: -1}).limit(25).toArray();
             let returnData = {
               "items": [] as { type: string; data: string;}[]
             }
@@ -258,16 +249,14 @@ router.post('/chat/openList', async (req, res) => {
       const vaildToken : boolean = result.valid;
       const userId : string | undefined = result.userId;
 
-      if (vaildToken) { // user token is valid
-        let collection : mongoDB.Collection = database.collection('chat_rooms');
-    
+      if (vaildToken) { // user token is valid    
         if (startPosPost) {
           if (startPosPost.type === "chat_room" && !startPosPost.data){
             console.log("invalid start chat")
             return res.status(400).send("invalid start chat");
           }
   
-          const startPosPostData = await collection.findOne({ chatRoomId: startPosPost.data, users: { $all: [userId] } })
+          const startPosPostData = await databases.chat_rooms.findOne({ chatRoomId: startPosPost.data, users: { $all: [userId] } })
           if (!startPosPostData){
             console.log("invalid start chat")
             return res.status(400).send("invalid start chat");
@@ -276,7 +265,7 @@ router.post('/chat/openList', async (req, res) => {
           startPosPostDate = startPosPostData.postDate;
         }
     
-        const posts = await collection.find({ users: { $all: [userId] }, lastMessage: { $lt: startPosPostDate}}).sort({lastMessage: -1}).limit(5).toArray();
+        const posts = await databases.chat_rooms.find({ users: { $all: [userId] }, lastMessage: { $lt: startPosPostDate}}).sort({lastMessage: -1}).limit(5).toArray();
         let returnData = {
           "items": [] as { type: string; data: string;}[]
         }
@@ -310,7 +299,7 @@ router.post('/chat/openList', async (req, res) => {
 
 
 router.post('/chat/roomData', async (req : Request, res : Response) => {
-    console.log(" => user fetching post data")
+    console.log(" => user fetching chat room data")
       try{
         const token = req.body.token;
         const chatRoomId = req.body.chatRoomId;
@@ -324,8 +313,7 @@ router.post('/chat/roomData', async (req : Request, res : Response) => {
         
       
         if (vaildToken) { // user token is valid
-          var collection : mongoDB.Collection = database.collection('chat_rooms');
-          var itemData = await collection.findOne({chatRoomId: chatRoomId})
+          var itemData = await databases.chat_rooms.findOne({chatRoomId: chatRoomId})
     
           if (itemData === null) {
             console.log("invalid chat room");
@@ -381,6 +369,83 @@ router.post('/chat/roomData', async (req : Request, res : Response) => {
   })
 
 
+  router.post('/chat/openChat', async (req : Request, res : Response) => {
+    console.log(" => user opening chat")
+      try{
+        const token = req.body.token;
+        const chatUserId = req.body.chatUserId;
+        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+  
+        const result = await testToken(token,userIpAddress);
+        const vaildToken : boolean = result.valid;
+        const userId : string | undefined = result.userId;
+  
+        
+      
+        if (vaildToken) { // user token is valid
+          var chatRoomData = await databases.chat_rooms.findOne({privateChat : true, users : { "$all" : [userId, chatUserId]} })
+    
+          var otherUserData = await databases.user_data.findOne({userId : chatUserId})
+
+          //make sure other users exist
+          if (otherUserData === null){
+            console.log("other user not found");
+            return res.status(404).send("other user not found");
+          }
+
+          if (userId == chatUserId){
+            console.log("cannot be same user");
+            return res.status(400).send("cannot be same user");
+          }
+
+          var chatRoomId = "";
+          if (chatRoomData === null) {
+            //need to make chatroom
+            while (true) {
+              chatRoomId = generateRandomString(16);
+              var testingChatRoomData = await databases.chat_rooms.findOne({chatRoomId : chatRoomId})
+              if (testingChatRoomData === null){
+                break
+              }
+              console.log("chat room id already in use trying another")
+              
+            }
+
+            const response = await databases.chat_rooms.insertOne({
+              "creationDate": Date.now(),
+              "chatRoomId": chatRoomId,
+              "chatName": "",
+              "privateChat": true,
+              "lastMessage": 0,
+              "users": [
+                userId,
+                chatUserId
+              ]
+            })
+
+            if (response.acknowledged == false){
+              console.log("failed creating chat");
+              return res.status(500).send("failed creating chat");
+            }
+
+          }else{
+            chatRoomId = chatRoomData.chatRoomId;
+          }
+  
+          console.log("sending chat data");
+          return res.status(200).json({
+            chatRoomId : chatRoomId,
+          });
+    
+        }else{
+          console.log("invalid token");
+          return res.status(401).send("invalid token");
+        }
+      }catch(err){
+        console.log(err);
+        return res.status(500).send("server error")
+      }
+  })
 
 
 

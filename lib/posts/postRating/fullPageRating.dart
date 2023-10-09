@@ -50,6 +50,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                     child: LazyLoadPage(
                       widgetAddedToTop: Center(
                           child: Column(children: [
+                        SizedBox(height: 32),
                         userRating(
                           ratingId: rootItem,
                           clickable: false,
@@ -172,7 +173,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                                 if (response.statusCode == 201) {
                                   // ignore: use_build_context_synchronously
                                   openAlert("success", "created comment", null,
-                                      context);
+                                      context, null);
 
                                   await jsonCache.remove('rating-$rootItem');
                                   Navigator.pop(context);
@@ -187,7 +188,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                                       response.body, context);
                                   // ignore: use_build_context_synchronously
                                   openAlert("error", "failed creating comments",
-                                      null, context);
+                                      null, context, null);
                                 }
                               },
                               child: const Text(

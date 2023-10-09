@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { database } from './database';
+import { databases } from './database';
 import { testToken } from './userLogin';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
@@ -22,15 +22,13 @@ router.post('/search/users', async (req, res) => {
         const userId : string | undefined = result.userId;
       
         if (validToken) { // user token is valid
-          let collection: mongoDB.Collection = database.collection('user_data');
-    
           if (startPosPost) {
             if (startPosPost.type === "user" && !startPosPost.data){
               console.log("invalid start user")
               return res.status(400).send("invalid start user");
             }
   
-            const startPosPostData = await collection.findOne({ userId: startPosPost.data })
+            const startPosPostData = await databases.user_data.findOne({ userId: startPosPost.data })
             if (startPosPostData === null){
               console.log("invalid start user")
               return res.status(400).send("invalid start user");
@@ -39,7 +37,7 @@ router.post('/search/users', async (req, res) => {
             startPosInfo = startPosPostData.creationDate;
           }
     
-          const dataReturning = await collection.find({ shareMode: 'public', creationDate: { $lt: startPosInfo}}).sort({creationDate : -1}).limit(15).toArray();
+          const dataReturning = await databases.user_data.find({ creationDate: { $lt: startPosInfo}}).sort({creationDate : -1}).limit(15).toArray();
           let returnData = {
             "items": [] as { type: string; data: string;}[]
           }

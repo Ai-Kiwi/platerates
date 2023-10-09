@@ -1,11 +1,9 @@
 import 'dart:convert';
 
 import 'package:Toaster/chat/chatList.dart';
-import 'package:Toaster/chat/openChat.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/notifications/notificationPageList.dart';
-import 'package:Toaster/searchPage.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/foundation.dart';

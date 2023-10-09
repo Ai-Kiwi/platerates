@@ -4,7 +4,7 @@ import 'package:Toaster/chat/openChat.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/posts/fullPagePost.dart';
+import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -84,7 +84,7 @@ class _chatBarItemState extends State<chatBarItem> {
                         avatarImage: chatRoomImageData,
                         size: 45,
                         roundness: 45,
-                        onTap: () {},
+                        onTapFunction: null,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -128,6 +128,7 @@ class _fullPageChatListState extends State<FullPageChatList> {
     // TODO: implement build
     return const LazyLoadPage(
       widgetAddedToTop: Column(children: [
+        SizedBox(height: 32),
         Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(

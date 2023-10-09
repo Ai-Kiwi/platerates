@@ -8,24 +8,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
-Future<void> openAlert(String type, String title, String? desc, context) async {
-  var alertStyle = const AlertStyle(
-    animationType: AnimationType.grow,
-    isCloseButton: true,
-    //isOverlayTapDismiss: false,
-    titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-    descStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
+const alertStyle = AlertStyle(
+  animationType: AnimationType.grow,
+  isCloseButton: true,
+  //isOverlayTapDismiss: false,
+  titleStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+  descStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.normal),
 
-    animationDuration: Duration(milliseconds: 250),
-    //alertBorder: RoundedRectangleBorder(
-    //  borderRadius: BorderRadius.circular(0.0),
-    //  side: BorderSide(
-    //    color: Colors.grey,
-    //  ),
-    //),
+  animationDuration: Duration(milliseconds: 250),
+  //alertBorder: RoundedRectangleBorder(
+  //  borderRadius: BorderRadius.circular(0.0),
+  //  side: BorderSide(
+  //    color: Colors.grey,
+  //  ),
+  //),
 
-    //alertAlignment: Alignment.topCenter,
-  );
+  //alertAlignment: Alignment.topCenter,
+);
+
+Future<void> openAlert(String type, String title, String? desc, context,
+    Map<String, VoidCallback>? functionsToRunPerButton) async {
   if (type == "info") {
     Alert(
       context: context,
@@ -138,10 +140,37 @@ Future<void> openAlert(String type, String title, String? desc, context) async {
             } else {
               ErrorHandler.httpError(
                   response.statusCode, response.body, context);
-              openAlert("error", "failed logging out", response.body, context);
+              openAlert(
+                  "error", "failed logging out", response.body, context, null);
             }
           },
         ),
+      ],
+    ).show();
+  } else if (type == "yes_or_no") {
+    Alert(
+      context: context,
+      type: AlertType.warning,
+      title: title,
+      desc: desc,
+      style: alertStyle,
+      buttons: [
+        DialogButton(
+          onPressed: functionsToRunPerButton?["yes"],
+          color: Colors.green,
+          child: const Text(
+            "Yes",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+        DialogButton(
+          color: Colors.red,
+          child: const Text(
+            "No",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: functionsToRunPerButton?["no"],
+        )
       ],
     ).show();
   }

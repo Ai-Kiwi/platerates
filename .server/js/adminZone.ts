@@ -7,7 +7,7 @@ import { generateRandomString } from "./utilFunctions";
 import { createUser, banAccount } from "./userAccounts";
 import express from 'express';
 import { testToken } from "./userLogin";
-import { database } from "./database";
+import { databases } from "./database";
 import { sendMail } from "./mailsender";
 import { testUsername } from "./validInputTester";
 import { BlobOptions } from "buffer";
@@ -16,8 +16,7 @@ const router: express.Router = express.Router();
 
 async function testUserAdmin(userId: string){
     try{
-        const userDataCollectionollection: mongoDB.Collection = database.collection('user_data');
-        const userData = await userDataCollectionollection.findOne({ userId: userId}); 
+        const userData = await databases.user_data.findOne({ userId: userId}); 
 
         if (userData === null){
             return false
@@ -49,9 +48,7 @@ router.post('/admin/createUser', async (req : Request, res : Response) => {
         const userId : string | undefined = result.userId;
 
         if (validToken) { // user token is valid
-
-            let userDataCollection: mongoDB.Collection = database.collection('user_data');
-            let userData = await userDataCollection.findOne({ userId: userId}); 
+            let userData = await databases.user_data.findOne({ userId: userId}); 
 
             if (userData === null) {
                 console.log("tokens user not found");
@@ -155,8 +152,7 @@ router.post('/admin/banUser', async (req, res) => {
       
         if (validToken) { // user token is valid
 
-            var userDataCollection: mongoDB.Collection = database.collection('user_data');
-            var userData = await userDataCollection.findOne({ userId: userId}); 
+            var userData = await databases.user_data.findOne({ userId: userId}); 
 
             if (userData === null) {
                 console.log("tokens user not found");

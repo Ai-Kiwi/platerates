@@ -1,4 +1,4 @@
-import { database } from './database';
+import { databases } from './database';
 import { millisecondsToTime } from './utilFunctions';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
@@ -6,14 +6,12 @@ import { Request, Response } from "express";
 
 
 async function userTimeout(userId : string,timeoutAction : string,timeoutTime : number) {
-    var collection : mongoDB.Collection = database.collection('user_data');
-
     let updateQuery: Record<string, any> = {};
     updateQuery.cooldowns = {};
     updateQuery.cooldowns[timeoutAction] = (timeoutTime * 1000) + Date.now();
 
 
-    let collectionUpdate = await collection.updateOne(
+    let collectionUpdate = await databases.user_data.updateOne(
         { userId: userId },
         { $set: updateQuery}
     );
@@ -30,9 +28,6 @@ async function userTimeout(userId : string,timeoutAction : string,timeoutTime : 
 }
 
 async function userTimeoutLimit(userId : string,timeoutAction : string,maxTimeoutTime : number) {
-    let collection : mongoDB.Collection = database.collection('user_data');
-
-
     let filterQuery : Record<string, any>  = {};
     filterQuery.userId = userId;
     filterQuery.cooldowns = {};
@@ -44,7 +39,7 @@ async function userTimeoutLimit(userId : string,timeoutAction : string,maxTimeou
     updateQuery.cooldowns[timeoutAction] = (maxTimeoutTime * 1000) + Date.now();
 
 
-    let collectionUpdate = await collection.updateOne(
+    let collectionUpdate = await databases.user_data.updateOne(
         filterQuery,
         { $set: updateQuery},
     );
@@ -61,9 +56,7 @@ async function userTimeoutLimit(userId : string,timeoutAction : string,maxTimeou
 
 async function userTimeoutTest(userId : string,timeoutAction : string) {
     console.log("user timeout test");
-    var collection = database.collection('user_data');
-
-    const userData = await collection.findOne({userId: userId});
+    const userData = await databases.user_data.findOne({userId: userId});
 
     //user data doesn't exist
     if (userData === null) {
