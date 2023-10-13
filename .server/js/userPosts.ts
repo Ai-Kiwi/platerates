@@ -242,6 +242,7 @@ router.post('/post/feed', async (req, res) => {
     try{
       const token = req.body.token;
       const startPosPost = req.body.startPosPost;
+      const pageFetching = req.body.pageFetching;
       let startPosPostDate: number = 100000000000000
       const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
@@ -265,7 +266,30 @@ router.post('/post/feed', async (req, res) => {
           startPosPostDate = startPosPostData.postDate;
         }
   
-        const posts = await databases.posts.find({ postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
+        let posts : any[] = [];
+        if (pageFetching === "popular"){
+          posts = await databases.posts.find({ postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
+
+        }else if (pageFetching === "followers"){
+          const usersData = await databases.user_follows.find({follower: userId}).toArray();
+          console.log(usersData)
+          const usersFollowing = [];
+
+          for(var i = 0; i < usersData.length; i++) {
+            var userData = usersData[i];
+            usersFollowing.push(userData.followee);
+            
+          }
+
+          console.table(usersFollowing);
+
+          posts = await databases.posts.find({ postDate: { $lt: startPosPostDate}, posterUserId : {$in : usersFollowing}}).sort({postDate: -1}).limit(5).toArray();
+
+        }else{
+          console.log("no page to fetch")
+          return res.status(400).send("no page to fetch");
+
+        }
         let returnData = {
           "items": [] as { type: string; data: string;}[]
         }
