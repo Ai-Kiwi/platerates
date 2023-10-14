@@ -183,7 +183,7 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
 
         const userData = await databases.user_data.findOne({userId : userId})
         if (userData){
-          databases.user_avatars.deleteOne({avatarId : userData["avatar"]})
+          await databases.user_avatars.deleteOne({avatarId : userData["avatar"]})
         }
 
         let response = await databases.user_avatars.insertOne(
