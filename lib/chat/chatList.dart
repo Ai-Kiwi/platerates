@@ -4,9 +4,8 @@ import 'package:Toaster/chat/openChat.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 
 class chatBarItem extends StatefulWidget {
   final chatItem;

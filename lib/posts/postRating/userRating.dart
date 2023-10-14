@@ -17,7 +17,6 @@ import '../../libs/report.dart';
 import '../../libs/smoothTransitions.dart';
 import '../../main.dart';
 import '../../login/userLogin.dart';
-import '../../userProfile/userProfile.dart';
 
 class userRating extends StatefulWidget {
   final String ratingId;
