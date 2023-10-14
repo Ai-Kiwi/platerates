@@ -70,7 +70,7 @@ app.get('/privacyPolicy', async (req : Request, res : Response) => {
 })
 
 app.get('/changeLog', async (req : Request, res : Response) => {
-  console.log(" => user delete data website")
+  console.log(" => user changelog website")
   try{
     return res.status(200).sendFile(__dirname + "/pages/changeLog.html");
   }catch(err){
@@ -81,7 +81,7 @@ app.get('/changeLog', async (req : Request, res : Response) => {
 
 
 app.get('/toaster.apk', async (req : Request, res : Response) => {
-  console.log(" => user delete data website")
+  console.log(" => user download app")
   try{
     return res.status(200).sendFile(__dirname + "/toaster.apk");
   }catch(err){

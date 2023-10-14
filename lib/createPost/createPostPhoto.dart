@@ -38,7 +38,7 @@ class _CameraPageState extends State<CameraPage> {
       } catch (e) {
         try {
           // ignore: use_build_context_synchronously
-          openAlert("error", "failed loading camera", null, context, null);
+          openAlert("error", "failed loading camera", "$e", context, null);
         } catch (e) {}
       }
     }
@@ -65,7 +65,7 @@ class _CameraPageState extends State<CameraPage> {
         });
       } catch (e) {
         // ignore: use_build_context_synchronously
-        openAlert("error", "failed loading camera", null, context, null);
+        openAlert("error", "failed loading camera", "$e", context, null);
       }
     }
     if (!mounted) return;
@@ -289,7 +289,8 @@ class _CameraPageState extends State<CameraPage> {
                   }
                 } catch (err) {
                   // ignore: use_build_context_synchronously
-                  openAlert("error", "error taking photo", null, context, null);
+                  openAlert(
+                      "error", "error taking photo", "$err", context, null);
 
                   print(err);
                   return null;

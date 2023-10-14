@@ -224,6 +224,7 @@ Future<void> testNotificationOnBootData(context) async {
 var updateUnreadNotificationCount;
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool userAcceptedMigration = false;
   int _selectedIndex = 0;
   double containerWidth = 200.0;
   double containerHeight = 300.0;
@@ -243,6 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   int unreadNotificationCount = 0;
+  int unreadMessageCount = 0;
 
   Future<void> _updateUnreadNotificationCount() async {
     var response = await http.post(
@@ -262,6 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (mounted) {
         setState(() {
           unreadNotificationCount = jsonData['unreadCount'];
+          //unreadMessageCount = jsonData['unreadMessageCount'];
         });
       }
     }
@@ -278,6 +281,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (aspectRatio < 1.5) {
       return DisplayErrorMessagePage(errorMessage: "screen to wide");
+    }
+
+    if (userAcceptedMigration == false && kIsWeb == true) {
+      return migrateToAppPage(
+        ignorePrompt: () {
+          setState(() {
+            userAcceptedMigration = true;
+          });
+        },
+      );
     }
 
     //see if notifcation has been clicked and if so display it

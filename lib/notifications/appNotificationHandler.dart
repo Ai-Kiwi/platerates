@@ -236,7 +236,8 @@ Future<Map> openNotification(notificationData, context) async {
   if (response.statusCode == 200) {
     jsonData['read'] = true;
   } else {
-    openAlert("error", "failed marking notification read", null, context, null);
+    openAlert("error", "failed marking notification read", response.body,
+        context, null);
   }
 
   updateUnreadNotificationCount();

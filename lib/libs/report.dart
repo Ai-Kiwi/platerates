@@ -60,8 +60,8 @@ class ReportSystem {
               } else {
                 ErrorHandler.httpError(
                     response.statusCode, response.body, context);
-                openAlert(
-                    "error", "failed reporting post", null, context, null);
+                openAlert("error", "failed reporting post", response.body,
+                    context, null);
               }
             },
             child: const Text(

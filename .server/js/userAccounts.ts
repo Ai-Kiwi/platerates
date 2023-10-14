@@ -194,7 +194,7 @@ router.post('/profile/settings/change', async (req : Request, res : Response) =>
         )
 
         if (response.acknowledged === true) {
-          let response = await databases.user_avatars.updateOne(
+          let response = await databases.user_data.updateOne(
             {userId : userId},
             { $set: {
               avatar : avatarId
