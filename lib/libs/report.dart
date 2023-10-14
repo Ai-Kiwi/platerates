@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:rflutter_alert/rflutter_alert.dart';
 import '../login/userLogin.dart';

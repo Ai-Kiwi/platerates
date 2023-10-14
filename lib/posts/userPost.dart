@@ -15,7 +15,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../libs/errorHandler.dart';
 import '../libs/report.dart';
 import '../main.dart';
-import '../userProfile/userProfile.dart';
 
 class PostItem extends StatefulWidget {
   final String postId;
