@@ -153,11 +153,22 @@ router.post('/post/rating/data', async (req, res) => {
         }
 
         const childRatings = await databases.post_ratings.countDocuments({ "rootItem.data" : ratingId, "rootItem.type" : "rating" });
+        const ratingLikes = await databases.post_rating_likes.countDocuments({ "ratingId" : ratingId, });
+
+        let userLikeItem = await databases.post_rating_likes.findOne({ ratingId : ratingId, liker : userId})
+        let userLiked = true;
+        if (userLikeItem === null){
+          userLiked = false;
+        }
 
         console.log("response sent")
         if (onlyUpdateChangeable === true) {
           return res.status(200).json({
             childRatingsAmount: childRatings,
+            ratingLikes : ratingLikes,
+            relativeViewerData : {
+              userLiked : userLiked,
+            },
           });
         }
         return res.status(200).json({
@@ -166,6 +177,10 @@ router.post('/post/rating/data', async (req, res) => {
           ratingPosterId : ratingData.ratingPosterId,
           rootItem: ratingData.rootItem,
           childRatingsAmount: childRatings,
+          ratingLikes : ratingLikes,
+          relativeViewerData : {
+            userLiked : userLiked,
+          },
         });
 
 
@@ -180,6 +195,89 @@ router.post('/post/rating/data', async (req, res) => {
       console.log(err);
       return res.status(500).send("server error");
     }
+})
+
+
+
+
+router.post('/post/rating/like', async (req : Request, res : Response) => {
+  console.log(" => user liking/unliking post")
+  try{
+    const token = req.body.token;
+    const tryingToLike = req.body.liking;
+    const ratingId = req.body.ratingId;
+
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+
+    const result = await testToken(token,userIpAddress);
+    const validToken : boolean = result.valid;
+    const userId : string | undefined = result.userId;
+  
+    if (validToken) { // user token is valid
+      let ratingData = await databases.post_ratings.findOne({ratingId : ratingId});
+      if (ratingData === null){
+        console.log("not valid rating")
+        return res.status(404).send("not valid rating");
+      }
+
+      
+      //make sure not trying to follow themselfs
+      if (userId === ratingData.ratingPosterId){
+        console.log("can't like your own rating")
+        return res.status(409).send("can't like your own rating");
+      }
+
+      //add part to make sure user exists
+
+
+      //look if already following
+      let userFollowItem = await databases.post_rating_likes.findOne({ ratingId : ratingId, liker : userId})
+      let alreadyLiked = false;
+      if (userFollowItem !== null) {
+        alreadyLiked = true;
+      }
+
+      //if you are trying to follow them or unfollow them
+      if (tryingToLike == true){
+
+        if (alreadyLiked === true){
+          console.log("already liked")
+          return res.status(409).send("already liked");
+        }else{
+          const response = await databases.post_rating_likes.insertOne({ ratingId : ratingId, liker : userId})
+          if (response.acknowledged === true){
+            console.log("liked rating");
+            return res.status(200).send("liked rating")
+          }else{
+            console.log("failed to create item in database");
+            return res.status(500).send("server error")
+          }
+        }
+
+
+      }else{
+        if (alreadyLiked === true){
+          const response = await databases.post_rating_likes.deleteOne({ ratingId : ratingId, liker : userId})
+          if (response.acknowledged === true){
+            console.log("removed like");
+            return res.status(200).send("removed like")
+          }else{
+            console.log("failed to create item in database");
+            return res.status(500).send("server error")
+          }
+        }else{
+          console.log("already not liked")
+          return res.status(409).send("already not liked");
+        }
+      }
+    }else{
+      console.log("invalid token")
+      return res.status(401).send("invalid token");
+    }
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
 })
 
 
