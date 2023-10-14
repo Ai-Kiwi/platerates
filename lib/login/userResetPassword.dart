@@ -158,7 +158,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           openAlert(
                               "error",
                               "failed creating reset password link",
-                              null,
+                              response.body,
                               context,
                               null);
                         }

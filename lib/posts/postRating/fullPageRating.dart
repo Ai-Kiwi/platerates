@@ -188,7 +188,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                                       response.body, context);
                                   // ignore: use_build_context_synchronously
                                   openAlert("error", "failed creating comments",
-                                      null, context, null);
+                                      response.body, context, null);
                                 }
                               },
                               child: const Text(

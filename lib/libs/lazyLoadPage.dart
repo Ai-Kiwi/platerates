@@ -109,7 +109,8 @@ class LazyLoadPageState extends State<LazyLoadPage> {
       } catch (err) {}
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
-      openAlert("error", "failed getting new items", null, context, null);
+      openAlert(
+          "error", "failed getting new items", response.body, context, null);
     }
     _isLoading = false;
   }

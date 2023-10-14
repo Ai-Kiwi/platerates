@@ -335,7 +335,8 @@ class PostManageButton extends StatelessWidget {
                 ErrorHandler.httpError(
                     response.statusCode, response.body, context);
                 // ignore: use_build_context_synchronously
-                openAlert("error", "failed deleting post", null, context, null);
+                openAlert("error", "failed deleting post", response.body,
+                    context, null);
               }
             },
             "no": () {

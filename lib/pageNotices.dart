@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:Toaster/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:install_plugin/install_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class DisplayErrorMessagePage extends StatefulWidget {
   final String errorMessage;
@@ -148,5 +150,102 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
         ),
       );
     }
+  }
+}
+
+class migrateToAppPage extends StatelessWidget {
+  VoidCallback ignorePrompt;
+
+  migrateToAppPage({required this.ignorePrompt});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 16, 16, 16),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              "Toaster has moved",
+              style: TextStyle(
+                color: Color.fromARGB(210, 255, 255, 255),
+                fontWeight: FontWeight.bold,
+                fontSize: 35,
+              ),
+            ),
+            Icon(
+              Icons.install_mobile,
+              size: 128,
+              color: Colors.white,
+            ),
+            const SizedBox(height: 64),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+              child: Text(
+                "Toaster has become a mobile app. To unlock its full potential, click 'Install' below, then install the downloaded file.\nTo install the APK file, enable 'Install from unknown sources' in your web browser or file explorer settings (should prompt when attempting open) then open it and follow the on-screen instructions for installation.",
+                style: TextStyle(
+                  color: Color.fromARGB(210, 255, 255, 255),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 15,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+              child: Text(
+                "note: sadly it is not possible for phones other then android",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+                  onPressed: () async {
+                    //downloadAndInstallApp();
+                    if (!await launchUrl(
+                        Uri.parse('$serverDomain/toaster.apk'))) {
+                      throw Exception('Could not launch domain');
+                    }
+                  },
+                  child: const Text(
+                    'install',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      backgroundColor: Colors.red),
+                  onPressed: () {
+                    ignorePrompt();
+                  },
+                  child: const Text(
+                    'ignore',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

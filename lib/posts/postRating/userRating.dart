@@ -205,8 +205,8 @@ class _userRatingState extends State<userRating> {
                       } else {
                         ErrorHandler.httpError(
                             response.statusCode, response.body, context);
-                        openAlert("error", "failed deleting rating", null,
-                            context, null);
+                        openAlert("error", "failed deleting rating",
+                            response.body, context, null);
                       }
                     } else if (value == 'report') {
                       reportSystem.reportItem(context, "post_rating", ratingId);

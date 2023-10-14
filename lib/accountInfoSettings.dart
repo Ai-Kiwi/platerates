@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   String _bio = '';
   String _startBio = '';
   bool _loading = true;
+  bool _savingData = false;
   List<int>? _userImage;
   List<int>? _startUserImage;
 
@@ -72,12 +74,8 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-        'failed changing $setting',
-        style: TextStyle(fontSize: 20, color: Colors.red),
-      )));
-
+      openAlert("error", "failed to change setting $setting", response.body,
+          context, null);
       return;
     }
   }
@@ -233,49 +231,59 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                         //login button
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: SizedBox(
-                          width: double.infinity,
-                          height: 50.0,
-                          child: ElevatedButton(
-                            style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0),
-                            )),
-                            onPressed: () async {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text(
-                                  'saving info...',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              ));
+                            width: double.infinity,
+                            height: 50.0,
+                            child: _savingData
+                                ? ElevatedButton(
+                                    style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                    )),
+                                    onPressed: () async {},
+                                    child: const Center(
+                                        child: const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )))
+                                : ElevatedButton(
+                                    style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                    )),
+                                    onPressed: () async {
+                                      setState(() {
+                                        _savingData = true;
+                                      });
 
-                              if (_userImage != _startUserImage) {
-                                await _changeSetting(
-                                    "avatar",
-                                    base64Encode(imageUtils.uintListToBytes(
-                                        Uint8List.fromList(_userImage!))));
-                              }
-                              if (_username != _startUsername) {
-                                await _changeSetting("username", _username);
-                              }
-                              if (_bio != _startBio) {
-                                await _changeSetting("bio", _bio);
-                              }
-                              // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text(
-                                'changed settings',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              )));
-                            },
-                            child: const Text(
-                              'change info',
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                          ),
-                        ),
+                                      if (_userImage != _startUserImage) {
+                                        print("changing user image");
+                                        await _changeSetting(
+                                            "avatar",
+                                            base64Encode(
+                                                imageUtils.uintListToBytes(
+                                                    Uint8List.fromList(
+                                                        _userImage!))));
+                                      }
+                                      if (_username != _startUsername) {
+                                        print("changing username");
+                                        await _changeSetting(
+                                            "username", _username);
+                                      }
+                                      if (_bio != _startBio) {
+                                        print("changing user bio");
+                                        await _changeSetting("bio", _bio);
+                                      }
+                                      // ignore: use_build_context_synchronously
+                                      openAlert("success", "changed settings",
+                                          null, context, null);
+                                      setState(() {
+                                        _savingData = false;
+                                      });
+                                    },
+                                    child: const Text(
+                                      'change info',
+                                      style: TextStyle(fontSize: 18.0),
+                                    ),
+                                  )),
                       ),
                     ],
                   ))))),

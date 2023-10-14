@@ -252,7 +252,7 @@ class _PostRatingListState extends State<fullPagePost> {
                                       openAlert(
                                           "error",
                                           "failed uploading rating",
-                                          null,
+                                          response.body,
                                           context,
                                           null);
                                     }
