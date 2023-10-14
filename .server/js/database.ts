@@ -29,6 +29,10 @@ const databases = {
   account_notices : database.collection('account_notices'),
   user_avatars : database.collection('user_avatars'),
   user_follows : database.collection('user_follows'),
+  post_rating_likes : database.collection('post_rating_likes'),
 }
+
+//database.createCollection("post_rating_likes");
+//database.dropCollection("user_rating_likes")
 
 export { databases }; //add database

@@ -42,6 +42,8 @@ class _userRatingState extends State<userRating> {
   String posterUserId = "";
   double? rating;
   int? childRatingsAmount;
+  int? ratingLikes;
+  bool? ratingLiked;
   var rootItem;
   var posterAvatar;
 
@@ -64,15 +66,38 @@ class _userRatingState extends State<userRating> {
         posterUserId = jsonData['ratingPosterId'];
         rootItem = jsonData['rootItem'];
         childRatingsAmount = jsonData['childRatingsAmount'];
+        ratingLikes = jsonData['ratingLikes'];
         if (avatarData["imageData"] != null) {
           posterAvatar = base64Decode(avatarData["imageData"]);
         }
+        ratingLiked = jsonData['relativeViewerData']['userLiked'];
       });
       return;
     } catch (err) {
       print(err);
       return;
     }
+  }
+
+  Future<void> _toggleLike() async {
+    var newLikeState = !(ratingLiked ?? false);
+    final response = await http.post(
+      Uri.parse('$serverDomain/post/rating/like'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "token": userManager.token,
+        "liking": newLikeState,
+        "ratingId": ratingId
+      }),
+    );
+    if (response.statusCode == 200) {
+      //setState(() {
+      //  userFollowing = newFollowState;
+      //});
+      await _collectAndUpdateData();
+    } else {}
   }
 
   Future<void> _collectAndUpdateData() async {
@@ -225,19 +250,62 @@ class _userRatingState extends State<userRating> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //const Padding(
-              //  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-              //  child: Center(
-              //      child: Icon(
-              //    //plus button
-              //    Icons.thumb_up_outlined,
-              //    color: Colors.white,
-              //  )),
-              //),
-
               const SizedBox(width: 8),
               Column(
                 children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    child: GestureDetector(
+                      child: Center(
+                        child: ratingLiked == true
+                            ? const Icon(
+                                //plus button
+                                Icons.thumb_up,
+                                color: Colors.white,
+                              )
+                            : const Icon(
+                                //plus button
+                                Icons.thumb_up_outlined,
+                                color: Colors.white,
+                              ),
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _toggleLike();
+                        });
+                      },
+                    ),
+                  ),
+                  //Padding(
+                  //  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  //  child: Center(
+                  //    child: IconButton(
+                  //      icon: ratingLiked == true
+                  //          ? const Icon(
+                  //              //plus button
+                  //              Icons.thumb_up,
+                  //              color: Colors.white,
+                  //            )
+                  //          : const Icon(
+                  //              //plus button
+                  //              Icons.thumb_up_outlined,
+                  //              color: Colors.white,
+                  //            ),
+                  //      tooltip: 'like comment',
+                  //      onPressed: () {
+                  //        setState(() {
+                  //          _toggleLike();
+                  //        });
+                  //      },
+                  //    ),
+                  //  ),
+                  //),
+                  Text((ratingLikes ?? "").toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                      )),
+                  const SizedBox(height: 8),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8.0),
                     child: Center(
@@ -254,7 +322,6 @@ class _userRatingState extends State<userRating> {
                       )),
                 ],
               ),
-
               const SizedBox(width: 8),
               Flexible(
                   //text for rating

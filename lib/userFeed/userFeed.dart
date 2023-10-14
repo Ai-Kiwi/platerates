@@ -44,8 +44,8 @@ class _UserFeedState extends State<userFeed> {
         ),
         Padding(
           //share mode selection
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SizedBox(
             width: double.infinity,
             child: ToggleSwitch(
               minWidth: double.infinity,
@@ -60,16 +60,16 @@ class _UserFeedState extends State<userFeed> {
               activeFgColor: Colors.white,
               inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
               inactiveFgColor: Colors.white,
-              labels: ['popular posts', 'followers posts'],
+              labels: const ['popular posts', 'followers posts'],
               onToggle: changePageOpen,
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 16,
         )
       ])),
-      widgetAddedToEnd: Center(
+      widgetAddedToEnd: const Center(
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(
@@ -77,7 +77,7 @@ class _UserFeedState extends State<userFeed> {
               style: TextStyle(color: Colors.white, fontSize: 25),
             )),
       ),
-      widgetAddedToBlank: Center(
+      widgetAddedToBlank: const Center(
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(
