@@ -33,13 +33,14 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   final String userId;
   String username = "";
   double rating = 0;
-  var posterAvatar;
+  late Uint8List posterAvatar;
 
   _SimpleUserProfileBarState({required this.userId});
 
   Future<void> _collectData() async {
     Map basicUserData =
         await dataCollect.getBasicUserData(userId, context, false);
+    // ignore: use_build_context_synchronously
     Map avatarData = await dataCollect.getAvatarData(
         basicUserData["avatar"], context, false);
 
@@ -54,6 +55,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
 
   Future<void> _collectAndUpdateData() async {
     await _collectData();
+    // ignore: use_build_context_synchronously
     if (await dataCollect.updateBasicUserData(userId, context, false) == true) {
       await _collectData();
     }
@@ -72,7 +74,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           height: 50,
           child: GestureDetector(
@@ -93,7 +95,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
                 children: [
                   Text(
                     username,
-                    style: TextStyle(color: Colors.white, fontSize: 25),
+                    style: const TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ],
               )
@@ -133,7 +135,7 @@ class _UserProfileState extends State<UserProfile> {
   String userBio = "";
   String username = "";
   bool followingUser = false;
-  var posterAvatar;
+  late Uint8List posterAvatar;
   //display data for profile
   int followersCount = 0;
   int followingCount = 0;
@@ -152,6 +154,7 @@ class _UserProfileState extends State<UserProfile> {
 
     Map fetchedData = await dataCollect.getUserData(userId, context, false);
     Map avatarData =
+        // ignore: use_build_context_synchronously
         await dataCollect.getAvatarData(fetchedData["avatar"], context, false);
 
     setState(() {
@@ -174,6 +177,7 @@ class _UserProfileState extends State<UserProfile> {
 
   Future<void> _fetchAndUpdateProfile() async {
     await _fetchProfile();
+    // ignore: use_build_context_synchronously
     if (await dataCollect.updateUserData(userId, context, false) == true) {
       await _fetchProfile();
     }
@@ -220,7 +224,7 @@ class _UserProfileState extends State<UserProfile> {
       );
     }
     return Scaffold(
-        backgroundColor: Color.fromRGBO(16, 16, 16, 1),
+        backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: Stack(alignment: Alignment.topLeft, children: <Widget>[
           LazyLoadPage(
             key: UniqueKey(),
@@ -228,7 +232,7 @@ class _UserProfileState extends State<UserProfile> {
             extraUrlData: {"userId": realUserId},
             widgetAddedToTop: Column(
               children: [
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 Visibility(
                     visible: userId == null,
                     child: SizedBox(
@@ -280,7 +284,7 @@ class _UserProfileState extends State<UserProfile> {
                                     "logout", "null", null, context, null);
                               },
                             ),
-                            SizedBox(width: 16),
+                            const SizedBox(width: 16),
                           ],
                         )))),
                 Padding(
@@ -501,7 +505,7 @@ class _UserProfileState extends State<UserProfile> {
                 Padding(
                     //description
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Container(
+                    child: SizedBox(
                         height: 100,
                         width: double.infinity,
                         child: ListView(
