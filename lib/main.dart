@@ -9,6 +9,7 @@ import 'package:Toaster/userFeed/userFeed.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_cache/json_cache.dart';
@@ -28,9 +29,14 @@ void main() {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kDebugMode == true) {
+  if (kDebugMode == true) {}
+
+  if (FlavorConfig.instance.variables["release"] == "test") {
     serverDomain = 'http://192.168.0.157:3030';
     serverWebsocketDomain = 'ws://192.168.0.157:3030';
+  } else if (FlavorConfig.instance.variables["release"] == "dev") {
+    serverDomain = 'https://dev.toaster.aikiwi.dev';
+    serverWebsocketDomain = 'wss://dev.toaster.aikiwi.dev';
   }
 
   runApp(Phoenix(child: const MyApp()));
@@ -152,49 +158,50 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.green,
-          statusBarIconBrightness: Brightness.light,
-          systemNavigationBarIconBrightness: Brightness.dark,
-        ),
-        child: MaterialApp(
-            title: 'Toaster',
-            theme: ThemeData(
-              primaryColor: Colors.green,
-              primarySwatch: Colors.green,
-              dialogBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
+    return FlavorBanner(
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: Colors.green,
+              statusBarIconBrightness: Brightness.light,
+              systemNavigationBarIconBrightness: Brightness.dark,
             ),
-            home: StreamBuilder<String>(
-              stream: initializeApp(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Show a loading indicator while the authentication state is being fetched
-                  return LoadingScreen(
-                    toasterLogo: true,
-                  );
-                } else {
-                  print(snapshot.data);
-                  //if (snapshot.hasData && snapshot.data == true) {
-                  if (snapshot.data == "valid-token") {
-                    // User is logged in, navigate to home page
-                    return MyHomePage();
-                  } else if (snapshot.data == "server-contact-error") {
-                    //error contacting server
-                    return DisplayErrorMessagePage(
-                        errorMessage: "error contacting server");
-                  } else if (snapshot.data == "client-out-of-date") {
-                    //  //client is out of date
-                    return DisplayErrorMessagePage(
-                        errorMessage: "client-out-of-date");
-                  } else {
-                    // User is not logged in, navigate to login page
-                    return const LoginPage();
-                  }
-                }
-              },
-            )));
+            child: MaterialApp(
+                title: 'Toaster',
+                theme: ThemeData(
+                  primaryColor: Colors.green,
+                  primarySwatch: Colors.green,
+                  dialogBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
+                ),
+                home: StreamBuilder<String>(
+                  stream: initializeApp(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Show a loading indicator while the authentication state is being fetched
+                      return LoadingScreen(
+                        toasterLogo: true,
+                      );
+                    } else {
+                      print(snapshot.data);
+                      //if (snapshot.hasData && snapshot.data == true) {
+                      if (snapshot.data == "valid-token") {
+                        // User is logged in, navigate to home page
+                        return MyHomePage();
+                      } else if (snapshot.data == "server-contact-error") {
+                        //error contacting server
+                        return DisplayErrorMessagePage(
+                            errorMessage: "error contacting server");
+                      } else if (snapshot.data == "client-out-of-date") {
+                        //  //client is out of date
+                        return DisplayErrorMessagePage(
+                            errorMessage: "client-out-of-date");
+                      } else {
+                        // User is not logged in, navigate to login page
+                        return const LoginPage();
+                      }
+                    }
+                  },
+                ))));
   }
 }
 
