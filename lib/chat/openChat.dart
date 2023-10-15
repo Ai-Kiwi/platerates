@@ -125,30 +125,31 @@ class _fullPageChatState extends State<FullPageChat> {
           Map jsonData = jsonDecode(message);
           print(jsonData);
 
-          if (jsonData["action"] == "new_message") {
+          if (jsonData["action"] == "new_message" ||
+              jsonData["action"] == "past_message") {
+            //if (pastItemDate > jsonData["data"]["sendTime"]) {
+            //  pastItemDate = jsonData["data"]["sendTime"];
+            //}
+            //var messageStatus = types.Status.sending;
+            //if (jsonData["data"]["singlePersonStatus"] == "sending") {
+            //  messageStatus = types.Status.sending;
+            //} else if (jsonData["data"]["singlePersonStatus"] == "sent") {
+            //  messageStatus = types.Status.sent;
+            //} else if (jsonData["data"]["singlePersonStatus"] == "seen") {
+            //  messageStatus = types.Status.seen;
+            //}
+
             final textMessage = types.TextMessage(
               author:
                   await getUserInfo(jsonData["data"]["messagePoster"], context),
               createdAt: jsonData["data"]["sendTime"],
               id: jsonData["data"]["messageId"],
               text: jsonData["data"]["text"],
+              //status: messageStatus
             );
 
-            _addMessage(textMessage, false);
-          } else if (jsonData["action"] == "past_message") {
-            if (pastItemDate > jsonData["data"]["sendTime"]) {
-              pastItemDate = jsonData["data"]["sendTime"];
-
-              final textMessage = types.TextMessage(
-                author: await getUserInfo(
-                    jsonData["data"]["messagePoster"], context),
-                createdAt: jsonData["data"]["sendTime"],
-                id: jsonData["data"]["messageId"],
-                text: jsonData["data"]["text"],
-              );
-
-              _addMessage(textMessage, true);
-            }
+            _addMessage(
+                textMessage, (jsonData["action"] == "past_message") == true);
           } else if (jsonData["action"] == "authenticated") {
             _user = await getUserInfo(jsonData["data"]["userId"], context);
             pastItemDate = 99999999999999;
@@ -162,9 +163,11 @@ class _fullPageChatState extends State<FullPageChat> {
             if (privateChat == true) {
               privateChatOtherUser = jsonData["data"]["privateChatOtherUser"];
 
+              // ignore: use_build_context_synchronously
               Map fetchedData = await dataCollect.getUserData(
                   privateChatOtherUser, context, false);
 
+              // ignore: use_build_context_synchronously
               Map avatarData = await dataCollect.getAvatarData(
                   fetchedData["avatar"], context, false);
               setState(() {
