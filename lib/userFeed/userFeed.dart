@@ -67,15 +67,44 @@ class _UserFeedState extends State<userFeed> {
         ),
         const SizedBox(
           height: 16,
-        )
+        ),
+        //DropdownButton(
+        //    focusColor: Colors.green,
+        //    hint: new Text("Select a user"),
+        //    value: "e",
+        //    dropdownColor: Colors.black,
+        //    onChanged: (index) {
+        //      setState(() {
+        //        //selectedUser = newValue;
+        //      });
+        //    },
+        //    //items: users.map((User user) {
+        //    //  return new DropdownMenuItem<User>(
+        //    //    value: user,
+        //    //    child: new Text(
+        //    //      user.name,
+        //    //      style: new TextStyle(color: Colors.black),
+        //    //    ),
+        //    //  );
+        //    //}).toList(),
+        //    items: [
+        //      DropdownMenuItem<String>(
+        //        value: "e",
+        //        child: new Text(
+        //          "hello",
+        //          style: new TextStyle(color: Colors.white),
+        //        ),
+        //      ),
+        //    ]),
       ])),
       widgetAddedToEnd: const Center(
         child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-            child: Text(
-              "end of feed",
-              style: TextStyle(color: Colors.white, fontSize: 25),
-            )),
+          padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+          child: Text(
+            "end of feed",
+            style: TextStyle(color: Colors.white, fontSize: 25),
+          ),
+        ),
       ),
       widgetAddedToBlank: const Center(
         child: Padding(
