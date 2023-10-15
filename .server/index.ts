@@ -91,11 +91,9 @@ app.get('/toaster.apk', async (req : Request, res : Response) => {
 })
 
 
-
-const adminData = require("./adminKeys.json")
-
+//add to .env following this guide : https://dev.to/wilsonparson/how-to-securely-use-google-apis-service-account-credentials-in-a-public-repo-4k65
 firebase.initializeApp({
-  credential: firebase.credential.cert(adminData),
+  credential: firebase.credential.applicationDefault(),
 });
 
 //createUser("demouser@aikiwi.dev","xZb2VQyvgBV8#24axwVLaOHwDHzKv@az","demo user")

@@ -1,16 +1,34 @@
-BRANCH="latest"
+#BRANCH="latest"
+read -p "input branch: " releaseVer
+
+if [ "$releaseVer" == "release" ]
+then
+    BRANCH="latest"
+    TargetDartFile="lib/main.dart"
+elif [ "$releaseVer" == "dev" ]
+then
+    BRANCH="latest-dev"
+    TargetDartFile="lib/main_dev.dart"
+else
+    echo "unkown build release"
+    exit 1
+fi
+
+
+ 
+
 
 set -e
 
 #already know start dir
 
 echo " # building web"
-flutter build web
+flutter build web --release --target $TargetDartFile
 echo "done"
 /bin/sleep 2
 
 echo " # building apk"
-flutter build apk --release
+flutter build apk --release --target $TargetDartFile
 echo "done"
 /bin/sleep 2
 
