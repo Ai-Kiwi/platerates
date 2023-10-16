@@ -126,10 +126,11 @@ class _fullPageChatState extends State<FullPageChat> {
           print(jsonData);
 
           if (jsonData["action"] == "new_message" ||
-              jsonData["action"] == "past_message") {
-            //if (pastItemDate > jsonData["data"]["sendTime"]) {
-            //  pastItemDate = jsonData["data"]["sendTime"];
-            //}
+              (jsonData["action"] == "past_message" &&
+                  pastItemDate > jsonData["data"]["sendTime"])) {
+            if (jsonData["action"] == "past_message") {
+              pastItemDate = jsonData["data"]["sendTime"];
+            }
             //var messageStatus = types.Status.sending;
             //if (jsonData["data"]["singlePersonStatus"] == "sending") {
             //  messageStatus = types.Status.sending;

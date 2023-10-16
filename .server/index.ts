@@ -94,6 +94,7 @@ app.get('/toaster.apk', async (req : Request, res : Response) => {
 //add to .env following this guide : https://dev.to/wilsonparson/how-to-securely-use-google-apis-service-account-credentials-in-a-public-repo-4k65
 firebase.initializeApp({
   credential: firebase.credential.applicationDefault(),
+  projectId:  process.env.FIREBASE_PROJECT_ID,
 });
 
 //createUser("demouser@aikiwi.dev","xZb2VQyvgBV8#24axwVLaOHwDHzKv@az","demo user")
