@@ -33,7 +33,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   final String userId;
   String username = "";
   double rating = 0;
-  late Uint8List posterAvatar;
+  var posterAvatar;
 
   _SimpleUserProfileBarState({required this.userId});
 
@@ -135,7 +135,7 @@ class _UserProfileState extends State<UserProfile> {
   String userBio = "";
   String username = "";
   bool followingUser = false;
-  late Uint8List posterAvatar;
+  var posterAvatar;
   //display data for profile
   int followersCount = 0;
   int followingCount = 0;
