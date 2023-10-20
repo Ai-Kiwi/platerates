@@ -1,6 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+    body {background-color: rgb(16, 16, 16)}
+    
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+      
+      .loader {
+        border-radius: 50%;
+        border-top: 4px solid rgb(80, 175, 76);
+        border-right: 4px solid rgb(16, 16, 16);
+        border-bottom: 4px solid rgb(80, 175, 76);
+        border-left: 4px solid rgb(16, 16, 16);
+        width: 32px;
+        height: 32px;
+        -webkit-animation: spin 1s linear infinite;
+        animation: spin 1s linear infinite;
+        position: absolute;
+        top: 0;
+      }
+    
+      @-webkit-keyframes spin {
+        0% {
+          -webkit-transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+    
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
   <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
@@ -40,6 +88,9 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+  <div class="loading">
+    <div class="loader"></div>
+  </div>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
