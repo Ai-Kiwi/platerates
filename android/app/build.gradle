@@ -38,7 +38,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "dev.aikiwi.toaster"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {

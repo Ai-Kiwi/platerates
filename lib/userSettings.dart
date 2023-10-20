@@ -63,24 +63,21 @@ class _UserSettingsState extends State<UserSettings> {
                     settingIcon: Icons.book,
                     settingName: "change log",
                     ontap: () {
-                      launchUrl(
-                          Uri.parse("https://toaster.aikiwi.dev/changeLog"));
+                      launchUrl(Uri.parse("$serverDomain/changeLog"));
                     },
                   ),
                   SettingItem(
                     settingIcon: Icons.download,
                     settingName: "get app beta",
                     ontap: () {
-                      launchUrl(
-                          Uri.parse("https://toaster.aikiwi.dev/toaster.apk"));
+                      launchUrl(Uri.parse("$serverDomain/toaster.apk"));
                     },
                   ),
                   SettingItem(
                     settingIcon: Icons.lock,
                     settingName: "privacy policy",
                     ontap: () {
-                      launchUrl(Uri.parse(
-                          "https://toaster.aikiwi.dev/privacyPolicy"));
+                      launchUrl(Uri.parse("$serverDomain/privacyPolicy"));
                     },
                   ),
                   SettingItem(
