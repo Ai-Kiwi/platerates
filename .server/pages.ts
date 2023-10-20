@@ -31,10 +31,10 @@ router.get('/changeLog', async (req : Request, res : Response) => {
   }
 })
 
-router.get('/CommunityGuidelines.css', async (req : Request, res : Response) => {
+router.get('/CommunityGuidelines', async (req : Request, res : Response) => {
   console.log(" => user changelog website")
   try{
-    return res.status(200).sendFile(__dirname + "/pages/CommunityGuidelines.css");
+    return res.status(200).sendFile(__dirname + "/pages/CommunityGuidelines.html");
   }catch(err){
     console.log(err);
     return res.status(500).send("server error")

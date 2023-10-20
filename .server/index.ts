@@ -20,12 +20,38 @@ const limiter = rateLimit({
 
 require('dotenv').config();
 
-const port: string = process.env.port || "3030";
+
 const clientVersion: string = "1.1.0+3";
+const Licenses = {
+  CommunityGuidelines : {
+    name : "Community Guidelines",
+    url : "https://toaster.aikiwi.dev/CommunityGuidelines",
+    revision : 1,
+  },
+  deleteData : {
+    name : "Data Deletion Policy",
+    url : "https://toaster.aikiwi.dev/deleteData",
+    revision : 3,
+  },
+  privacyPolicy : {
+    name : "Privacy Policy",
+    url : "https://toaster.aikiwi.dev/privacyPolicy",
+    revision : 3,
+  },
+  termsofService : {
+    name : "Terms Of Service",
+    url : "https://toaster.aikiwi.dev/termsofService",
+    revision : 1,
+  },
+}
+
+
+
 
 //setup app
 const app = express()
 const expressWs = require('express-ws')(app);
+const port: string = process.env.port || "3030";
 
 app.use(bodyParser.json({ limit: '2mb' }))       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
