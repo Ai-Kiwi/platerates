@@ -5,7 +5,6 @@ import 'package:Toaster/login/userResetPassword.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../libs/smoothTransitions.dart';
 import '../main.dart';
@@ -229,6 +228,67 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
+                          //Padding(
+                          //  //login button
+                          //  padding: const EdgeInsets.symmetric(
+                          //      horizontal: 16.0, vertical: 16),
+                          //  child: Row(
+                          //    children: [
+                          //      Expanded(
+                          //        child: ElevatedButton(
+                          //          style: OutlinedButton.styleFrom(
+                          //              shape: RoundedRectangleBorder(
+                          //            borderRadius: BorderRadius.circular(15.0),
+                          //          )),
+                          //          onPressed: () async {
+                          //            GoogleSignIn _googleSignIn = GoogleSignIn(
+                          //              scopes: [
+                          //                'email',
+                          //                //'https://www.googleapis.com/auth/contacts.readonly',
+                          //              ],
+                          //            );
+                          //
+                          //            //await _googleSignIn.signIn();
+                          //            try {
+                          //              final GoogleSignInAccount? googleUser =
+                          //                  await _googleSignIn.signIn();
+                          //              final GoogleSignInAuthentication?
+                          //                  googleAuth =
+                          //                  await googleUser?.authentication;
+                          //              final String idToken =
+                          //                  googleAuth!.idToken!;
+                          //
+                          //              print(idToken);
+                          //              print("down sign in");
+                          //            } on PlatformException catch (error) {
+                          //              print("error with login $error");
+                          //              // ignore: use_build_context_synchronously
+                          //              openAlert(
+                          //                  "error",
+                          //                  "failed login with google",
+                          //                  "$error",
+                          //                  context,
+                          //                  null);
+                          //            }
+                          //
+                          //            //final bool isAuthorized =
+                          //            //    await _googleSignIn
+                          //            //        .requestScopes(['email']);
+                          //            //if (isAuthorized) {
+                          //            //  // Do things that only authorized users can do!
+                          //            //}
+                          //
+                          //            await _googleSignIn.disconnect();
+                          //          },
+                          //          child: const Text(
+                          //            'Log in with google',
+                          //            style: TextStyle(fontSize: 18.0),
+                          //          ),
+                          //        ),
+                          //      ),
+                          //    ],
+                          //  ),
+                          //),
                         ],
                       ))))),
     );
