@@ -212,6 +212,20 @@ class _fullPageChatState extends State<FullPageChat> {
     }));
   }
 
+  void _handlePreviewDataFetched(
+    types.TextMessage message,
+    types.PreviewData previewData,
+  ) {
+    final index = _messages.indexWhere((element) => element.id == message.id);
+    final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
+      previewData: previewData,
+    );
+
+    setState(() {
+      _messages[index] = updatedMessage;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -255,6 +269,7 @@ class _fullPageChatState extends State<FullPageChat> {
                 messages: _messages,
                 onSendPressed: _handleSendPressed,
                 user: _user,
+                onPreviewDataFetched: _handlePreviewDataFetched,
                 //onEndReachedThreshold: 80,
                 onEndReached: () async {
                   if (lastReachedTimeMessageTime != pastItemDate ||
@@ -321,3 +336,4 @@ class _fullPageChatState extends State<FullPageChat> {
 //make other user border not white
 //make some system for users color
 //make message unloading when scrolling up
+//unsend messages

@@ -5,6 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 //import 'package:android_package_installer/android_package_installer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -158,6 +159,39 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
               Visibility(
                 visible: _updatingApp,
                 child: const CircularProgressIndicator(),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if (errorMessage == "error contacting server") {
+      return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 16, 16, 16),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "error contacting server",
+                style: const TextStyle(
+                  color: Color.fromARGB(210, 255, 255, 255),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 25,
+                ),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                )),
+                onPressed: () async {
+                  Phoenix.rebirth(context);
+                },
+                child: const Text(
+                  'retry',
+                  style: TextStyle(fontSize: 18.0),
+                ),
               ),
             ],
           ),
