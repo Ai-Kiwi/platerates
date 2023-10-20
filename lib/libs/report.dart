@@ -15,6 +15,8 @@ class ReportSystem {
         style: alertStyle,
         context: context,
         title: "report",
+        desc:
+            "note: depending on what you are reporting support may need to look further into your account. eg past chat messages or posts",
         content: Column(
           children: <Widget>[
             TextField(
