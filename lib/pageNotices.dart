@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:Toaster/main.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 //import 'package:android_package_installer/android_package_installer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,7 +71,8 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
       setState(() {
         _updatingApp = false;
       });
-    } on Exception catch (error) {
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
       print(error);
       setState(() {
         _updatingApp = false;

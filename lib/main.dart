@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:Toaster/chat/chatList.dart';
+import 'package:Toaster/firebase_options.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/notifications/notificationPageList.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +22,7 @@ import 'createPost/createPostPhoto.dart';
 import 'pageNotices.dart';
 import 'login/userLogin.dart';
 import 'navbar.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 String serverDomain = 'https://toaster.aikiwi.dev';
 String serverWebsocketDomain = 'wss://toaster.aikiwi.dev';
@@ -128,6 +131,12 @@ class MyApp extends StatelessWidget {
     if (userManager.token == "") {
       await userManager.loadTokenFromStoreage();
     }
+
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    FirebaseCrashlytics.instance.crash();
 
     await initNotificationHandler(); //also handles firebase
 

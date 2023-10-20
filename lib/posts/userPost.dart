@@ -6,6 +6,7 @@ import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/login/userLogin.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -71,7 +72,8 @@ class _PostItemState extends State<PostItem> {
         }
       });
       return;
-    } catch (err) {
+    } catch (err, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(err, stackTrace);
       print(err);
       return;
     }
@@ -84,7 +86,8 @@ class _PostItemState extends State<PostItem> {
       if (await dataCollect.updatePostData(postId, context, false) == true) {
         await _collectData();
       }
-    } catch (err) {
+    } catch (err, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(err, stackTrace);
       print(err);
     }
   }

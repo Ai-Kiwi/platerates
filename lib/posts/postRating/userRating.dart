@@ -4,6 +4,7 @@ import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -72,7 +73,8 @@ class _userRatingState extends State<userRating> {
         ratingLiked = jsonData['relativeViewerData']['userLiked'];
       });
       return;
-    } catch (err) {
+    } catch (err, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(err, stackTrace);
       print(err);
       return;
     }
@@ -109,7 +111,9 @@ class _userRatingState extends State<userRating> {
               true) {
         await _collectData();
       }
-    } on Error {}
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    }
   }
 
   @override

@@ -5,6 +5,7 @@ import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/notifications/notificationBarItem.dart';
 import 'package:Toaster/posts/postRating/userRating.dart';
 import 'package:Toaster/posts/userPost.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
@@ -106,7 +107,9 @@ class LazyLoadPageState extends State<LazyLoadPage> {
             lastItem = post;
           }
         });
-      } catch (err) {}
+      } on Exception catch (error, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      }
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
       openAlert(

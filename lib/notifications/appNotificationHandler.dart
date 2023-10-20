@@ -10,6 +10,7 @@ import 'package:Toaster/main.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -127,10 +128,6 @@ Future<void> initNotificationHandler() async {
           AndroidFlutterLocalNotificationsPlugin>()
       ?.requestPermission();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
   //await FirebaseMessaging.requestPermission()
 
   final fcmToken = await FirebaseMessaging.instance.getToken();
@@ -157,7 +154,8 @@ Future<void> initNotificationHandler() async {
       String channelId = '${dataValue['channelId']}';
 
       sendNotification(title, desc, openData, channelId);
-    } on Error {
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
       print("error with handling Notification data");
     }
   });
@@ -174,7 +172,8 @@ Future<void> initNotificationHandler() async {
       String channelId = '${dataValue['channelId']}';
 
       sendNotification(title, desc, openData, channelId);
-    } on Error {
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
       print("error with handling Notification data");
     }
   });
