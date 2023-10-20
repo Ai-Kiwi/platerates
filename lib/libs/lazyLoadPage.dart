@@ -91,22 +91,24 @@ class LazyLoadPageState extends State<LazyLoadPage> {
     );
     if (response.statusCode == 200) {
       try {
-        setState(() {
-          var fetchedData = jsonDecode(response.body);
-          var postData = fetchedData["items"];
-          if (fetchedData["items"].isEmpty) {
-            if (itemsCollected.isEmpty) {
-              itemsCollected.add("blank");
-            } else {
-              itemsCollected.add("end");
+        if (mounted) {
+          setState(() {
+            var fetchedData = jsonDecode(response.body);
+            var postData = fetchedData["items"];
+            if (fetchedData["items"].isEmpty) {
+              if (itemsCollected.isEmpty) {
+                itemsCollected.add("blank");
+              } else {
+                itemsCollected.add("end");
+              }
+              return;
             }
-            return;
-          }
-          for (var post in postData) {
-            itemsCollected.add(post);
-            lastItem = post;
-          }
-        });
+            for (var post in postData) {
+              itemsCollected.add(post);
+              lastItem = post;
+            }
+          });
+        }
       } on Exception catch (error, stackTrace) {
         FirebaseCrashlytics.instance.recordError(error, stackTrace);
       }
