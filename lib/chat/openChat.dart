@@ -169,16 +169,21 @@ class _fullPageChatState extends State<FullPageChat> {
               Map fetchedData = await dataCollect.getUserData(
                   privateChatOtherUser, context, false);
 
-              // ignore: use_build_context_synchronously
-              Map avatarData = await dataCollect.getAvatarData(
-                  fetchedData["avatar"], context, false);
+              // ignore: prefer_typing_uninitialized_variables
+              var imageData;
+              if (fetchedData["avatar"] != null) {
+                // ignore: use_build_context_synchronously
+                Map avatarData = await dataCollect.getAvatarData(
+                    fetchedData["avatar"], context, false);
+                imageData = avatarData["imageData"];
+              }
               setState(() {
                 dataGathered = true;
                 groupName = fetchedData["username"];
 
                 //posterAvatar = avatarData["imageData"];
-                if (avatarData["imageData"] != null) {
-                  groupImage = base64Decode(avatarData["imageData"]);
+                if (imageData != null) {
+                  groupImage = base64Decode(imageData);
                 }
               });
             }
@@ -318,13 +323,6 @@ class _fullPageChatState extends State<FullPageChat> {
     }
   }
 }
-
-//talking will be websockets
-//server will send when user is typing
-//server will send on new message
-//client will send acknolagment, if server doesn't get one will keep resending
-//messages have id to make sure if send twice by server it does nothing
-//client will tell server that it has sent message, will not care if it has or hasn't been accepted
 
 //add typing
 //add when message last seen
