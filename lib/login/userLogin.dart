@@ -5,6 +5,7 @@ import 'package:Toaster/login/userResetPassword.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../libs/smoothTransitions.dart';
 import '../main.dart';

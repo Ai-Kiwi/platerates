@@ -136,7 +136,9 @@ class MyApp extends StatelessWidget {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    FirebaseCrashlytics.instance.crash();
+    if (kDebugMode == true) {
+      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    }
 
     await initNotificationHandler(); //also handles firebase
 
