@@ -118,8 +118,8 @@ Future<void> initNotificationHandler() async {
       InitializationSettings(android: initializationSettingsAndroid);
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
-    onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
-    onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+    //onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
+    //onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
   );
 
   flutterLocalNotificationsPlugin
@@ -148,8 +148,8 @@ Future<void> initNotificationHandler() async {
 
   // Handle foreground notifications
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Foreground Notification: ${message}');
     try {
-      print('Foreground Notification: ${message}');
       Map dataValue = message.data;
       String title = '${dataValue['title']}';
       String desc = '${dataValue['body']}';
@@ -167,7 +167,6 @@ Future<void> initNotificationHandler() async {
     print('Background/terminated Notification: ${message}');
     // Handle the notification here (e.g., navigate to a specific screen)
     try {
-      print('Foreground Notification: ${message}');
       Map dataValue = message.data;
       String title = '${dataValue['title']}';
       String desc = '${dataValue['body']}';

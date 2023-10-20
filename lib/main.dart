@@ -29,7 +29,7 @@ void main() {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kDebugMode == true) {}
+  //if (kDebugMode == true) {}
 
   if (FlavorConfig.instance.variables["release"] == "test") {
     serverDomain = 'http://192.168.0.157:3030';

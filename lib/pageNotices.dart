@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:Toaster/main.dart';
+//import 'package:android_package_installer/android_package_installer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:install_plugin/install_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DisplayErrorMessagePage extends StatefulWidget {
@@ -44,11 +45,24 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
         final file = File(downloadPath);
         await file.writeAsBytes(response.bodyBytes);
 
-        //will download the file
         print("installing app");
-        await InstallPlugin.installApk(downloadPath);
 
-        SystemNavigator.pop();
+        //will download the file
+        while (await Permission.requestInstallPackages.isGranted == false) {
+          // The OS restricts access, for example because of parental controls.
+          await Permission.requestInstallPackages.request();
+        }
+
+        //int? statusCode =
+        //    await AndroidPackageInstaller.installApk(apkFilePath: downloadPath);
+        //print(statusCode);
+        //if (code != null) {
+        //  PackageInstallerStatus installationStatus =
+        //      PackageInstallerStatus.byCode(statusCode);
+        //  print(installationStatus.name);
+        //}
+
+        //SystemNavigator.pop();
       } else {
         // Handle download error
         print('Error: ${response.statusCode}');
@@ -73,55 +87,72 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "app out of date",
-                style: TextStyle(
-                  color: Color.fromARGB(210, 255, 255, 255),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 25,
-                ),
-              ),
-              const Text(
-                "you must update your client to keep using toaster",
-                style: TextStyle(
-                  color: Color.fromARGB(210, 255, 255, 255),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 15,
-                ),
-              ),
-              const Text(
-                "you may need to give some permissions to update",
-                style: TextStyle(
-                  color: Color.fromARGB(210, 255, 255, 255),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 15,
-                ),
-              ),
-              const Text(
-                "app will close after done, you must reopen it yourself",
-                style: TextStyle(
-                  color: Color.fromARGB(210, 255, 255, 255),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 15,
-                ),
-              ),
-              const SizedBox(height: 32),
-              Visibility(
-                visible: !_updatingApp,
-                child: ElevatedButton(
-                  style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  )),
-                  onPressed: () async {
-                    downloadAndInstallApp();
-                  },
-                  child: const Text(
-                    'update app',
-                    style: TextStyle(fontSize: 18.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+                child: Text(
+                  "app out of date",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
+              Icon(
+                Icons.system_update,
+                color: Colors.white,
+                size: 100,
+              ),
+              const SizedBox(
+                height: 32,
+              ),
+
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+                child: Text(
+                  "you must update your client to keep using toaster\ncurrently auto updating is not supported please redownload the app",
+                  style: TextStyle(
+                    color: Color.fromARGB(210, 255, 255, 255),
+                    fontWeight: FontWeight.normal,
+                    fontSize: 15,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              //const Text(
+              //  "you may need to give some permissions to update",
+              //  style: TextStyle(
+              //    color: Color.fromARGB(210, 255, 255, 255),
+              //    fontWeight: FontWeight.normal,
+              //    fontSize: 15,
+              //  ),
+              //),
+              //const Text(
+              //  "app will close after done, you must reopen it yourself",
+              //  style: TextStyle(
+              //    color: Color.fromARGB(210, 255, 255, 255),
+              //    fontWeight: FontWeight.normal,
+              //    fontSize: 15,
+              //  ),
+              //),
+              //const SizedBox(height: 32),
+              //Visibility(
+              //  visible: !_updatingApp,
+              //  child: ElevatedButton(
+              //    style: OutlinedButton.styleFrom(
+              //        shape: RoundedRectangleBorder(
+              //      borderRadius: BorderRadius.circular(15.0),
+              //    )),
+              //    onPressed: () async {
+              //      downloadAndInstallApp();
+              //    },
+              //    child: const Text(
+              //      'update app',
+              //      style: TextStyle(fontSize: 18.0),
+              //    ),
+              //  ),
+              //),
               Visibility(
                 visible: _updatingApp,
                 child: const CircularProgressIndicator(),
@@ -175,11 +206,11 @@ class migrateToAppPage extends StatelessWidget {
               ),
             ),
             Icon(
-              Icons.install_mobile,
-              size: 128,
+              Icons.system_update,
               color: Colors.white,
+              size: 100,
             ),
-            const SizedBox(height: 64),
+            const SizedBox(height: 32),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
               child: Text(
