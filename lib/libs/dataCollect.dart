@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
@@ -45,7 +46,8 @@ class DataCollect {
 
       //as non of these have returned error it must have found data
       return jsonData;
-    } catch (err) {
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
       jsonCache.remove(cacheCode);
       return {};
     }

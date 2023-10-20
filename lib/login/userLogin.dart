@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/login/userResetPassword.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -54,7 +55,8 @@ class User {
       } else {
         return false;
       }
-    } catch (err) {
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
       return false;
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:image/image.dart' as img;
 
 class _imageUtils {
@@ -49,8 +50,9 @@ class _imageUtils {
       final List<int> editedBytes = img.encodeJpg(image, quality: 100);
 
       return editedBytes;
-    } catch (err) {
-      print(err);
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      print(error);
       return null;
     }
   }

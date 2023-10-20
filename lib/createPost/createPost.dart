@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/imageUtils.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -217,7 +218,9 @@ class _CreatePostState extends State<CreatePostPage> {
                                 openAlert("error", "error uploading post", null,
                                     context, null);
                               }
-                            } catch (err) {
+                            } on Exception catch (error, stackTrace) {
+                              FirebaseCrashlytics.instance
+                                  .recordError(error, stackTrace);
                               openAlert(
                                   "error",
                                   "unkown error contacting serer",

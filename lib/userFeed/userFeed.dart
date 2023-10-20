@@ -74,9 +74,7 @@ class _UserFeedState extends State<userFeed> {
         //    value: "e",
         //    dropdownColor: Colors.black,
         //    onChanged: (index) {
-        //      setState(() {
         //        //selectedUser = newValue;
-        //      });
         //    },
         //    //items: users.map((User user) {
         //    //  return new DropdownMenuItem<User>(

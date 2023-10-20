@@ -3,6 +3,7 @@ import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/imageUtils.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 //import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -35,10 +36,11 @@ class _CameraPageState extends State<CameraPage> {
         await _cameraController!.initialize().then((_) {
           setState(() {});
         });
-      } catch (e) {
+      } on Exception catch (error, stackTrace) {
+        FirebaseCrashlytics.instance.recordError(error, stackTrace);
         try {
           // ignore: use_build_context_synchronously
-          openAlert("error", "failed loading camera", "$e", context, null);
+          openAlert("error", "failed loading camera", "$error", context, null);
         } catch (e) {}
       }
     }

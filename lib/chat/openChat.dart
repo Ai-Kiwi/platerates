@@ -5,6 +5,7 @@ import 'package:Toaster/libs/userAvatar.dart' as toasterUserAvatar;
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:Toaster/main.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -182,9 +183,10 @@ class _fullPageChatState extends State<FullPageChat> {
               });
             }
           }
-        } catch (err) {
+        } on Exception catch (error, stackTrace) {
+          FirebaseCrashlytics.instance.recordError(error, stackTrace);
           print("error reading data");
-          print(err);
+          print(error);
         }
 
         print("data got");
