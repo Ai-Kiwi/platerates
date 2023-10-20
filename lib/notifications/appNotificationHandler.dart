@@ -95,16 +95,18 @@ Future<void> informServerNotificationToken(String? token) async {
   }
 
   if (token != null) {
-    await http.post(
-      Uri.parse("$serverDomain/notification/updateDeviceToken"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'token': userManager.token,
-        'newToken': token,
-      }),
-    );
+    try {
+      await http.post(
+        Uri.parse("$serverDomain/notification/updateDeviceToken"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'token': userManager.token,
+          'newToken': token,
+        }),
+      );
+    } on Exception catch (error) {}
 
     //  /notification/updateDeviceToken
   }
