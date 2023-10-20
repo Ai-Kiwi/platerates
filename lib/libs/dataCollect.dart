@@ -47,7 +47,9 @@ class DataCollect {
       //as non of these have returned error it must have found data
       return jsonData;
     } on Exception catch (error, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      if (expectError == false) {
+        FirebaseCrashlytics.instance.recordError(error, stackTrace);
+      }
       jsonCache.remove(cacheCode);
       return {};
     }
