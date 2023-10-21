@@ -57,6 +57,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                           content: Column(
                             children: <Widget>[
                               TextField(
+                                style: const TextStyle(color: Colors.white),
                                 maxLengthEnforcement: MaxLengthEnforcement
                                     .truncateAfterCompositionEnds,
                                 decoration: const InputDecoration(
@@ -68,6 +69,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                 },
                               ),
                               TextField(
+                                style: const TextStyle(color: Colors.white),
                                 maxLengthEnforcement: MaxLengthEnforcement
                                     .truncateAfterCompositionEnds,
                                 decoration: const InputDecoration(
@@ -152,6 +154,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                           content: Column(
                             children: <Widget>[
                               TextField(
+                                style: const TextStyle(color: Colors.white),
                                 maxLengthEnforcement: MaxLengthEnforcement
                                     .truncateAfterCompositionEnds,
                                 decoration: const InputDecoration(
@@ -163,6 +166,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                 },
                               ),
                               TextField(
+                                style: const TextStyle(color: Colors.white),
                                 maxLengthEnforcement: MaxLengthEnforcement
                                     .truncateAfterCompositionEnds,
                                 decoration: const InputDecoration(
@@ -174,6 +178,7 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                 },
                               ),
                               TextField(
+                                style: const TextStyle(color: Colors.white),
                                 maxLengthEnforcement: MaxLengthEnforcement
                                     .truncateAfterCompositionEnds,
                                 decoration: const InputDecoration(

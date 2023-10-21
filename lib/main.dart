@@ -7,6 +7,7 @@ import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/notifications/notificationPageList.dart';
 import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:Toaster/userFeed/userFeed.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
     version = packageInfo.version;
     buildNumber = packageInfo.buildNumber;
 
+    print("setting up cache");
     //load in json cache stuff
     await Hive.initFlutter();
     final box =
@@ -103,6 +105,7 @@ class MyApp extends StatelessWidget {
       }
     }
 
+    print("asking server for the latest verison");
     //contact server and get verison
     try {
       final response = await http.post(
@@ -120,18 +123,21 @@ class MyApp extends StatelessWidget {
           return;
         }
       } else {
-        //really should be error for this
+        yield "server-contact-error";
+        return;
       }
     } catch (err) {
       yield "server-contact-error";
       return;
     }
 
+    print("loading in token");
     //load in token
     if (userManager.token == "") {
       await userManager.loadTokenFromStoreage();
     }
 
+    print("starting firebase");
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -140,6 +146,34 @@ class MyApp extends StatelessWidget {
       FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     }
 
+    print("starting app check");
+    if (kDebugMode == false) {
+      await FirebaseAppCheck.instance.activate(
+        //webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+        androidProvider: AndroidProvider.playIntegrity,
+        // Default provider for iOS/macOS is the Device Check provider. You can use the "AppleProvider" enum to choose
+        // your preferred provider. Choose from:
+        // 1. Debug provider
+        // 2. Device Check provider
+        // 3. App Attest provider
+        // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
+        // appleProvider: AppleProvider.appAttest,
+      );
+    } else {
+      await FirebaseAppCheck.instance.activate(
+        //webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+        androidProvider: AndroidProvider.debug,
+        // Default provider for iOS/macOS is the Device Check provider. You can use the "AppleProvider" enum to choose
+        // your preferred provider. Choose from:
+        // 1. Debug provider
+        // 2. Device Check provider
+        // 3. App Attest provider
+        // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
+        // appleProvider: AppleProvider.appAttest,
+      );
+    }
+
+    print("starting notifcation service");
     await initNotificationHandler(); //also handles firebase
 
     //load notfcation stuff if opened
@@ -155,6 +189,7 @@ class MyApp extends StatelessWidget {
       }
     }
 
+    print("testing login state");
     //respond with if token is valid
     var loginStateData = await userManager.checkLoginState();
     if (loginStateData == true) {

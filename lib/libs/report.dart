@@ -16,13 +16,14 @@ class ReportSystem {
         context: context,
         title: "report",
         desc:
-            "note: depending on what you are reporting support may need to look further into your account. eg past chat messages or posts",
+            "note: depending on what you are reporting support may need to look further into your account.\neg past chat messages or posts",
         content: Column(
           children: <Widget>[
             TextField(
               maxLengthEnforcement:
                   MaxLengthEnforcement.truncateAfterCompositionEnds,
               maxLength: 1000,
+              style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
                 icon: Icon(Icons.account_circle, color: Colors.white),
                 labelText: 'reason',

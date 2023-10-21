@@ -30,7 +30,10 @@ const databases = {
   user_avatars : database.collection('user_avatars'),
   user_follows : database.collection('user_follows'),
   post_rating_likes : database.collection('post_rating_likes'),
+  account_create_requests : database.collection('account_create_requests'),
 }
+
+//database.createCollection('account_create_requests');
 
 //database.createCollection("post_rating_likes");
 //database.dropCollection("user_rating_likes")

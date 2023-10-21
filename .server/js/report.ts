@@ -44,6 +44,9 @@ router.post('/report', async (req, res) => {
       }else if (reportItem.type === "post_rating"){
         reportingItem = await databases.post_ratings.findOne({ratingId : reportItem.data});
 
+      }else if (reportItem.type === "chat_message"){
+        reportingItem = await databases.chat_messages.findOne({messageId : reportItem.data});
+
       }else{
         console.log("unkown type");
         return res.status(409).send("unkown type")

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
+import 'package:Toaster/login/createAccount.dart';
 import 'package:Toaster/login/userResetPassword.dart';
+import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -175,14 +177,27 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const SizedBox(height: 8.0),
-                          TextButton(
-                            // reset password
-                            onPressed: () {
-                              Navigator.of(context).push(smoothTransitions
-                                  .slideUp(const ResetPasswordPage()));
-                            },
-                            child: const Text('Reset Password'),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              //login button
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: TextButton(
+                                // reset password
+
+                                onPressed: () {
+                                  Navigator.of(context).push(smoothTransitions
+                                      .slideUp(const ResetPasswordPage()));
+                                },
+                                child: const Text(
+                                  'Forgot Password?',
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                            ),
                           ),
+
                           const SizedBox(height: 8.0),
                           Padding(
                             //login button
@@ -215,6 +230,9 @@ class _LoginPageState extends State<LoginPage> {
                                       MaterialPageRoute(
                                           builder: (context) => MyHomePage()),
                                     );
+                                    //save
+                                    // ignore: use_build_context_synchronously
+                                    //informServerNotificationToken();
                                   } else {
                                     // ignore: use_build_context_synchronously
                                     openAlert("error", "invalid login",
@@ -228,6 +246,29 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
+                          TextButton(
+                            // reset password
+                            onPressed: () {
+                              Navigator.of(context).push(smoothTransitions
+                                  .slideUp(const createAccountPage()));
+                            },
+                            child: RichText(
+                              text: const TextSpan(
+                                text: 'Don\'t have an account yet? ',
+                                style: TextStyle(color: Colors.white),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'Sign up here',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
                           //Padding(
                           //  //login button
                           //  padding: const EdgeInsets.symmetric(
