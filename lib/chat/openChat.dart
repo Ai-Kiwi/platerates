@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:Toaster/libs/alertSystem.dart';
+import 'package:Toaster/libs/report.dart';
 import 'package:Toaster/libs/userAvatar.dart' as toasterUserAvatar;
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/login/userLogin.dart';
@@ -9,6 +11,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 //import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -255,6 +258,36 @@ class _fullPageChatState extends State<FullPageChat> {
     }));
   }
 
+  Future<void> _handleMessageHold(
+      BuildContext context, types.Message p1) async {
+    //openAlert("info", "message data", p1.id, context, null);
+    Alert(
+      style: alertStyle,
+      title: "select action for message",
+      content: Column(children: [
+        const SizedBox(height: 16),
+        SizedBox(
+          width: 200,
+          child: ElevatedButton(
+            style: OutlinedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                )),
+            onPressed: () async {
+              reportSystem.reportItem(context, "chat_message", p1.id);
+            },
+            child: const Text(
+              '🚩 report comment',
+              style: TextStyle(fontSize: 18.0),
+            ),
+          ),
+        ),
+      ]),
+      context: context,
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -276,6 +309,9 @@ class _fullPageChatState extends State<FullPageChat> {
                 user: _user,
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 //onEndReachedThreshold: 80,
+                onMessageLongPress: (context, p1) {
+                  _handleMessageHold(context, p1);
+                },
                 onEndReached: () async {
                   if (lastReachedTimeMessageTime != pastItemDate ||
                       lastReachedTopTime <

@@ -211,6 +211,15 @@ router.post('/login', async (req, res) => {
         token: token,
         userId: userId,
       });
+
+      //set account so that it has been logged into
+      await databases.user_credentials.updateOne(
+        { email: userEmail },
+        { $set: {
+          hasLoggedIn : true
+        }
+      }
+      );
       return;
 
     }else{

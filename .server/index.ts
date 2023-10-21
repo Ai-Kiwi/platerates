@@ -4,7 +4,7 @@ import { rateLimit} from 'express-rate-limit';
 import path from "path";
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import firebase from 'firebase-admin'
+import firebase, { database } from 'firebase-admin'
 
 const limiter = rateLimit({
 	//windowMs: 3 * 60 * 1000, // 3 minutes

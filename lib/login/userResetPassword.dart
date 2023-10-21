@@ -48,8 +48,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   onChanged: (value) {
                     _email = value;
                   },
-                  autofillHints: const [AutofillHints.password],
-                  obscureText: true,
+                  autofillHints: const [AutofillHints.email],
                   style: const TextStyle(color: Colors.white, fontSize: 20),
                   decoration: const InputDecoration(
                     labelText: 'Email Address',

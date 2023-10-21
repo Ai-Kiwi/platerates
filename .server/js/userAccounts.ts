@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import crypto from 'crypto';
+import crypto, { checkPrimeSync } from 'crypto';
 import { databases } from './database';
 import { testToken } from './userLogin';
 import { generateRandomString } from './utilFunctions';
@@ -10,6 +10,9 @@ import { cleanEmailAddress, testUsername } from './validInputTester';
 import { title } from 'process';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
+import { appCheckVerification } from './securityUtils';
+import nodemailer from "nodemailer";
+import { sendMail } from './mailsender';
 
 async function sendNoticeToAccount(userId : string, text : string, title : string){
   const collection: mongoDB.Collection = databases.account_notices.collection('account_notices');
@@ -511,6 +514,187 @@ async function banAccount(userId : string,time : number,reason : string) {
   }
 }
 
+
+
+
+router.get('/use-create-account-code', async (req, res) => {
+  const requestId = req.query.requestId;
+  const ipAddress = req.headers['x-forwarded-for'];
+  console.log("user using account create code")
+  try{
+
+    const accountCreateRequestItem = await databases.account_create_requests.findOne({requestId: requestId});
+    
+    //test if code is valid
+    if (accountCreateRequestItem === null) {
+      console.log("code invalid");
+      return res.status(400).send("code invalid");
+    }
+    //test if code is expired
+    if (accountCreateRequestItem.creationDate <= Date.now() - (1000 * 60 * 60 * 24 * 16)) { // expires after 16 days
+      console.log("code expired");
+      return res.status(410).send("code expired");
+    }
+
+    const newAccountUsername = accountCreateRequestItem.username;
+    const newAccountEmail = accountCreateRequestItem.email;
+
+
+
+    const testUsernameResult = await testUsername(newAccountUsername);
+    const usernameAllowed : boolean = testUsernameResult.valid;
+    const usernameDeniedReason : string = testUsernameResult.reason;
+
+    if (usernameAllowed === false){
+        console.log("username input invalid");
+        return res.status(400).send(`invalid username : ${usernameDeniedReason}`);    
+    }
+
+    //create password and send email
+    const NewUserPassword : string = generateRandomString(16)
+
+    //add user to database
+    const response: boolean = await createUser(newAccountEmail,NewUserPassword,newAccountUsername) 
+    if (response === true) {
+        const emailData: nodemailer.SentMessageInfo = await sendMail(
+            '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+            newAccountEmail,
+            "Toaster account created",
+            `
+Hi user,
+Your account has been created and you can log in at https://toaster.aikiwi.dev/. Your temporary password is below please change this once logged in using reset password on login page.
+
+Login email address : ${newAccountEmail}
+Temporary password : ${NewUserPassword}
+
+We hope you enjoy using Toaster! We're always looking for feedback, so please feel free to reach out to us with any questions or suggestions at toaster@aikiwi.dev.
+
+Welcome to the Toaster community! We're a welcoming community and we expect all users to follow our community guidelines at https://toaster.aikiwi.dev/CommunityGuidelines and terms of service at https://toaster.aikiwi.dev/termsofService
+
+For any concerns about data handling you can find our privacy policy at https://toaster.aikiwi.dev/privacyPolicy and our data deletion instructions at https://toaster.aikiwi.dev/deleteData. 
+
+Thanks,
+The Toaster Team`);
+      if (emailData) {
+          await databases.account_create_requests.deleteOne({requestId : requestId}) 
+
+          console.log("account created");
+          return res.status(200).send("user created");   
+      }else{
+          console.log("failed sending email");
+          return res.status(500).send("failed to send email");
+      }
+    }else{
+        console.log("failed creating user");
+        return res.status(500).send("failed creating user");
+    }
+
+    
+
+
+
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error");
+  }
+})
+
+
+
+router.post('/createAccount', [appCheckVerification] , async (req : Request, res : Response) => {
+  console.log(" => user creating account request code")
+  try{
+    const token = req.body.token;
+    const newAccountEmail = cleanEmailAddress(req.body.email);
+    const newAccountUsername = req.body.username;
+    const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+    
+    //add ip blocking
+    //add strict rate limiting
+    //add device id limits
+
+    //test that username and email has a value
+
+    
+
+    if (newAccountEmail === null || newAccountEmail === undefined || newAccountEmail === "") {
+      console.log("email empty");
+      return res.status(400).send("email can't be nothing");   
+    }
+    if (newAccountUsername === null || newAccountUsername === undefined || newAccountUsername === "") {
+        console.log("username empty");
+        return res.status(400).send("username can't be nothing");   
+    }
+
+    var requestId : string;
+    while (true){
+      requestId = generateRandomString(128);
+
+      let requestIdInUse = await databases.account_create_requests.findOne({requestId: requestId});
+      if (requestIdInUse === null){
+        break
+      }
+    }
+
+    //make sure username is valid
+    var userNameValid = await testUsername(newAccountUsername)
+    if (userNameValid.valid === false){
+      console.log(`username invalid : ${userNameValid.reason}`);
+      return res.status(400).send(`username invalid : ${userNameValid.reason}`);   
+    }
+
+    var accountResult;
+
+    accountResult = await databases.user_credentials.findOne({email : newAccountEmail});
+    if (accountResult != null){
+      console.log("email already in use");
+      return res.status(400).send("email already in use");   
+    }
+    
+    const response = await databases.account_create_requests.insertOne({
+      requestId : requestId,
+      username : newAccountUsername,
+      email : newAccountEmail,
+      creationDate : Date.now()
+    })
+
+    if (response.acknowledged === true){
+
+            const emailData: nodemailer.SentMessageInfo = await sendMail(
+          '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+          newAccountEmail,
+          "Toaster account creation verification",
+          `
+Your account can be activated by going to the following link below
+
+https://toaster.aikiwi.dev/use-create-account-code?requestId=${requestId}
+
+If you need any help with this or someone is spamming you with these you can reach out to us at toaster@aikiwi.dev `);
+      if (emailData) {
+        console.log("created request");
+        return res.status(200).send("created request");   
+      }else{
+        console.log("failed sending email");
+        return res.status(500).send("failed to send email");
+      }
+
+
+
+    }else{
+      console.log("server error create request");
+      return res.status(500).send("server error create request");   
+
+    }
+    
+    
+
+  }catch(err){
+    console.log(err);
+    return res.status(500).send("server error")
+  }
+})
+
+
 async function createUser(rawEmail : string,password : string, username : string){
     try{
       const email = cleanEmailAddress(rawEmail);
@@ -573,6 +757,7 @@ async function createUser(rawEmail : string,password : string, username : string
           accountBanExpiryDate: 0,
           failedLoginAttemptInfo: {},
           tokenNotExpiedCode: tokenNotExpiredCode,
+          hasLoggedIn : false
         }
       )
       const userDataOutput = await databases.user_data.insertOne(
