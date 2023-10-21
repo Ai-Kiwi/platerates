@@ -67,13 +67,6 @@ class _UserSettingsState extends State<UserSettings> {
                     },
                   ),
                   SettingItem(
-                    settingIcon: Icons.download,
-                    settingName: "get app beta",
-                    ontap: () {
-                      launchUrl(Uri.parse("$serverDomain/toaster.apk"));
-                    },
-                  ),
-                  SettingItem(
                     settingIcon: Icons.lock,
                     settingName: "privacy policy",
                     ontap: () {
