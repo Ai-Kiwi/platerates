@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/login/createAccount.dart';
 import 'package:Toaster/login/userResetPassword.dart';
-import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

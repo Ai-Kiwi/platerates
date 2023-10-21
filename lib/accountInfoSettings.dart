@@ -29,7 +29,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   List<int>? _userImage;
   List<int>? _startUserImage;
 
-  late String _realUserId;
+  //late String _realUserId;
 
   Future<void> _fetchAccountData() async {
     await dataCollect.updateUserData(null, context, false);
@@ -45,7 +45,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
       _username = fetchedData['username'];
       _startUsername = fetchedData['username'];
 
-      _realUserId = fetchedData['userId'];
+      //_realUserId = fetchedData['userId'];
 
       _loading = false;
 
@@ -241,7 +241,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                     )),
                                     onPressed: () async {},
                                     child: const Center(
-                                        child: const CircularProgressIndicator(
+                                        child: CircularProgressIndicator(
                                       color: Colors.white,
                                     )))
                                 : ElevatedButton(
