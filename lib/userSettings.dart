@@ -74,6 +74,20 @@ class _UserSettingsState extends State<UserSettings> {
                     },
                   ),
                   SettingItem(
+                    settingIcon: Icons.rule,
+                    settingName: "Community guidelines",
+                    ontap: () {
+                      launchUrl(Uri.parse("$serverDomain/CommunityGuidelines"));
+                    },
+                  ),
+                  SettingItem(
+                    settingIcon: Icons.hardware,
+                    settingName: "terms of service",
+                    ontap: () {
+                      launchUrl(Uri.parse("$serverDomain/termsOfService"));
+                    },
+                  ),
+                  SettingItem(
                     settingIcon: Icons.help,
                     settingName: "contact support",
                     ontap: () {
