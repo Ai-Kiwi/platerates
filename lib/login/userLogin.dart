@@ -6,6 +6,7 @@ import 'package:Toaster/login/userResetPassword.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../libs/smoothTransitions.dart';
 import '../main.dart';
@@ -105,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
           bottom: true,
           top: true,
@@ -258,6 +260,30 @@ class _LoginPageState extends State<LoginPage> {
                                 children: <TextSpan>[
                                   TextSpan(
                                     text: 'Sign up here',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const Expanded(child: Center()),
+
+                          TextButton(
+                            // reset password
+                            onPressed: () {
+                              launchUrl(
+                                  Uri.parse("$serverDomain/privacyPolicy"));
+                            },
+                            child: RichText(
+                              text: const TextSpan(
+                                text: 'you can find our privacy policy ',
+                                style: TextStyle(color: Colors.white),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: 'here',
                                     style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       color: Colors.blue,
