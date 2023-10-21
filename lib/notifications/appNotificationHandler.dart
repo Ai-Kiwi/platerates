@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:Toaster/firebase_options.dart';
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
@@ -9,7 +8,6 @@ import 'package:Toaster/login/userLogin.dart';
 import 'package:Toaster/main.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +104,9 @@ Future<void> informServerNotificationToken(String? token) async {
           'newToken': token,
         }),
       );
-    } on Exception catch (error) {}
+    } on Exception catch (error) {
+      print(error);
+    }
 
     //  /notification/updateDeviceToken
   }
