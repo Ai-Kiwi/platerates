@@ -7,6 +7,7 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class createAccountPage extends StatefulWidget {
   const createAccountPage({super.key});
@@ -18,6 +19,8 @@ class createAccountPage extends StatefulWidget {
 class _createAccountPageState extends State<createAccountPage> {
   String _emailAddress = '';
   String _username = '';
+  bool _agreeToTos = false;
+  bool _agreeToCommunityGuidelines = false;
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +106,113 @@ class _createAccountPageState extends State<createAccountPage> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 16.0),
+                              SizedBox(
+                                height: 24,
+                                child: Center(
+                                  child: Row(
+                                    children: [
+                                      const SizedBox(width: 8.0),
+                                      Checkbox(
+                                        value: _agreeToTos,
+                                        onChanged: (value) => {
+                                          setState(() {
+                                            _agreeToTos = !_agreeToTos;
+                                          })
+                                        },
+                                        side: const BorderSide(
+                                            width: 2, color: Colors.green),
+                                      ),
+                                      TextButton(
+                                        // reset password
+                                        onPressed: () {
+                                          launchUrl(Uri.parse(
+                                              "$serverDomain/termsOfService"));
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          //minimumSize:
+                                          //    Size.infinite, // Set this
+                                          padding: EdgeInsets.zero, // and this
+                                        ),
+                                        child: RichText(
+                                          text: const TextSpan(
+                                            text:
+                                                'I agree to terms of service. ',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                text: 'View here',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.blue,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8.0),
+                              SizedBox(
+                                height: 16,
+                                child: Center(
+                                  child: Row(
+                                    children: [
+                                      const SizedBox(width: 8.0),
+                                      Checkbox(
+                                        value: _agreeToCommunityGuidelines,
+                                        onChanged: (value) => {
+                                          setState(() {
+                                            _agreeToCommunityGuidelines =
+                                                !_agreeToCommunityGuidelines;
+                                          })
+                                        },
+                                        side: const BorderSide(
+                                            width: 2, color: Colors.green),
+                                      ),
+                                      TextButton(
+                                        // reset password
+                                        onPressed: () {
+                                          launchUrl(Uri.parse(
+                                              "$serverDomain/termsOfService"));
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          //minimumSize:
+                                          //    Size.infinite, // Set this
+                                          padding: EdgeInsets.zero, // and this
+                                        ),
+                                        child: RichText(
+                                          text: const TextSpan(
+                                            text:
+                                                'I agree to community guidelines. ',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                            children: <TextSpan>[
+                                              TextSpan(
+                                                text: 'View here',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.blue,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 32.0),
                               Visibility(
                                 visible: kIsWeb == false,
@@ -120,6 +230,26 @@ class _createAccountPageState extends State<createAccountPage> {
                                             BorderRadius.circular(15.0),
                                       )),
                                       onPressed: () async {
+                                        if (_agreeToTos == false) {
+                                          openAlert(
+                                              "error",
+                                              "you must agree to follow terms of service",
+                                              null,
+                                              context,
+                                              null);
+                                          return;
+                                        }
+                                        if (_agreeToCommunityGuidelines ==
+                                            false) {
+                                          openAlert(
+                                              "error",
+                                              "you must agree to follow community guidelines",
+                                              null,
+                                              context,
+                                              null);
+                                          return;
+                                        }
+
                                         final response = await http.post(
                                           Uri.parse(
                                               "$serverDomain/createAccount"),
