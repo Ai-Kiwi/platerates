@@ -41,10 +41,10 @@ router.get('/CommunityGuidelines', async (req : Request, res : Response) => {
   }
 })
 
-router.get('/termsofService.css', async (req : Request, res : Response) => {
+router.get('/termsOfService', async (req : Request, res : Response) => {
   console.log(" => user changelog website")
   try{
-    return res.status(200).sendFile(__dirname + "/pages/termsofService.html");
+    return res.status(200).sendFile(__dirname + "/pages/termsOfService.html");
   }catch(err){
     console.log(err);
     return res.status(500).send("server error")
