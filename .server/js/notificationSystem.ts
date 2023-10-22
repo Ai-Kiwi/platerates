@@ -3,8 +3,8 @@ const router = express.Router();
 import { databases } from "./database";
 import mongoDB from "mongodb";
 import { generateRandomString } from "./utilFunctions";
-import { testToken } from "./userLogin";
 import firebase from 'firebase-admin'
+import { confirmTokenValid } from './securityUtils';
 
 // Create a list containing up to 500 registration tokens.
 // These registration tokens come from the client FCM SDKs.
@@ -72,28 +72,17 @@ async function fetchUsername(userId : string){
 }
 
 
-router.post('/notification/updateDeviceToken', async (req, res) => {
+router.post('/notification/updateDeviceToken', confirmTokenValid, async (req, res) => {
   console.log(" => user update device token")
     try{
-      const token = req.body.token;
-
       const newToken = req.body.newToken;
-      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-
-      const result = await testToken(token,userIpAddress);
-      const validToken : boolean = result.valid;
-      const userId : string | undefined = result.userId;
+      const userId : string | undefined = req.body.tokenUserId;
     
-      if (validToken) { // user token is valid
-        const response = await databases.user_data.updateOne({userId : userId},{ $set: {deviceNotificationTokens : [newToken]}});
+      const response = await databases.user_data.updateOne({userId : userId},{ $set: {deviceNotificationTokens : [newToken]}});
 
-        console.log("updated")
-        return res.status(200).send("updated token");
+      console.log("updated")
+      return res.status(200).send("updated token");
 
-      }else{
-        console.log("invalid token");
-        return res.status(401).send("invalid token");
-      }
     }catch(err){
       console.log(err);
       return res.status(500).send("server error");
@@ -169,64 +158,53 @@ async function sendNotification(notificationData : {userId : string | undefined,
 }
 
 
-router.post('/notification/list', async (req, res) => {
+router.post('/notification/list', confirmTokenValid, async (req, res) => {
     console.log(" => user fetching notifications")
       try{
         const searchText = req.body.searchText;
-        const token = req.body.token;
         const startPosPost = req.body.startPosPost;
         let startPosInfo: number = 100000000000000
-
-        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-
-        const result = await testToken(token,userIpAddress);
-        const validToken : boolean = result.valid;
-        const userId : string | undefined = result.userId;
+        const userId : string | undefined = req.body.tokenUserId;
       
-        if (validToken) { // user token is valid
-          if (startPosPost) {
-            if (startPosPost.type === "notification" && !startPosPost.data){
-              console.log("invalid start notification")
-              return res.status(400).send("invalid start notification");
-            }
-            //unlike others data is a json object and has noti data in there
-            const notificationData = JSON.parse(startPosPost.data);
+        if (startPosPost) {
+          if (startPosPost.type === "notification" && !startPosPost.data){
+            console.log("invalid start notification")
+            return res.status(400).send("invalid start notification");
+          }
+          //unlike others data is a json object and has noti data in there
+          const notificationData = JSON.parse(startPosPost.data);
 
-            const startPosPostData = await databases.user_notifications.findOne({ notificationId: notificationData.notificationId })
-            if (startPosPostData === null){
-              console.log("invalid start notification")
-              return res.status(400).send("invalid start notification");
-            }
-              
-            startPosInfo = startPosPostData.sentDate;
+          const startPosPostData = await databases.user_notifications.findOne({ notificationId: notificationData.notificationId })
+          if (startPosPostData === null){
+            console.log("invalid start notification")
+            return res.status(400).send("invalid start notification");
           }
-    
-          const dataReturning = await databases.user_notifications.find({ sentDate: { $lt: startPosInfo}, receiverId : userId}).sort({sentDate : -1}).limit(15).toArray();
-          let returnData = {
-            "items": [] as { type: string; data: string;}[]
-          }
-     
-          if (dataReturning.length == 0) {
-            console.log("nothing to fetch");
-          }
-
-
-          for (var i = 0; i < dataReturning.length; i++) {
-            if (dataReturning[i].userId !== null) {
-              returnData["items"].push({
-                type : "notification",
-                data : JSON.stringify(dataReturning[i]),
-              });
-            }
-          }
-          
-          console.log("returning notifications");
-          return res.status(200).json(returnData);
-    
-        }else{
-          console.log("invalid token");
-          return res.status(401).send("invalid token");
+            
+          startPosInfo = startPosPostData.sentDate;
         }
+  
+        const dataReturning = await databases.user_notifications.find({ sentDate: { $lt: startPosInfo}, receiverId : userId}).sort({sentDate : -1}).limit(15).toArray();
+        let returnData = {
+          "items": [] as { type: string; data: string;}[]
+        }
+    
+        if (dataReturning.length == 0) {
+          console.log("nothing to fetch");
+        }
+
+
+        for (var i = 0; i < dataReturning.length; i++) {
+          if (dataReturning[i].userId !== null) {
+            returnData["items"].push({
+              type : "notification",
+              data : JSON.stringify(dataReturning[i]),
+            });
+          }
+        }
+        
+        console.log("returning notifications");
+        return res.status(200).json(returnData);
+  
       }catch(err){
         console.log(err);
         return res.status(500).send("server error");
@@ -234,84 +212,63 @@ router.post('/notification/list', async (req, res) => {
   })
 
 
-router.post('/notification/read', async (req, res) => {
+router.post('/notification/read', confirmTokenValid, async (req, res) => {
   console.log(" => user marking notification as read")
     try{
       const notificationId = req.body.notificationId;
-      const token = req.body.token;
-      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-      const result = await testToken(token,userIpAddress);
-      const validToken : boolean = result.valid;
-      const userId : string | undefined = result.userId;
+      const userId : string | undefined = req.body.tokenUserId;
     
-      if (validToken) { // user token is valid
-        let postFetching = await databases.user_notifications.findOne({notificationId : notificationId});
+      let postFetching = await databases.user_notifications.findOne({notificationId : notificationId});
 
-        if (postFetching === null){
-          console.log("notification not found");
-          return res.status(404).send("notification not found");
-        }
-
-        if (postFetching.receiverId !== userId){
-          console.log("user doesn't own notification");
-          return res.status(403).send("notification not yours");
-        }
-
-
-        let markReadResponse = await databases.user_notifications.updateOne({notificationId : notificationId},{$set: {read : true}});
-
-        if (markReadResponse.acknowledged === true){
-          console.log("marked notification read");
-          return res.status(200).send("notification marked as read");
-        }else{
-          console.log("error marking read");
-          return res.status(200).send("error marking notification read");
-        }
-
-        
-
-  
-      }else{
-        console.log("invalid token");
-        return res.status(401).send("invalid token");
+      if (postFetching === null){
+        console.log("notification not found");
+        return res.status(404).send("notification not found");
       }
+
+      if (postFetching.receiverId !== userId){
+        console.log("user doesn't own notification");
+        return res.status(403).send("notification not yours");
+      }
+
+
+      let markReadResponse = await databases.user_notifications.updateOne({notificationId : notificationId},{$set: {read : true}});
+
+      if (markReadResponse.acknowledged === true){
+        console.log("marked notification read");
+        return res.status(200).send("notification marked as read");
+      }else{
+        console.log("error marking read");
+        return res.status(200).send("error marking notification read");
+      }
+
     }catch(err){
       console.log(err);
       return res.status(500).send("server error");
     }
 })
 
-router.post('/notification/unreadCount', async (req, res) => {
+router.post('/notification/unreadCount', confirmTokenValid, async (req, res) => {
   console.log(" => user marking notification as read")
     try{
       const token = req.body.token;
       const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-      const result = await testToken(token,userIpAddress);
-      const validToken : boolean = result.valid;
-      const userId : string | undefined = result.userId;
+      const userId : string | undefined = req.body.tokenUserId;
     
-      if (validToken) { // user token is valid
-        let unreadCount = await databases.user_notifications.countDocuments({read : false, receiverId : userId});
+      let unreadCount = await databases.user_notifications.countDocuments({read : false, receiverId : userId});
 
-        //console.log(unreadCount);
+      //console.log(unreadCount);
 
-        if (unreadCount != null){
-          console.log("marked notification read");
-          return res.status(200).json({
-            unreadCount : unreadCount
-          });
-        }else{
-          console.log("error marking read");
-          return res.status(400).send("error getting notifications count");
-        }
+      if (unreadCount != null){
+        console.log("marked notification read");
+        return res.status(200).json({
+          unreadCount : unreadCount
+        });
+      }else{
+        console.log("error marking read");
+        return res.status(400).send("error getting notifications count");
+      }
 
         
-
-  
-      }else{
-        console.log("invalid token");
-        return res.status(401).send("invalid token");
-      }
     }catch(err){
       console.log(err);
       return res.status(500).send("server error");

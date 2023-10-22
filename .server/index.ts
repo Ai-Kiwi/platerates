@@ -86,7 +86,6 @@ app.get('/toaster.apk', async (req : Request, res : Response) => {
 })
 
 
-//add to .env following this guide : https://dev.to/wilsonparson/how-to-securely-use-google-apis-service-account-credentials-in-a-public-repo-4k65
 firebase.initializeApp({
   credential: firebase.credential.cert({
     projectId : process.env.FIREBASE_PROJECT_ID ,
@@ -99,9 +98,10 @@ firebase.initializeApp({
 //createUser("demouser@aikiwi.dev","xZb2VQyvgBV8#24axwVLaOHwDHzKv@az","demo user")
 
 import {router as pagesRouter} from "./pages";
+import {router as userLoginRouter} from "./js/userLogins";
+
 import {router as userPostsRouter} from "./js/userPosts";
 import {router as userAccountsRouter} from "./js/userAccounts";
-import {router as userLoginRouter} from "./js/userLogin";
 import {router as userPostRatingRouter} from "./js/userRating";
 import {router as reportRouter} from "./js/report";
 import {router as adminZoneRouter} from "./js/adminZone";
@@ -109,12 +109,12 @@ import {router as searchSystemRouter} from "./js/searchSystem";
 import {router as notificationSystem} from "./js/notificationSystem";
 import {router as chatSystem} from "./js/chatSystem"; 
 
-
-app.use('/', pagesRouter)
 app.use('/', limiter)
+app.use('/', pagesRouter)
+
+app.use('/', userLoginRouter);
 app.use('/', userPostsRouter);
 app.use('/', userAccountsRouter);
-app.use('/', userLoginRouter);
 app.use('/', userPostRatingRouter);
 app.use('/', reportRouter);
 app.use('/', adminZoneRouter);
@@ -126,16 +126,3 @@ app.use('/', chatSystem);
 app.listen(port, () => {
   console.log(`Toaster server listening on port ${port}`)
 })
-
-
-// REMEMBER //
-//anything done such as adding ads must be updated on privacy polocy and google play console
-//all content must be ok for children
-//when added reporting change rating of app
-//when new features are added there should be a way for it to stick with deleted accounts
-//all more data collected and what not should be checked on google play console
-
-
-// - plugins to use
-//use image_cropper for user avatars
-//use https://stackoverflow.com/questions/45031499/how-to-get-unique-device-id-in-flutter for doing device id

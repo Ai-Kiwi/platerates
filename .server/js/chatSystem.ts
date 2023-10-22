@@ -1,11 +1,12 @@
 import express from "express";
 import { generateRandomString } from "./utilFunctions";
-import { testToken } from "./userLogin";
 const router = express.Router();
 import { databases } from "./database";
 import mongoDB, { Int32 } from "mongodb";
 import { Request, Response } from "express";
 import { sendNotification, sendNotificationToDevices } from "./notificationSystem";
+import { testTokenValid } from "./userLogins";
+import { confirmTokenValid } from "./securityUtils";
 
 
 let wsClients : Record<string, any> = []
@@ -36,7 +37,7 @@ router.ws('/chatWs', function(ws, req) {
         if (jsonData["request"] == "authenticate") {
             //attempt user token
             const userIpAddress : string = req.socket.remoteAddress as string;
-            const result = await testToken(jsonData["token"],userIpAddress);
+            const result = await testTokenValid(jsonData["token"],userIpAddress);
             const vaildToken : boolean = result.valid;
             const userId : string | undefined = result.userId;
 
@@ -237,59 +238,48 @@ router.ws('/chatWs', function(ws, req) {
 //}),
 
 
-router.post('/chat/openList', async (req, res) => {
+router.post('/chat/openList', confirmTokenValid, async (req, res) => {
     console.log(" => user fetching feed")
     try{
-      const token = req.body.token;
       const startPosPost = req.body.startPosPost;
       let startPosPostDate: number = 100000000000000
-      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-    
-      const result = await testToken(token,userIpAddress);
-      const vaildToken : boolean = result.valid;
-      const userId : string | undefined = result.userId;
-
-      if (vaildToken) { // user token is valid    
-        if (startPosPost) {
-          if (startPosPost.type === "chat_room" && !startPosPost.data){
-            console.log("invalid start chat")
-            return res.status(400).send("invalid start chat");
-          }
+      const userId : string | undefined = req.body.tokenUserId;
   
-          const startPosPostData = await databases.chat_rooms.findOne({ chatRoomId: startPosPost.data, users: { $all: [userId] } })
-          if (!startPosPostData){
-            console.log("invalid start chat")
-            return res.status(400).send("invalid start chat");
-          }
-
-          startPosPostDate = startPosPostData.postDate;
-        }
-    
-        const posts = await databases.chat_rooms.find({ users: { $all: [userId] }, lastMessage: { $lt: startPosPostDate}}).sort({lastMessage: -1}).limit(5).toArray();
-        let returnData = {
-          "items": [] as { type: string; data: string;}[]
+      if (startPosPost) {
+        if (startPosPost.type === "chat_room" && !startPosPost.data){
+          console.log("invalid start chat")
+          return res.status(400).send("invalid start chat");
         }
 
-        if (posts.length == 0) {
-          console.log("nothing to fetch");
-        }
-    
-        for (var i = 0; i < posts.length; i++) {
-          if (posts[i].userId !== null) {
-            returnData["items"].push({
-              type : "chat_room",
-              data : posts[i].chatRoomId,
-            });
-          }
+        const startPosPostData = await databases.chat_rooms.findOne({ chatRoomId: startPosPost.data, users: { $all: [userId] } })
+        if (!startPosPostData){
+          console.log("invalid start chat")
+          return res.status(400).send("invalid start chat");
         }
 
-        console.log("returning chats");
-        return res.status(200).json(returnData);
-  
-      }else{
-        console.log("invalid token");
-        return res.status(401).send("invalid token");
+        startPosPostDate = startPosPostData.postDate;
       }
+  
+      const posts = await databases.chat_rooms.find({ users: { $all: [userId] }, lastMessage: { $lt: startPosPostDate}}).sort({lastMessage: -1}).limit(5).toArray();
+      let returnData = {
+        "items": [] as { type: string; data: string;}[]
+      }
+
+      if (posts.length == 0) {
+        console.log("nothing to fetch");
+      }
+  
+      for (var i = 0; i < posts.length; i++) {
+        if (posts[i].userId !== null) {
+          returnData["items"].push({
+            type : "chat_room",
+            data : posts[i].chatRoomId,
+          });
+        }
+      }
+
+      console.log("returning chats");
+      return res.status(200).json(returnData);
     }catch(err){
       console.log(err);
       return res.status(500).send("server error");
@@ -298,70 +288,61 @@ router.post('/chat/openList', async (req, res) => {
 
 
 
-router.post('/chat/roomData', async (req : Request, res : Response) => {
+router.post('/chat/roomData', confirmTokenValid, async (req : Request, res : Response) => {
     console.log(" => user fetching chat room data")
       try{
         const token = req.body.token;
         const chatRoomId = req.body.chatRoomId;
         const userIpAddress : string = req.headers['x-forwarded-for'] as string;
         const onlyUpdateChangeable = req.body.onlyUpdateChangeable;
-  
-        const result = await testToken(token,userIpAddress);
-        const vaildToken : boolean = result.valid;
-        const userId : string | undefined = result.userId;
+        const userId : string = req.body.tokenUserId;
   
         
       
-        if (vaildToken) { // user token is valid
-          var itemData = await databases.chat_rooms.findOne({chatRoomId: chatRoomId})
-    
-          if (itemData === null) {
-            console.log("invalid chat room");
-            return res.status(404).send("invalid chat room");
-          }
-    
-          if ((itemData.users as Array<any>).includes(userId) === false){
-            console.log("user not in chat room");
-            return res.status(403).send("user not in chat room");
-          }
-
-
-          //used so there is less code on client
-          let privateChatOtherUser = null;
-          if (itemData["privateChat"] === true){
-              //it is a private chat so get data about it
-              if (itemData.users[0] !== userId){
-                privateChatOtherUser = itemData.users[0]
-              }else{
-                privateChatOtherUser = itemData.users[1]
-              }   
-          }
+        var itemData = await databases.chat_rooms.findOne({chatRoomId: chatRoomId})
   
-          console.log("sending post data");
-          if (onlyUpdateChangeable === true) {
-            return res.status(200).json({
-              chatRoomId : itemData.chatRoomId,
-              lastMessage : itemData.lastMessage,
-              users : itemData.users,
-              chatName : itemData.chatName,
-              privateChatOtherUser : privateChatOtherUser,
-            });
-          }
+        if (itemData === null) {
+          console.log("invalid chat room");
+          return res.status(404).send("invalid chat room");
+        }
+  
+        if ((itemData.users as Array<any>).includes(userId) === false){
+          console.log("user not in chat room");
+          return res.status(403).send("user not in chat room");
+        }
+
+
+        //used so there is less code on client
+        let privateChatOtherUser = null;
+        if (itemData["privateChat"] === true){
+            //it is a private chat so get data about it
+            if (itemData.users[0] !== userId){
+              privateChatOtherUser = itemData.users[0]
+            }else{
+              privateChatOtherUser = itemData.users[1]
+            }   
+        }
+
+        console.log("sending post data");
+        if (onlyUpdateChangeable === true) {
           return res.status(200).json({
             chatRoomId : itemData.chatRoomId,
-            privateChat : itemData.privateChat,
             lastMessage : itemData.lastMessage,
             users : itemData.users,
             chatName : itemData.chatName,
             privateChatOtherUser : privateChatOtherUser,
-
-            
           });
-    
-        }else{
-          console.log("invalid token");
-          return res.status(401).send("invalid token");
         }
+        return res.status(200).json({
+          chatRoomId : itemData.chatRoomId,
+          privateChat : itemData.privateChat,
+          lastMessage : itemData.lastMessage,
+          users : itemData.users,
+          chatName : itemData.chatName,
+          privateChatOtherUser : privateChatOtherUser,
+
+          
+        });
       }catch(err){
         console.log(err);
         return res.status(500).send("server error")
@@ -369,78 +350,65 @@ router.post('/chat/roomData', async (req : Request, res : Response) => {
   })
 
 
-  router.post('/chat/openChat', async (req : Request, res : Response) => {
+  router.post('/chat/openChat', confirmTokenValid, async (req : Request, res : Response) => {
     console.log(" => user opening chat")
       try{
-        const token = req.body.token;
         const chatUserId = req.body.chatUserId;
-        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-  
-        const result = await testToken(token,userIpAddress);
-        const vaildToken : boolean = result.valid;
-        const userId : string | undefined = result.userId;
-  
-        
+        const userId : string | undefined = req.body.tokenUserId;
       
-        if (vaildToken) { // user token is valid
-          var chatRoomData = await databases.chat_rooms.findOne({privateChat : true, users : { "$all" : [userId, chatUserId]} })
-    
-          var otherUserData = await databases.user_data.findOne({userId : chatUserId})
-
-          //make sure other users exist
-          if (otherUserData === null){
-            console.log("other user not found");
-            return res.status(404).send("other user not found");
-          }
-
-          if (userId == chatUserId){
-            console.log("cannot be same user");
-            return res.status(400).send("cannot be same user");
-          }
-
-          var chatRoomId = "";
-          if (chatRoomData === null) {
-            //need to make chatroom
-            while (true) {
-              chatRoomId = generateRandomString(16);
-              var testingChatRoomData = await databases.chat_rooms.findOne({chatRoomId : chatRoomId})
-              if (testingChatRoomData === null){
-                break
-              }
-              console.log("chat room id already in use trying another")
-              
-            }
-
-            const response = await databases.chat_rooms.insertOne({
-              "creationDate": Date.now(),
-              "chatRoomId": chatRoomId,
-              "chatName": "",
-              "privateChat": true,
-              "lastMessage": 0,
-              "users": [
-                userId,
-                chatUserId
-              ]
-            })
-
-            if (response.acknowledged == false){
-              console.log("failed creating chat");
-              return res.status(500).send("failed creating chat");
-            }
-
-          }else{
-            chatRoomId = chatRoomData.chatRoomId;
-          }
+        var chatRoomData = await databases.chat_rooms.findOne({privateChat : true, users : { "$all" : [userId, chatUserId]} })
   
-          console.log("sending chat data");
-          return res.status(200).json({
-            chatRoomId : chatRoomId,
-          });
-    
-        }else{
-          console.log("invalid token");
-          return res.status(401).send("invalid token");
+        var otherUserData = await databases.user_data.findOne({userId : chatUserId})
+
+        //make sure other users exist
+        if (otherUserData === null){
+          console.log("other user not found");
+          return res.status(404).send("other user not found");
         }
+
+        if (userId == chatUserId){
+          console.log("cannot be same user");
+          return res.status(400).send("cannot be same user");
+        }
+
+        var chatRoomId = "";
+        if (chatRoomData === null) {
+          //need to make chatroom
+          while (true) {
+            chatRoomId = generateRandomString(16);
+            var testingChatRoomData = await databases.chat_rooms.findOne({chatRoomId : chatRoomId})
+            if (testingChatRoomData === null){
+              break
+            }
+            console.log("chat room id already in use trying another")
+            
+          }
+
+          const response = await databases.chat_rooms.insertOne({
+            "creationDate": Date.now(),
+            "chatRoomId": chatRoomId,
+            "chatName": "",
+            "privateChat": true,
+            "lastMessage": 0,
+            "users": [
+              userId,
+              chatUserId
+            ]
+          })
+
+          if (response.acknowledged == false){
+            console.log("failed creating chat");
+            return res.status(500).send("failed creating chat");
+          }
+
+        }else{
+          chatRoomId = chatRoomData.chatRoomId;
+        }
+
+        console.log("sending chat data");
+        return res.status(200).json({
+          chatRoomId : chatRoomId,
+        });
       }catch(err){
         console.log(err);
         return res.status(500).send("server error")
