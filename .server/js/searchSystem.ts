@@ -1,68 +1,56 @@
 import express from 'express';
 const router = express.Router();
 import { databases } from './database';
-import { testToken } from './userLogin';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
+import { confirmTokenValid } from './securityUtils';
 
 
 
-router.post('/search/users', async (req, res) => {
+router.post('/search/users', confirmTokenValid, async (req, res) => {
     console.log(" => user searching")
       try{
         const searchText = req.body.searchText;
-        const token = req.body.token;
         const startPosPost = req.body.startPosPost;
         let startPosInfo: number = 100000000000000
-
-        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-
-        const result = await testToken(token,userIpAddress);
-        const validToken : boolean = result.valid;
-        const userId : string | undefined = result.userId;
+        const userId : string | undefined = req.body.tokenUserId;
       
-        if (validToken) { // user token is valid
-          if (startPosPost) {
-            if (startPosPost.type === "user" && !startPosPost.data){
-              console.log("invalid start user")
-              return res.status(400).send("invalid start user");
-            }
-  
-            const startPosPostData = await databases.user_data.findOne({ userId: startPosPost.data })
-            if (startPosPostData === null){
-              console.log("invalid start user")
-              return res.status(400).send("invalid start user");
-            }
-              
-            startPosInfo = startPosPostData.creationDate;
-          }
-    
-          const dataReturning = await databases.user_data.find({ creationDate: { $lt: startPosInfo}}).sort({creationDate : -1}).limit(15).toArray();
-          let returnData = {
-            "items": [] as { type: string; data: string;}[]
-          }
-     
-          if (dataReturning.length == 0) {
-            console.log("nothing to fetch");
+        if (startPosPost) {
+          if (startPosPost.type === "user" && !startPosPost.data){
+            console.log("invalid start user")
+            return res.status(400).send("invalid start user");
           }
 
-
-          for (var i = 0; i < dataReturning.length; i++) {
-            if (dataReturning[i].userId !== null) {
-              returnData["items"].push({
-                type : "user",
-                data : dataReturning[i].userId,
-              });
-            }
+          const startPosPostData = await databases.user_data.findOne({ userId: startPosPost.data })
+          if (startPosPostData === null){
+            console.log("invalid start user")
+            return res.status(400).send("invalid start user");
           }
-          
-          console.log("returning users");
-          return res.status(200).json(returnData);
-    
-        }else{
-          console.log("invalid token");
-          return res.status(401).send("invalid token");
+            
+          startPosInfo = startPosPostData.creationDate;
         }
+  
+        const dataReturning = await databases.user_data.find({ creationDate: { $lt: startPosInfo}}).sort({creationDate : -1}).limit(15).toArray();
+        let returnData = {
+          "items": [] as { type: string; data: string;}[]
+        }
+    
+        if (dataReturning.length == 0) {
+          console.log("nothing to fetch");
+        }
+
+
+        for (var i = 0; i < dataReturning.length; i++) {
+          if (dataReturning[i].userId !== null) {
+            returnData["items"].push({
+              type : "user",
+              data : dataReturning[i].userId,
+            });
+          }
+        }
+        
+        console.log("returning users");
+        return res.status(200).json(returnData);
       }catch(err){
         console.log(err);
         return res.status(500).send("server error");

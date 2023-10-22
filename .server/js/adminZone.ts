@@ -6,11 +6,11 @@ import nodemailer from "nodemailer";
 import { generateRandomString } from "./utilFunctions";
 import { createUser, banAccount } from "./userAccounts";
 import express from 'express';
-import { testToken } from "./userLogin";
 import { databases } from "./database";
 import { sendMail } from "./mailsender";
 import { testUsername } from "./validInputTester";
 import { BlobOptions } from "buffer";
+import { confirmTokenValid } from "./securityUtils";
 const router: express.Router = express.Router();
 
 
@@ -34,46 +34,33 @@ async function testUserAdmin(userId: string){
 
 
 
-router.post('/admin/banUser', async (req, res) => {
+router.post('/admin/banUser', confirmTokenValid, async (req, res) => {
   console.log(" => admin creating user")
     try{
-        const token = req.body.token;
         const userIdBanning = req.body.userId;
         const banReason = req.body.reason;
         const banTime = req.body.time;
+        const userId : string | undefined = req.body.tokenUserId;
 
-        const userIpAddress : string = req.headers['x-forwarded-for'] as string;
+        var userData = await databases.user_data.findOne({ userId: userId}); 
 
-        const result = await testToken(token,userIpAddress);
-        const validToken : boolean = result.valid;
-        const userId : string | undefined = result.userId;
-      
-        if (validToken) { // user token is valid
+        if (userData === null) {
+            console.log("tokens user not found");
+            return res.status(500).send("tokens user not found");
+        }
 
-            var userData = await databases.user_data.findOne({ userId: userId}); 
+        if (userData.administrator !== true) {
+            console.log("user not admin");
+            return res.status(403).send("you are not an admin");
+        }
 
-            if (userData === null) {
-                console.log("tokens user not found");
-                return res.status(500).send("tokens user not found");
-            }
-
-            if (userData.administrator !== true) {
-                console.log("user not admin");
-                return res.status(403).send("you are not an admin");
-            }
-
-            
-            if (await banAccount(userIdBanning,parseInt(banTime),banReason)){
-                console.log("user banned");
-                return res.status(200).send("user banned");
-            }else{
-                console.log("user not banned");
-                return res.status(400).send("user not banned");
-            }
-
+        
+        if (await banAccount(userIdBanning,parseInt(banTime),banReason)){
+            console.log("user banned");
+            return res.status(200).send("user banned");
         }else{
-          console.log("user token is invalid");
-          return res.status(401).send("invalid token");
+            console.log("user not banned");
+            return res.status(400).send("user not banned");
         }
     }catch(err){
       console.log(err);

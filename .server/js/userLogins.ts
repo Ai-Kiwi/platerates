@@ -14,6 +14,7 @@ import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { Store } from 'express-rate-limit';
 import { buffer } from 'stream/consumers';
+import { confirmTokenValid } from './securityUtils';
 
 require('dotenv').config();
 
@@ -61,7 +62,7 @@ async function updateUserPassword(rawEmail : string, newPassword : string) {
   }
 }
 
-async function testToken(token : string,ipAddress : string){
+async function testTokenValid(token : string,ipAddress : string){
   try{
     let decoded;
     try{
@@ -132,7 +133,7 @@ async function testToken(token : string,ipAddress : string){
 
 
 // POST method route
-router.post('/login', async (req, res) => {
+router.post('/login', async (req : Request, res : Response) => {
   console.log(" => user attempting login")
   try{
 
@@ -257,42 +258,30 @@ router.post('/login', async (req, res) => {
   }
 })
 
-router.post('/login/logout', async (req, res) => {
+router.post('/login/logout', [confirmTokenValid], async (req : Request, res : Response) => {
   console.log(" => user log out")
     try{
-      const token = req.body.token;
-      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
-
-      const result = await testToken(token,userIpAddress);
-      const vaildToken : boolean = result.valid;
-      const userId : string | undefined = result.userId;
+      const userId : string | undefined = req.body.tokenUserId;
       
       
-      if (vaildToken) { // user token is valid
-
-        //fetch the user credentials
-        const userCreds = await databases.user_credentials.findOne({ userId :  userId})
-        if (userCreds === null) {
-          console.log("no user found");
-          return res.status(404).send("no user found");
-        
-        }
-
-        const newTokenNotExpiredCode : string = await generateRandomString(16);
-        const reponse = await databases.user_credentials.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode, deviceNotificationTokens : []}})
-        if (reponse.acknowledged === true){
-          console.log("user logged out")
-          return res.status(200).send("user logged out");
-        }else{
-          console.log("failed to logout user");
-          return res.status(500).send("failed to logout user");
-        }
-
-  
-      }else{
-        console.log("invalid token");
-        return res.status(401).send("invalid token");
+      //fetch the user credentials
+      const userCreds = await databases.user_credentials.findOne({ userId :  userId})
+      if (userCreds === null) {
+        console.log("no user found");
+        return res.status(404).send("no user found");
+      
       }
+
+      const newTokenNotExpiredCode : string = await generateRandomString(16);
+      const reponse = await databases.user_credentials.updateOne({userId : userId}, { $set: {tokenNotExpiredCode : newTokenNotExpiredCode, deviceNotificationTokens : []}})
+      if (reponse.acknowledged === true){
+        console.log("user logged out")
+        return res.status(200).send("user logged out");
+      }else{
+        console.log("failed to logout user");
+        return res.status(500).send("failed to logout user");
+      }
+
     }catch(err){
       console.log(err);
       return res.status(500).send("server error");
@@ -300,23 +289,12 @@ router.post('/login/logout', async (req, res) => {
 })
 
 
-router.post('/testToken', async (req, res) => {
+router.post('/testToken', confirmTokenValid, async (req, res) => {
   console.log(" => user testing token")
-  const token = req.body.token;
-  const userIpAddress : string = req.headers['x-forwarded-for'] as string;
 
+  console.log("vaild token");
+  return res.status(200).send("vaild token");
 
-  const result = await testToken(token,userIpAddress);
-  const vaildToken : boolean = result.valid;
-  const userId : string | undefined = result.userId;
-
-  if(vaildToken){
-    console.log("vaild token");
-    return res.status(200).send("vaild token");
-  }else{
-    console.log("invalid token");
-    return res.status(401).send("invalid token");
-  }
   
 })
 
@@ -491,7 +469,7 @@ router.get('/reset-password', async (req, res) => {
 })
 
 export {
-    router,
-    testToken,
-    updateUserPassword,
+  router,
+  testTokenValid,
+  updateUserPassword,
 };
