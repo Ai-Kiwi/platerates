@@ -34,7 +34,10 @@ class DataCollect {
         if (response.statusCode == 200) {
           //if true do nothing and then it will display
           jsonData = jsonDecode(response.body);
-          await jsonCache.refresh(cacheCode, {"data": response.body});
+          await jsonCache.refresh(cacheCode, {
+            "data": response.body,
+            "lastUpdated": DateTime.timestamp().millisecondsSinceEpoch
+          });
         } else {
           ErrorHandler.httpError(response.statusCode, response.body, context);
           if (expectError == false) {
@@ -56,10 +59,19 @@ class DataCollect {
   }
 
   Future<bool> updateData(Map headers, String url, String cacheCode, context,
-      bool expectError) async {
+      bool expectError, Duration cacheLiveTime) async {
     var dataUpdated = false;
     var headersUsing = headers;
     headersUsing['onlyUpdateChangeable'] = true;
+
+    var cachedData = await jsonCache.value(cacheCode);
+    if (cachedData != null) {
+      if (cachedData["lastUpdated"] >
+          DateTime.timestamp().millisecondsSinceEpoch -
+              cacheLiveTime.inMilliseconds) {
+        return false;
+      }
+    }
 
     final response = await http.post(Uri.parse(url),
         headers: <String, String>{
@@ -79,7 +91,10 @@ class DataCollect {
         }
       });
 
-      await jsonCache.refresh(cacheCode, {"data": jsonEncode(inputData)});
+      await jsonCache.refresh(cacheCode, {
+        "data": jsonEncode(inputData),
+        "lastUpdated": DateTime.timestamp().millisecondsSinceEpoch
+      });
     } else {
       ErrorHandler.httpError(response.statusCode, response.body, context);
       if (expectError == false) {
@@ -106,7 +121,7 @@ class DataCollect {
       'token': userManager.token,
       'userId': userId,
     }, "$serverDomain/profile/basicData", 'basicUserData-$userId', context,
-        expectError);
+        expectError, const Duration(minutes: 15));
   }
 
   Future<Map> getUserData(String? userId, context, expectError) async {
@@ -120,7 +135,8 @@ class DataCollect {
     return updateData({
       'token': userManager.token,
       'userId': userId,
-    }, "$serverDomain/profile/data", 'userData-$userId', context, expectError);
+    }, "$serverDomain/profile/data", 'userData-$userId', context, expectError,
+        const Duration(hours: 24));
   }
 
   Future<Map> getPostData(String? postId, context, expectError) async {
@@ -134,7 +150,8 @@ class DataCollect {
     return updateData({
       'token': userManager.token,
       'postId': postId,
-    }, "$serverDomain/post/data", 'post-$postId', context, expectError);
+    }, "$serverDomain/post/data", 'post-$postId', context, expectError,
+        const Duration(minutes: 15));
   }
 
   Future<Map> getRatingData(String? ratingId, context, expectError) async {
@@ -150,7 +167,7 @@ class DataCollect {
       'token': userManager.token,
       'ratingId': ratingId,
     }, "$serverDomain/post/rating/data", 'rating-$ratingId', context,
-        expectError);
+        expectError, const Duration(minutes: 15));
   }
 
   Future<Map> getAvatarData(String? avatarId, context, expectError) async {
@@ -176,7 +193,7 @@ class DataCollect {
       'token': userManager.token,
       'chatRoomId': chatRoomId,
     }, "$serverDomain/chat/roomData", 'chatRoomId-$chatRoomId', context,
-        expectError);
+        expectError, const Duration(milliseconds: 0));
   }
 }
 
