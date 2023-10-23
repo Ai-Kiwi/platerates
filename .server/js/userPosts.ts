@@ -7,10 +7,10 @@ import { userTimeout, userTimeoutTest } from './timeouts';
 import { testUserAdmin } from './adminZone';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
-import { confirmTokenValid } from './securityUtils';
+import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 
 
-router.post('/post/upload', confirmTokenValid, async (req : Request, res : Response) => {
+router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
     console.log(" => user uploading post");
     try{
       const title = req.body.title;
@@ -111,7 +111,7 @@ router.post('/post/upload', confirmTokenValid, async (req : Request, res : Respo
 
 
 
-router.post('/post/data', confirmTokenValid, async (req : Request, res : Response) => {
+router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching post data")
     try{
       const postId = req.body.postId;
@@ -168,7 +168,7 @@ router.post('/post/data', confirmTokenValid, async (req : Request, res : Respons
 
 
 
-router.post('/post/delete', confirmTokenValid, async (req, res) => {
+router.post('/post/delete', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user deleteing post")
     try{
       const postId = req.body.postId;
@@ -205,7 +205,7 @@ router.post('/post/delete', confirmTokenValid, async (req, res) => {
 
 
 
-router.post('/post/feed', confirmTokenValid, async (req, res) => {
+router.post('/post/feed', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching feed")
     try{
       const startPosPost = req.body.startPosPost;

@@ -9,7 +9,7 @@ import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/loadScreen.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:Toaster/main.dart';
-import 'package:Toaster/userSettings.dart';
+import 'package:Toaster/userProfile/userSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';

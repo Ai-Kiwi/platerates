@@ -8,7 +8,7 @@ import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { error } from 'console';
 import { sendNotification } from './notificationSystem';
-import { confirmTokenValid } from './securityUtils';
+import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 
 
 async function updatePostRating(rootItem : {data : string, type : string}){
@@ -59,7 +59,7 @@ async function updatePostRating(rootItem : {data : string, type : string}){
 
 
 
-router.post('/post/rating/delete', confirmTokenValid, async (req, res) => {
+router.post('/post/rating/delete', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching rating data")
     try{
       //const parentItem = req.body.parentItem; ------not yet added
@@ -99,7 +99,7 @@ router.post('/post/rating/delete', confirmTokenValid, async (req, res) => {
 
 
 
-router.post('/post/rating/data', confirmTokenValid, async (req, res) => {
+router.post('/post/rating/data', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching rating data")
     try{
       //const parentItem = req.body.parentItem; ------not yet added
@@ -173,7 +173,7 @@ router.post('/post/rating/data', confirmTokenValid, async (req, res) => {
 
 
 
-router.post('/post/rating/like', confirmTokenValid, async (req : Request, res : Response) => {
+router.post('/post/rating/like', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user liking/unliking post")
   try{
     const tryingToLike = req.body.liking;
@@ -245,7 +245,7 @@ router.post('/post/rating/like', confirmTokenValid, async (req : Request, res : 
 
 
 
-router.post('/post/rating/upload', confirmTokenValid, async (req, res) => {
+router.post('/post/rating/upload', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching post ratings")
     try{
       //const parentItem = req.body.parentItem; ------not yet added
@@ -400,7 +400,7 @@ router.post('/post/rating/upload', confirmTokenValid, async (req, res) => {
 
 
 
-router.post('/post/ratings', confirmTokenValid, async (req, res) => {
+router.post('/post/ratings', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching post ratings")
     try{
       //const parentItem = req.body.parentItem; ------not yet added

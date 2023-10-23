@@ -8,7 +8,7 @@ import { userTimeout, userTimeoutTest } from './timeouts';
 import { cleanEmailAddress, testUsername } from './validInputTester';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
-import { appCheckVerification, confirmTokenValid } from './securityUtils';
+import { appCheckVerification, confirmActiveAccount, confirmTokenValid } from './securityUtils';
 import nodemailer from "nodemailer";
 import { sendMail } from './mailsender';
 
@@ -27,7 +27,7 @@ async function sendNoticeToAccount(userId : string, text : string, title : strin
   }
 }
 
-router.post('/profile/basicData', [confirmTokenValid], async (req : Request, res : Response) => {
+router.post('/profile/basicData', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching profile")
   try{
     const userId = req.body.userId;
@@ -64,7 +64,7 @@ router.post('/profile/basicData', [confirmTokenValid], async (req : Request, res
 
 
 
-router.post('/profile/settings/change', [confirmTokenValid], async (req : Request, res : Response) => {
+router.post('/profile/settings/change', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user profile setting change")
   try{
     const setting = req.body.setting;
@@ -211,7 +211,7 @@ router.post('/profile/settings/change', [confirmTokenValid], async (req : Reques
 
 
 
-router.post('/profile/data', [confirmTokenValid], async (req : Request, res : Response) => {
+router.post('/profile/data', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
     console.log(" => user fetching profile")
     try{
       let userId = req.body.userId;
@@ -283,7 +283,7 @@ router.post('/profile/data', [confirmTokenValid], async (req : Request, res : Re
     }
 })
 
-router.post('/profile/avatar', [confirmTokenValid], async (req : Request, res : Response) => {
+router.post('/profile/avatar', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching avatar")
   try{
     const avatarId = req.body.avatarId;
@@ -311,7 +311,7 @@ router.post('/profile/avatar', [confirmTokenValid], async (req : Request, res : 
   }
 })
 
-router.post('/profile/posts', [confirmTokenValid], async (req : Request, res : Response) => {
+router.post('/profile/posts', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user fetching posts on profile")
   try{
     const startPosPost = req.body.startPosPost;
@@ -363,7 +363,7 @@ router.post('/profile/posts', [confirmTokenValid], async (req : Request, res : R
   }
 })
 
-router.post('/profile/follow', [confirmTokenValid], async (req : Request, res : Response) => {
+router.post('/profile/follow', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user following/unfollowing user")
   try{
     const tryingToFollow = req.body.following;

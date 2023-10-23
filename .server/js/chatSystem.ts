@@ -6,7 +6,7 @@ import mongoDB, { Int32 } from "mongodb";
 import { Request, Response } from "express";
 import { sendNotification, sendNotificationToDevices } from "./notificationSystem";
 import { testTokenValid } from "./userLogins";
-import { confirmTokenValid } from "./securityUtils";
+import { confirmActiveAccount, confirmTokenValid } from "./securityUtils";
 
 
 let wsClients : Record<string, any> = []
@@ -238,7 +238,7 @@ router.ws('/chatWs', function(ws, req) {
 //}),
 
 
-router.post('/chat/openList', confirmTokenValid, async (req, res) => {
+router.post('/chat/openList', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
     console.log(" => user fetching feed")
     try{
       const startPosPost = req.body.startPosPost;
@@ -288,7 +288,7 @@ router.post('/chat/openList', confirmTokenValid, async (req, res) => {
 
 
 
-router.post('/chat/roomData', confirmTokenValid, async (req : Request, res : Response) => {
+router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
     console.log(" => user fetching chat room data")
       try{
         const token = req.body.token;
@@ -350,7 +350,7 @@ router.post('/chat/roomData', confirmTokenValid, async (req : Request, res : Res
   })
 
 
-  router.post('/chat/openChat', confirmTokenValid, async (req : Request, res : Response) => {
+  router.post('/chat/openChat', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
     console.log(" => user opening chat")
       try{
         const chatUserId = req.body.chatUserId;

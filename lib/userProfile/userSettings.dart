@@ -2,9 +2,9 @@ import 'package:Toaster/accountInfoSettings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../main.dart';
-import 'libs/smoothTransitions.dart';
-import 'login/userResetPassword.dart';
+import '../../main.dart';
+import '../libs/smoothTransitions.dart';
+import '../login/userResetPassword.dart';
 
 class UserSettings extends StatefulWidget {
   const UserSettings({super.key});

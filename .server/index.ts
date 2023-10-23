@@ -7,9 +7,9 @@ import bodyParser from 'body-parser';
 import firebase, { database } from 'firebase-admin'
 
 const limiter = rateLimit({
-	//windowMs: 3 * 60 * 1000, // 3 minutes
-  windowMs: 3 * 1000, // 3 seconds (bassicly disabled)
-	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	windowMs: 3 * 60 * 1000, // 3 minutes
+  //windowMs: 3 * 1000, // 3 seconds (bassicly disabled)
+	max: 200, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: 'Too many requests, please try again later.',
@@ -22,31 +22,7 @@ require('dotenv').config();
 
 
 const clientVersion: string = "1.1.0+3";
-const Licenses = {
-  CommunityGuidelines : {
-    name : "Community Guidelines",
-    url : "https://toaster.aikiwi.dev/CommunityGuidelines",
-    revision : 1,
-  },
-  deleteData : {
-    name : "Data Deletion Policy",
-    url : "https://toaster.aikiwi.dev/deleteData",
-    revision : 3,
-  },
-  privacyPolicy : {
-    name : "Privacy Policy",
-    url : "https://toaster.aikiwi.dev/privacyPolicy",
-    revision : 3,
-  },
-  termsofService : {
-    name : "Terms Of Service",
-    url : "https://toaster.aikiwi.dev/termsofService",
-    revision : 1,
-  },
-}
-
-
-
+//make sure to update lisesnes on securityUtil file
 
 //setup app
 const app = express()
@@ -97,30 +73,43 @@ firebase.initializeApp({
 
 //createUser("demouser@aikiwi.dev","xZb2VQyvgBV8#24axwVLaOHwDHzKv@az","demo user")
 
-import {router as pagesRouter} from "./pages";
-import {router as userLoginRouter} from "./js/userLogins";
-
-import {router as userPostsRouter} from "./js/userPosts";
-import {router as userAccountsRouter} from "./js/userAccounts";
-import {router as userPostRatingRouter} from "./js/userRating";
-import {router as reportRouter} from "./js/report";
-import {router as adminZoneRouter} from "./js/adminZone";
-import {router as searchSystemRouter} from "./js/searchSystem";
-import {router as notificationSystem} from "./js/notificationSystem";
-import {router as chatSystem} from "./js/chatSystem"; 
-
 app.use('/', limiter)
+
+import {router as pagesRouter} from "./pages";
 app.use('/', pagesRouter)
 
+import {router as userLoginRouter} from "./js/userLogins";
 app.use('/', userLoginRouter);
+
+import {router as licensesRouter} from "./js/licenses";
+app.use('/', licensesRouter)
+
+import {router as userPostsRouter} from "./js/userPosts";
 app.use('/', userPostsRouter);
+
+import {router as userAccountsRouter} from "./js/userAccounts";
 app.use('/', userAccountsRouter);
+
+import {router as userPostRatingRouter} from "./js/userRating";
 app.use('/', userPostRatingRouter);
+
+import {router as reportRouter} from "./js/report";
 app.use('/', reportRouter);
+
+import {router as adminZoneRouter} from "./js/adminZone";
 app.use('/', adminZoneRouter);
+
+import {router as searchSystemRouter} from "./js/searchSystem";
 app.use('/', searchSystemRouter);
+
+import {router as notificationSystem} from "./js/notificationSystem";
 app.use('/', notificationSystem);
+
+import {router as chatSystem} from "./js/chatSystem"; 
 app.use('/', chatSystem);
+
+
+
 
 
 app.listen(port, () => {

@@ -55,6 +55,7 @@ late String appName;
 late String packageName;
 late String version;
 late String buildNumber;
+bool acceptedAllLicenses = true;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -348,6 +349,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //see if notifcation has been clicked and if so display it
     testNotificationOnBootData(context);
+
+    if (acceptedAllLicenses == false) {
+      return PromptUserToAcceptNewLicenses();
+    }
 
     return Scaffold(
         extendBody: true,
