@@ -533,13 +533,16 @@ class _UserProfileState extends State<UserProfile> {
               ],
             ),
             widgetAddedToEnd: const Center(
-              child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-                  child: Text(
-                    "end of posts.",
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  )),
-            ),
+                child: Column(
+              children: [
+                SizedBox(height: 16),
+                Text(
+                  "end of posts",
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+                SizedBox(height: 128),
+              ],
+            )),
             widgetAddedToBlank: const Center(
               child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),

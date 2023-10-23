@@ -171,6 +171,9 @@ class DataCollect {
   }
 
   Future<Map> getAvatarData(String? avatarId, context, expectError) async {
+    if (avatarId == null) {
+      return {};
+    }
     print('sending $avatarId');
     return getData({
       'token': userManager.token,
