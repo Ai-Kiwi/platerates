@@ -7,9 +7,9 @@ import bodyParser from 'body-parser';
 import firebase, { database } from 'firebase-admin'
 
 const limiter = rateLimit({
-	windowMs: 3 * 60 * 1000, // 3 minutes
+	windowMs: 10 * 60 * 1000, // 3 minutes
   //windowMs: 3 * 1000, // 3 seconds (bassicly disabled)
-	max: 200, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: 'Too many requests, please try again later.',
@@ -21,7 +21,7 @@ const limiter = rateLimit({
 require('dotenv').config();
 
 
-const clientVersion: string = "1.1.0+3";
+const clientVersion: string = "1.1.0+4";
 //make sure to update lisesnes on securityUtil file
 
 //setup app
