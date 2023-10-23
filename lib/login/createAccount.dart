@@ -181,7 +181,7 @@ class _createAccountPageState extends State<createAccountPage> {
                                         // reset password
                                         onPressed: () {
                                           launchUrl(Uri.parse(
-                                              "$serverDomain/termsOfService"));
+                                              "$serverDomain/CommunityGuidelines"));
                                         },
                                         style: OutlinedButton.styleFrom(
                                           //minimumSize:
@@ -191,7 +191,7 @@ class _createAccountPageState extends State<createAccountPage> {
                                         child: RichText(
                                           text: const TextSpan(
                                             text:
-                                                'I agree to community guidelines. ',
+                                                'I agree to follow community guidelines. ',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16,

@@ -6,11 +6,11 @@ import { Request, Response } from "express";
 import { databases } from'./database';
 import { generateRandomString } from'./utilFunctions';
 import { sendMail } from'./mailsender';
-import { confirmTokenValid } from './securityUtils';
+import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 
 
 
-router.post('/report', confirmTokenValid, async (req, res) => {
+router.post('/report', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user reporting item")
   try{
     const reportItem = req.body.reportItem;

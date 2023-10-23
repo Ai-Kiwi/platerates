@@ -1,5 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
+import 'package:Toaster/libs/alertSystem.dart';
+import 'package:Toaster/libs/errorHandler.dart';
+import 'package:Toaster/login/userLogin.dart';
 import 'package:Toaster/main.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 //import 'package:android_package_installer/android_package_installer.dart';
@@ -241,7 +246,7 @@ class migrateToAppPage extends StatelessWidget {
                 fontSize: 35,
               ),
             ),
-            Icon(
+            const Icon(
               Icons.system_update,
               color: Colors.white,
               size: 100,
@@ -314,5 +319,259 @@ class migrateToAppPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class PromptUserToAcceptNewLicenses extends StatefulWidget {
+  const PromptUserToAcceptNewLicenses({super.key});
+
+  @override
+  _PromptUserToAcceptNewLicensesState createState() =>
+      _PromptUserToAcceptNewLicensesState();
+}
+
+class _PromptUserToAcceptNewLicensesState
+    extends State<PromptUserToAcceptNewLicenses> with WidgetsBindingObserver {
+  List _lisensesToAccept = [
+    //"CommunityGuidelines",
+    //"deleteData",
+    //"privacyPolicy",
+    //"termsofService"
+  ];
+  Map<String, dynamic> latestLisenseVersions = {};
+  bool _loading = true;
+
+  Future<void> _acceptedNewLisenses() async {
+    final response = await http.post(
+      Uri.parse('$serverDomain/licenses/update'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "token": userManager.token,
+        "licenses": latestLisenseVersions,
+      }),
+    );
+    // ignore: use_build_context_synchronously
+    Phoenix.rebirth(context);
+    if (response.statusCode == 200) {
+      acceptedAllLicenses = true;
+      Phoenix.rebirth(context);
+    } else {
+      await ErrorHandler.httpError(response.statusCode, response.body, context);
+      openAlert(
+          "error", "failed updating licenses", response.body, context, null);
+
+      //FirebaseCrashlytics.instance.crash();
+    }
+  }
+
+  Future<void> _fetchData() async {
+    final response = await http.post(
+      Uri.parse('$serverDomain/licenses/unaccepted'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        "token": userManager.token,
+      }),
+    );
+    if (response.statusCode == 200) {
+      var dataFetched = response.body;
+      latestLisenseVersions = jsonDecode(dataFetched);
+      print(dataFetched);
+      setState(() {
+        latestLisenseVersions.forEach((key, value) {
+          _lisensesToAccept.add(key);
+        });
+        _loading = false;
+      });
+    } else {
+      await ErrorHandler.httpError(response.statusCode, response.body, context);
+      openAlert("error", "failed getting new licenses", null, context, null);
+
+      //FirebaseCrashlytics.instance.crash();
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Color.fromRGBO(16, 16, 16, 1),
+        body: SafeArea(
+            child: Center(
+                child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 32),
+            const Text(
+              "license updates",
+              style: TextStyle(color: Colors.white, fontSize: 35),
+            ),
+            Expanded(
+                child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: _loading == false
+                  ? ListView.builder(
+                      itemCount: _lisensesToAccept.length,
+                      itemBuilder: (context, index) {
+                        if (_lisensesToAccept[index] == "CommunityGuidelines") {
+                          return ListTile(
+                              title: const Text("Community Guidelines",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18)),
+                              subtitle: const Text(
+                                  "Our Community Guidelines outline the standards and expectations for respectful and positive interactions within our online community.",
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 12)),
+                              trailing: const Icon(Icons.arrow_forward_rounded,
+                                  color: Colors.white, size: 40),
+                              onTap: () {
+                                launchUrl(Uri.parse(
+                                    "$serverDomain/CommunityGuidelines"));
+                              });
+                        } else if (_lisensesToAccept[index] == "deleteData") {
+                          return ListTile(
+                              title: const Text("Data Deletion Policy",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18)),
+                              subtitle: const Text(
+                                  "Our Data Privacy Policy explains how we handle and protect your personal information, ensuring your data is safe and used responsibly.",
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 12)),
+                              trailing: const Icon(Icons.arrow_forward_rounded,
+                                  color: Colors.white, size: 40),
+                              onTap: () {
+                                launchUrl(
+                                    Uri.parse("$serverDomain/deleteData"));
+                              });
+                        } else if (_lisensesToAccept[index] ==
+                            "privacyPolicy") {
+                          return ListTile(
+                              title: const Text("Privacy Policy",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18)),
+                              subtitle: const Text(
+                                  "Our Data Privacy Policy explains how we handle and protect your personal information, ensuring your data is safe and used responsibly.",
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 12)),
+                              trailing: const Icon(Icons.arrow_forward_rounded,
+                                  color: Colors.white, size: 40),
+                              onTap: () {
+                                launchUrl(
+                                    Uri.parse("$serverDomain/privacyPolicy"));
+                              });
+                        } else if (_lisensesToAccept[index] ==
+                            "termsofService") {
+                          return ListTile(
+                              title: const Text("Terms Of Service",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18)),
+                              subtitle: const Text(
+                                  "Our Terms of Service detail the legal agreement between you and our platform, governing your usage and responsibilities as a user.",
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 12)),
+                              trailing: const Icon(Icons.arrow_forward_rounded,
+                                  color: Colors.white, size: 40),
+                              onTap: () {
+                                launchUrl(Uri.parse(
+                                    "$serverDomain/CommunityGuidelines"));
+                              });
+                        }
+                        throw Exception("unkown lisence");
+                      },
+                    )
+                  : const Expanded(
+                      child: Center(child: CircularProgressIndicator())),
+
+              //ListView(
+              //  children: [
+              //    TextButton(
+              //      // reset password
+              //      onPressed: () {
+              //        launchUrl(Uri.parse("$serverDomain/termsOfService"));
+              //      },
+              //      style: OutlinedButton.styleFrom(
+              //        //minimumSize:
+              //        //    Size.infinite, // Set this
+              //        padding: EdgeInsets.zero, // and this
+              //      ),
+              //      child: RichText(
+              //        text: const TextSpan(
+              //          text: 'community guidelines. ',
+              //          style: TextStyle(
+              //            color: Colors.white,
+              //            fontSize: 16,
+              //          ),
+              //          children: <TextSpan>[
+              //            TextSpan(
+              //              text: 'View here',
+              //              style: TextStyle(
+              //                fontWeight: FontWeight.normal,
+              //                color: Colors.blue,
+              //                fontSize: 16,
+              //              ),
+              //            ),
+              //          ],
+              //        ),
+              //      ),
+              //    ),
+              //  ],
+              //),
+            )),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: SizedBox(
+                width: 350,
+                height: 50,
+                child: ElevatedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (latestLisenseVersions["termsofService"] == null) {
+                      _acceptedNewLisenses();
+                    } else {
+                      openAlert(
+                          "yes_or_no",
+                          "accept terms of service",
+                          "By clicking 'Yes,' you confirm your agreement to follow our legally binding Terms of Service.",
+                          context, {
+                        "yes": () {
+                          Navigator.pop(context);
+                          _acceptedNewLisenses();
+                        },
+                        "no": () {
+                          Navigator.pop(context);
+                        },
+                      });
+                    }
+                  },
+                  child: const Text(
+                    "Accept new licences",
+                    style: TextStyle(fontSize: 16.0),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ))));
   }
 }

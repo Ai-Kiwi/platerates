@@ -3,11 +3,11 @@ const router = express.Router();
 import { databases } from './database';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
-import { confirmTokenValid } from './securityUtils';
+import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 
 
 
-router.post('/search/users', confirmTokenValid, async (req, res) => {
+router.post('/search/users', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
     console.log(" => user searching")
       try{
         const searchText = req.body.searchText;

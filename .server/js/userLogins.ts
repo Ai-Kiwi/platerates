@@ -14,7 +14,7 @@ import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { Store } from 'express-rate-limit';
 import { buffer } from 'stream/consumers';
-import { confirmTokenValid } from './securityUtils';
+import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 
 require('dotenv').config();
 
@@ -153,12 +153,6 @@ router.post('/login', async (req : Request, res : Response) => {
     const hashedPassword : string = userData.hashedPassword;
     const passwordSalt : string = userData.passwordSalt;
     const userId : string = userData.userId;
-
-    //look if account is banned
-    if (userData.accountBanExpiryDate > Date.now()){
-      console.log("account is banned")
-      return res.status(403).send(`account banned for ${ millisecondsToTime( userData.accountBanExpiryDate - Date.now() ) }\nReason: ${userData.accountBanReason}`);
-    }
 
     //the way this works is abit werid so ima explain it.
     //when a login it failed a counter storeing recent failed logins will increase, depending on how high this value is a time will be set for when the account will be unlocked out, worth noting when that time expires this counter will not go back down.

@@ -1,10 +1,9 @@
 import express from 'express';
 const router = express.Router();
 import { databases } from "./database";
-import mongoDB from "mongodb";
 import { generateRandomString } from "./utilFunctions";
 import firebase from 'firebase-admin'
-import { confirmTokenValid } from './securityUtils';
+import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 
 // Create a list containing up to 500 registration tokens.
 // These registration tokens come from the client FCM SDKs.
@@ -72,7 +71,7 @@ async function fetchUsername(userId : string){
 }
 
 
-router.post('/notification/updateDeviceToken', confirmTokenValid, async (req, res) => {
+router.post('/notification/updateDeviceToken', [confirmTokenValid, confirmActiveAccount], async (req : any, res : any) => {
   console.log(" => user update device token")
     try{
       const newToken = req.body.newToken;
@@ -81,11 +80,13 @@ router.post('/notification/updateDeviceToken', confirmTokenValid, async (req, re
       const response = await databases.user_data.updateOne({userId : userId},{ $set: {deviceNotificationTokens : [newToken]}});
 
       console.log("updated")
-      return res.status(200).send("updated token");
+      res.status(200).send("updated token");
+      return;
 
     }catch(err){
       console.log(err);
-      return res.status(500).send("server error");
+      res.status(500).send("server error");
+      return;
     }
 })
 
@@ -158,7 +159,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
 }
 
 
-router.post('/notification/list', confirmTokenValid, async (req, res) => {
+router.post('/notification/list', [confirmTokenValid, confirmActiveAccount], async (req : any, res : any) => {
     console.log(" => user fetching notifications")
       try{
         const searchText = req.body.searchText;
@@ -212,7 +213,7 @@ router.post('/notification/list', confirmTokenValid, async (req, res) => {
   })
 
 
-router.post('/notification/read', confirmTokenValid, async (req, res) => {
+router.post('/notification/read', [confirmTokenValid, confirmActiveAccount], async (req : any, res : any) => {
   console.log(" => user marking notification as read")
     try{
       const notificationId = req.body.notificationId;
@@ -247,11 +248,9 @@ router.post('/notification/read', confirmTokenValid, async (req, res) => {
     }
 })
 
-router.post('/notification/unreadCount', confirmTokenValid, async (req, res) => {
+router.post('/notification/unreadCount', [confirmTokenValid, confirmActiveAccount], async (req : any, res : any) => {
   console.log(" => user marking notification as read")
     try{
-      const token = req.body.token;
-      const userIpAddress : string = req.headers['x-forwarded-for'] as string;
       const userId : string | undefined = req.body.tokenUserId;
     
       let unreadCount = await databases.user_notifications.countDocuments({read : false, receiverId : userId});
