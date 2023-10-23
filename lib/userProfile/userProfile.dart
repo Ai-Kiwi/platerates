@@ -197,11 +197,17 @@ class _UserProfileState extends State<UserProfile> {
       }),
     );
     if (response.statusCode == 200) {
-      //setState(() {
-      //  userFollowing = newFollowState;
-      //});
-      await _fetchAndUpdateProfile();
-    } else {}
+      setState(() {
+        userFollowing = newFollowState;
+        if (newFollowState == true) {
+          followersCount = followersCount + 1;
+        } else {
+          followersCount = followersCount - 1;
+        }
+      });
+    } else {
+      openAlert("error", "failed to change follow state", null, context, null);
+    }
   }
 
   @override
