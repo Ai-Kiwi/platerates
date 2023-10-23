@@ -96,14 +96,16 @@ class _UserFeedState extends State<userFeed> {
         //    ]),
       ])),
       widgetAddedToEnd: const Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-          child: Text(
+          child: Column(
+        children: [
+          SizedBox(height: 16),
+          Text(
             "end of feed",
             style: TextStyle(color: Colors.white, fontSize: 25),
           ),
-        ),
-      ),
+          SizedBox(height: 128),
+        ],
+      )),
       widgetAddedToBlank: const Center(
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
