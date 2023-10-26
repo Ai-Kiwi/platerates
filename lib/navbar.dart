@@ -43,12 +43,12 @@ class UserNavbar extends StatelessWidget {
           const BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_outline),
             activeIcon: Icon(Icons.chat_bubble),
-            label: 'chat',
+            label: 'Chat',
           ),
           const BottomNavigationBarItem(
             icon: Icon(Icons.add_outlined),
             activeIcon: Icon(Icons.add),
-            label: 'create',
+            label: 'Create',
           ),
           BottomNavigationBarItem(
             icon: FittedBox(
@@ -81,12 +81,12 @@ class UserNavbar extends StatelessWidget {
               ),
             ),
             activeIcon: Icon(Icons.notifications),
-            label: 'notifications',
+            label: 'Notifications',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person_outlined),
             activeIcon: Icon(Icons.person),
-            label: 'profile',
+            label: 'Profile',
           ),
         ],
         currentIndex: selectedIndex,
