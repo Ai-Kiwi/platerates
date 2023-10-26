@@ -63,15 +63,16 @@ async function confirmActiveAccount(req : Request, res : Response, next : NextFu
     const userId = req.body.tokenUserId;
 
     const userData = await databases.user_data.findOne({ userId : userId })
+    const userDataCredentials = await databases.user_credentials.findOne({ userId : userId })
 
-    if (userData == null){
+    if (userData == null || userDataCredentials == null){
         console.log("user id from token invalid")
         res.status(404).send(`user id from token invalid`);
         return;
     }
 
     //test if account is banned
-    if (userData.accountBanExpiryDate > Date.now()){
+    if (userDataCredentials.accountBanExpiryDate > Date.now()){
         console.log("account is banned")
         res.status(403).send(`account banned`);
         return;
