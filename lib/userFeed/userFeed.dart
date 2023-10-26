@@ -60,7 +60,7 @@ class _UserFeedState extends State<userFeed> {
               activeFgColor: Colors.white,
               inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
               inactiveFgColor: Colors.white,
-              labels: const ['popular posts', 'followers posts'],
+              labels: const ['Recent Posts', 'Followers Posts'],
               onToggle: changePageOpen,
             ),
           ),

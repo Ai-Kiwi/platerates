@@ -521,7 +521,7 @@ The Toaster Team`);
           await databases.account_create_requests.deleteOne({requestId : requestId}) 
 
           console.log("account created");
-          return res.status(200).send("user created");   
+          return res.status(200).send("user created\ncheck your emails");   
       }else{
           console.log("failed sending email");
           return res.status(500).send("failed to send email");
