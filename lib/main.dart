@@ -56,6 +56,7 @@ late String packageName;
 late String version;
 late String buildNumber;
 bool acceptedAllLicenses = true;
+bool accountBanned = false;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -352,6 +353,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (acceptedAllLicenses == false) {
       return PromptUserToAcceptNewLicenses();
+    } else if (accountBanned == true) {
+      return PromptUserBanned();
     }
 
     return Scaffold(

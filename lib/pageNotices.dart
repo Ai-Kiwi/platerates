@@ -575,3 +575,71 @@ class _PromptUserToAcceptNewLicensesState
         ))));
   }
 }
+
+class PromptUserBanned extends StatefulWidget {
+  const PromptUserBanned({super.key});
+
+  @override
+  _PromptPromptUserBannedState createState() => _PromptPromptUserBannedState();
+}
+
+class _PromptPromptUserBannedState extends State<PromptUserBanned> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 60),
+          const Center(
+            child: Text(
+              "Account Banned",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 30),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              "We regret to inform you that your Toaster account has been suspended due to violations of our community guidelines and terms of service.\n\nIMPORTANT: Please refrain from creating another account to circumvent this suspension, as it is strictly prohibited and will result in further actions being taken against you.\n\nIf you believe this suspension is in error or wish to discuss the matter further, please contact our support team at toaster@aikiwi.dev.\n\nYour cooperation in adhering to our platform's rules is essential for maintaining a positive and respectful user environment.",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+              child: Center(
+            child: ElevatedButton(
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+              ),
+              onPressed: () async {
+                accountBanned = false;
+                Phoenix.rebirth(context);
+              },
+              child: const Text(
+                "retry",
+                style: TextStyle(fontSize: 16.0),
+              ),
+            ),
+          ))
+        ],
+      ),
+    );
+  }
+}

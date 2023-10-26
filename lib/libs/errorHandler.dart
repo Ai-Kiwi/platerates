@@ -9,6 +9,9 @@ class errorHandlerClass {
     } else if (errorMessage == "not accepted licenses") {
       acceptedAllLicenses = false;
       Phoenix.rebirth(context);
+    } else if (errorMessage == "account banned") {
+      accountBanned = true;
+      Phoenix.rebirth(context);
     }
   }
 }
