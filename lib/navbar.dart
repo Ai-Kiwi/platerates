@@ -80,7 +80,7 @@ class UserNavbar extends StatelessWidget {
                 ],
               ),
             ),
-            activeIcon: Icon(Icons.notifications),
+            activeIcon: const Icon(Icons.notifications),
             label: 'Notifications',
           ),
           const BottomNavigationBarItem(

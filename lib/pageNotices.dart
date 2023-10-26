@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/errorHandler.dart';
@@ -9,7 +8,6 @@ import 'package:Toaster/main.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 //import 'package:android_package_installer/android_package_installer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
@@ -326,6 +324,7 @@ class PromptUserToAcceptNewLicenses extends StatefulWidget {
   const PromptUserToAcceptNewLicenses({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _PromptUserToAcceptNewLicensesState createState() =>
       _PromptUserToAcceptNewLicensesState();
 }
@@ -356,9 +355,12 @@ class _PromptUserToAcceptNewLicensesState
     Phoenix.rebirth(context);
     if (response.statusCode == 200) {
       acceptedAllLicenses = true;
+      // ignore: use_build_context_synchronously
       Phoenix.rebirth(context);
     } else {
+      // ignore: use_build_context_synchronously
       await ErrorHandler.httpError(response.statusCode, response.body, context);
+      // ignore: use_build_context_synchronously
       openAlert(
           "error", "failed updating licenses", response.body, context, null);
 
@@ -379,7 +381,6 @@ class _PromptUserToAcceptNewLicensesState
     if (response.statusCode == 200) {
       var dataFetched = response.body;
       latestLisenseVersions = jsonDecode(dataFetched);
-      print(dataFetched);
       setState(() {
         latestLisenseVersions.forEach((key, value) {
           _lisensesToAccept.add(key);
@@ -387,7 +388,9 @@ class _PromptUserToAcceptNewLicensesState
         _loading = false;
       });
     } else {
+      // ignore: use_build_context_synchronously
       await ErrorHandler.httpError(response.statusCode, response.body, context);
+      // ignore: use_build_context_synchronously
       openAlert("error", "failed getting new licenses", null, context, null);
 
       //FirebaseCrashlytics.instance.crash();
@@ -396,7 +399,6 @@ class _PromptUserToAcceptNewLicensesState
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fetchData();
   }
@@ -404,7 +406,7 @@ class _PromptUserToAcceptNewLicensesState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(16, 16, 16, 1),
+        backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: SafeArea(
             child: Center(
                 child: Column(
@@ -586,7 +588,6 @@ class PromptUserBanned extends StatefulWidget {
 class _PromptPromptUserBannedState extends State<PromptUserBanned> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
