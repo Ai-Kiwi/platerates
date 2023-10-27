@@ -19,8 +19,8 @@ async function sendNotificationToDevices(title : String, body : String, channelI
     const avatarData = await databases.user_data.findOne({ userId: userIds[i] });
     
     if (avatarData !== null){
-      if (avatarData!.deviceNotificationTokens !== null){
-        avatarData!.deviceNotificationTokens.forEach((element : String) => {
+      if (avatarData.deviceNotificationTokens != undefined){
+        avatarData.deviceNotificationTokens.forEach((element : String) => {
           registrationTokens.push(element);
         });
       }
