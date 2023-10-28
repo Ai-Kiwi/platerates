@@ -3,6 +3,7 @@ import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { RegExpMatcher, TextCensor, englishDataset, englishRecommendedTransformers, } from 'obscenity';
 import validator from 'validator';
+import { reportError } from './errorHandler';
 
 async function testUsername(username : string){
   try{
@@ -60,7 +61,7 @@ async function testUsername(username : string){
     };
 
   }catch(err){
-    console.log(err)
+    reportError(err);
     return {
       valid: false,
       reason : "unkown error"

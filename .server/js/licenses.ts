@@ -6,7 +6,7 @@ import nodemailer from "nodemailer";
 import { sendMail } from './mailsender';
 import mongoDB from "mongodb";
 import { databases } from "./database";
-import { json } from 'stream/consumers';
+import { reportError } from './errorHandler';
 
 
 
@@ -39,7 +39,7 @@ router.post('/licenses/unaccepted', [confirmTokenValid], async (req : Request, r
         return res.status(200).send(JSON.stringify(LicensesToUpdate))
       
     }catch(err){
-      console.log(err);
+    reportError(err);
       return res.status(500).send("server error")
     }
 })
@@ -101,8 +101,8 @@ router.post('/licenses/update', [confirmTokenValid], async (req : Request, res :
 
       
     }catch(err){
-      console.log(err);
-      return res.status(500).send("server error")
+        reportError(err);
+        return res.status(500).send("server error")
     }
 })
 

@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import { sendNotification, sendNotificationToDevices } from "./notificationSystem";
 import { testTokenValid } from "./userLogins";
 import { confirmActiveAccount, confirmTokenValid } from "./securityUtils";
+import { reportError } from "./errorHandler";
 
 
 let wsClients : Record<string, any> = []
@@ -196,13 +197,12 @@ router.ws('/chatWs', function(ws, req) {
         }
         
     }catch (err){
-        console.log("server error")
-        console.log(err);
-        ws.send(JSON.stringify({
-            success : false,
-            reason : "server error"
-        }));
-        ws.close();
+      reportError(err);
+      ws.send(JSON.stringify({
+          success : false,
+          reason : "server error"
+      }));
+      ws.close();
     }
     });
 
@@ -281,7 +281,7 @@ router.post('/chat/openList', [confirmTokenValid, confirmActiveAccount], async (
       console.log("returning chats");
       return res.status(200).json(returnData);
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })
@@ -344,7 +344,7 @@ router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (
           
         });
       }catch(err){
-        console.log(err);
+        reportError(err);
         return res.status(500).send("server error")
       }
   })
@@ -410,7 +410,7 @@ router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (
           chatRoomId : chatRoomId,
         });
       }catch(err){
-        console.log(err);
+        reportError(err);
         return res.status(500).send("server error")
       }
   })

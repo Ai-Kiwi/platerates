@@ -11,6 +11,7 @@ import { Request, Response } from "express";
 import { appCheckVerification, confirmActiveAccount, confirmTokenValid } from './securityUtils';
 import nodemailer from "nodemailer";
 import { sendMail } from './mailsender';
+import { reportError } from './errorHandler';
 
 async function sendNoticeToAccount(userId : string, text : string, title : string){
   const collection: mongoDB.Collection = databases.account_notices.collection('account_notices');
@@ -57,7 +58,7 @@ router.post('/profile/basicData', [confirmTokenValid, confirmActiveAccount], asy
     });
     
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })
@@ -150,7 +151,7 @@ router.post('/profile/settings/change', [confirmTokenValid, confirmActiveAccount
 
 
       } catch (err) {
-        console.log(err)
+        reportError(err);
         return res.status(500).send('error saving avatar image');
       }
 
@@ -204,7 +205,7 @@ router.post('/profile/settings/change', [confirmTokenValid, confirmActiveAccount
     }
     
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })
@@ -278,7 +279,7 @@ router.post('/profile/data', [confirmTokenValid, confirmActiveAccount], async (r
       });
       
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error")
     }
 })
@@ -306,7 +307,7 @@ router.post('/profile/avatar', [confirmTokenValid, confirmActiveAccount], async 
     });
     
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })
@@ -358,7 +359,7 @@ router.post('/profile/posts', [confirmTokenValid, confirmActiveAccount], async (
     return res.status(200).json(returnData);
 
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })
@@ -426,7 +427,7 @@ router.post('/profile/follow', [confirmTokenValid, confirmActiveAccount], async 
       }
     }
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })
@@ -451,7 +452,7 @@ async function banAccount(userId : string,time : number,reason : string) {
     }
     
   }catch(err){
-    console.log(err);
+    reportError(err);
     return false
   }
 }
@@ -536,7 +537,7 @@ The Toaster Team`);
 
 
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error");
   }
 })
@@ -627,7 +628,7 @@ If you need any help with this or someone is spamming you with these you can rea
     }
 
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })
@@ -650,7 +651,7 @@ async function createUser(rawEmail : string,password : string, username : string
           emailInUse = false;
         }
       }catch(err){
-        console.log(err);
+        reportError(err);
       }
   
       if(emailInUse===true){
@@ -679,7 +680,7 @@ async function createUser(rawEmail : string,password : string, username : string
             invalidUserId = false;
           }
         }catch(err){
-          console.log(err);
+          reportError(err);
         }
       }
      
@@ -719,7 +720,7 @@ async function createUser(rawEmail : string,password : string, username : string
   
 
     }catch (err){
-      console.log(err);
+      reportError(err);
       return false;
     }
     //phone number

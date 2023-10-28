@@ -15,6 +15,7 @@ import { Request, Response } from "express";
 import { Store } from 'express-rate-limit';
 import { buffer } from 'stream/consumers';
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
+import { reportError } from './errorHandler';
 
 require('dotenv').config();
 
@@ -56,8 +57,8 @@ async function updateUserPassword(rawEmail : string, newPassword : string) {
       return false;
     }
 
-  } catch (error) {
-    console.log('Error updating password:', error);
+  } catch (err) {
+    reportError(err);
     return false;
   }
 }
@@ -68,7 +69,6 @@ async function testTokenValid(token : string,ipAddress : string){
     try{
       decoded = jwt.verify(token, privateKey) as { userId: string, tokenNotExpiredCode: string, ipAddress: string } ;
     }catch (err){
-      console.log(err);
       return {
         valid: false,
         userId: "",
@@ -120,7 +120,7 @@ async function testTokenValid(token : string,ipAddress : string){
     };
 
   }catch(err){
-    console.log(err);
+    reportError(err);
     return {      
       valid: false,
       userId: "",
@@ -247,7 +247,7 @@ router.post('/login', async (req : Request, res : Response) => {
       return res.status(401).send("invalid login credentials"); //incorrect login
     }
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(401).send("invalid login credentials");
   }
 })
@@ -277,7 +277,7 @@ router.post('/login/logout', [confirmTokenValid], async (req : Request, res : Re
       }
 
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })
@@ -388,7 +388,7 @@ router.post('/login/reset-password', async (req, res) => {
       return res.status(500).send("server error");
     }
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error");
   }
 })
@@ -457,7 +457,7 @@ router.get('/reset-password', async (req, res) => {
 
 
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error");
   }
 })

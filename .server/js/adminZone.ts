@@ -11,6 +11,7 @@ import { sendMail } from "./mailsender";
 import { testUsername } from "./validInputTester";
 import { BlobOptions } from "buffer";
 import { confirmTokenValid } from "./securityUtils";
+import { reportError } from "./errorHandler";
 const router: express.Router = express.Router();
 
 
@@ -63,7 +64,7 @@ router.post('/admin/banUser', confirmTokenValid, async (req, res) => {
             return res.status(400).send("user not banned");
         }
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error")
     }
 })

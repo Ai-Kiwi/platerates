@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { reportError } from "./errorHandler";
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
@@ -25,7 +26,7 @@ async function sendMail(from : string,to : string,subject : string,text : string
         console.log("Message sent: %s", info.messageId);
         return info;
     }catch (err){
-        console.log(err);
+        reportError(err);
         return null
     }
 }

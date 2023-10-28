@@ -8,6 +8,7 @@ import { testUserAdmin } from './adminZone';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
+import { reportError } from './errorHandler';
 
 
 router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
@@ -76,7 +77,7 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
 
 
       } catch (err) {
-        console.log(err)
+        reportError(err);
         return res.status(500).send('error saving image');
       }
 
@@ -103,7 +104,7 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
       }
     
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error")
     }
   
@@ -161,7 +162,7 @@ router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req 
         posterId : itemData.posterUserId
       });
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error")
     }
 })
@@ -198,7 +199,7 @@ router.post('/post/delete', [confirmTokenValid, confirmActiveAccount], async (re
       }
   
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error")
     }
 })
@@ -228,6 +229,9 @@ router.post('/post/feed', [confirmTokenValid, confirmActiveAccount], async (req 
         startPosPostDate = startPosPostData.postDate;
       }
 
+      reportError("failed with error");
+
+
       let posts : any[] = [];
       if (pageFetching === "popular"){
         posts = await databases.posts.find({ postDate: { $lt: startPosPostDate}}).sort({postDate: -1}).limit(5).toArray();
@@ -242,8 +246,6 @@ router.post('/post/feed', [confirmTokenValid, confirmActiveAccount], async (req 
           usersFollowing.push(userData.followee);
           
         }
-
-        console.table(usersFollowing);
 
         posts = await databases.posts.find({ postDate: { $lt: startPosPostDate}, posterUserId : {$in : usersFollowing}}).sort({postDate: -1}).limit(5).toArray();
 
@@ -273,7 +275,7 @@ router.post('/post/feed', [confirmTokenValid, confirmActiveAccount], async (req 
       return res.status(200).json(returnData);
       
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })

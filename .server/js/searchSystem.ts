@@ -4,6 +4,7 @@ import { databases } from './database';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
+import { reportError } from './errorHandler';
 
 
 
@@ -52,7 +53,7 @@ router.post('/search/users', [confirmTokenValid, confirmActiveAccount], async (r
         console.log("returning users");
         return res.status(200).json(returnData);
       }catch(err){
-        console.log(err);
+        reportError(err);
         return res.status(500).send("server error");
       }
   })

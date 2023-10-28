@@ -9,6 +9,7 @@ import { Request, Response } from "express";
 import { error } from 'console';
 import { sendNotification } from './notificationSystem';
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
+import { reportError } from './errorHandler';
 
 
 async function updatePostRating(rootItem : {data : string, type : string}){
@@ -92,7 +93,7 @@ router.post('/post/rating/delete', [confirmTokenValid, confirmActiveAccount], as
       }
         
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })
@@ -165,7 +166,7 @@ router.post('/post/rating/data', [confirmTokenValid, confirmActiveAccount], asyn
       });
 
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })
@@ -238,7 +239,7 @@ router.post('/post/rating/like', [confirmTokenValid, confirmActiveAccount], asyn
     }
 
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })
@@ -393,7 +394,7 @@ router.post('/post/rating/upload', [confirmTokenValid, confirmActiveAccount], as
       }
 
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })
@@ -468,7 +469,7 @@ router.post('/post/ratings', [confirmTokenValid, confirmActiveAccount], async (r
       return res.status(200).json(returnData);
 
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })
