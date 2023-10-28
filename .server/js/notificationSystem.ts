@@ -4,12 +4,13 @@ import { databases } from "./database";
 import { generateRandomString } from "./utilFunctions";
 import firebase from 'firebase-admin'
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
+import { reportError } from './errorHandler';
 
 // Create a list containing up to 500 registration tokens.
 // These registration tokens come from the client FCM SDKs.
 
 
-async function sendNotificationToDevices(title : String, body : String, channelId : String, userIds : Array<String>, notificationId : String | undefined) {
+async function sendNotificationToDevices(title : String, body : String, channelId : String, userIds : Array<String>, notificationId : String) {
   console.log("sending notifications to devices")
   
   const registrationTokens : Array<String> = [];
@@ -84,7 +85,7 @@ router.post('/notification/updateDeviceToken', [confirmTokenValid, confirmActive
       return;
 
     }catch(err){
-      console.log(err);
+      reportError(err);
       res.status(500).send("server error");
       return;
     }
@@ -154,7 +155,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
         }
 
     }catch (err){
-        console.log(err);
+      reportError(err);
     }
 }
 
@@ -207,7 +208,7 @@ router.post('/notification/list', [confirmTokenValid, confirmActiveAccount], asy
         return res.status(200).json(returnData);
   
       }catch(err){
-        console.log(err);
+        reportError(err);
         return res.status(500).send("server error");
       }
   })
@@ -243,7 +244,7 @@ router.post('/notification/read', [confirmTokenValid, confirmActiveAccount], asy
       }
 
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })
@@ -269,7 +270,7 @@ router.post('/notification/unreadCount', [confirmTokenValid, confirmActiveAccoun
 
         
     }catch(err){
-      console.log(err);
+      reportError(err);
       return res.status(500).send("server error");
     }
 })

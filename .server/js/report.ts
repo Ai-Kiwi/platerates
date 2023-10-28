@@ -7,6 +7,7 @@ import { databases } from'./database';
 import { generateRandomString } from'./utilFunctions';
 import { sendMail } from'./mailsender';
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
+import { reportError } from './errorHandler';
 
 
 
@@ -104,7 +105,7 @@ router.post('/report', [confirmTokenValid, confirmActiveAccount], async (req : R
 
 
       }catch (err){
-        console.log(err);
+        reportError(err);
       }
 
       console.log("reported");
@@ -115,7 +116,7 @@ router.post('/report', [confirmTokenValid, confirmActiveAccount], async (req : R
     }
 
   }catch(err){
-    console.log(err);
+    reportError(err);
     return res.status(500).send("server error")
   }
 })

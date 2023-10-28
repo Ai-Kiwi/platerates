@@ -72,6 +72,13 @@ Future<void> sendNotification(
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker');
+  } else if (channelId == "admin") {
+    androidNotificationDetails =
+        AndroidNotificationDetails(channelId, "admin notifications",
+            //following stuff makes sure it plays sound and what not
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
   }
 
   if (androidNotificationDetails != null) {
