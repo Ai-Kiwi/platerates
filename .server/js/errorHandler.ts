@@ -10,7 +10,7 @@ async function reportError(error){
 
     adminUsers.forEach(element => {
         const userIdValue : String = element.userId;
-        sendNotificationToDevices("server crash",`${error}`.toString(),"admin",[userIdValue],"undefined")
+        sendNotificationToDevices("server error",`${error}`.toString(),"admin",[userIdValue],"undefined")
     });
 
 

@@ -229,7 +229,7 @@ router.post('/post/feed', [confirmTokenValid, confirmActiveAccount], async (req 
         startPosPostDate = startPosPostData.postDate;
       }
 
-      reportError("failed with error");
+
 
 
       let posts : any[] = [];
