@@ -26,7 +26,7 @@ class _notificationPageListState extends State<notificationPageList> {
           Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
               child: Text(
-                "notifications",
+                "Notifications",
                 style: TextStyle(color: Colors.white, fontSize: 40),
               )),
           Divider(
@@ -39,7 +39,7 @@ class _notificationPageListState extends State<notificationPageList> {
           children: [
             SizedBox(height: 16),
             Text(
-              "end of notifications",
+              "End of notifications",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             SizedBox(height: 128),
@@ -49,7 +49,7 @@ class _notificationPageListState extends State<notificationPageList> {
           child: Padding(
               padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
               child: Text(
-                "no notifications",
+                "No notifications",
                 style: TextStyle(color: Colors.white, fontSize: 25),
               )),
         ),
