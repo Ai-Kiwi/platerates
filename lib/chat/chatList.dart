@@ -4,6 +4,7 @@ import 'package:Toaster/chat/openChat.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:Toaster/libs/userAvatar.dart';
+import 'package:Toaster/main.dart';
 import 'package:flutter/material.dart';
 //import 'package:http/http.dart' as http;
 
@@ -66,6 +67,7 @@ class _chatBarItemState extends State<chatBarItem> {
     //jsonData = jsonDecode(notificationData);
     super.initState();
     _fetchAndUpdateOpenChatData();
+    updateUnreadNotificationCount();
   }
 
   _chatBarItemState({required this.chatItem});

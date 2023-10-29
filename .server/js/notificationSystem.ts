@@ -5,6 +5,7 @@ import { generateRandomString } from "./utilFunctions";
 import firebase from 'firebase-admin'
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 import { reportError } from './errorHandler';
+import { report } from 'process';
 
 // Create a list containing up to 500 registration tokens.
 // These registration tokens come from the client FCM SDKs.
@@ -253,6 +254,37 @@ router.post('/notification/unreadCount', [confirmTokenValid, confirmActiveAccoun
   console.log(" => user marking notification as read")
     try{
       const userId : string | undefined = req.body.tokenUserId;
+
+      //fetch unread messages
+      let newChatMessages = await databases.chat_rooms.aggregate([
+        {
+            $match: {
+                $and: [
+                    {
+                        $expr: { $ne: ["$lastMessage", `$usersLastReadMessage.${userId}`] }
+                    },
+                    {
+                      "users": { $in: [userId] } // field3 contains "itemToFind"
+                    }
+                ]
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                count: { $sum: 1 }
+            }
+        }
+      ]).toArray();
+
+      let unreadMessages = 0;
+      if (newChatMessages != null){
+        if (newChatMessages[0] != undefined){
+          if (newChatMessages[0].count != undefined){
+            unreadMessages = newChatMessages[0].count
+          }
+        }
+      }
     
       let unreadCount = await databases.user_notifications.countDocuments({read : false, receiverId : userId});
 
@@ -261,7 +293,8 @@ router.post('/notification/unreadCount', [confirmTokenValid, confirmActiveAccoun
       if (unreadCount != null){
         console.log("marked notification read");
         return res.status(200).json({
-          unreadCount : unreadCount
+          unreadCount : unreadCount,
+          newChatMessages : unreadMessages
         });
       }else{
         console.log("error marking read");

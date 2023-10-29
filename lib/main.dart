@@ -299,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   int unreadNotificationCount = 0;
-  int unreadMessageCount = 0;
+  int unreadMessagesCount = 0;
 
   Future<void> _updateUnreadNotificationCount() async {
     var response = await http.post(
@@ -319,6 +319,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (mounted) {
         setState(() {
           unreadNotificationCount = jsonData['unreadCount'];
+          unreadMessagesCount = jsonData['newChatMessages'];
           //unreadMessageCount = jsonData['unreadMessageCount'];
         });
       }
@@ -364,6 +365,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         bottomNavigationBar: UserNavbar(
           notificationCount: unreadNotificationCount,
+          unreadMessagesCount: unreadMessagesCount,
           selectedIndex: _selectedIndex,
           onClicked: _onItemSelected,
         ));
