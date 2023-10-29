@@ -119,7 +119,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
 
             if (response.acknowledged === true){
               const notificationDataFromDatabase = await databases.user_notifications.findOne({ notificationId: notificationId })
-              sendNotificationToDevices(`toast rating`,`${await fetchUsername(notificationData.userId!)} rated your toast`,`userRating`,[notificationData.receiverId], notificationId)
+              sendNotificationToDevices(`Toast rating`,`${await fetchUsername(notificationData.userId!)} rated your toast`,`userRating`,[notificationData.receiverId], notificationId)
               console.log("sent notification");
             }else{
               console.log("failed sending notification");
@@ -145,7 +145,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
 
             if (response.acknowledged === true){
               const notificationDataFromDatabase = await databases.user_notifications.findOne({ notificationId: notificationId })
-              sendNotificationToDevices(`message reply`,`${await fetchUsername(notificationData.userId!)} replied to you`,`userComment`,[notificationData.receiverId], notificationId)
+              sendNotificationToDevices(`Message reply`,`${await fetchUsername(notificationData.userId!)} replied to you`,`userComment`,[notificationData.receiverId], notificationId)
               console.log("sent notification");
             }else{
               console.log("failed sending notification");
