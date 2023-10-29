@@ -21,6 +21,7 @@ class _chatBarItemState extends State<chatBarItem> {
   var chatRoomImageData;
   bool dataLoaded =
       false; //this really needs to be added lmao but will do when so and so what not
+  bool unreadMessages = true;
   String chatRoomName = "";
 
   Future<void> _fetchOpenChatData() async {
@@ -39,6 +40,10 @@ class _chatBarItemState extends State<chatBarItem> {
 
         if (avatarData["imageData"] != null) {
           chatRoomImageData = base64Decode(avatarData["imageData"]);
+        }
+        if (dataGatherd["relativeViewerData"] != null) {
+          unreadMessages =
+              dataGatherd["relativeViewerData"]["hasUnreadMessages"];
         }
 
         dataLoaded = true;
@@ -89,8 +94,9 @@ class _chatBarItemState extends State<chatBarItem> {
                       Expanded(
                           child: Text(
                         chatRoomName,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 20),
+                        style: unreadMessages
+                            ? const TextStyle(color: Colors.white, fontSize: 20)
+                            : const TextStyle(color: Colors.grey, fontSize: 20),
                       )),
                     ],
                   ),
