@@ -362,9 +362,6 @@ router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (
         //relative data
         var hasUnreadMessages = true;
         if (userId in itemData.usersLastReadMessage){
-          console.log(itemData.usersLastReadMessage[userId])
-          console.log(itemData.lastMessage)
-          console.log(itemData.usersLastReadMessage[userId] !== itemData.lastMessage)
           if (itemData.usersLastReadMessage[userId] !== itemData.lastMessage){
             hasUnreadMessages = true;
           }else{

@@ -4,12 +4,14 @@ class UserNavbar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onClicked;
   final int notificationCount;
+  final int unreadMessagesCount;
 
   const UserNavbar(
       {super.key,
       required this.selectedIndex,
       required this.onClicked,
-      required this.notificationCount});
+      required this.notificationCount,
+      required this.unreadMessagesCount});
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +42,37 @@ class UserNavbar extends StatelessWidget {
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            activeIcon: Icon(Icons.chat_bubble),
+          BottomNavigationBarItem(
+            icon: FittedBox(
+              child: Stack(
+                alignment: Alignment.topLeft,
+                children: [
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Icon(Icons.chat_bubble_outline),
+                  ),
+                  Visibility(
+                    visible: unreadMessagesCount > 0.9,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Colors.red),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(
+                          "$unreadMessagesCount",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            activeIcon: const Icon(Icons.chat_bubble),
             label: 'Chat',
           ),
           const BottomNavigationBarItem(
