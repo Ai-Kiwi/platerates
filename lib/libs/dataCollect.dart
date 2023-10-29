@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -198,6 +199,15 @@ class DataCollect {
     }, "$serverDomain/chat/roomData", 'chatRoomId-$chatRoomId', context,
         expectError, const Duration(milliseconds: 0));
   }
+
+  //not had a chance todo for anything yet
+  //will add for the following
+  //chatroom
+  //user settings change
+  //really any notifcations
+  //Future<void> clearCacheForItem(String cacheName) async {
+  //  jsonCache.remove(cacheName);
+  //}
 }
 
 DataCollect dataCollect = DataCollect();

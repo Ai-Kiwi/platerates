@@ -74,6 +74,22 @@ router.ws('/chatWs', function(ws, req) {
                         }
                     }));
 
+                    const mostRecentMessage = await databases.chat_messages.find({ chatRoomId : jsonData["chatRoomId"] }).sort({sendTime : -1}).limit(1).toArray();
+                    if (mostRecentMessage != null){
+                      if (mostRecentMessage[0] != undefined){
+                        const valueToSet = {}
+                        valueToSet[`usersLastReadMessage.${userId}`] = mostRecentMessage[0].messageId;
+
+                        await databases.chat_rooms.updateOne({
+                          chatRoomId : jsonData["chatRoomId"],
+                        },{
+                           $set: valueToSet,
+                        })
+                      }
+                    }
+                    
+
+
                 }else{
                     ws.send(JSON.stringify({
                         success : false,
@@ -128,8 +144,12 @@ router.ws('/chatWs', function(ws, req) {
             }
 
 
-
+            
             const messageDatabaseResponse = await databases.chat_messages.insertOne(dataSending)
+            const dataUpdatingOnChatRoom = {
+              "lastMessageTime" : sendTime,
+              "lastMessage" : messageId,
+            }
 
             if (messageDatabaseResponse.acknowledged === true){
                 if (wsClients[connectionId].chatRoomId){
@@ -152,6 +172,10 @@ router.ws('/chatWs', function(ws, req) {
                           if (usersToSendTo.indexOf(wsClients[key].userId) != undefined){
                             usersToSendTo.splice(usersToSendTo.indexOf(wsClients[key].userId));
                           }
+
+                          //update saying they have read the message
+                          dataUpdatingOnChatRoom[`usersLastReadMessage.${wsClients[key].userId}`] = dataSending.messageId
+                          
                       }
                   }
                   
@@ -163,6 +187,18 @@ router.ws('/chatWs', function(ws, req) {
                       sendNotificationToDevices(chatRoomData.chatName,`${chatSenderUserData.username} : ${dataSending.text}`,"newMessage",usersToSendTo,"this does nothing rn");
                     }
                     
+                  }
+                  
+                  //update data on chat room
+                  console.log("updating chat room data")
+                  const chatRoomDataUpdated = await databases.chat_rooms.updateOne({
+                    chatRoomId : wsClients[connectionId].chatRoomId,
+                  },{ $set:
+                    dataUpdatingOnChatRoom
+                  })
+
+                  if (chatRoomDataUpdated.acknowledged != true){
+                    reportError("failed to update chat room data")
                   }
                     
                   
@@ -257,10 +293,10 @@ router.post('/chat/openList', [confirmTokenValid, confirmActiveAccount], async (
           return res.status(400).send("invalid start chat");
         }
 
-        startPosPostDate = startPosPostData.postDate;
+        startPosPostDate = startPosPostData.lastMessageTime;
       }
   
-      const posts = await databases.chat_rooms.find({ users: { $all: [userId] }, lastMessage: { $lt: startPosPostDate}}).sort({lastMessage: -1}).limit(5).toArray();
+      const posts = await databases.chat_rooms.find({ users: { $all: [userId] }, lastMessageTime: { $lt: startPosPostDate}}).sort({lastMessageTime: -1}).limit(5).toArray();
       let returnData = {
         "items": [] as { type: string; data: string;}[]
       }
@@ -323,6 +359,19 @@ router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (
             }   
         }
 
+        //relative data
+        var hasUnreadMessages = true;
+        if (userId in itemData.usersLastReadMessage){
+          console.log(itemData.usersLastReadMessage[userId])
+          console.log(itemData.lastMessage)
+          console.log(itemData.usersLastReadMessage[userId] !== itemData.lastMessage)
+          if (itemData.usersLastReadMessage[userId] !== itemData.lastMessage){
+            hasUnreadMessages = true;
+          }else{
+            hasUnreadMessages = false;
+          }
+        }
+
         console.log("sending post data");
         if (onlyUpdateChangeable === true) {
           return res.status(200).json({
@@ -331,6 +380,9 @@ router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (
             users : itemData.users,
             chatName : itemData.chatName,
             privateChatOtherUser : privateChatOtherUser,
+            relativeViewerData : {
+              hasUnreadMessages : hasUnreadMessages
+            }
           });
         }
         return res.status(200).json({
@@ -340,6 +392,9 @@ router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (
           users : itemData.users,
           chatName : itemData.chatName,
           privateChatOtherUser : privateChatOtherUser,
+          relativeViewerData : {
+            hasUnreadMessages : hasUnreadMessages
+          }
 
           
         });
@@ -389,7 +444,9 @@ router.post('/chat/roomData', [confirmTokenValid, confirmActiveAccount], async (
             "chatRoomId": chatRoomId,
             "chatName": "",
             "privateChat": true,
-            "lastMessage": 0,
+            "lastMessage": null,
+            "lastMessageTime": 0,
+            "usersLastReadMessage": {},
             "users": [
               userId,
               chatUserId

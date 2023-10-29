@@ -4,6 +4,7 @@ import { sendNotificationToDevices } from "./notificationSystem";
 
 
 async function reportError(error){
+    console.log(error)
     console.log(`# error #\n${error}\n`)
     
     const adminUsers = await databases.user_data.find({ administrator : true }).toArray();
