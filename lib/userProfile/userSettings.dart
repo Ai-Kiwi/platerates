@@ -1,4 +1,4 @@
-import 'package:Toaster/accountInfoSettings.dart';
+import 'package:Toaster/userProfile/accountInfoSettings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
