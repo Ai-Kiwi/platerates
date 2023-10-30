@@ -6,11 +6,11 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'libs/dataCollect.dart';
-import 'libs/errorHandler.dart';
-import 'libs/imageUtils.dart';
-import 'login/userLogin.dart';
-import 'main.dart';
+import '../libs/dataCollect.dart';
+import '../libs/errorHandler.dart';
+import '../libs/imageUtils.dart';
+import '../login/userLogin.dart';
+import '../main.dart';
 
 class AccountInfoSettings extends StatefulWidget {
   const AccountInfoSettings({super.key});
