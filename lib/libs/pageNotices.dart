@@ -189,7 +189,7 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
                   borderRadius: BorderRadius.circular(15.0),
                 )),
                 onPressed: () async {
-                  Phoenix.rebirth(context);
+                  updateHomePage();
                 },
                 child: const Text(
                   'retry',
@@ -352,11 +352,10 @@ class _PromptUserToAcceptNewLicensesState
       }),
     );
     // ignore: use_build_context_synchronously
-    Phoenix.rebirth(context);
     if (response.statusCode == 200) {
       acceptedAllLicenses = true;
       // ignore: use_build_context_synchronously
-      Phoenix.rebirth(context);
+      updateHomePage();
     } else {
       // ignore: use_build_context_synchronously
       await ErrorHandler.httpError(response.statusCode, response.body, context);
@@ -409,7 +408,8 @@ class _PromptUserToAcceptNewLicensesState
         backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: SafeArea(
             child: Center(
-                child: Column(
+                child: Flex(
+          direction: Axis.vertical,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 32),
@@ -631,7 +631,7 @@ class _PromptPromptUserBannedState extends State<PromptUserBanned> {
               ),
               onPressed: () async {
                 accountBanned = false;
-                Phoenix.rebirth(context);
+                updateHomePage();
               },
               child: const Text(
                 "retry",
