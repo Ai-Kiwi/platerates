@@ -277,6 +277,7 @@ Future<void> testNotificationOnBootData(context) async {
 }
 
 var updateUnreadNotificationCount;
+var updateHomePage;
 
 class _MyHomePageState extends State<MyHomePage> {
   bool userAcceptedMigration = false;
@@ -296,6 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     updateUnreadNotificationCount = _updateUnreadNotificationCount;
     updateUnreadNotificationCount();
+    updateHomePage = _updateHomePage;
   }
 
   int unreadNotificationCount = 0;
@@ -324,6 +326,10 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     }
+  }
+
+  Future<void> _updateHomePage() async {
+    setState(() {});
   }
 
   @override
