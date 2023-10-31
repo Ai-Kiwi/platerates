@@ -150,9 +150,9 @@ class _createAccountPageState extends State<createAccountPage> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8.0),
+                          const SizedBox(height: 3.0),
                           SizedBox(
-                            height: 16,
+                            height: 24,
                             child: Center(
                               child: Row(
                                 children: [
