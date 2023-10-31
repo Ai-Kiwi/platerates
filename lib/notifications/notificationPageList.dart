@@ -17,7 +17,6 @@ class _notificationPageListState extends State<notificationPageList> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color.fromRGBO(16, 16, 16, 1),
       body: LazyLoadPage(
         urlToFetch: "/notification/list",
         widgetAddedToTop: Center(

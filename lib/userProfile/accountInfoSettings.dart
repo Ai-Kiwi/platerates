@@ -91,215 +91,205 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   Widget build(BuildContext context) {
     if (_loading == true) {
       return const Scaffold(
-          backgroundColor: Color.fromRGBO(16, 16, 16, 1),
           body: Center(
-            child: CircularProgressIndicator(),
-          ));
+        child: CircularProgressIndicator(),
+      ));
     }
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: SafeArea(
             child: Stack(alignment: Alignment.topLeft, children: <Widget>[
-          Center(
-              //make sure on pc it's not to wide
-              child: SizedBox(
-                  width: 650,
-                  child: Center(
-                      child: AutofillGroup(
-                          child: ListView(
-                    children: <Widget>[
-                      Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 48.0),
-                          child: Center(
-                            child: SizedBox(
-                                width: 200,
-                                height: 200,
-                                child: Stack(
-                                  children: [
-                                    UserAvatar(
-                                      avatarImage: _userImage,
-                                      size: 200,
-                                      roundness: 200,
-                                      customFunction: () async {
-                                        const XTypeGroup typeGroup = XTypeGroup(
-                                          label: 'images',
-                                          extensions: <String>['jpg', 'png'],
-                                        );
-
-                                        XFile? file = await openFile(
-                                            acceptedTypeGroups: <XTypeGroup>[
-                                              typeGroup
-                                            ]);
-
-                                        final List<int>? tempNewUserImage =
-                                            await imageUtils.resizePhoto(
-                                                await file?.readAsBytes());
-
-                                        setState(() {
-                                          if (tempNewUserImage != null) {
-                                            _userImage = tempNewUserImage;
-                                          }
-                                        });
-                                      },
-                                      onTapFunction: 'customFunction',
-                                      context: context,
-                                    ),
-                                    Align(
-                                      alignment: Alignment.topRight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 16.0),
-                                        child: Container(
-                                          width: 30,
-                                          height: 30,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            color: Colors.grey[800],
-                                          ),
-                                          child: Icon(
-                                            Icons.edit,
-                                            size:
-                                                20, // Adjust the size of the icon
-                                            color: Colors.grey[300],
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                          )),
-                      //const Divider(
-                      //  color: Color.fromARGB(255, 110, 110, 110),
-                      //  thickness: 1.0,
-                      //),
-                      const SizedBox(height: 8.0),
-                      Padding(
-                        //email input feild
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TextFormField(
-                          onChanged: (value) {
-                            _username = value;
-                          },
-                          initialValue: _username,
-                          autofillHints: const [AutofillHints.email],
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 20),
-                          decoration: const InputDecoration(
-                            labelText: 'username',
-                            labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 200, 200, 200)),
-                            contentPadding: const EdgeInsets.all(8.0),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Padding(
-                        //password input feild
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TextFormField(
-                          onChanged: (value) {
-                            _bio = value;
-                          },
-                          initialValue: _bio,
-                          autofillHints: const [AutofillHints.password],
-                          maxLines: 5,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 20),
-                          decoration: const InputDecoration(
-                            labelText: 'bio',
-                            labelStyle: TextStyle(
-                                color: Color.fromARGB(255, 200, 200, 200)),
-                            contentPadding: const EdgeInsets.all(8.0),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.green),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Padding(
-                        //login button
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      Center(
+          //make sure on pc it's not to wide
+          child: SizedBox(
+              width: 650,
+              child: Center(
+                  child: AutofillGroup(
+                      child: ListView(
+                children: <Widget>[
+                  Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 48.0),
+                      child: Center(
                         child: SizedBox(
-                            width: double.infinity,
-                            height: 50.0,
-                            child: _savingData
-                                ? ElevatedButton(
-                                    style: OutlinedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    )),
-                                    onPressed: () async {},
-                                    child: const Center(
-                                        child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )))
-                                : ElevatedButton(
-                                    style: OutlinedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    )),
-                                    onPressed: () async {
-                                      setState(() {
-                                        _savingData = true;
-                                      });
+                            width: 200,
+                            height: 200,
+                            child: Stack(
+                              children: [
+                                UserAvatar(
+                                  avatarImage: _userImage,
+                                  size: 200,
+                                  roundness: 200,
+                                  customFunction: () async {
+                                    const XTypeGroup typeGroup = XTypeGroup(
+                                      label: 'images',
+                                      extensions: <String>['jpg', 'png'],
+                                    );
 
-                                      if (_userImage != _startUserImage) {
-                                        print("changing user image");
-                                        await _changeSetting(
-                                            "avatar",
-                                            base64Encode(
-                                                imageUtils.uintListToBytes(
-                                                    Uint8List.fromList(
-                                                        _userImage!))));
+                                    XFile? file = await openFile(
+                                        acceptedTypeGroups: <XTypeGroup>[
+                                          typeGroup
+                                        ]);
+
+                                    final List<int>? tempNewUserImage =
+                                        await imageUtils.resizePhoto(
+                                            await file?.readAsBytes());
+
+                                    setState(() {
+                                      if (tempNewUserImage != null) {
+                                        _userImage = tempNewUserImage;
                                       }
-                                      if (_username != _startUsername) {
-                                        print("changing username");
-                                        await _changeSetting(
-                                            "username", _username);
-                                      }
-                                      if (_bio != _startBio) {
-                                        print("changing user bio");
-                                        await _changeSetting("bio", _bio);
-                                      }
-                                      // ignore: use_build_context_synchronously
-                                      openAlert("success", "changed settings",
-                                          null, context, null);
-                                      setState(() {
-                                        _savingData = false;
-                                      });
-                                    },
-                                    child: const Text(
-                                      'change info',
-                                      style: TextStyle(fontSize: 18.0),
+                                    });
+                                  },
+                                  onTapFunction: 'customFunction',
+                                  context: context,
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 16.0),
+                                    child: Container(
+                                      width: 30,
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.grey[800],
+                                      ),
+                                      child: Icon(
+                                        Icons.edit,
+                                        size: 20, // Adjust the size of the icon
+                                        color: Colors.grey[300],
+                                      ),
                                     ),
-                                  )),
+                                  ),
+                                )
+                              ],
+                            )),
+                      )),
+                  //const Divider(
+                  //  color: Color.fromARGB(255, 110, 110, 110),
+                  //  thickness: 1.0,
+                  //),
+                  const SizedBox(height: 8.0),
+                  Padding(
+                    //email input feild
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextFormField(
+                      onChanged: (value) {
+                        _username = value;
+                      },
+                      initialValue: _username,
+                      autofillHints: const [AutofillHints.email],
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                      decoration: const InputDecoration(
+                        labelText: 'username',
+                        labelStyle: TextStyle(
+                            color: Color.fromARGB(255, 200, 200, 200)),
+                        contentPadding: const EdgeInsets.all(8.0),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                        ),
                       ),
-                    ],
-                  ))))),
-          Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ))
-        ])));
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  Padding(
+                    //password input feild
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextFormField(
+                      onChanged: (value) {
+                        _bio = value;
+                      },
+                      initialValue: _bio,
+                      autofillHints: const [AutofillHints.password],
+                      maxLines: 5,
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                      decoration: const InputDecoration(
+                        labelText: 'bio',
+                        labelStyle: TextStyle(
+                            color: Color.fromARGB(255, 200, 200, 200)),
+                        contentPadding: const EdgeInsets.all(8.0),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.green),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  Padding(
+                    //login button
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SizedBox(
+                        width: double.infinity,
+                        height: 50.0,
+                        child: _savingData
+                            ? ElevatedButton(
+                                style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                )),
+                                onPressed: () async {},
+                                child: const Center(
+                                    child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                )))
+                            : ElevatedButton(
+                                style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                )),
+                                onPressed: () async {
+                                  setState(() {
+                                    _savingData = true;
+                                  });
+
+                                  if (_userImage != _startUserImage) {
+                                    print("changing user image");
+                                    await _changeSetting(
+                                        "avatar",
+                                        base64Encode(imageUtils.uintListToBytes(
+                                            Uint8List.fromList(_userImage!))));
+                                  }
+                                  if (_username != _startUsername) {
+                                    print("changing username");
+                                    await _changeSetting("username", _username);
+                                  }
+                                  if (_bio != _startBio) {
+                                    print("changing user bio");
+                                    await _changeSetting("bio", _bio);
+                                  }
+                                  // ignore: use_build_context_synchronously
+                                  openAlert("success", "changed settings", null,
+                                      context, null);
+                                  setState(() {
+                                    _savingData = false;
+                                  });
+                                },
+                                child: const Text(
+                                  'change info',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                              )),
+                  ),
+                ],
+              ))))),
+      Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          child: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ))
+    ])));
   }
 }

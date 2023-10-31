@@ -368,72 +368,69 @@ class _fullPageChatState extends State<FullPageChat> {
     final ThemeData theme = Theme.of(context);
     if (dataGathered == true) {
       return Scaffold(
-          backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
           body: Stack(
-            children: [
-              Chat(
-                showUserAvatars: false,
-                showUserNames: true,
-                theme: DefaultChatTheme(
-                  primaryColor: theme.primaryColor,
-                  backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
-                ),
-                typingIndicatorOptions: TypingIndicatorOptions(
-                  typingMode: TypingIndicatorMode.both,
-                  typingUsers: _usersTyping,
-                ),
-                usePreviewData: true,
-                messages: _messages,
-                onSendPressed: _handleSendPressed,
-                user: _user,
-                onPreviewDataFetched: _handlePreviewDataFetched,
-                //onEndReachedThreshold: 80,
-                onMessageLongPress: (context, p1) {
-                  _handleMessageHold(context, p1);
-                },
-                inputOptions: InputOptions(
-                  onTextChanged: _handleTextChange,
-                ),
-                onEndReached: () async {
-                  if (lastReachedTimeMessageTime != pastItemDate ||
-                      lastReachedTopTime <
-                          (DateTime.now().millisecondsSinceEpoch -
-                              (1000 * 5))) {
-                    print("fetching");
-                    lastReachedTimeMessageTime = pastItemDate;
-                    lastReachedTopTime = DateTime.now().millisecondsSinceEpoch;
-                    channel.sink.add(jsonEncode({
-                      "request": "past_messages",
-                      "pastItemDate": pastItemDate,
-                      "token": userManager.token,
-                    }));
-                  }
-                },
+        children: [
+          Chat(
+            showUserAvatars: false,
+            showUserNames: true,
+            theme: DefaultChatTheme(
+              primaryColor: theme.primaryColor,
+              backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
+            ),
+            typingIndicatorOptions: TypingIndicatorOptions(
+              typingMode: TypingIndicatorMode.both,
+              typingUsers: _usersTyping,
+            ),
+            usePreviewData: true,
+            messages: _messages,
+            onSendPressed: _handleSendPressed,
+            user: _user,
+            onPreviewDataFetched: _handlePreviewDataFetched,
+            //onEndReachedThreshold: 80,
+            onMessageLongPress: (context, p1) {
+              _handleMessageHold(context, p1);
+            },
+            inputOptions: InputOptions(
+              onTextChanged: _handleTextChange,
+            ),
+            onEndReached: () async {
+              if (lastReachedTimeMessageTime != pastItemDate ||
+                  lastReachedTopTime <
+                      (DateTime.now().millisecondsSinceEpoch - (1000 * 5))) {
+                print("fetching");
+                lastReachedTimeMessageTime = pastItemDate;
+                lastReachedTopTime = DateTime.now().millisecondsSinceEpoch;
+                channel.sink.add(jsonEncode({
+                  "request": "past_messages",
+                  "pastItemDate": pastItemDate,
+                  "token": userManager.token,
+                }));
+              }
+            },
+          ),
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color.fromRGBO(24, 24, 24, 1),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(8),
+                bottomRight: Radius.circular(8),
               ),
-              Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(24, 24, 24, 1),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  ),
-                ),
-                child: SafeArea(
-                  bottom: false,
-                  child: topUserBar(
-                    privateChat: privateChat,
-                    otherUserId: privateChatOtherUser,
-                    chatImage: groupImage,
-                    chatName: groupName,
-                  ),
-                ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: topUserBar(
+                privateChat: privateChat,
+                otherUserId: privateChatOtherUser,
+                chatImage: groupImage,
+                chatName: groupName,
               ),
-            ],
-          ));
+            ),
+          ),
+        ],
+      ));
     } else {
       return const Scaffold(
-        backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
         body: Center(
           child: CircularProgressIndicator(),
         ),

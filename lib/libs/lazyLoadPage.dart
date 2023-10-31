@@ -154,8 +154,7 @@ class LazyLoadPageState extends State<LazyLoadPage> {
   @override
   Widget build(BuildContext context) {
     //final ThemeData theme = Theme.of(context);
-    return Container(
-      decoration: const BoxDecoration(color: Color.fromRGBO(16, 16, 16, 1)),
+    return SizedBox(
       child: Center(
         child: ListView.builder(
           padding: EdgeInsets.zero,

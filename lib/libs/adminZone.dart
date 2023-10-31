@@ -26,246 +26,240 @@ class _AdminZonePageState extends State<AdminZonePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(16, 16, 16, 1),
         body: Stack(alignment: Alignment.topLeft, children: <Widget>[
-          SafeArea(
-              top: true,
-              bottom: true,
-              child: ListView(
-                children: [
-                  const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
-                      child: Center(
-                          child: Text(
-                        "Admin Zone",
-                        style: TextStyle(color: Colors.white, fontSize: 40),
-                      ))),
-                  const Divider(
-                    color: Color.fromARGB(255, 110, 110, 110),
-                    thickness: 1.0,
-                  ),
-                  _AdminItem(
-                    settingIcon: Icons.person_outline,
-                    settingName: "create user",
-                    ontap: () async {
-                      String accountUsername = "";
-                      String accountEmail = "";
+      SafeArea(
+          top: true,
+          bottom: true,
+          child: ListView(
+            children: [
+              const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                  child: Center(
+                      child: Text(
+                    "Admin Zone",
+                    style: TextStyle(color: Colors.white, fontSize: 40),
+                  ))),
+              const Divider(
+                color: Color.fromARGB(255, 110, 110, 110),
+                thickness: 1.0,
+              ),
+              _AdminItem(
+                settingIcon: Icons.person_outline,
+                settingName: "create user",
+                ontap: () async {
+                  String accountUsername = "";
+                  String accountEmail = "";
 
-                      Alert(
-                          context: context,
-                          title: "create user",
-                          content: Column(
-                            children: <Widget>[
-                              TextField(
-                                style: const TextStyle(color: Colors.white),
-                                maxLengthEnforcement: MaxLengthEnforcement
-                                    .truncateAfterCompositionEnds,
-                                decoration: const InputDecoration(
-                                  icon: Icon(Icons.account_circle),
-                                  labelText: 'username',
-                                ),
-                                onChanged: (value) {
-                                  accountUsername = value;
-                                },
-                              ),
-                              TextField(
-                                style: const TextStyle(color: Colors.white),
-                                maxLengthEnforcement: MaxLengthEnforcement
-                                    .truncateAfterCompositionEnds,
-                                decoration: const InputDecoration(
-                                  icon: Icon(Icons.account_circle),
-                                  labelText: 'email',
-                                ),
-                                onChanged: (value) {
-                                  accountEmail = value;
-                                },
-                              ),
-                            ],
-                          ),
-                          buttons: [
-                            DialogButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                                final response = await http.post(
-                                  Uri.parse("$serverDomain/admin/createUser"),
-                                  headers: <String, String>{
-                                    'Content-Type':
-                                        'application/json; charset=UTF-8',
-                                  },
-                                  body: jsonEncode(<String, String>{
-                                    'token': userManager.token,
-                                    "username": accountUsername,
-                                    "email": accountEmail,
-                                  }),
-                                );
-                                if (response.statusCode == 200) {
-                                  // ignore: use_build_context_synchronously
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          content: Text(
-                                    'user created',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  )));
-                                } else {
-                                  ErrorHandler.httpError(response.statusCode,
-                                      response.body, context);
-                                  // ignore: use_build_context_synchronously
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          content: Text(
-                                    'failed creating user',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.red),
-                                  )));
-                                }
-                              },
-                              child: const Text(
-                                "create",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
+                  Alert(
+                      context: context,
+                      title: "create user",
+                      content: Column(
+                        children: <Widget>[
+                          TextField(
+                            style: const TextStyle(color: Colors.white),
+                            maxLengthEnforcement: MaxLengthEnforcement
+                                .truncateAfterCompositionEnds,
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.account_circle),
+                              labelText: 'username',
                             ),
-                            DialogButton(
-                              color: Colors.red,
-                              child: const Text(
-                                "cancel",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            )
-                          ]).show();
-                    },
-                  ),
-                  _AdminItem(
-                    settingIcon: Icons.remove,
-                    settingName: "ban user",
-                    ontap: () async {
-                      String accountUserId = "";
-                      String accountBanReason = "";
-                      String accountBanTime = "";
-
-                      Alert(
-                          context: context,
-                          title: "create user",
-                          content: Column(
-                            children: <Widget>[
-                              TextField(
-                                style: const TextStyle(color: Colors.white),
-                                maxLengthEnforcement: MaxLengthEnforcement
-                                    .truncateAfterCompositionEnds,
-                                decoration: const InputDecoration(
-                                  icon: Icon(Icons.account_circle),
-                                  labelText: 'userId',
-                                ),
-                                onChanged: (value) {
-                                  accountUserId = value;
-                                },
-                              ),
-                              TextField(
-                                style: const TextStyle(color: Colors.white),
-                                maxLengthEnforcement: MaxLengthEnforcement
-                                    .truncateAfterCompositionEnds,
-                                decoration: const InputDecoration(
-                                  icon: Icon(Icons.account_circle),
-                                  labelText: 'reason',
-                                ),
-                                onChanged: (value) {
-                                  accountBanReason = value;
-                                },
-                              ),
-                              TextField(
-                                style: const TextStyle(color: Colors.white),
-                                maxLengthEnforcement: MaxLengthEnforcement
-                                    .truncateAfterCompositionEnds,
-                                decoration: const InputDecoration(
-                                  icon: Icon(Icons.account_circle),
-                                  labelText: 'time (seconds)',
-                                ),
-                                onChanged: (value) {
-                                  accountBanTime = value;
-                                },
-                              ),
-                            ],
+                            onChanged: (value) {
+                              accountUsername = value;
+                            },
                           ),
-                          buttons: [
-                            DialogButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                                final response = await http.post(
-                                  Uri.parse("$serverDomain/admin/banUser"),
-                                  headers: <String, String>{
-                                    'Content-Type':
-                                        'application/json; charset=UTF-8',
-                                  },
-                                  body: jsonEncode(<String, String>{
-                                    'token': userManager.token,
-                                    "userId": accountUserId,
-                                    "reason": accountBanReason,
-                                    "time": accountBanTime,
-                                  }),
-                                );
-                                if (response.statusCode == 200) {
-                                  // ignore: use_build_context_synchronously
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          content: Text(
-                                    'user banned',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.red),
-                                  )));
-                                } else {
-                                  ErrorHandler.httpError(response.statusCode,
-                                      response.body, context);
-                                  // ignore: use_build_context_synchronously
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                          content: Text(
-                                    'failed banning user',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.red),
-                                  )));
-                                }
-                              },
-                              child: const Text(
-                                "ban",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
+                          TextField(
+                            style: const TextStyle(color: Colors.white),
+                            maxLengthEnforcement: MaxLengthEnforcement
+                                .truncateAfterCompositionEnds,
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.account_circle),
+                              labelText: 'email',
                             ),
-                            DialogButton(
-                              color: Colors.red,
-                              child: const Text(
-                                "cancel",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
+                            onChanged: (value) {
+                              accountEmail = value;
+                            },
+                          ),
+                        ],
+                      ),
+                      buttons: [
+                        DialogButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            final response = await http.post(
+                              Uri.parse("$serverDomain/admin/createUser"),
+                              headers: <String, String>{
+                                'Content-Type':
+                                    'application/json; charset=UTF-8',
                               },
-                            )
-                          ]).show();
-                    },
-                  ),
-                ],
-              )),
-          Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
+                              body: jsonEncode(<String, String>{
+                                'token': userManager.token,
+                                "username": accountUsername,
+                                "email": accountEmail,
+                              }),
+                            );
+                            if (response.statusCode == 200) {
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                      content: Text(
+                                'user created',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              )));
+                            } else {
+                              ErrorHandler.httpError(
+                                  response.statusCode, response.body, context);
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                      content: Text(
+                                'failed creating user',
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.red),
+                              )));
+                            }
+                          },
+                          child: const Text(
+                            "create",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        ),
+                        DialogButton(
+                          color: Colors.red,
+                          child: const Text(
+                            "cancel",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ]).show();
                 },
-              ))
-        ]));
+              ),
+              _AdminItem(
+                settingIcon: Icons.remove,
+                settingName: "ban user",
+                ontap: () async {
+                  String accountUserId = "";
+                  String accountBanReason = "";
+                  String accountBanTime = "";
+
+                  Alert(
+                      context: context,
+                      title: "create user",
+                      content: Column(
+                        children: <Widget>[
+                          TextField(
+                            style: const TextStyle(color: Colors.white),
+                            maxLengthEnforcement: MaxLengthEnforcement
+                                .truncateAfterCompositionEnds,
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.account_circle),
+                              labelText: 'userId',
+                            ),
+                            onChanged: (value) {
+                              accountUserId = value;
+                            },
+                          ),
+                          TextField(
+                            style: const TextStyle(color: Colors.white),
+                            maxLengthEnforcement: MaxLengthEnforcement
+                                .truncateAfterCompositionEnds,
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.account_circle),
+                              labelText: 'reason',
+                            ),
+                            onChanged: (value) {
+                              accountBanReason = value;
+                            },
+                          ),
+                          TextField(
+                            style: const TextStyle(color: Colors.white),
+                            maxLengthEnforcement: MaxLengthEnforcement
+                                .truncateAfterCompositionEnds,
+                            decoration: const InputDecoration(
+                              icon: Icon(Icons.account_circle),
+                              labelText: 'time (seconds)',
+                            ),
+                            onChanged: (value) {
+                              accountBanTime = value;
+                            },
+                          ),
+                        ],
+                      ),
+                      buttons: [
+                        DialogButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            final response = await http.post(
+                              Uri.parse("$serverDomain/admin/banUser"),
+                              headers: <String, String>{
+                                'Content-Type':
+                                    'application/json; charset=UTF-8',
+                              },
+                              body: jsonEncode(<String, String>{
+                                'token': userManager.token,
+                                "userId": accountUserId,
+                                "reason": accountBanReason,
+                                "time": accountBanTime,
+                              }),
+                            );
+                            if (response.statusCode == 200) {
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                      content: Text(
+                                'user banned',
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.red),
+                              )));
+                            } else {
+                              ErrorHandler.httpError(
+                                  response.statusCode, response.body, context);
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                      content: Text(
+                                'failed banning user',
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.red),
+                              )));
+                            }
+                          },
+                          child: const Text(
+                            "ban",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        ),
+                        DialogButton(
+                          color: Colors.red,
+                          child: const Text(
+                            "cancel",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        )
+                      ]).show();
+                },
+              ),
+            ],
+          )),
+      Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+          child: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
+              size: 30,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ))
+    ]));
   }
 }
 

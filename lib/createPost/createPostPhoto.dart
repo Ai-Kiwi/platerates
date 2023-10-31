@@ -117,10 +117,9 @@ class _CameraPageState extends State<CameraPage> {
   Widget build(BuildContext context) {
     if (_takingPhoto == true) {
       return const Scaffold(
-          backgroundColor: Color.fromRGBO(16, 16, 16, 1),
           body: Center(
-            child: CircularProgressIndicator(),
-          ));
+        child: CircularProgressIndicator(),
+      ));
     }
 
     var size = MediaQuery.of(context).size.width;
@@ -128,7 +127,6 @@ class _CameraPageState extends State<CameraPage> {
         32; //really hacky work around, as image needs to be sqaure because there is padding on each side.
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(16, 16, 16, 1),
       body: Center(
           child: ListView(children: [
         const Center(

@@ -108,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
     final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
       resizeToAvoidBottomInset: false,
       body: SafeArea(
           bottom: true,
