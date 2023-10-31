@@ -224,6 +224,19 @@ router.ws('/chatWs', function(ws, req) {
                 }))
             }
 
+        }else if (jsonData["request"] == "typing_indicator") {
+          if (jsonData["typing"] === true || jsonData["typing"] === false){
+            for (let key in wsClients) {
+              if (wsClients[connectionId].chatRoomId === wsClients[key].chatRoomId){
+                wsClients[key].ws.send(JSON.stringify({
+                  action : "user_typing",
+                  userId : wsClients[connectionId].userId,
+                  typing : jsonData["typing"]
+                }))
+              }
+            }
+          }
+
         }else{
             console.log("unkown command")
             ws.send(JSON.stringify({
