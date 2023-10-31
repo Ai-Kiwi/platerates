@@ -38,12 +38,9 @@ class _fullPageRatingState extends State<FullPageRating> {
         body: Stack(alignment: Alignment.topLeft, children: <Widget>[
       SafeArea(
           top: false,
-          child: Container(
+          child: SizedBox(
               height: double.infinity,
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(16, 16, 16, 1),
-              ),
               child: Column(
                 children: [
                   Expanded(
