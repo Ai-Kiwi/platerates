@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -104,6 +105,7 @@ class topUserBar extends StatelessWidget {
 class _fullPageChatState extends State<FullPageChat> {
   final String chatRoomId;
   final List<types.Message> _messages = [];
+  final List<types.User> _usersTyping = [];
   bool dataGathered = false;
   var _user = const types.User(id: 'none');
   var channel =
@@ -190,6 +192,27 @@ class _fullPageChatState extends State<FullPageChat> {
                 }
               });
             }
+          } else if (jsonData["action"] == "user_typing") {
+            types.User userTypingData =
+                await getUserInfo(jsonData["userId"], context);
+
+            setState(() {
+              print(jsonData["typing"]);
+              if (jsonData["typing"] == true) {
+                if (_usersTyping.contains(userTypingData) == false) {
+                  _usersTyping.add(userTypingData);
+                } else {
+                  print("user already in list");
+                }
+              } else {
+                if (_usersTyping.contains(userTypingData)) {
+                  _usersTyping.remove(userTypingData);
+                } else {
+                  print("user not in list");
+                } //yeah this is working fully yet
+              }
+            });
+            print(userTypingData);
           }
         } on Exception catch (error, stackTrace) {
           FirebaseCrashlytics.instance.recordError(error, stackTrace);
@@ -256,6 +279,17 @@ class _fullPageChatState extends State<FullPageChat> {
       "token": userManager.token,
       "text": message.text
     }));
+    if (_typingTimer != null) {
+      if (_typingTimer!.isActive) {
+        _typingTimer?.cancel();
+        channel.sink.add(jsonEncode({
+          "request": "typing_indicator",
+          "token": userManager.token,
+          "typing": false,
+        }));
+        typing = false;
+      }
+    }
   }
 
   Future<void> _handleMessageHold(
@@ -288,6 +322,47 @@ class _fullPageChatState extends State<FullPageChat> {
     ).show();
   }
 
+  Timer? _typingTimer;
+  bool typing = false;
+  Future<void> _handleTextChange(String text) async {
+    if (_typingTimer == null || !_typingTimer!.isActive) {
+      // Start the timer when the user starts typing.
+      print("user started typing");
+      if (_typingTimer != null) {
+        print(_typingTimer!.isActive);
+      }
+      if (typing == false) {
+        channel.sink.add(jsonEncode({
+          "request": "typing_indicator",
+          "token": userManager.token,
+          "typing": true,
+        }));
+        typing = true;
+      }
+
+      _typingTimer = Timer(Duration(seconds: 3), () {
+        // Code to run after the user stops typing for 2 seconds.
+        print("User stopped typing.");
+        channel.sink.add(jsonEncode({
+          "request": "typing_indicator",
+          "token": userManager.token,
+          "typing": false,
+        }));
+        typing = false;
+      });
+    } else {
+      // If the user continues typing, reset the timer.
+      _typingTimer?.cancel();
+      _handleTextChange(text);
+    }
+  }
+
+  @override
+  void dispose() {
+    _typingTimer?.cancel(); // Cancel the timer when disposing the widget.
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -303,6 +378,10 @@ class _fullPageChatState extends State<FullPageChat> {
                   primaryColor: theme.primaryColor,
                   backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
                 ),
+                typingIndicatorOptions: TypingIndicatorOptions(
+                  typingMode: TypingIndicatorMode.both,
+                  typingUsers: _usersTyping,
+                ),
                 usePreviewData: true,
                 messages: _messages,
                 onSendPressed: _handleSendPressed,
@@ -312,6 +391,9 @@ class _fullPageChatState extends State<FullPageChat> {
                 onMessageLongPress: (context, p1) {
                   _handleMessageHold(context, p1);
                 },
+                inputOptions: InputOptions(
+                  onTextChanged: _handleTextChange,
+                ),
                 onEndReached: () async {
                   if (lastReachedTimeMessageTime != pastItemDate ||
                       lastReachedTopTime <

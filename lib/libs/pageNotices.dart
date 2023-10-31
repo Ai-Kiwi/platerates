@@ -189,7 +189,7 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
                   borderRadius: BorderRadius.circular(15.0),
                 )),
                 onPressed: () async {
-                  updateHomePage();
+                  Phoenix.rebirth(context);
                 },
                 child: const Text(
                   'retry',

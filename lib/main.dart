@@ -220,6 +220,7 @@ class MyApp extends StatelessWidget {
                   primaryColor: Colors.green,
                   primarySwatch: Colors.green,
                   dialogBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
+                  scaffoldBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
                 ),
                 home: StreamBuilder<String>(
                   stream: initializeApp(),
