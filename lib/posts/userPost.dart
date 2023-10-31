@@ -120,140 +120,144 @@ class _PostItemState extends State<PostItem> {
                 style: TextStyle(color: Colors.red, fontSize: 20),
               ))));
     } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-        child: Container(
-            child: Column(children: <Widget>[
-          //user logo and name
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Container(
-                  height: 35,
-                  child: Row(children: <Widget>[
-                    Flexible(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(width: 8),
-                            UserAvatar(
-                              avatarImage: posterAvatar,
-                              size: 35,
-                              roundness: 35,
-                              onTapFunction: 'openProfile',
-                              context: context,
-                              userId: posterUserId,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(posterName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                )),
-                          ]),
-                    ),
-                    PostManageButton(
-                      posterUserId: posterUserId,
-                      postId: postId,
-                    ),
-                    SizedBox(
-                      width: 8,
-                    )
-                  ]))),
-          const SizedBox(height: 8.0),
-          Padding(
-              // image
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: GestureDetector(
+      return GestureDetector(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+            child: Container(
+              color: Colors.transparent,
+              child: Column(children: <Widget>[
+                //user logo and name
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                        height: 35,
+                        child: Row(children: <Widget>[
+                          Flexible(
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(width: 8),
+                                  UserAvatar(
+                                    avatarImage: posterAvatar,
+                                    size: 35,
+                                    roundness: 35,
+                                    onTapFunction: 'openProfile',
+                                    context: context,
+                                    userId: posterUserId,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(posterName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      )),
+                                ]),
+                          ),
+                          PostManageButton(
+                            posterUserId: posterUserId,
+                            postId: postId,
+                          ),
+                          SizedBox(
+                            width: 8,
+                          )
+                        ]))),
+                const SizedBox(height: 8.0),
+                Padding(
+                  // image
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(16.0)),
                       child: PostImage(
                         imageData: imageData,
                         imageRoundness: 16,
                       )),
-                  onTap: () {
-                    if (clickable == true) {
-                      Navigator.of(context).push(smoothTransitions
-                          .slideUp(fullPagePost(postId: postId)));
-                    }
-                  })),
+                ),
 
-          //rating row
-          Row(children: <Widget>[
-            // 2nd row of items
-            const SizedBox(width: 16.0),
-            //rating display
-            SizedBox(
-                height: 25,
-                child: Row(
-                  children: [
-                    RatingBarIndicator(
-                      rating: rating,
-                      itemBuilder: (context, index) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
+                //rating row
+                Row(children: <Widget>[
+                  // 2nd row of items
+                  const SizedBox(width: 16.0),
+                  //rating display
+                  SizedBox(
+                      height: 25,
+                      child: Row(
+                        children: [
+                          RatingBarIndicator(
+                            rating: rating,
+                            itemBuilder: (context, index) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            itemCount: 5,
+                            itemSize: 20.0,
+                            direction: Axis.horizontal,
+                          ),
+                          Text(
+                            " ($ratingsAmount)",
+                            style: TextStyle(color: Colors.white),
+                          )
+                        ],
+                      )),
+                  //display if you have rated yet
+                  Visibility(
+                      visible: !hasRated!,
+                      child: const Row(
+                        children: [
+                          SizedBox(width: 8),
+                          Text(
+                            "not rated yet",
+                            style: TextStyle(color: Colors.red, fontSize: 16),
+                          ),
+                        ],
+                      ))
+                ]),
+                //title and desc
+                Padding(
+                  //title
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Container(
+                    width: double.infinity,
+                    child: SelectableLinkify(
+                      onOpen: (link) async {
+                        if (!await launchUrl(Uri.parse(link.url))) {
+                          throw Exception('Could not launch ${link.url}');
+                        }
+                      },
+                      text: title,
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Padding(
+                    //description
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Container(
+                      height: 60,
+                      width: double.infinity,
+                      child: SelectableLinkify(
+                        onOpen: (link) async {
+                          if (!await launchUrl(Uri.parse(link.url))) {
+                            throw Exception('Could not launch ${link.url}');
+                          }
+                        },
+                        text: description,
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 15),
                       ),
-                      itemCount: 5,
-                      itemSize: 20.0,
-                      direction: Axis.horizontal,
-                    ),
-                    Text(
-                      " ($ratingsAmount)",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                )),
-            //display if you have rated yet
-            Visibility(
-                visible: !hasRated!,
-                child: const Row(
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      "not rated yet",
-                      style: TextStyle(color: Colors.red, fontSize: 16),
-                    ),
-                  ],
-                ))
-          ]),
-          //title and desc
-          Padding(
-            //title
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-              width: double.infinity,
-              child: SelectableLinkify(
-                onOpen: (link) async {
-                  if (!await launchUrl(Uri.parse(link.url))) {
-                    throw Exception('Could not launch ${link.url}');
-                  }
-                },
-                text: title,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
-              ),
+                    )),
+                const SizedBox(height: 16.0),
+              ]),
             ),
           ),
-          const SizedBox(height: 8.0),
-          Padding(
-              //description
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                height: 60,
-                width: double.infinity,
-                child: SelectableLinkify(
-                  onOpen: (link) async {
-                    if (!await launchUrl(Uri.parse(link.url))) {
-                      throw Exception('Could not launch ${link.url}');
-                    }
-                  },
-                  text: description,
-                  style: const TextStyle(color: Colors.grey, fontSize: 15),
-                ),
-              )),
-          const SizedBox(height: 16.0),
-        ])),
-      );
+          onTap: () {
+            if (clickable == true) {
+              Navigator.of(context).push(
+                  smoothTransitions.slideUp(fullPagePost(postId: postId)));
+            }
+          });
     }
   }
 }
