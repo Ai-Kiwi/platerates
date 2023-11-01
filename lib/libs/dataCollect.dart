@@ -11,7 +11,8 @@ import 'errorHandler.dart';
 class DataCollect {
   Future<void> reportError(
       String errorMessage, String dataGetting, context) async {
-    openAlert("error", "failed getting $dataGetting", null, context, null);
+    openAlert(
+        "error", "failed getting $dataGetting", errorMessage, context, null);
   }
 
   Future<Map> getData(Map headers, String url, String cacheCode, context,

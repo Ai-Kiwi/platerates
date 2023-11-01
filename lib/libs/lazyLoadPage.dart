@@ -19,6 +19,7 @@ class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToBlank;
   final String urlToFetch;
   final Map<dynamic, dynamic>? extraUrlData;
+  final bool openFullContentTree;
 
   const LazyLoadPage({
     Key? key,
@@ -26,6 +27,7 @@ class LazyLoadPage extends StatefulWidget {
     required this.urlToFetch,
     required this.widgetAddedToEnd,
     required this.widgetAddedToBlank,
+    required this.openFullContentTree,
     this.extraUrlData,
   }) : super(key: key);
 
@@ -36,6 +38,7 @@ class LazyLoadPage extends StatefulWidget {
         extraUrlData: extraUrlData,
         widgetAddedToEnd: widgetAddedToEnd,
         widgetAddedToBlank: widgetAddedToBlank,
+        openFullContentTree: openFullContentTree,
       );
 }
 
@@ -49,12 +52,14 @@ class LazyLoadPageState extends State<LazyLoadPage> {
   final double scrollDistence = 0.8;
   final String urlToFetch;
   final Map<dynamic, dynamic>? extraUrlData;
+  final bool openFullContentTree;
 
   LazyLoadPageState({
     required this.widgetAddedToTop,
     required this.urlToFetch,
     required this.widgetAddedToEnd,
     required this.widgetAddedToBlank,
+    required this.openFullContentTree,
     this.extraUrlData,
   });
 
@@ -172,11 +177,13 @@ class LazyLoadPageState extends State<LazyLoadPage> {
                 return PostItem(
                   postId: itemsCollected[index - 1]["data"],
                   clickable: true,
+                  openFullContentTree: openFullContentTree,
                 );
               } else if (itemsCollected[index - 1]["type"] == "rating") {
                 return userRating(
                   ratingId: itemsCollected[index - 1]["data"],
                   clickable: true,
+                  openFullContentTree: openFullContentTree,
                 );
               } else if (itemsCollected[index - 1]["type"] == "user") {
                 return SimpleUserProfileBar(

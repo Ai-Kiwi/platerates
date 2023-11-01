@@ -19,6 +19,7 @@ class _notificationPageListState extends State<notificationPageList> {
     return const Scaffold(
       body: LazyLoadPage(
         urlToFetch: "/notification/list",
+        openFullContentTree: true,
         widgetAddedToTop: Center(
             child: Column(children: [
           SizedBox(height: 32),

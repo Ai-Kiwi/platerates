@@ -116,23 +116,25 @@ router.post('/post/rating/data', [confirmTokenValid, confirmActiveAccount], asyn
         return res.status(404).send("no post found");
       
       }
-      const rootItem = ratingData.rootItem;
 
-      //extract root item info
-      if (!rootItem) {
-        console.log("no root item attached");
-        return res.status(400).send("no root item");
-      }
-      let rootItemData;
-      if (rootItem.type === "post"){
-        rootItemData = await databases.posts.findOne({ postId : rootItem.data })
-      }else if (rootItem.type === "rating"){
-        rootItemData = await databases.post_ratings.findOne({ ratingId : rootItem.data })
-      }
-      if (!rootItemData){
-        console.log("root item is invalid");
-        return res.status(400).send("invalid root post");
-      }
+      //not needed, doesn't matter if root item is valid or not for getting rating data
+      //const rootItem = ratingData.rootItem;
+      //
+      ////extract root item info
+      //if (!rootItem) {
+      //  console.log("no root item attached");
+      //  return res.status(400).send("no root item");
+      //}
+      //let rootItemData;
+      //if (rootItem.type === "post"){
+      //  rootItemData = await databases.posts.findOne({ postId : rootItem.data })
+      //}else if (rootItem.type === "rating"){
+      //  rootItemData = await databases.post_ratings.findOne({ ratingId : rootItem.data })
+      //}
+      //if (!rootItemData){
+      //  console.log("root item is invalid");
+      //  return res.status(400).send("invalid root post");
+      //}
 
       const childRatings = await databases.post_ratings.countDocuments({ "rootItem.data" : ratingId, "rootItem.type" : "rating" });
       const ratingLikes = await databases.post_rating_likes.countDocuments({ "ratingId" : ratingId, });

@@ -134,6 +134,7 @@ class _fullPageChatListState extends State<FullPageChatList> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return const LazyLoadPage(
+      openFullContentTree: false,
       widgetAddedToTop: Column(children: [
         SizedBox(height: 32),
         Padding(

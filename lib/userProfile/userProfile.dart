@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 //import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../libs/dataCollect.dart';
 import '../libs/userAvatar.dart';
@@ -144,6 +145,8 @@ class _UserProfileState extends State<UserProfile> {
   String updateValue = "";
   //follow info
   bool userFollowing = false;
+  int ProfileItemIndex = 0;
+  String urlToSearch = "/profile/posts";
 
   _UserProfileState({required this.userId, required this.openedOntopMenu});
 
@@ -222,6 +225,17 @@ class _UserProfileState extends State<UserProfile> {
     super.dispose();
   }
 
+  void changeUserContentOpen(index) {
+    setState(() {
+      ProfileItemIndex = index;
+      if (index == 0) {
+        urlToSearch = "/profile/posts";
+      } else {
+        urlToSearch = "/profile/ratings";
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading == true) {
@@ -232,8 +246,9 @@ class _UserProfileState extends State<UserProfile> {
     return Scaffold(
         body: Stack(alignment: Alignment.topLeft, children: <Widget>[
       LazyLoadPage(
+        openFullContentTree: true,
         key: UniqueKey(),
-        urlToFetch: "/profile/posts",
+        urlToFetch: urlToSearch,
         extraUrlData: {"userId": realUserId},
         widgetAddedToTop: Column(
           children: [
@@ -523,6 +538,30 @@ class _UserProfileState extends State<UserProfile> {
                             const TextStyle(color: Colors.grey, fontSize: 15),
                       )
                     ]))),
+            const SizedBox(height: 16),
+            Padding(
+              //share mode selection
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ToggleSwitch(
+                  minWidth: double.infinity,
+                  cornerRadius: 15.0,
+                  initialLabelIndex: ProfileItemIndex,
+                  totalSwitches: 2,
+                  activeBgColors: const [
+                    [Colors.green],
+                    [Colors.green]
+                  ],
+                  centerText: true,
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
+                  inactiveFgColor: Colors.white,
+                  labels: const ['Posts', 'Ratings'],
+                  onToggle: changeUserContentOpen,
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
           ],
         ),

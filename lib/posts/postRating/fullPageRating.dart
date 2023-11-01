@@ -45,12 +45,14 @@ class _fullPageRatingState extends State<FullPageRating> {
                 children: [
                   Expanded(
                     child: LazyLoadPage(
+                      openFullContentTree: false,
                       widgetAddedToTop: Center(
                           child: Column(children: [
                         SizedBox(height: 32),
                         userRating(
                           ratingId: rootItem,
                           clickable: false,
+                          openFullContentTree: false,
                         ),
                         const Padding(
                           padding: EdgeInsets.symmetric(

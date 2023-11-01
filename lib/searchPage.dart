@@ -22,6 +22,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return const Scaffold(
         body: LazyLoadPage(
+      openFullContentTree: true,
       urlToFetch: "/search/users",
       widgetAddedToBlank: Center(),
       widgetAddedToEnd: Center(
