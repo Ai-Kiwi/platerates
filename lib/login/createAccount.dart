@@ -205,92 +205,79 @@ class _createAccountPageState extends State<createAccountPage> {
                             ),
                           ),
                           const SizedBox(height: 32.0),
-                          Visibility(
-                            visible: kIsWeb == false,
-                            child: Padding(
-                              //create account button
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 50.0,
-                                child: ElevatedButton(
-                                  style: OutlinedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  )),
-                                  onPressed: () async {
-                                    if (_agreeToTos == false) {
-                                      openAlert(
-                                          "error",
-                                          "you must agree to follow terms of service",
-                                          null,
-                                          context,
-                                          null);
-                                      return;
-                                    }
-                                    if (_agreeToCommunityGuidelines == false) {
-                                      openAlert(
-                                          "error",
-                                          "you must agree to follow community guidelines",
-                                          null,
-                                          context,
-                                          null);
-                                      return;
-                                    }
+                          Padding(
+                            //create account button
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 50.0,
+                              child: ElevatedButton(
+                                style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                )),
+                                onPressed: () async {
+                                  if (_agreeToTos == false) {
+                                    openAlert(
+                                        "error",
+                                        "you must agree to follow terms of service",
+                                        null,
+                                        context,
+                                        null);
+                                    return;
+                                  }
+                                  if (_agreeToCommunityGuidelines == false) {
+                                    openAlert(
+                                        "error",
+                                        "you must agree to follow community guidelines",
+                                        null,
+                                        context,
+                                        null);
+                                    return;
+                                  }
 
-                                    final response = await http.post(
-                                      Uri.parse("$serverDomain/createAccount"),
-                                      headers: <String, String>{
-                                        'Content-Type':
-                                            'application/json; charset=UTF-8',
-                                        'X-Firebase-AppCheck':
-                                            "${await FirebaseAppCheck.instance.getToken()}",
-                                      },
-                                      body: jsonEncode({
-                                        "email": _emailAddress,
-                                        "username": _username,
-                                      }),
-                                    );
+                                  final response = await http.post(
+                                    Uri.parse("$serverDomain/createAccount"),
+                                    headers: <String, String>{
+                                      'Content-Type':
+                                          'application/json; charset=UTF-8',
+                                      'X-Firebase-AppCheck':
+                                          "${await FirebaseAppCheck.instance.getToken()}",
+                                    },
+                                    body: jsonEncode({
+                                      "email": _emailAddress,
+                                      "username": _username,
+                                    }),
+                                  );
 
-                                    if (response.statusCode == 200) {
-                                      // ignore: use_build_context_synchronously
-                                      openAlert(
-                                          "success",
-                                          "created account creation code",
-                                          "check your email's to activate your account",
-                                          context,
-                                          null);
-                                    } else {
-                                      // ignore: use_build_context_synchronously
-                                      ErrorHandler.httpError(
-                                          response.statusCode,
-                                          response.body,
-                                          context);
-                                      // ignore: use_build_context_synchronously
-                                      openAlert(
-                                          "error",
-                                          "failed creating account creation code",
-                                          response.body,
-                                          context,
-                                          null);
-                                    }
-                                  },
-                                  child: const Text(
-                                    'create account',
-                                    style: TextStyle(fontSize: 18.0),
-                                  ),
+                                  if (response.statusCode == 200) {
+                                    // ignore: use_build_context_synchronously
+                                    openAlert(
+                                        "success",
+                                        "created account creation code",
+                                        "check your email's to activate your account\nNote: Email has not been tested for being valid",
+                                        context,
+                                        null);
+                                  } else {
+                                    // ignore: use_build_context_synchronously
+                                    ErrorHandler.httpError(response.statusCode,
+                                        response.body, context);
+                                    // ignore: use_build_context_synchronously
+                                    openAlert(
+                                        "error",
+                                        "failed creating account creation code",
+                                        response.body,
+                                        context,
+                                        null);
+                                  }
+                                },
+                                child: const Text(
+                                  'create account',
+                                  style: TextStyle(fontSize: 18.0),
                                 ),
                               ),
                             ),
-                          ),
-                          const Visibility(
-                            visible: kIsWeb == true,
-                            child: Text(
-                                "creating accounts currently limited to phone app\nplease use either your or another persons phone to sign up\nsorry for the inconvenience",
-                                textAlign: TextAlign.center,
-                                style:
-                                    TextStyle(color: Colors.red, fontSize: 15)),
                           ),
                         ]))))),
         Padding(

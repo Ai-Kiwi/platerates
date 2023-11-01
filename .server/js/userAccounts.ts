@@ -4,7 +4,7 @@ import crypto, { checkPrimeSync } from 'crypto';
 import { databases } from './database';
 import { generateRandomString } from './utilFunctions';
 import sharp, { Sharp } from 'sharp';
-import { userTimeout, userTimeoutTest } from './timeouts';
+import { IpAddressTimeoutTest, ipAddressTimeout, userTimeout, userTimeoutTest } from './timeouts';
 import { cleanEmailAddress, testUsername } from './validInputTester';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
@@ -597,7 +597,7 @@ The Toaster Team`);
 
 
 
-router.post('/createAccount', [appCheckVerification] , async (req : Request, res : Response) => {
+router.post('/createAccount', async (req : Request, res : Response) => {
   console.log(" => user creating account request code")
   try{
     const token = req.body.token;
@@ -611,6 +611,16 @@ router.post('/createAccount', [appCheckVerification] , async (req : Request, res
 
     //test that username and email has a value
 
+    const TimeoutTestresult = await IpAddressTimeoutTest(userIpAddress,"create-account");
+    const timeoutActive : boolean = TimeoutTestresult.active;
+    const timeoutTime : string | undefined = TimeoutTestresult.timeLeft;
+
+
+    if (timeoutActive === true){
+      console.log("ip address timeout");
+      return res.status(408).send(`create account timeout ${timeoutTime} left`);  
+    }
+    await ipAddressTimeout(userIpAddress,"create-account", 5); //just to stop sending large brust of them
     
 
     if (newAccountEmail === null || newAccountEmail === undefined || newAccountEmail === "") {
@@ -667,6 +677,7 @@ https://toaster.aikiwi.dev/use-create-account-code?requestId=${requestId}
 
 If you need any help with this or someone is spamming you with these you can reach out to us at toaster@aikiwi.dev `);
       if (emailData) {
+        await ipAddressTimeout(userIpAddress,"create-account", 7200); //timeout for 2 hours
         console.log("created request");
         return res.status(200).send("created request");   
       }else{

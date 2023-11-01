@@ -3,6 +3,48 @@ import { millisecondsToTime } from './utilFunctions';
 import mongoDB from "mongodb";
 import { Request, Response } from "express";
 
+const ipAddressTimeouts = {}
+
+async function ipAddressTimeout(ipAddress : string,timeoutAction : string,timeoutTime : number) {
+    if (ipAddressTimeouts[ipAddress] === undefined){
+        ipAddressTimeouts[ipAddress] = {}
+    }
+    ipAddressTimeouts[ipAddress][timeoutAction] = (timeoutTime * 1000) + Date.now();
+
+}
+
+async function IpAddressTimeoutTest(ipAddress : string,timeoutAction : string) {
+    //user data doesn't exist
+    if (ipAddressTimeouts[ipAddress] === undefined) {
+        return {
+            active : false
+        };
+    }
+
+    //item not created yet
+    if (ipAddressTimeouts[ipAddress][timeoutAction] === undefined){
+        return {
+            active : false
+        };
+    }
+
+    const timeoutLeft = millisecondsToTime(ipAddressTimeouts[ipAddress][timeoutAction] - Date.now());
+    //test if cooldown is active or not
+    if ( ipAddressTimeouts[ipAddress][timeoutAction] >= Date.now() ) {
+        console.log("user cooldown is active for " + timeoutLeft);
+        return {
+            active : true,
+            timeLeft : timeoutLeft
+        };
+    }else{
+        return {
+            active : false
+        };
+    }
+
+    
+
+}
 
 
 async function userTimeout(userId : string,timeoutAction : string,timeoutTime : number) {
@@ -79,7 +121,7 @@ async function userTimeoutTest(userId : string,timeoutAction : string) {
     if ( userData.cooldowns[timeoutAction] >= Date.now() ) {
         console.log("user cooldown is active for " + timeoutLeft);
         return {
-            active : false,
+            active : true,
             timeLeft : timeoutLeft
         };
     }
@@ -98,4 +140,6 @@ export {
     userTimeout,
     userTimeoutTest,
     userTimeoutLimit,
+    ipAddressTimeout,
+    IpAddressTimeoutTest,
 };
