@@ -16,6 +16,7 @@ import { Store } from 'express-rate-limit';
 import { buffer } from 'stream/consumers';
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 import { reportError } from './errorHandler';
+import { sendNotificationToDevices } from './notificationSystem';
 
 require('dotenv').config();
 
@@ -200,6 +201,8 @@ router.post('/login', async (req : Request, res : Response) => {
         //token not expired code, used to make sure that user has not done password reset or anything
         tokenNotExpiredCode: userData.tokenNotExpiredCode,
       }, privateKey, {expiresIn: '30d'});
+
+      await sendNotificationToDevices("New Login","A new device has logged into your toaster account","newLogin",[userId],"user-login");
 
       console.log("sent login info");
       res.status(200).json({
