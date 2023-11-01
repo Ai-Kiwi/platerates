@@ -75,6 +75,7 @@ class _PostRatingListState extends State<fullPagePost> {
                 children: [
                   Expanded(
                     child: LazyLoadPage(
+                      openFullContentTree: false,
                       widgetAddedToTop: Center(
                           child: Column(children: [
                         SizedBox(height: 32),
@@ -93,6 +94,7 @@ class _PostRatingListState extends State<fullPagePost> {
                         PostItem(
                           postId: rootItem,
                           clickable: false,
+                          openFullContentTree: false,
                         )
                       ])),
                       widgetAddedToEnd: const Center(

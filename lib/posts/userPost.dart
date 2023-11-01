@@ -4,6 +4,7 @@ import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
 import 'package:Toaster/libs/userAvatar.dart';
+import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -20,17 +21,25 @@ import '../main.dart';
 class PostItem extends StatefulWidget {
   final String postId;
   final bool clickable;
+  final bool openFullContentTree;
 
-  const PostItem({super.key, required this.postId, required this.clickable});
+  const PostItem(
+      {super.key,
+      required this.postId,
+      required this.clickable,
+      required this.openFullContentTree});
 
   @override
-  _PostItemState createState() =>
-      _PostItemState(clickable: clickable, postId: postId);
+  _PostItemState createState() => _PostItemState(
+      clickable: clickable,
+      postId: postId,
+      openFullContentTree: openFullContentTree);
 }
 
 class _PostItemState extends State<PostItem> {
   String postId;
   final bool clickable;
+  final bool openFullContentTree;
   String title = "";
   String description = "";
   double rating = 0;
@@ -42,7 +51,10 @@ class _PostItemState extends State<PostItem> {
   var imageData;
   bool errorOccurred = false;
 
-  _PostItemState({required this.postId, required this.clickable});
+  _PostItemState(
+      {required this.postId,
+      required this.clickable,
+      required this.openFullContentTree});
 
   Future<void> _collectData() async {
     //as non of these have returned error it must have found data
@@ -254,8 +266,15 @@ class _PostItemState extends State<PostItem> {
           ),
           onTap: () {
             if (clickable == true) {
-              Navigator.of(context).push(
-                  smoothTransitions.slideUp(fullPagePost(postId: postId)));
+              if (openFullContentTree == true) {
+                openUserItemContent({
+                  "type": "post",
+                  "data": postId,
+                }, context);
+              } else {
+                Navigator.of(context).push(
+                    smoothTransitions.slideUp(fullPagePost(postId: postId)));
+              }
             }
           });
     }

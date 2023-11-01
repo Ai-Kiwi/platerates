@@ -188,13 +188,13 @@ Future<void> initNotificationHandler() async {
   });
 }
 
-Future<void> _openParentPage(perentData, context) async {
+Future<void> openUserItemContent(perentData, context) async {
   if (perentData["type"] == "rating") {
     Map ratingData =
         await dataCollect.getRatingData(perentData["data"], context, true);
     var rootItem = ratingData['rootItem'];
     if (rootItem != null) {
-      await _openParentPage(rootItem, context);
+      await openUserItemContent(rootItem, context);
     }
     Navigator.of(context).push(smoothTransitions
         .slideUp(FullPageRating(ratingId: perentData["data"])));
@@ -204,7 +204,7 @@ Future<void> _openParentPage(perentData, context) async {
         await dataCollect.getPostData(perentData["data"], context, true);
     var rootItem = postData['rootItem'];
     if (rootItem != null) {
-      await _openParentPage(rootItem, context);
+      await openUserItemContent(rootItem, context);
     }
     Navigator.of(context).push(
         smoothTransitions.slideUp(fullPagePost(postId: perentData["data"])));
@@ -218,12 +218,12 @@ Future<Map> openNotification(notificationData, context) async {
   final jsonData = jsonDecode(notificationData);
 
   if (jsonData['action'] == "user_rated_post") {
-    await _openParentPage({
+    await openUserItemContent({
       "type": "rating",
       "data": jsonData['itemId'],
     }, context);
   } else if (jsonData['action'] == "user_reply_post_rating") {
-    await _openParentPage({
+    await openUserItemContent({
       "type": "rating",
       "data": jsonData['itemId'],
     }, context);

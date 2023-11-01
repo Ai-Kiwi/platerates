@@ -364,6 +364,59 @@ router.post('/profile/posts', [confirmTokenValid, confirmActiveAccount], async (
   }
 })
 
+
+router.post('/profile/ratings', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
+  console.log(" => user fetching ratings on profile")
+  try{
+    const startPosPost = req.body.startPosPost;
+    const fetchingUserId = req.body.userId;
+    let startPosPostDate = 100000000000000
+    const userId : string | undefined = req.body.tokenUserId;
+  
+    if (startPosPost) {
+      if (startPosPost.type === "rating" && !startPosPost.data){
+        console.log("invalid start rating");
+        return res.status(400).send("invalid start rating");
+      }
+
+      const startPosPostData = await databases.post_ratings.findOne({ ratingId: startPosPost.data })
+      if (!startPosPostData){
+        console.log("invalid start rating");
+        return res.status(400).send("invalid start rating");
+      }
+        
+      startPosPostDate = startPosPostData.creationDate;
+    }
+
+    const ratings = await databases.post_ratings.find({ratingPosterId : fetchingUserId, creationDate: { $lt: startPosPostDate}}).sort({creationDate: -1}).limit(5).toArray();
+    var returnData = {
+      "items": [] as { type: string; data: string;}[]
+    }
+
+
+    if (ratings.length == 0) {
+      console.log("nothing to fetch");
+    }
+
+
+    for (var i = 0; i < ratings.length; i++) {
+      if (ratings[i].userId !== null) {
+        returnData["items"].push({
+          type : "rating",
+          data : ratings[i].ratingId,
+        });
+      }
+    }
+    
+    console.log("returning ratings");
+    return res.status(200).json(returnData);
+
+  }catch(err){
+    reportError(err);
+    return res.status(500).send("server error")
+  }
+})
+
 router.post('/profile/follow', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user following/unfollowing user")
   try{

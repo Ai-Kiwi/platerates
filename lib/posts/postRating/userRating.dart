@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/userAvatar.dart';
+import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -22,16 +23,20 @@ import '../../login/userLogin.dart';
 class userRating extends StatefulWidget {
   final String ratingId;
   final bool clickable;
+  final bool openFullContentTree;
 
   userRating({
     super.key,
     required this.ratingId,
     required this.clickable,
+    required this.openFullContentTree,
   });
 
   @override
-  _userRatingState createState() =>
-      _userRatingState(ratingId: ratingId, clickable: clickable);
+  _userRatingState createState() => _userRatingState(
+      ratingId: ratingId,
+      clickable: clickable,
+      openFullContentTree: openFullContentTree);
 }
 
 class _userRatingState extends State<userRating> {
@@ -46,6 +51,7 @@ class _userRatingState extends State<userRating> {
   bool? ratingLiked;
   var rootItem;
   var posterAvatar;
+  final bool openFullContentTree;
 
   Future<void> _collectData() async {
     //as non of these have returned error it must have found data
@@ -122,7 +128,10 @@ class _userRatingState extends State<userRating> {
     _collectAndUpdateData();
   }
 
-  _userRatingState({required this.ratingId, required this.clickable});
+  _userRatingState(
+      {required this.ratingId,
+      required this.clickable,
+      required this.openFullContentTree});
 
   @override
   Widget build(BuildContext context) {
@@ -347,8 +356,15 @@ class _userRatingState extends State<userRating> {
         ]),
         onTap: () {
           if (clickable == true) {
-            Navigator.of(context).push(
-                smoothTransitions.slideUp(FullPageRating(ratingId: ratingId)));
+            if (openFullContentTree == true) {
+              openUserItemContent({
+                "type": "rating",
+                "data": ratingId,
+              }, context);
+            } else {
+              Navigator.of(context).push(smoothTransitions
+                  .slideUp(FullPageRating(ratingId: ratingId)));
+            }
           }
         },
       ),

@@ -26,6 +26,7 @@ class _UserFeedState extends State<userFeed> {
   Widget build(BuildContext context) {
     //final ThemeData theme = Theme.of(context);
     return LazyLoadPage(
+      openFullContentTree: true,
       key: UniqueKey(),
       urlToFetch: "/post/feed",
       extraUrlData: {"pageFetching": pageOpen},
@@ -100,7 +101,7 @@ class _UserFeedState extends State<userFeed> {
         children: [
           SizedBox(height: 16),
           Text(
-            "end of feed",
+            "end of content",
             style: TextStyle(color: Colors.white, fontSize: 25),
           ),
           SizedBox(height: 128),
@@ -110,7 +111,7 @@ class _UserFeedState extends State<userFeed> {
         child: Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(
-              "nothing in your feed",
+              "nothing posted",
               style: TextStyle(color: Colors.white, fontSize: 25),
             )),
       ),
