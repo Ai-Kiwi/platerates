@@ -1,4 +1,6 @@
 import 'package:Toaster/libs/lazyLoadPage.dart';
+import 'package:Toaster/libs/smoothTransitions.dart';
+import 'package:Toaster/searchPage.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -33,12 +35,32 @@ class _UserFeedState extends State<userFeed> {
       widgetAddedToTop: Center(
           child: Column(children: [
         const SizedBox(height: 32),
-        const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-            child: Text(
-              "Your feed",
-              style: TextStyle(color: Colors.white, fontSize: 40),
-            )),
+        Stack(
+          children: [
+            const Align(
+              alignment: Alignment.center,
+              child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                  child: Text(
+                    "Your feed",
+                    style: TextStyle(color: Colors.white, fontSize: 40),
+                  )),
+            ),
+            Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                  child: IconButton(
+                    icon: Icon(Icons.search, size: 32, color: Colors.white),
+                    onPressed: () => {
+                      Navigator.of(context)
+                          .push(smoothTransitions.slideUp(const SearchPage()))
+                    },
+                  ),
+                ))
+          ],
+        ),
+
         const Divider(
           color: Color.fromARGB(255, 110, 110, 110),
           thickness: 1.0,

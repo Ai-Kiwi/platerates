@@ -30,8 +30,14 @@ router.post('/search/users', [confirmTokenValid, confirmActiveAccount], async (r
             
           startPosInfo = startPosPostData.creationDate;
         }
-  
-        const dataReturning = await databases.user_data.find({ creationDate: { $lt: startPosInfo}}).sort({creationDate : -1}).limit(15).toArray();
+
+        databases.user_data.createIndex({ username: "text", bio: "text" });
+        const dataReturning = await databases.user_data
+          .find({ username: { $regex: searchText, $options: 'i' }, creationDate: { $lt: startPosInfo } })  // 'i' for case-insensitive matching
+          .sort({ creationDate: -1 })
+          .limit(15)
+          .toArray();
+        
         let returnData = {
           "items": [] as { type: string; data: string;}[]
         }
