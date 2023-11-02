@@ -519,25 +519,28 @@ class _UserProfileState extends State<UserProfile> {
                 ),
               ),
             ),
-            Padding(
-                //description
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SizedBox(
-                    height: 100,
-                    width: double.infinity,
-                    child:
-                        ListView(padding: EdgeInsets.zero, children: <Widget>[
-                      SelectableLinkify(
-                        onOpen: (link) async {
-                          if (!await launchUrl(Uri.parse(link.url))) {
-                            throw Exception('Could not launch ${link.url}');
-                          }
-                        },
-                        text: userBio,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 15),
-                      )
-                    ]))),
+            Visibility(
+              visible: (userBio != null && userBio != ""),
+              child: Padding(
+                  //description
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SizedBox(
+                      height: 100,
+                      width: double.infinity,
+                      child:
+                          ListView(padding: EdgeInsets.zero, children: <Widget>[
+                        SelectableLinkify(
+                          onOpen: (link) async {
+                            if (!await launchUrl(Uri.parse(link.url))) {
+                              throw Exception('Could not launch ${link.url}');
+                            }
+                          },
+                          text: userBio,
+                          style:
+                              const TextStyle(color: Colors.grey, fontSize: 15),
+                        )
+                      ]))),
+            ),
             const SizedBox(height: 16),
             Padding(
               //share mode selection
