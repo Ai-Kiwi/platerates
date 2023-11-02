@@ -287,7 +287,19 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
               size: 30,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              openAlert(
+                  "yes_or_no",
+                  "Discard changes",
+                  "Any unsaved changes will be discarded.\nAre you sure you want to continue?",
+                  context, {
+                "no": () {
+                  Navigator.pop(context);
+                },
+                "yes": () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                }
+              });
             },
           ))
     ])));
