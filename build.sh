@@ -1,21 +1,38 @@
 #BRANCH="latest"
-read -p "input branch: " releaseVer
+read -p "input branch: " releaseBranch
 
-if [ "$releaseVer" == "release" ]
+if [ "$releaseBranch" == "release" ]
 then
     BRANCH="latest"
     TargetDartFile="lib/main.dart"
-elif [ "$releaseVer" == "dev" ]
+    URL="https://toaster.aikiwi.dev/latestVersion"
+elif [ "$releaseBranch" == "dev" ]
 then
     BRANCH="latest-dev"
     TargetDartFile="lib/main_dev.dart"
+    URL="https://dev.toaster.aikiwi.dev/latestVersion"
 else
     echo "unkown build release"
     exit 1
 fi
 
 
- 
+
+response=$(curl -s -X POST -d "" "$URL")
+clientVer=$(yq -r '.version' 'pubspec.yaml')
+
+echo "current server running $response"
+echo "new client running $clientVer"
+
+read -p "does this look correct? (kill if wrong): " correct
+
+
+if [ "$response" == "$clientVer" ]
+then
+    echo "please update verison or build to push update"
+    exit 1
+fi
+
 
 
 set -e
