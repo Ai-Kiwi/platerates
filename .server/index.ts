@@ -6,6 +6,9 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import firebase, { database } from 'firebase-admin'
 
+const isLocalhost = (req) => req.ip === '127.0.0.1' || req.ip === '::1';
+//bench marking can be done with ->   artillery run test.yml
+
 const limiter = rateLimit({
 	windowMs: 10 * 60 * 1000, // 3 minutes
   //windowMs: 3 * 1000, // 3 seconds (bassicly disabled)
@@ -13,6 +16,7 @@ const limiter = rateLimit({
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: 'Too many requests, please try again later.',
+  skip: (req) => isLocalhost(req), // Skip rate limiting for localhost
   keyGenerator: (req: Request) => {
     return req.headers['x-forwarded-for'] as string;
   },
