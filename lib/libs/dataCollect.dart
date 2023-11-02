@@ -205,9 +205,9 @@ class DataCollect {
   //chatroom
   //user settings change
   //really any notifcations
-  //Future<void> clearCacheForItem(String cacheName) async {
-  //  jsonCache.remove(cacheName);
-  //}
+  Future<void> clearCacheForItem(String cacheName) async {
+    jsonCache.remove(cacheName);
+  }
 }
 
 DataCollect dataCollect = DataCollect();

@@ -28,6 +28,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   bool _savingData = false;
   List<int>? _userImage;
   List<int>? _startUserImage;
+  String _realUserId = '';
 
   //late String _realUserId;
 
@@ -45,7 +46,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
       _username = fetchedData['username'];
       _startUsername = fetchedData['username'];
 
-      //_realUserId = fetchedData['userId'];
+      _realUserId = fetchedData['userId'];
 
       _loading = false;
 
@@ -128,16 +129,17 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                         acceptedTypeGroups: <XTypeGroup>[
                                           typeGroup
                                         ]);
+                                    if (file != null) {
+                                      final List<int>? tempNewUserImage =
+                                          await imageUtils.resizePhoto(
+                                              await file?.readAsBytes());
 
-                                    final List<int>? tempNewUserImage =
-                                        await imageUtils.resizePhoto(
-                                            await file?.readAsBytes());
-
-                                    setState(() {
-                                      if (tempNewUserImage != null) {
-                                        _userImage = tempNewUserImage;
-                                      }
-                                    });
+                                      setState(() {
+                                        if (tempNewUserImage != null) {
+                                          _userImage = tempNewUserImage;
+                                        }
+                                      });
+                                    }
                                   },
                                   onTapFunction: 'customFunction',
                                   context: context,
@@ -263,6 +265,15 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                     print("changing user bio");
                                     await _changeSetting("bio", _bio);
                                   }
+                                  await dataCollect
+                                      .clearCacheForItem('basicUserData-null');
+                                  await dataCollect
+                                      .clearCacheForItem('userData-null');
+                                  await dataCollect.clearCacheForItem(
+                                      'basicUserData-$_realUserId');
+                                  await dataCollect.clearCacheForItem(
+                                      'userData-$_realUserId');
+
                                   // ignore: use_build_context_synchronously
                                   openAlert("success", "changed settings", null,
                                       context, null);
