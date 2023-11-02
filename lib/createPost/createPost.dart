@@ -203,7 +203,6 @@ class _CreatePostState extends State<CreatePostPage> {
                           );
 
                           if (response.statusCode == 201) {
-                            Navigator.pop(context);
                             // ignore: use_build_context_synchronously
                             openAlert(
                                 "success", "created post", null, context, null);
