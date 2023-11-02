@@ -1,6 +1,5 @@
 import 'package:Toaster/libs/lazyLoadPage.dart';
 import 'package:flutter/material.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -48,37 +47,54 @@ class _SearchPageState extends State<SearchPage> {
       widgetAddedToTop: Center(
           child: Column(children: [
         const SizedBox(height: 32),
-        Padding(
-          //email input feild
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: TextFormField(
-            initialValue: textSearching,
-            onChanged: (value) {
-              textSearching = value;
-            },
-            onFieldSubmitted: (value) {
-              setState(() {
-                textSearching = textSearching;
-              });
-            },
-            autofillHints: const [AutofillHints.email],
-            style: const TextStyle(color: Colors.white, fontSize: 20),
-            decoration: const InputDecoration(
-                labelText: 'Search',
-                labelStyle:
-                    TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                contentPadding: EdgeInsets.all(8.0),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
+        Row(
+          children: [
+            Center(
+                child: IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 30,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )),
+            Expanded(
+              child: Padding(
+                //email input feild
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextFormField(
+                  initialValue: textSearching,
+                  onChanged: (value) {
+                    textSearching = value;
+                  },
+                  onFieldSubmitted: (value) {
+                    setState(() {
+                      textSearching = textSearching;
+                    });
+                  },
+                  autofillHints: const [AutofillHints.email],
+                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  decoration: const InputDecoration(
+                      labelText: 'Search',
+                      labelStyle:
+                          TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+                      contentPadding: EdgeInsets.all(8.0),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                      suffixIcon: Icon(
+                        Icons.search,
+                        color: Colors.white,
+                      )),
                 ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
-                ),
-                suffixIcon: Icon(
-                  Icons.search,
-                  color: Colors.white,
-                )),
-          ),
+              ),
+            ),
+          ],
         ),
         //Padding(
         //  //share mode selection
