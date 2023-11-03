@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Toaster/libs/usefullWidgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:Toaster/chat/openChat.dart';
 import 'package:Toaster/libs/adminZone.dart';
@@ -244,8 +245,10 @@ class _UserProfileState extends State<UserProfile> {
       );
     }
     return Scaffold(
-        body: Stack(alignment: Alignment.topLeft, children: <Widget>[
-      LazyLoadPage(
+        body: PageBackButton(
+      warnDiscardChanges: false,
+      active: openedOntopMenu,
+      child: LazyLoadPage(
         openFullContentTree: true,
         key: UniqueKey(),
         urlToFetch: urlToSearch,
@@ -588,21 +591,6 @@ class _UserProfileState extends State<UserProfile> {
               )),
         ),
       ),
-      Visibility(
-          visible: openedOntopMenu,
-          child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ))),
-    ]));
+    ));
   }
 }

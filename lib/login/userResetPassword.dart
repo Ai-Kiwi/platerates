@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
+import 'package:Toaster/libs/usefullWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:toggle_switch/toggle_switch.dart';
@@ -22,8 +23,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(alignment: Alignment.topLeft, children: <Widget>[
-      SizedBox(
+        body: PageBackButton(
+      warnDiscardChanges: false,
+      active: true,
+      child: SizedBox(
           child: Center(
               child: Column(
         children: <Widget>[
@@ -167,18 +170,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           ),
         ],
       ))),
-      Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 30,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ))
-    ]));
+    ));
   }
 }
