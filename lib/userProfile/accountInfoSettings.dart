@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
+import 'package:Toaster/libs/usefullWidgets.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -98,8 +99,10 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
     }
     return Scaffold(
         body: SafeArea(
-            child: Stack(alignment: Alignment.topLeft, children: <Widget>[
-      Center(
+            child: PageBackButton(
+      active: true,
+      warnDiscardChanges: false,
+      child: Center(
           //make sure on pc it's not to wide
           child: SizedBox(
               width: 650,
@@ -289,30 +292,6 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                   ),
                 ],
               ))))),
-      Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 30,
-            ),
-            onPressed: () {
-              openAlert(
-                  "yes_or_no",
-                  "Discard changes",
-                  "Any unsaved changes will be discarded.\nAre you sure you want to continue?",
-                  context, {
-                "no": () {
-                  Navigator.pop(context);
-                },
-                "yes": () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                }
-              });
-            },
-          ))
-    ])));
+    )));
   }
 }

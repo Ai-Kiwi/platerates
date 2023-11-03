@@ -1,3 +1,4 @@
+import 'package:Toaster/libs/usefullWidgets.dart';
 import 'package:Toaster/userProfile/accountInfoSettings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,10 @@ class _UserSettingsState extends State<UserSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(alignment: Alignment.topLeft, children: <Widget>[
-      SafeArea(
+        body: PageBackButton(
+      warnDiscardChanges: false,
+      active: true,
+      child: SafeArea(
           top: false,
           child: ListView(
             children: [
@@ -116,19 +119,7 @@ class _UserSettingsState extends State<UserSettings> {
               ),
             ],
           )),
-      Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-          child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 30,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ))
-    ]));
+    ));
   }
 }
 

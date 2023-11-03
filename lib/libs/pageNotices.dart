@@ -88,7 +88,6 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
   Widget build(BuildContext context) {
     if (errorMessage == "client-out-of-date") {
       return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 16, 16, 16),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -169,7 +168,6 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
       );
     } else if (errorMessage == "error contacting server") {
       return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 16, 16, 16),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -202,7 +200,6 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
       );
     } else {
       return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 16, 16, 16),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -231,7 +228,6 @@ class migrateToAppPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 16, 16, 16),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
