@@ -21,6 +21,8 @@ fi
 response=$(curl -s -X POST -d "" "$URL")
 clientVer=$(yq -r '.version' 'pubspec.yaml')
 
+echo ""
+echo "make sure verison has been updated and changes have been added to changelog"
 echo "current server running $response"
 echo "new client running $clientVer"
 
