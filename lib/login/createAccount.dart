@@ -244,8 +244,6 @@ class _createAccountPageState extends State<createAccountPage> {
                                   headers: <String, String>{
                                     'Content-Type':
                                         'application/json; charset=UTF-8',
-                                    'X-Firebase-AppCheck':
-                                        "${await FirebaseAppCheck.instance.getToken()}",
                                   },
                                   body: jsonEncode({
                                     "email": _emailAddress,

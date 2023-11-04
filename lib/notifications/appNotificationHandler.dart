@@ -97,8 +97,9 @@ Future<void> sendNotification(
   } else {
     print("error failed to find channelId $channelId");
   }
-
-  updateUnreadNotificationCount();
+  if (updateUnreadNotificationCount != null) {
+    updateUnreadNotificationCount();
+  }
 }
 
 Future<void> informServerNotificationToken(String? token) async {
