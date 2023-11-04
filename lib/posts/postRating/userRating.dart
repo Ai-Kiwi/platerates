@@ -185,6 +185,13 @@ class _userRatingState extends State<userRating> {
                                     openedOntopMenu: true)),
                           );
                         },
+                        child: Text(
+                          posterName,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                       Text(
                           "${timeMaths.SingleLongFormatDuration(creationDate == null ? 0 : (DateTime.now().millisecondsSinceEpoch - creationDate!))} ago",
