@@ -6,6 +6,7 @@ import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/posts/postRating/fullPageRating.dart';
+import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -174,12 +175,16 @@ class _userRatingState extends State<userRating> {
                         visible: rating != null,
                         child: const SizedBox(height: 8),
                       ),
-                      Text(
-                        posterName,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UserProfile(
+                                    userId: posterUserId,
+                                    openedOntopMenu: true)),
+                          );
+                        },
                       ),
                       Text(
                           "${timeMaths.SingleLongFormatDuration(creationDate == null ? 0 : (DateTime.now().millisecondsSinceEpoch - creationDate!))} ago",
