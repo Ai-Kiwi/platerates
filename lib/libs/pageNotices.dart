@@ -499,7 +499,7 @@ class _PromptUserToAcceptNewLicensesState
                                   fontWeight: FontWeight.w600,
                                   fontSize: 18)),
                           subtitle: const Text(
-                              "Our Data Privacy Policy explains how we handle and protect your personal information, ensuring your data is safe and used responsibly.",
+                              "Our Data Deletion Policy defines the procedures and timelines for removing user data upon request or in accordance with our data retention practices.",
                               style: TextStyle(
                                   color: Colors.white70, fontSize: 12)),
                           trailing: const Icon(Icons.arrow_forward_rounded,
