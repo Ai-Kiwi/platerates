@@ -52,6 +52,7 @@ class _createAccountPageState extends State<createAccountPage> {
                           //password input feild
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: TextFormField(
+                            initialValue: _username,
                             onChanged: (value) {
                               _username = value;
                             },
@@ -77,6 +78,7 @@ class _createAccountPageState extends State<createAccountPage> {
                           //email input feild
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: TextFormField(
+                            initialValue: _emailAddress,
                             onChanged: (value) {
                               _emailAddress = value;
                             },
