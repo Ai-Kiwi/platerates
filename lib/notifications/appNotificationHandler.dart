@@ -143,7 +143,7 @@ Future<void> initNotificationHandler() async {
   flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin>()
-      ?.requestPermission();
+      ?.requestNotificationsPermission();
 
   //await FirebaseMessaging.requestPermission()
 
