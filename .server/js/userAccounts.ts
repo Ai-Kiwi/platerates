@@ -620,7 +620,18 @@ router.post('/createAccount', async (req : Request, res : Response) => {
       console.log("ip address timeout");
       return res.status(408).send(`create account timeout ${timeoutTime} left`);  
     }
-    await ipAddressTimeout(userIpAddress,"create-account", 5); //just to stop sending large brust of them
+    await ipAddressTimeout(userIpAddress,"create-account", 3); //just to stop sending large brust of them
+
+
+    const emailTimeoutTestResult = await IpAddressTimeoutTest(userIpAddress,`create-account-${newAccountEmail}`);
+    const emailTimeoutActive : boolean = emailTimeoutTestResult.active;
+    const emailTimeoutTime : string | undefined = emailTimeoutTestResult.timeLeft;
+
+
+    if (emailTimeoutActive === true){
+      console.log("email ip address timeout");
+      return res.status(408).send(`create account for this email timed out ${emailTimeoutTime} left`);  
+    }
     
 
     if (newAccountEmail === null || newAccountEmail === undefined || newAccountEmail === "") {
@@ -677,7 +688,7 @@ https://toaster.aikiwi.dev/use-create-account-code?requestId=${requestId}
 
 If you need any help with this or someone is spamming you with these you can reach out to us at toaster@aikiwi.dev `);
       if (emailData) {
-        await ipAddressTimeout(userIpAddress,"create-account", 7200); //timeout for 2 hours
+        await ipAddressTimeout(userIpAddress,`create-account-${newAccountEmail}`, 7200); //timeout for 2 hours
         console.log("created request");
         return res.status(200).send("created request");   
       }else{
