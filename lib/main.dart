@@ -74,11 +74,18 @@ class MyApp extends StatelessWidget {
     print("setting up cache");
     //load in json cache stuff
     await Hive.initFlutter();
-    final tempDir = await getTemporaryDirectory();
-    final box = await Hive.openBox<String>('appBox',
-        path:
-            "${tempDir.path}/cacheData.toastyCache"); // it must be a Box<String>.
-    jsonCache = JsonCacheMem(JsonCacheHive(box));
+
+    if (kIsWeb == true) {
+      final box =
+          await Hive.openBox<String>('appBox'); // it must be a Box<String>.
+      jsonCache = JsonCacheMem(JsonCacheHive(box));
+    } else {
+      final tempDir = await getTemporaryDirectory();
+      final box = await Hive.openBox<String>('appBox',
+          path:
+              "${tempDir.path}/cacheData.toastyCache"); // it must be a Box<String>.
+      jsonCache = JsonCacheMem(JsonCacheHive(box));
+    }
 
     //if I change reset data this also needs to be changed in login script as well as logout script in alerts
     var expireTime = await jsonCache.value("expire-data");
