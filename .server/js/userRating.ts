@@ -165,6 +165,7 @@ router.post('/post/rating/data', [confirmTokenValid, confirmActiveAccount], asyn
         rootItem: ratingData.rootItem,
         childRatingsAmount: childRatings,
         ratingLikes : ratingLikes,
+        creationDate : ratingData.creationDate,
         relativeViewerData : {
           userLiked : userLiked,
           viewerIsCreator : viewerIsCreator,

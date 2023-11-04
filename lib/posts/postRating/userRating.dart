@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Toaster/libs/alertSystem.dart';
+import 'package:Toaster/libs/timeMaths.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
@@ -54,6 +55,7 @@ class _userRatingState extends State<userRating> {
   var posterAvatar;
   final bool openFullContentTree;
   bool? viewerIsCreator;
+  int? creationDate;
 
   Future<void> _collectData() async {
     //as non of these have returned error it must have found data
@@ -75,6 +77,7 @@ class _userRatingState extends State<userRating> {
         rootItem = jsonData['rootItem'];
         childRatingsAmount = jsonData['childRatingsAmount'];
         ratingLikes = jsonData['ratingLikes'];
+        creationDate = jsonData["creationDate"];
         viewerIsCreator = jsonData["relativeViewerData"]["viewerIsCreator"];
         if (avatarData["imageData"] != null) {
           posterAvatar = base64Decode(avatarData["imageData"]);
@@ -163,9 +166,14 @@ class _userRatingState extends State<userRating> {
               Expanded(
                 //name and rating
                 child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Visibility(
+                        maintainState: false,
+                        visible: rating != null,
+                        child: const SizedBox(height: 8),
+                      ),
                       Text(
                         posterName,
                         style: const TextStyle(
@@ -173,6 +181,12 @@ class _userRatingState extends State<userRating> {
                             fontSize: 20,
                             fontWeight: FontWeight.bold),
                       ),
+                      Text(
+                          "${timeMaths.SingleLongFormatDuration(creationDate == null ? 0 : (DateTime.now().millisecondsSinceEpoch - creationDate!))} ago",
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 10,
+                          )),
                       Visibility(
                           maintainState: false,
                           visible: rating != null,

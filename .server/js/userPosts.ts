@@ -161,6 +161,7 @@ router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req 
         title : itemData.title,
         description : itemData.description,
         rating : itemData.rating,
+        postDate : itemData.postDate,
         ratingsAmount : `${ratingsAmount}`, // converts to string as client software pefers that
         requesterRated :`${requesterHasRated}`,
         postId : postId,
