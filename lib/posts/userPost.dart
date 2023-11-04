@@ -8,6 +8,7 @@ import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
 import 'package:Toaster/login/userLogin.dart';
+import 'package:Toaster/userProfile/userProfile.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -170,12 +171,24 @@ class _PostItemState extends State<PostItem> {
                                         CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text(posterName,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                          )),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UserProfile(
+                                                        userId: posterUserId,
+                                                        openedOntopMenu: true)),
+                                          );
+                                        },
+                                        child: Text(posterName,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15,
+                                            )),
+                                      ),
                                       Text(
                                           "${timeMaths.SingleLongFormatDuration(postDate == null ? 0 : (DateTime.now().millisecondsSinceEpoch - postDate!))} ago",
                                           style: const TextStyle(
