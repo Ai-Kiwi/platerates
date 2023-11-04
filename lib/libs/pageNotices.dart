@@ -411,8 +411,8 @@ class _PromptUserToAcceptNewLicensesState
       // ignore: use_build_context_synchronously
       await ErrorHandler.httpError(response.statusCode, response.body, context);
       // ignore: use_build_context_synchronously
-      openAlert(
-          "error", "failed updating licenses", response.body, context, null);
+      openAlert("error", "failed updating licenses", response.body, context,
+          null, null);
 
       //FirebaseCrashlytics.instance.crash();
     }
@@ -441,7 +441,8 @@ class _PromptUserToAcceptNewLicensesState
       // ignore: use_build_context_synchronously
       await ErrorHandler.httpError(response.statusCode, response.body, context);
       // ignore: use_build_context_synchronously
-      openAlert("error", "failed getting new licenses", null, context, null);
+      openAlert(
+          "error", "failed getting new licenses", null, context, null, null);
 
       //FirebaseCrashlytics.instance.crash();
     }
@@ -601,15 +602,17 @@ class _PromptUserToAcceptNewLicensesState
                       "yes_or_no",
                       "accept terms of service",
                       "By clicking 'Yes,' you confirm your agreement to follow our legally binding Terms of Service.",
-                      context, {
-                    "yes": () {
-                      Navigator.pop(context);
-                      _acceptedNewLisenses();
-                    },
-                    "no": () {
-                      Navigator.pop(context);
-                    },
-                  });
+                      context,
+                      {
+                        "yes": () {
+                          Navigator.pop(context);
+                          _acceptedNewLisenses();
+                        },
+                        "no": () {
+                          Navigator.pop(context);
+                        },
+                      },
+                      null);
                 }
               },
               child: const Text(

@@ -240,8 +240,13 @@ class _LoginPageState extends State<LoginPage> {
                                     informServerNotificationToken(fcmToken);
                                   } else {
                                     // ignore: use_build_context_synchronously
-                                    openAlert("error", "invalid login",
-                                        correctLogin.error, context, null);
+                                    openAlert(
+                                        "error",
+                                        "invalid login",
+                                        correctLogin.error,
+                                        context,
+                                        null,
+                                        null);
                                   }
                                 },
                                 child: const Text(

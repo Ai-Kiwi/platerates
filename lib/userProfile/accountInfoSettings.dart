@@ -77,7 +77,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
       ErrorHandler.httpError(response.statusCode, response.body, context);
       // ignore: use_build_context_synchronously
       openAlert("error", "failed to change setting $setting", response.body,
-          context, null);
+          context, null, null);
       return;
     }
   }
@@ -279,7 +279,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
 
                                   // ignore: use_build_context_synchronously
                                   openAlert("success", "changed settings", null,
-                                      context, null);
+                                      context, null, null);
                                   setState(() {
                                     _savingData = false;
                                   });

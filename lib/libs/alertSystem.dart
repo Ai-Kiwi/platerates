@@ -26,8 +26,13 @@ const alertStyle = AlertStyle(
   //alertAlignment: Alignment.topCenter,
 );
 
-Future<void> openAlert(String type, String title, String? desc, context,
-    Map<String, VoidCallback>? functionsToRunPerButton) async {
+Future<void> openAlert(
+    String type,
+    String title,
+    String? desc,
+    context,
+    Map<String, VoidCallback>? functionsToRunPerButton,
+    List<Widget>? customButtons) async {
   if (type == "info") {
     Alert(
       context: context,
@@ -140,8 +145,8 @@ Future<void> openAlert(String type, String title, String? desc, context,
             } else {
               ErrorHandler.httpError(
                   response.statusCode, response.body, context);
-              openAlert(
-                  "error", "failed logging out", response.body, context, null);
+              openAlert("error", "failed logging out", response.body, context,
+                  null, null);
             }
           },
         ),
@@ -172,6 +177,22 @@ Future<void> openAlert(String type, String title, String? desc, context,
           onPressed: functionsToRunPerButton?["no"],
         )
       ],
+    ).show();
+  } else if (type == "custom_buttons") {
+    Alert(
+      context: context,
+      title: title,
+      desc: desc,
+      style: alertStyle,
+      content: Column(
+        children: [
+          const SizedBox(
+            height: 8,
+          ),
+          Column(children: customButtons!)
+        ],
+      ),
+      buttons: [],
     ).show();
   }
 }

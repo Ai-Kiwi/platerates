@@ -222,6 +222,7 @@ class _createAccountPageState extends State<createAccountPage> {
                                       "you must agree to follow terms of service",
                                       null,
                                       context,
+                                      null,
                                       null);
                                   return;
                                 }
@@ -231,6 +232,7 @@ class _createAccountPageState extends State<createAccountPage> {
                                       "you must agree to follow community guidelines",
                                       null,
                                       context,
+                                      null,
                                       null);
                                   return;
                                 }
@@ -256,6 +258,7 @@ class _createAccountPageState extends State<createAccountPage> {
                                       "created account creation code",
                                       "check your email's to activate your account\nNote: Email has not been tested for being valid",
                                       context,
+                                      null,
                                       null);
                                 } else {
                                   // ignore: use_build_context_synchronously
@@ -267,6 +270,7 @@ class _createAccountPageState extends State<createAccountPage> {
                                       "failed creating account creation code",
                                       response.body,
                                       context,
+                                      null,
                                       null);
                                 }
                               },

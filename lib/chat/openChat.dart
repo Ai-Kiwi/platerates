@@ -295,31 +295,19 @@ class _fullPageChatState extends State<FullPageChat> {
   Future<void> _handleMessageHold(
       BuildContext context, types.Message p1) async {
     //openAlert("info", "message data", p1.id, context, null);
-    Alert(
-      style: alertStyle,
-      title: "select action for message",
-      content: Column(children: [
-        const SizedBox(height: 16),
-        SizedBox(
-          width: 200,
-          child: ElevatedButton(
-            style: OutlinedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                )),
-            onPressed: () async {
-              reportSystem.reportItem(context, "chat_message", p1.id);
-            },
-            child: const Text(
-              '🚩 report comment',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          ),
+    openAlert(
+        "custom_buttons", "select action for message", null, context, null, [
+      DialogButton(
+        color: Colors.red,
+        child: const Text(
+          '🚩 report comment',
+          style: TextStyle(fontSize: 16.0, color: Colors.white),
         ),
-      ]),
-      context: context,
-    ).show();
+        onPressed: () async {
+          reportSystem.reportItem(context, "chat_message", p1.id);
+        },
+      )
+    ]);
   }
 
   Timer? _typingTimer;

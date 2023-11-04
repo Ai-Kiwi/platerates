@@ -181,48 +181,54 @@ class _CreatePostState extends State<CreatePostPage> {
                   borderRadius: BorderRadius.circular(15.0),
                 )),
                 onPressed: () async {
-                  openAlert("yes_or_no", "Are you sure you want to post this?",
-                      null, context, {
-                    "yes": () async {
-                      Navigator.pop(context);
+                  openAlert(
+                      "yes_or_no",
+                      "Are you sure you want to post this?",
+                      null,
+                      context,
+                      {
+                        "yes": () async {
+                          Navigator.pop(context);
 
-                      try {
-                        final response = await http.post(
-                          Uri.parse("$serverDomain/post/upload"),
-                          headers: <String, String>{
-                            'Content-Type': 'application/json; charset=UTF-8',
-                          },
-                          body: jsonEncode({
-                            "token": userManager.token,
-                            "title": _title,
-                            "description": _description,
-                            "shareMode": postCodeNames[shareModeSelected],
-                            "image": base64Encode(
-                                imageUtils.uintListToBytes(imageData)),
-                          }),
-                        );
+                          try {
+                            final response = await http.post(
+                              Uri.parse("$serverDomain/post/upload"),
+                              headers: <String, String>{
+                                'Content-Type':
+                                    'application/json; charset=UTF-8',
+                              },
+                              body: jsonEncode({
+                                "token": userManager.token,
+                                "title": _title,
+                                "description": _description,
+                                "shareMode": postCodeNames[shareModeSelected],
+                                "image": base64Encode(
+                                    imageUtils.uintListToBytes(imageData)),
+                              }),
+                            );
 
-                        if (response.statusCode == 201) {
-                          // ignore: use_build_context_synchronously
-                          openAlert(
-                              "success", "created post", null, context, null);
-                        } else {
-                          ErrorHandler.httpError(
-                              response.statusCode, response.body, context);
-                          openAlert("error", "error uploading post", null,
-                              context, null);
-                        }
-                      } on Exception catch (error, stackTrace) {
-                        FirebaseCrashlytics.instance
-                            .recordError(error, stackTrace);
-                        openAlert("error", "unkown error contacting serer",
-                            null, context, null);
-                      }
-                    },
-                    "no": () {
-                      Navigator.pop(context);
-                    },
-                  });
+                            if (response.statusCode == 201) {
+                              // ignore: use_build_context_synchronously
+                              openAlert("success", "created post", null,
+                                  context, null, null);
+                            } else {
+                              ErrorHandler.httpError(
+                                  response.statusCode, response.body, context);
+                              openAlert("error", "error uploading post", null,
+                                  context, null, null);
+                            }
+                          } on Exception catch (error, stackTrace) {
+                            FirebaseCrashlytics.instance
+                                .recordError(error, stackTrace);
+                            openAlert("error", "unkown error contacting serer",
+                                null, context, null, null);
+                          }
+                        },
+                        "no": () {
+                          Navigator.pop(context);
+                        },
+                      },
+                      null);
                 },
                 child: const Text(
                   'Upload post',

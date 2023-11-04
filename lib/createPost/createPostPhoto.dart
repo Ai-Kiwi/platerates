@@ -40,7 +40,8 @@ class _CameraPageState extends State<CameraPage> {
         FirebaseCrashlytics.instance.recordError(error, stackTrace);
         try {
           // ignore: use_build_context_synchronously
-          openAlert("error", "failed loading camera", "$error", context, null);
+          openAlert(
+              "error", "failed loading camera", "$error", context, null, null);
         } catch (e) {}
       }
     }
@@ -67,7 +68,7 @@ class _CameraPageState extends State<CameraPage> {
         });
       } catch (e) {
         // ignore: use_build_context_synchronously
-        openAlert("error", "failed loading camera", "$e", context, null);
+        openAlert("error", "failed loading camera", "$e", context, null, null);
       }
     }
     if (!mounted) return;
@@ -219,7 +220,7 @@ class _CameraPageState extends State<CameraPage> {
                                     } else {
                                       // ignore: use_build_context_synchronously
                                       openAlert("error", "error loading camera",
-                                          null, context, null);
+                                          null, context, null, null);
                                     }
                                   },
                                   child: const Text(
@@ -289,8 +290,8 @@ class _CameraPageState extends State<CameraPage> {
                   }
                 } catch (err) {
                   // ignore: use_build_context_synchronously
-                  openAlert(
-                      "error", "error taking photo", "$err", context, null);
+                  openAlert("error", "error taking photo", "$err", context,
+                      null, null);
 
                   print(err);
                   return null;

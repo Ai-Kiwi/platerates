@@ -33,7 +33,8 @@ class UserAvatar extends StatelessWidget {
     } else if (onTapFunction == "copyUserId") {
       if (userId != null) {
         Clipboard.setData(ClipboardData(text: userId));
-        openAlert("info", "copied user id to clipboard", null, context, null);
+        openAlert(
+            "info", "copied user id to clipboard", null, context, null, null);
       }
     } else if (onTapFunction == "customFunction") {
       customFunction!();

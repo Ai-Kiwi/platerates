@@ -31,15 +31,17 @@ class PageBackButton extends StatelessWidget {
                         "yes_or_no",
                         "Discard changes",
                         "Any unsaved changes will be discarded.\nAre you sure you want to continue?",
-                        context, {
-                      "no": () {
-                        Navigator.pop(context);
-                      },
-                      "yes": () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      }
-                    });
+                        context,
+                        {
+                          "no": () {
+                            Navigator.pop(context);
+                          },
+                          "yes": () {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          }
+                        },
+                        null);
                   } else {
                     Navigator.pop(context);
                   }

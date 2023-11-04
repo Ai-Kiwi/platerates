@@ -59,12 +59,13 @@ class ReportSystem {
                 }),
               );
               if (response.statusCode == 201) {
-                openAlert("success", "post reported", null, context, null);
+                openAlert(
+                    "success", "post reported", null, context, null, null);
               } else {
                 ErrorHandler.httpError(
                     response.statusCode, response.body, context);
                 openAlert("error", "failed reporting post", response.body,
-                    context, null);
+                    context, null, null);
               }
             },
             child: const Text(
