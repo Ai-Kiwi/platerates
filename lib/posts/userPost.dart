@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/dataCollect.dart';
 import 'package:Toaster/libs/smoothTransitions.dart';
+import 'package:Toaster/libs/timeMaths.dart';
 import 'package:Toaster/libs/userAvatar.dart';
 import 'package:Toaster/notifications/appNotificationHandler.dart';
 import 'package:Toaster/posts/fullPagePost.dart';
@@ -45,6 +46,7 @@ class _PostItemState extends State<PostItem> {
   String description = "";
   double rating = 0;
   String posterName = "";
+  int? postDate;
   int ratingsAmount = 0;
   bool? hasRated = true;
   var posterAvatar;
@@ -77,6 +79,7 @@ class _PostItemState extends State<PostItem> {
         imageData = base64Decode(jsonData['imageData']);
         posterName = basicUserData["username"];
         posterUserId = jsonData['posterId'];
+        postDate = jsonData['postDate'];
         ratingsAmount = int.parse(jsonData['ratingsAmount']);
         viewerIsCreator = jsonData["relativeViewerData"]["viewerIsCreator"];
         // ignore: sdk_version_since
@@ -162,12 +165,25 @@ class _PostItemState extends State<PostItem> {
                                     userId: posterUserId,
                                   ),
                                   const SizedBox(width: 4),
-                                  Text(posterName,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      )),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(posterName,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          )),
+                                      Text(
+                                          "${timeMaths.SingleLongFormatDuration(postDate == null ? 0 : (DateTime.now().millisecondsSinceEpoch - postDate!))} ago",
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 10,
+                                          )),
+                                    ],
+                                  )
                                 ]),
                           ),
                           PostManageButton(
