@@ -145,6 +145,8 @@ router.post('/post/rating/data', [confirmTokenValid, confirmActiveAccount], asyn
         userLiked = false;
       }
 
+      const viewerIsCreator = (userId == ratingData.ratingPosterId);
+
       console.log("response sent")
       if (onlyUpdateChangeable === true) {
         return res.status(200).json({
@@ -152,6 +154,7 @@ router.post('/post/rating/data', [confirmTokenValid, confirmActiveAccount], asyn
           ratingLikes : ratingLikes,
           relativeViewerData : {
             userLiked : userLiked,
+            viewerIsCreator : viewerIsCreator,
           },
         });
       }
@@ -164,6 +167,7 @@ router.post('/post/rating/data', [confirmTokenValid, confirmActiveAccount], asyn
         ratingLikes : ratingLikes,
         relativeViewerData : {
           userLiked : userLiked,
+          viewerIsCreator : viewerIsCreator,
         },
       });
 

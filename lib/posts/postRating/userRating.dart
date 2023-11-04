@@ -53,6 +53,7 @@ class _userRatingState extends State<userRating> {
   var rootItem;
   var posterAvatar;
   final bool openFullContentTree;
+  bool? viewerIsCreator;
 
   Future<void> _collectData() async {
     //as non of these have returned error it must have found data
@@ -74,6 +75,7 @@ class _userRatingState extends State<userRating> {
         rootItem = jsonData['rootItem'];
         childRatingsAmount = jsonData['childRatingsAmount'];
         ratingLikes = jsonData['ratingLikes'];
+        viewerIsCreator = jsonData["relativeViewerData"]["viewerIsCreator"];
         if (avatarData["imageData"] != null) {
           posterAvatar = base64Decode(avatarData["imageData"]);
         }
@@ -198,39 +200,44 @@ class _userRatingState extends State<userRating> {
                   onPressed: () {
                     openAlert("custom_buttons", "select action for message",
                         null, context, null, [
-                      DialogButton(
-                        color: Colors.red,
-                        child: const Text(
-                          'delete',
-                          style: TextStyle(fontSize: 16.0, color: Colors.white),
+                      Visibility(
+                        visible: viewerIsCreator == true,
+                        child: DialogButton(
+                          color: Colors.red,
+                          child: const Text(
+                            'delete',
+                            style:
+                                TextStyle(fontSize: 16.0, color: Colors.white),
+                          ),
+                          onPressed: () async {
+                            final response = await http.post(
+                              Uri.parse("$serverDomain/post/rating/delete"),
+                              headers: <String, String>{
+                                'Content-Type':
+                                    'application/json; charset=UTF-8',
+                              },
+                              body: jsonEncode(<String, String>{
+                                'token': userManager.token,
+                                'ratingId': ratingId,
+                              }),
+                            );
+                            if (response.statusCode == 200) {
+                              openAlert("error", "rating deleted", null,
+                                  context, null, null);
+                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => fullPagePost(
+                                          postId: rootItem["data"])));
+                            } else {
+                              ErrorHandler.httpError(
+                                  response.statusCode, response.body, context);
+                              openAlert("error", "failed deleting rating",
+                                  response.body, context, null, null);
+                            }
+                          },
                         ),
-                        onPressed: () async {
-                          final response = await http.post(
-                            Uri.parse("$serverDomain/post/rating/delete"),
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                            },
-                            body: jsonEncode(<String, String>{
-                              'token': userManager.token,
-                              'ratingId': ratingId,
-                            }),
-                          );
-                          if (response.statusCode == 200) {
-                            openAlert("error", "rating deleted", null, context,
-                                null, null);
-                            Navigator.pop(context);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => fullPagePost(
-                                        postId: rootItem["data"])));
-                          } else {
-                            ErrorHandler.httpError(
-                                response.statusCode, response.body, context);
-                            openAlert("error", "failed deleting rating",
-                                response.body, context, null, null);
-                          }
-                        },
                       ),
                       DialogButton(
                         color: Colors.red,
