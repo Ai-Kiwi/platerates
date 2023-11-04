@@ -51,6 +51,7 @@ class _PostItemState extends State<PostItem> {
   String posterUserId = "";
   var imageData;
   bool errorOccurred = false;
+  bool? viewerIsCreator;
 
   _PostItemState(
       {required this.postId,
@@ -77,6 +78,7 @@ class _PostItemState extends State<PostItem> {
         posterName = basicUserData["username"];
         posterUserId = jsonData['posterId'];
         ratingsAmount = int.parse(jsonData['ratingsAmount']);
+        viewerIsCreator = jsonData["relativeViewerData"]["viewerIsCreator"];
         // ignore: sdk_version_since
         hasRated = bool.tryParse(jsonData['requesterRated']);
         errorOccurred = false;
@@ -171,6 +173,7 @@ class _PostItemState extends State<PostItem> {
                           PostManageButton(
                             posterUserId: posterUserId,
                             postId: postId,
+                            viewerIsCreator: viewerIsCreator,
                           ),
                           SizedBox(
                             width: 8,
@@ -323,8 +326,12 @@ class PostImage extends StatelessWidget {
 class PostManageButton extends StatelessWidget {
   final String posterUserId;
   final String postId;
+  final bool? viewerIsCreator;
 
-  const PostManageButton({required this.posterUserId, required this.postId});
+  const PostManageButton(
+      {required this.posterUserId,
+      required this.postId,
+      required this.viewerIsCreator});
 
   @override
   Widget build(BuildContext context) {
@@ -339,51 +346,54 @@ class PostManageButton extends StatelessWidget {
       onPressed: () {
         openAlert("custom_buttons", "select action for message", null, context,
             null, [
-          DialogButton(
-            color: Colors.red,
-            child: const Text(
-              'delete',
-              style: TextStyle(fontSize: 16.0, color: Colors.white),
-            ),
-            onPressed: () async {
-              openAlert(
-                  "yes_or_no",
-                  "are you sure you want to delete this post?",
-                  null,
-                  context,
-                  {
-                    "yes": () async {
-                      final response = await http.post(
-                        Uri.parse("$serverDomain/post/delete"),
-                        headers: <String, String>{
-                          'Content-Type': 'application/json; charset=UTF-8',
-                        },
-                        body: jsonEncode(<String, String>{
-                          'token': userManager.token,
-                          'postId': postId,
-                        }),
-                      );
-                      if (response.statusCode == 200) {
-                        // ignore: use_build_context_synchronously
+          Visibility(
+            visible: viewerIsCreator == true,
+            child: DialogButton(
+              color: Colors.red,
+              child: const Text(
+                'delete',
+                style: TextStyle(fontSize: 16.0, color: Colors.white),
+              ),
+              onPressed: () async {
+                openAlert(
+                    "yes_or_no",
+                    "are you sure you want to delete this post?",
+                    null,
+                    context,
+                    {
+                      "yes": () async {
+                        final response = await http.post(
+                          Uri.parse("$serverDomain/post/delete"),
+                          headers: <String, String>{
+                            'Content-Type': 'application/json; charset=UTF-8',
+                          },
+                          body: jsonEncode(<String, String>{
+                            'token': userManager.token,
+                            'postId': postId,
+                          }),
+                        );
+                        if (response.statusCode == 200) {
+                          // ignore: use_build_context_synchronously
+                          Navigator.pop(context);
+                          // ignore: use_build_context_synchronously
+                          openAlert("success", "post deleted", null, context,
+                              null, null);
+                        } else {
+                          // ignore: use_build_context_synchronously
+                          ErrorHandler.httpError(
+                              response.statusCode, response.body, context);
+                          // ignore: use_build_context_synchronously
+                          openAlert("error", "failed deleting post",
+                              response.body, context, null, null);
+                        }
+                      },
+                      "no": () {
                         Navigator.pop(context);
-                        // ignore: use_build_context_synchronously
-                        openAlert("success", "post deleted", null, context,
-                            null, null);
-                      } else {
-                        // ignore: use_build_context_synchronously
-                        ErrorHandler.httpError(
-                            response.statusCode, response.body, context);
-                        // ignore: use_build_context_synchronously
-                        openAlert("error", "failed deleting post",
-                            response.body, context, null, null);
-                      }
+                      },
                     },
-                    "no": () {
-                      Navigator.pop(context);
-                    },
-                  },
-                  null);
-            },
+                    null);
+              },
+            ),
           ),
           DialogButton(
             color: Colors.red,

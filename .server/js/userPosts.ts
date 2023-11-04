@@ -143,12 +143,18 @@ router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req 
         requesterHasRated = true;
       }
 
+      const viewerIsCreator = (userId == itemData.posterUserId);
+      
+
       console.log("sending post data");
       if (onlyUpdateChangeable === true) {
         return res.status(200).json({
           rating : itemData.rating,
           ratingsAmount : `${ratingsAmount}`, // converts to string as client software pefers that
           requesterRated :`${requesterHasRated}`,
+          relativeViewerData : {
+            viewerIsCreator : viewerIsCreator,
+          },
         });
       }
       return res.status(200).json({
@@ -159,7 +165,10 @@ router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req 
         requesterRated :`${requesterHasRated}`,
         postId : postId,
         imageData : itemData.image,
-        posterId : itemData.posterUserId
+        posterId : itemData.posterUserId,
+        relativeViewerData : {
+          viewerIsCreator : viewerIsCreator,
+        },
       });
     }catch(err){
       reportError(err);

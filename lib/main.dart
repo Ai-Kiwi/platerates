@@ -19,6 +19,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_cache/json_cache.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'createPost/createPostPhoto.dart';
 import 'libs/pageNotices.dart';
@@ -73,8 +74,10 @@ class MyApp extends StatelessWidget {
     print("setting up cache");
     //load in json cache stuff
     await Hive.initFlutter();
-    final box =
-        await Hive.openBox<String>('appBox'); // it must be a Box<String>.
+    final tempDir = await getTemporaryDirectory();
+    final box = await Hive.openBox<String>('appBox',
+        path:
+            "${tempDir.path}/cacheData.toastyCache"); // it must be a Box<String>.
     jsonCache = JsonCacheMem(JsonCacheHive(box));
 
     //if I change reset data this also needs to be changed in login script as well as logout script in alerts

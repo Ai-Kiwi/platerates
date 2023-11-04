@@ -459,8 +459,7 @@ class _PromptUserToAcceptNewLicensesState
     return Scaffold(
         body: SafeArea(
             child: Center(
-                child: Flex(
-      direction: Axis.vertical,
+                child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 32),
@@ -545,8 +544,7 @@ class _PromptUserToAcceptNewLicensesState
                     throw Exception("unkown lisence");
                   },
                 )
-              : const Expanded(
-                  child: Center(child: CircularProgressIndicator())),
+              : const Center(child: Center(child: CircularProgressIndicator())),
 
           //ListView(
           //  children: [
