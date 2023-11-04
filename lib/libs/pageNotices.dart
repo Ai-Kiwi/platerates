@@ -5,10 +5,15 @@ import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/errorHandler.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:Toaster/main.dart';
+import 'package:android_intent/android_intent.dart';
+import 'package:app_installer/app_installer.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 //import 'package:android_package_installer/android_package_installer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
@@ -31,6 +36,10 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
   _DisplayErrorMessagePageState({required this.errorMessage});
   final String errorMessage;
   bool _updatingApp = false;
+  int _total = 1, _received = 0;
+  late http.StreamedResponse _response;
+  File? _image;
+  final List<int> _bytes = [];
 
   Future<void> downloadAndInstallApp() async {
     setState(() {
@@ -41,22 +50,61 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
       print("downloading app");
       //get info for download
       final appDir = await getTemporaryDirectory();
-      final downloadPath = '${appDir.path}/app.apk';
+      final String downloadPath = '${appDir.path}/toaster.apk';
+      //final String url = "$serverDomain/toaster.apk";
+      final String url = "https://dev.toaster.aikiwi.dev/toaster.apk";
 
-      //get info
-      final response =
-          await http.get(Uri.parse("https://toaster.aikiwi.dev/toaster.apk"));
-      if (response.statusCode == 200) {
-        final file = File(downloadPath);
-        await file.writeAsBytes(response.bodyBytes);
+      if (await File(downloadPath).exists() == true) {
+        File(downloadPath).deleteSync();
+      }
 
+      _response = await http.Client().send(http.Request('GET', Uri.parse(url)));
+      setState(() {
+        _total = _response.contentLength ?? 0;
+      });
+
+      _response.stream.listen((value) {
+        setState(() {
+          _bytes.addAll(value);
+          _received += value.length;
+        });
+      }).onDone(() async {
+        await File(downloadPath).writeAsBytes(_bytes);
+        var taskId = "";
         print("installing app");
 
         //will download the file
-        while (await Permission.requestInstallPackages.isGranted == false) {
-          // The OS restricts access, for example because of parental controls.
-          await Permission.requestInstallPackages.request();
+        //while (await Permission.requestInstallPackages.isGranted == false) {
+        //  // The OS restricts access, for example because of parental controls.
+        //  await Permission.requestInstallPackages.request();
+        //}
+        //sleep(Duration(seconds: 5));
+        print(await File(downloadPath).exists());
+        if (taskId != null && await File(downloadPath).exists() == true) {
+          // Open the downloaded APK file using the android_intent package
+          //setState(() {
+          //  _updatingApp = false;
+          //});
+          AppInstaller.installApk(downloadPath);
+        } else {
+          setState(() {
+            _updatingApp = false;
+          });
+          //openAlert("error", "failed downloading update", response.body,
+          //    context, null);
         }
+      });
+
+      //get info
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        //String? taskId = await FlutterDownloader.enqueue(
+        //  url: url,
+        //  savedDir: appDir.path,
+        //  fileName: 'toaster.apk',
+        //  showNotification: true,
+        //  openFileFromNotification: false,
+        //);
 
         //int? statusCode =
         //    await AndroidPackageInstaller.installApk(apkFilePath: downloadPath);
@@ -70,11 +118,13 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
         //SystemNavigator.pop();
       } else {
         // Handle download error
+        //openAlert(
+        //    "error", "failed downloading update", response.body, context, null);
         print('Error: ${response.statusCode}');
+        setState(() {
+          _updatingApp = false;
+        });
       }
-      setState(() {
-        _updatingApp = false;
-      });
     } on Exception catch (error, stackTrace) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
       print(error);
@@ -116,7 +166,7 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
                 child: Text(
-                  "you must update your client to keep using toaster\ncurrently auto updating is not supported please redownload the app",
+                  "you must update your client to keep using toaster\ncurrently auto updating is not supported please uninstall then reinstall the app",
                   style: TextStyle(
                     color: Color.fromARGB(210, 255, 255, 255),
                     fontWeight: FontWeight.normal,
@@ -160,7 +210,12 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
               //),
               Visibility(
                 visible: _updatingApp,
-                child: const CircularProgressIndicator(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 64),
+                  child: LinearProgressIndicator(
+                    value: (_received / (_total)),
+                  ),
+                ),
               ),
             ],
           ),

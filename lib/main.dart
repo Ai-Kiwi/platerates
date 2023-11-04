@@ -12,6 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -107,6 +108,25 @@ class MyApp extends StatelessWidget {
       }
     }
 
+    print("starting flutter downloader");
+    if (FlutterDownloader.initialized == false) {
+      await FlutterDownloader.initialize(
+          debug:
+              true, // optional: set to false to disable printing logs to console (default: true)
+          ignoreSsl:
+              true // option: set to false to disable working with http links (default: false)
+          );
+    }
+
+    print("starting firebase");
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    if (kDebugMode == true) {
+      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    }
+
     print("asking server for the latest verison");
     //contact server and get verison
     try {
@@ -137,15 +157,6 @@ class MyApp extends StatelessWidget {
     //load in token
     if (userManager.token == "") {
       await userManager.loadTokenFromStoreage();
-    }
-
-    print("starting firebase");
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-
-    if (kDebugMode == true) {
-      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     }
 
     print("starting app check");
