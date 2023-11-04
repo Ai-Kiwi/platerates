@@ -210,7 +210,8 @@ class _UserProfileState extends State<UserProfile> {
         }
       });
     } else {
-      openAlert("error", "failed to change follow state", null, context, null);
+      openAlert(
+          "error", "failed to change follow state", null, context, null, null);
     }
   }
 
@@ -302,7 +303,8 @@ class _UserProfileState extends State<UserProfile> {
                             size: 30,
                           ),
                           onPressed: () {
-                            openAlert("logout", "null", null, context, null);
+                            openAlert(
+                                "logout", "null", null, context, null, null);
                           },
                         ),
                         const SizedBox(width: 16),
@@ -494,6 +496,7 @@ class _UserProfileState extends State<UserProfile> {
                                               "failed opening message chat",
                                               response.body,
                                               context,
+                                              null,
                                               null);
                                         }
                                       },

@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../libs/errorHandler.dart';
 import '../libs/report.dart';
@@ -329,76 +330,81 @@ class PostManageButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FittedBox(
         child: Center(
-            child: PopupMenuButton<String>(
+            child: IconButton(
       icon: Icon(
         Icons.more_vert,
         size: 35, // Adjust the size of the icon
         color: Colors.grey[500],
       ),
-      onSelected: (value) async {
-        // Handle menu item selection
-        if (value == 'delete') {
-          openAlert("yes_or_no", "are you sure you want to delete this post?",
-              null, context, {
-            "yes": () async {
-              final response = await http.post(
-                Uri.parse("$serverDomain/post/delete"),
-                headers: <String, String>{
-                  'Content-Type': 'application/json; charset=UTF-8',
-                },
-                body: jsonEncode(<String, String>{
-                  'token': userManager.token,
-                  'postId': postId,
-                }),
-              );
-              if (response.statusCode == 200) {
-                // ignore: use_build_context_synchronously
-                Navigator.pop(context);
-                // ignore: use_build_context_synchronously
-                openAlert("success", "post deleted", null, context, null);
-              } else {
-                // ignore: use_build_context_synchronously
-                ErrorHandler.httpError(
-                    response.statusCode, response.body, context);
-                // ignore: use_build_context_synchronously
-                openAlert("error", "failed deleting post", response.body,
-                    context, null);
-              }
-            },
-            "no": () {
-              Navigator.pop(context);
-            },
-          });
-        } else if (value == 'report') {
-          reportSystem.reportItem(context, "post", postId);
-        } else if (value == 'copyId') {
-          Clipboard.setData(ClipboardData(text: posterUserId));
-        }
-      },
-      itemBuilder: (BuildContext context) {
-        return [
-          const PopupMenuItem<String>(
-            value: 'copyId',
-            child: Text(
-              'copy id to clipboard',
-              style: TextStyle(color: Color.fromARGB(255, 45, 45, 45)),
-            ),
-          ),
-          const PopupMenuItem<String>(
-            value: 'report',
-            child: Text(
-              'report 🚩',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-          const PopupMenuItem<String>(
-            value: 'delete',
-            child: Text(
+      onPressed: () {
+        openAlert("custom_buttons", "select action for message", null, context,
+            null, [
+          DialogButton(
+            color: Colors.red,
+            child: const Text(
               'delete',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
+            onPressed: () async {
+              openAlert(
+                  "yes_or_no",
+                  "are you sure you want to delete this post?",
+                  null,
+                  context,
+                  {
+                    "yes": () async {
+                      final response = await http.post(
+                        Uri.parse("$serverDomain/post/delete"),
+                        headers: <String, String>{
+                          'Content-Type': 'application/json; charset=UTF-8',
+                        },
+                        body: jsonEncode(<String, String>{
+                          'token': userManager.token,
+                          'postId': postId,
+                        }),
+                      );
+                      if (response.statusCode == 200) {
+                        // ignore: use_build_context_synchronously
+                        Navigator.pop(context);
+                        // ignore: use_build_context_synchronously
+                        openAlert("success", "post deleted", null, context,
+                            null, null);
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        ErrorHandler.httpError(
+                            response.statusCode, response.body, context);
+                        // ignore: use_build_context_synchronously
+                        openAlert("error", "failed deleting post",
+                            response.body, context, null, null);
+                      }
+                    },
+                    "no": () {
+                      Navigator.pop(context);
+                    },
+                  },
+                  null);
+            },
           ),
-        ];
+          DialogButton(
+            color: Colors.red,
+            child: const Text(
+              'report 🚩',
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
+            ),
+            onPressed: () async {
+              reportSystem.reportItem(context, "post", postId);
+            },
+          ),
+          DialogButton(
+            child: const Text(
+              'copyId',
+              style: TextStyle(fontSize: 16.0, color: Colors.white),
+            ),
+            onPressed: () async {
+              Clipboard.setData(ClipboardData(text: posterUserId));
+            },
+          ),
+        ]);
       },
     )));
   }

@@ -233,7 +233,7 @@ class _PostRatingListState extends State<fullPagePost> {
                                     if (response.statusCode == 201) {
                                       // ignore: use_build_context_synchronously
                                       openAlert("success", "uploaded rating",
-                                          null, context, null);
+                                          null, context, null, null);
                                       await jsonCache.remove('post-$rootItem');
                                       // ignore: use_build_context_synchronously
                                       Navigator.pop(context);
@@ -256,6 +256,7 @@ class _PostRatingListState extends State<fullPagePost> {
                                           "failed uploading rating",
                                           response.body,
                                           context,
+                                          null,
                                           null);
                                     }
                                   },

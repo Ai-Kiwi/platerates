@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../libs/dataCollect.dart';
@@ -188,70 +189,70 @@ class _userRatingState extends State<userRating> {
               FittedBox(
                 //3 dots on post
                 child: Center(
-                    child: PopupMenuButton(
+                    child: IconButton(
                   icon: Icon(
                     Icons.more_vert,
                     size: 35, // Adjust the size of the icon
                     color: Colors.grey[500],
                   ),
-                  onSelected: (value) async {
-                    if (value == 'delete') {
-                      final response = await http.post(
-                        Uri.parse("$serverDomain/post/rating/delete"),
-                        headers: <String, String>{
-                          'Content-Type': 'application/json; charset=UTF-8',
-                        },
-                        body: jsonEncode(<String, String>{
-                          'token': userManager.token,
-                          'ratingId': ratingId,
-                        }),
-                      );
-                      if (response.statusCode == 200) {
-                        openAlert(
-                            "error", "rating deleted", null, context, null);
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    fullPagePost(postId: rootItem["data"])));
-                      } else {
-                        ErrorHandler.httpError(
-                            response.statusCode, response.body, context);
-                        openAlert("error", "failed deleting rating",
-                            response.body, context, null);
-                      }
-                    } else if (value == 'report') {
-                      reportSystem.reportItem(context, "post_rating", ratingId);
-                    } else if (value == 'copyId') {
-                      Clipboard.setData(ClipboardData(text: posterUserId));
-                    }
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      const PopupMenuItem<String>(
-                        value: 'copyId',
-                        child: Text(
-                          'copy id to clipboard',
-                          style:
-                              TextStyle(color: Color.fromARGB(255, 45, 45, 45)),
-                        ),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'report',
-                        child: Text(
-                          'report 🚩',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Text(
+                  onPressed: () {
+                    openAlert("custom_buttons", "select action for message",
+                        null, context, null, [
+                      DialogButton(
+                        color: Colors.red,
+                        child: const Text(
                           'delete',
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(fontSize: 16.0, color: Colors.white),
                         ),
+                        onPressed: () async {
+                          final response = await http.post(
+                            Uri.parse("$serverDomain/post/rating/delete"),
+                            headers: <String, String>{
+                              'Content-Type': 'application/json; charset=UTF-8',
+                            },
+                            body: jsonEncode(<String, String>{
+                              'token': userManager.token,
+                              'ratingId': ratingId,
+                            }),
+                          );
+                          if (response.statusCode == 200) {
+                            openAlert("error", "rating deleted", null, context,
+                                null, null);
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => fullPagePost(
+                                        postId: rootItem["data"])));
+                          } else {
+                            ErrorHandler.httpError(
+                                response.statusCode, response.body, context);
+                            openAlert("error", "failed deleting rating",
+                                response.body, context, null, null);
+                          }
+                        },
                       ),
-                    ];
+                      DialogButton(
+                        color: Colors.red,
+                        child: const Text(
+                          'report 🚩',
+                          style: TextStyle(fontSize: 16.0, color: Colors.white),
+                        ),
+                        onPressed: () async {
+                          reportSystem.reportItem(
+                              context, "post_rating", ratingId);
+                        },
+                      ),
+                      DialogButton(
+                        child: const Text(
+                          'copyId',
+                          style: TextStyle(fontSize: 16.0, color: Colors.white),
+                        ),
+                        onPressed: () async {
+                          Clipboard.setData(ClipboardData(text: posterUserId));
+                        },
+                      ),
+                    ]);
                   },
                 )),
               ),

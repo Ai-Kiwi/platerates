@@ -175,7 +175,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                                 if (response.statusCode == 201) {
                                   // ignore: use_build_context_synchronously
                                   openAlert("success", "created comment", null,
-                                      context, null);
+                                      context, null, null);
 
                                   await jsonCache.remove('rating-$rootItem');
                                   Navigator.pop(context);
@@ -190,7 +190,7 @@ class _fullPageRatingState extends State<FullPageRating> {
                                       response.body, context);
                                   // ignore: use_build_context_synchronously
                                   openAlert("error", "failed creating comments",
-                                      response.body, context, null);
+                                      response.body, context, null, null);
                                 }
                               },
                               child: const Text(
