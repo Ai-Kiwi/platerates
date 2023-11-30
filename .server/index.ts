@@ -25,7 +25,7 @@ const limiter = rateLimit({
 require('dotenv').config();
 
 
-const clientVersion: string = "1.1.0+9";
+const clientVersion: string = "1.1.0+11";
 //make sure to update lisesnes on securityUtil file
 
 //setup app

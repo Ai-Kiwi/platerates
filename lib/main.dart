@@ -238,10 +238,13 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
                 title: 'Toaster',
                 theme: ThemeData(
+                  useMaterial3: false,
+                  indicatorColor: Colors.green,
                   primaryColor: Colors.green,
                   primarySwatch: Colors.green,
                   dialogBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
                   scaffoldBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
+                  //colorSchemeSeed: Colors.green,
                 ),
                 home: StreamBuilder<String>(
                   stream: initializeApp(),
