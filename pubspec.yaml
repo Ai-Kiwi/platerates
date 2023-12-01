@@ -87,24 +87,25 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 flutter_launcher_icons:
-  image_path_android: "assets/icons/icon-1024x1024.png"
-  image_path_ios: "assets/icons/icon-1024x1024.png"
+  image_path_android: "assets/icons/logo2.png"
+  image_path_ios: "assets/icons/logo2.png"
   android: true
   ios: false
-  image_path: "assets/icons/icon-1024x1024.png"
+  image_path: "assets/icons/logo2.png"
   min_sdk_android: 33 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "assets/icons/icon-1024x1024.png"
+    image_path: "assets/icons/logo2.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/icons/icon-1024x1024.png"
+    image_path: "assets/icons/logo2.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: false
-    image_path: "assets/icons/icon-1024x1024.png"
+    image_path: "assets/icons/logo2.png"
+#flutter pub run flutter_launcher_icons
 
 # The following section is specific to Flutter packages.
 flutter:
