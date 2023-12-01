@@ -186,7 +186,7 @@ router.post('/notification/list', [confirmTokenValid, confirmActiveAccount], asy
           startPosInfo = startPosPostData.sentDate;
         }
   
-        const dataReturning = await databases.user_notifications.find({ sentDate: { $lt: startPosInfo}, receiverId : userId}).sort({sentDate : -1}).limit(15).toArray();
+        const dataReturning = await databases.user_notifications.find({ sentDate: { $lt: startPosInfo}, receiverId : userId}).sort({sentDate : -1}).limit(50).toArray();
         let returnData = {
           "items": [] as { type: string; data: string;}[]
         }
