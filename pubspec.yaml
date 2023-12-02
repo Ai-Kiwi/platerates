@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.1.0+11
+version: 1.1.0+12
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
@@ -87,24 +87,24 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 flutter_launcher_icons:
-  image_path_android: "assets/icons/logo2.png"
-  image_path_ios: "assets/icons/logo2.png"
+  image_path_android: "assets/icons/icons.png"
+  image_path_ios: "assets/icons/icons.png"
   android: true
   ios: false
-  image_path: "assets/icons/logo2.png"
+  image_path: "assets/icons/icons.png"
   min_sdk_android: 33 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "assets/icons/logo2.png"
+    image_path: "assets/icons/icons.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/icons/logo2.png"
+    image_path: "assets/icons/icons.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: false
-    image_path: "assets/icons/logo2.png"
+    image_path: "assets/icons/icons.png"
 #flutter pub run flutter_launcher_icons
 
 # The following section is specific to Flutter packages.
