@@ -119,7 +119,7 @@ Future<void> openAlert(
           },
         ),
         DialogButton(
-          color: Colors.green,
+          color: Theme.of(context).primaryColor,
           child: const Text(
             "all",
             style: TextStyle(color: Colors.white, fontSize: 20),
@@ -162,7 +162,7 @@ Future<void> openAlert(
       buttons: [
         DialogButton(
           onPressed: functionsToRunPerButton?["yes"],
-          color: Colors.green,
+          color: Theme.of(context).primaryColor,
           child: const Text(
             "Yes",
             style: TextStyle(color: Colors.white, fontSize: 20),

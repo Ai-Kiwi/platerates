@@ -52,16 +52,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               },
               autofillHints: const [AutofillHints.email],
               style: const TextStyle(color: Colors.white, fontSize: 20),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email Address',
                 labelStyle:
-                    TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                contentPadding: EdgeInsets.all(8.0),
-                enabledBorder: UnderlineInputBorder(
+                    const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+                contentPadding: const EdgeInsets.all(8.0),
+                enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
             ),
@@ -77,16 +77,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               autofillHints: const [AutofillHints.password],
               obscureText: true,
               style: const TextStyle(color: Colors.white, fontSize: 20),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'New Password',
                 labelStyle:
-                    TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                contentPadding: EdgeInsets.all(8.0),
-                enabledBorder: UnderlineInputBorder(
+                    const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+                contentPadding: const EdgeInsets.all(8.0),
+                enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
             ),
@@ -102,16 +102,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               autofillHints: const [AutofillHints.password],
               obscureText: true,
               style: const TextStyle(color: Colors.white, fontSize: 20),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 labelStyle:
-                    TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                contentPadding: EdgeInsets.all(8.0),
-                enabledBorder: UnderlineInputBorder(
+                    const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
+                contentPadding: const EdgeInsets.all(8.0),
+                enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
             ),

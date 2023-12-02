@@ -242,9 +242,10 @@ class MyApp extends StatelessWidget {
                   indicatorColor: Colors.green,
                   primaryColor: Colors.green,
                   primarySwatch: Colors.green,
+
+                  //Theme.of(context).primarySwatch
                   dialogBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
                   scaffoldBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
-                  //colorSchemeSeed: Colors.green,
                 ),
                 home: StreamBuilder<String>(
                   stream: initializeApp(),

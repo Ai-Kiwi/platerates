@@ -75,9 +75,9 @@ class _UserFeedState extends State<userFeed> {
               cornerRadius: 15.0,
               initialLabelIndex: pageItemIndex,
               totalSwitches: 2,
-              activeBgColors: const [
-                [Colors.green],
-                [Colors.green]
+              activeBgColors: [
+                [Theme.of(context).primaryColor],
+                [Theme.of(context).primaryColor]
               ],
               centerText: true,
               activeFgColor: Colors.white,

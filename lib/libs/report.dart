@@ -24,15 +24,15 @@ class ReportSystem {
                   MaxLengthEnforcement.truncateAfterCompositionEnds,
               maxLength: 1000,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(
-                icon: Icon(Icons.account_circle, color: Colors.white),
+              decoration: InputDecoration(
+                icon: const Icon(Icons.account_circle, color: Colors.white),
                 labelText: 'reason',
-                labelStyle: TextStyle(color: Colors.white),
-                enabledBorder: UnderlineInputBorder(
+                labelStyle: const TextStyle(color: Colors.white),
+                enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white),
                 ),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
               onChanged: (value) {

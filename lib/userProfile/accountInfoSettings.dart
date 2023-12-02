@@ -185,16 +185,17 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                       initialValue: _username,
                       autofillHints: const [AutofillHints.email],
                       style: const TextStyle(color: Colors.white, fontSize: 20),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'username',
-                        labelStyle: TextStyle(
+                        labelStyle: const TextStyle(
                             color: Color.fromARGB(255, 200, 200, 200)),
                         contentPadding: const EdgeInsets.all(8.0),
-                        enabledBorder: UnderlineInputBorder(
+                        enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.green),
+                          borderSide:
+                              BorderSide(color: Theme.of(context).primaryColor),
                         ),
                       ),
                     ),
@@ -211,16 +212,17 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                       autofillHints: const [AutofillHints.password],
                       maxLines: 5,
                       style: const TextStyle(color: Colors.white, fontSize: 20),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'bio',
-                        labelStyle: TextStyle(
+                        labelStyle: const TextStyle(
                             color: Color.fromARGB(255, 200, 200, 200)),
                         contentPadding: const EdgeInsets.all(8.0),
-                        enabledBorder: UnderlineInputBorder(
+                        enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.green),
+                          borderSide:
+                              BorderSide(color: Theme.of(context).primaryColor),
                         ),
                       ),
                     ),

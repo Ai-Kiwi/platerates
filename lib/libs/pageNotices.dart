@@ -5,18 +5,13 @@ import 'package:Toaster/libs/alertSystem.dart';
 import 'package:Toaster/libs/errorHandler.dart';
 import 'package:Toaster/login/userLogin.dart';
 import 'package:Toaster/main.dart';
-import 'package:android_intent/android_intent.dart';
 import 'package:app_installer/app_installer.dart';
-import 'package:file_selector/file_selector.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 //import 'package:android_package_installer/android_package_installer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DisplayErrorMessagePage extends StatefulWidget {
@@ -38,7 +33,6 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
   bool _updatingApp = false;
   int _total = 1, _received = 0;
   late http.StreamedResponse _response;
-  File? _image;
   final List<int> _bytes = [];
 
   Future<void> downloadAndInstallApp() async {
