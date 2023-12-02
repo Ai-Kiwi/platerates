@@ -359,29 +359,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen dimensions
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    if (kIsWeb == true) {
+      // Get the screen dimensions
+      double screenWidth = MediaQuery.of(context).size.width;
+      double screenHeight = MediaQuery.of(context).size.height;
 
-    // Calculate the aspect ratio
-    double aspectRatio = screenHeight / screenWidth;
+      // Calculate the aspect ratio
+      double aspectRatio = screenHeight / screenWidth;
 
-    if (aspectRatio < 1.5) {
-      return DisplayErrorMessagePage(errorMessage: "screen to wide");
-    }
+      if (aspectRatio < 1.5) {
+        return DisplayErrorMessagePage(errorMessage: "screen to wide");
+      }
 
-    if (userAcceptedMigration == false && kIsWeb == true) {
-      return migrateToAppPage(
-        ignorePrompt: () {
-          setState(() {
-            userAcceptedMigration = true;
-          });
-        },
-      );
+      if (userAcceptedMigration == false) {
+        return migrateToAppPage(
+          ignorePrompt: () {
+            setState(() {
+              userAcceptedMigration = true;
+            });
+          },
+        );
+      }
     }
 
     //see if notifcation has been clicked and if so display it
-    testNotificationOnBootData(context);
+    //testNotificationOnBootData(context);
 
     if (acceptedAllLicenses == false) {
       return PromptUserToAcceptNewLicenses();
