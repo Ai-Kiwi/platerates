@@ -558,9 +558,9 @@ class _UserProfileState extends State<UserProfile> {
                   cornerRadius: 15.0,
                   initialLabelIndex: ProfileItemIndex,
                   totalSwitches: 2,
-                  activeBgColors: const [
-                    [Colors.green],
-                    [Colors.green]
+                  activeBgColors: [
+                    [Theme.of(context).primaryColor],
+                    [Theme.of(context).primaryColor]
                   ],
                   centerText: true,
                   activeFgColor: Colors.white,

@@ -76,18 +76,19 @@ class _SearchPageState extends State<SearchPage> {
                   },
                   autofillHints: const [AutofillHints.email],
                   style: const TextStyle(color: Colors.white, fontSize: 20),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                       labelText: 'Search',
-                      labelStyle:
-                          TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                      contentPadding: EdgeInsets.all(8.0),
-                      enabledBorder: UnderlineInputBorder(
+                      labelStyle: const TextStyle(
+                          color: Color.fromARGB(255, 200, 200, 200)),
+                      contentPadding: const EdgeInsets.all(8.0),
+                      enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide:
+                            BorderSide(color: Theme.of(context).primaryColor),
                       ),
-                      suffixIcon: Icon(
+                      suffixIcon: const Icon(
                         Icons.search,
                         color: Colors.white,
                       )),

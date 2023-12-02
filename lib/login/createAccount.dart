@@ -59,16 +59,17 @@ class _createAccountPageState extends State<createAccountPage> {
                             autofillHints: const [AutofillHints.password],
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 20),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Username',
-                              labelStyle: TextStyle(
+                              labelStyle: const TextStyle(
                                   color: Color.fromARGB(255, 200, 200, 200)),
-                              contentPadding: EdgeInsets.all(8.0),
-                              enabledBorder: UnderlineInputBorder(
+                              contentPadding: const EdgeInsets.all(8.0),
+                              enabledBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.white),
                               ),
                               focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor),
                               ),
                             ),
                           ),
@@ -85,16 +86,17 @@ class _createAccountPageState extends State<createAccountPage> {
                             autofillHints: const [AutofillHints.email],
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 20),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Email Address',
-                              labelStyle: TextStyle(
+                              labelStyle: const TextStyle(
                                   color: Color.fromARGB(255, 200, 200, 200)),
-                              contentPadding: EdgeInsets.all(8.0),
-                              enabledBorder: UnderlineInputBorder(
+                              contentPadding: const EdgeInsets.all(8.0),
+                              enabledBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.white),
                               ),
                               focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.green),
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor),
                               ),
                             ),
                           ),
@@ -113,8 +115,9 @@ class _createAccountPageState extends State<createAccountPage> {
                                       _agreeToTos = !_agreeToTos;
                                     })
                                   },
-                                  side: const BorderSide(
-                                      width: 2, color: Colors.green),
+                                  side: BorderSide(
+                                      width: 2,
+                                      color: Theme.of(context).primaryColor),
                                 ),
                                 TextButton(
                                   // reset password
@@ -159,16 +162,16 @@ class _createAccountPageState extends State<createAccountPage> {
                               children: [
                                 const SizedBox(width: 8.0),
                                 Checkbox(
-                                  value: _agreeToCommunityGuidelines,
-                                  onChanged: (value) => {
-                                    setState(() {
-                                      _agreeToCommunityGuidelines =
-                                          !_agreeToCommunityGuidelines;
-                                    })
-                                  },
-                                  side: const BorderSide(
-                                      width: 2, color: Colors.green),
-                                ),
+                                    value: _agreeToCommunityGuidelines,
+                                    onChanged: (value) => {
+                                          setState(() {
+                                            _agreeToCommunityGuidelines =
+                                                !_agreeToCommunityGuidelines;
+                                          })
+                                        },
+                                    side: BorderSide(
+                                        width: 2,
+                                        color: Theme.of(context).primaryColor)),
                                 TextButton(
                                   // reset password
                                   onPressed: () {
