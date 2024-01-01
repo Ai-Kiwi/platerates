@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Toaster/libs/usefullWidgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:Toaster/chat/openChat.dart';
 import 'package:Toaster/libs/adminZone.dart';
@@ -148,6 +149,9 @@ class _UserProfileState extends State<UserProfile> {
   bool userFollowing = false;
   int ProfileItemIndex = 0;
   String urlToSearch = "/profile/posts";
+  final verifiedAccounts = {
+    "github": {},
+  };
 
   _UserProfileState({required this.userId, required this.openedOntopMenu});
 
@@ -547,6 +551,7 @@ class _UserProfileState extends State<UserProfile> {
                         )
                       ]))),
             ),
+            //VerifiedAccounts(verifiedAccountsData: verifiedAccounts),
             const SizedBox(height: 16),
             Padding(
               //share mode selection
@@ -595,5 +600,137 @@ class _UserProfileState extends State<UserProfile> {
         ),
       ),
     ));
+  }
+}
+
+class VerifiedAccounts extends StatelessWidget {
+  final verifiedAccountsData;
+
+  const VerifiedAccounts({super.key, required this.verifiedAccountsData});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Visibility(
+        visible: verifiedAccountsData.isNotEmpty,
+        child: Column(
+          children: [
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  //
+                  Visibility(
+                    visible: verifiedAccountsData.containsKey('github'),
+                    child: SingleVerifiedAccountItem(
+                      accountIcon: FontAwesomeIcons.github,
+                      accountUsername: verifiedAccountsData['github']
+                          ['username'],
+                    ),
+                  ),
+                  //
+                  Visibility(
+                    visible: verifiedAccountsData.containsKey('twitter'),
+                    child: SingleVerifiedAccountItem(
+                      accountIcon: FontAwesomeIcons.twitter,
+                      accountUsername: verifiedAccountsData['twitter']
+                          ['username'],
+                    ),
+                  ),
+                  //
+                  Visibility(
+                    visible: verifiedAccountsData.containsKey('snapchat'),
+                    child: SingleVerifiedAccountItem(
+                      accountIcon: FontAwesomeIcons.snapchat,
+                      accountUsername: verifiedAccountsData['snapchat']
+                          ['username'],
+                    ),
+                  ),
+                  //
+                  Visibility(
+                    visible: verifiedAccountsData.containsKey('instagram'),
+                    child: SingleVerifiedAccountItem(
+                      accountIcon: FontAwesomeIcons.instagram,
+                      accountUsername: verifiedAccountsData['instagram']
+                          ['username'],
+                    ),
+                  ),
+
+                  //
+                  Visibility(
+                    visible: verifiedAccountsData.containsKey('whatsapp'),
+                    child: SingleVerifiedAccountItem(
+                      accountIcon: FontAwesomeIcons.whatsapp,
+                      accountUsername: verifiedAccountsData['whatsapp']
+                          ['username'],
+                    ),
+                  ),
+                  //
+                  Visibility(
+                    visible: verifiedAccountsData.containsKey('telegram'),
+                    child: SingleVerifiedAccountItem(
+                      accountIcon: FontAwesomeIcons.telegram,
+                      accountUsername: verifiedAccountsData['telegram']
+                          ['username'],
+                    ),
+                  ),
+                  //
+                  Visibility(
+                    visible: verifiedAccountsData.containsKey('reddit'),
+                    child: SingleVerifiedAccountItem(
+                      accountIcon: FontAwesomeIcons.reddit,
+                      accountUsername: verifiedAccountsData['reddit']
+                          ['username'],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ));
+  }
+}
+
+//verifiedAccountsData.containsKey('github')
+class SingleVerifiedAccountItem extends StatelessWidget {
+  final accountIcon;
+  final String accountUsername;
+
+  const SingleVerifiedAccountItem(
+      {super.key, required this.accountIcon, required this.accountUsername});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white,
+            style: BorderStyle.solid,
+            width: 1,
+          )),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        child: Row(
+          children: [
+            FaIcon(
+              accountIcon,
+              color: Colors.white,
+              size: 16,
+            ),
+            const SizedBox(width: 2),
+            Center(
+              child: Text(
+                accountUsername,
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            const SizedBox(width: 2),
+          ],
+        ),
+      ),
+    );
   }
 }
