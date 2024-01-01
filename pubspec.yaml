@@ -68,6 +68,7 @@ dependencies:
   flutter_downloader: ^1.11.4
   android_intent: ^2.0.2
   app_installer: ^1.1.0
+  font_awesome_flutter: ^10.6.0
   #google_sign_in: ^6.1.5
   #android_package_installer: ^0.0.2
 
