@@ -1,4 +1,4 @@
-import 'package:Toaster/main.dart';
+import 'package:PlateRates/main.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 class errorHandlerClass {

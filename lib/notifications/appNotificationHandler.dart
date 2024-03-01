@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/dataCollect.dart';
-import 'package:Toaster/libs/smoothTransitions.dart';
-import 'package:Toaster/login/userLogin.dart';
-import 'package:Toaster/main.dart';
-import 'package:Toaster/posts/fullPagePost.dart';
-import 'package:Toaster/posts/postRating/fullPageRating.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/dataCollect.dart';
+import 'package:PlateRates/libs/smoothTransitions.dart';
+import 'package:PlateRates/login/userLogin.dart';
+import 'package:PlateRates/main.dart';
+import 'package:PlateRates/posts/fullPagePost.dart';
+import 'package:PlateRates/posts/postRating/fullPageRating.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';

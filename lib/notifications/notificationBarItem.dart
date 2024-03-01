@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/dataCollect.dart';
-import 'package:Toaster/libs/timeMaths.dart';
-import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/notifications/appNotificationHandler.dart';
+import 'package:PlateRates/libs/dataCollect.dart';
+import 'package:PlateRates/libs/timeMaths.dart';
+import 'package:PlateRates/libs/userAvatar.dart';
+import 'package:PlateRates/notifications/appNotificationHandler.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../login/userLogin.dart';

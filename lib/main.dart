@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:Toaster/chat/chatList.dart';
-import 'package:Toaster/firebase_options.dart';
-import 'package:Toaster/libs/loadScreen.dart';
-import 'package:Toaster/notifications/appNotificationHandler.dart';
-import 'package:Toaster/notifications/notificationPageList.dart';
-import 'package:Toaster/userProfile/userProfile.dart';
-import 'package:Toaster/userFeed/userFeed.dart';
+import 'package:PlateRates/chat/chatList.dart';
+import 'package:PlateRates/firebase_options.dart';
+import 'package:PlateRates/libs/loadScreen.dart';
+import 'package:PlateRates/notifications/appNotificationHandler.dart';
+import 'package:PlateRates/notifications/notificationPageList.dart';
+import 'package:PlateRates/userProfile/userProfile.dart';
+import 'package:PlateRates/userFeed/userFeed.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -27,8 +27,8 @@ import 'login/userLogin.dart';
 import 'navbar.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-String serverDomain = 'https://toaster.aikiwi.dev';
-String serverWebsocketDomain = 'wss://toaster.aikiwi.dev';
+String serverDomain = 'https://platerates.com';
+String serverWebsocketDomain = 'wss://platerates.com';
 
 void main() {
   //make sure something a rather to use app verison
@@ -41,8 +41,8 @@ void main() {
     serverDomain = 'http://192.168.0.157:3030';
     serverWebsocketDomain = 'ws://192.168.0.157:3030';
   } else if (FlavorConfig.instance.variables["release"] == "dev") {
-    serverDomain = 'https://dev.toaster.aikiwi.dev';
-    serverWebsocketDomain = 'wss://dev.toaster.aikiwi.dev';
+    serverDomain = 'https://platerates.com';
+    serverWebsocketDomain = 'wss://platerates.com';
   }
 
   runApp(Phoenix(child: const MyApp()));
@@ -236,7 +236,7 @@ class MyApp extends StatelessWidget {
               systemNavigationBarIconBrightness: Brightness.dark,
             ),
             child: MaterialApp(
-                title: 'Toaster',
+                title: 'PlateRates',
                 theme: ThemeData(
                   useMaterial3: false,
                   indicatorColor: Colors.green,
@@ -253,7 +253,7 @@ class MyApp extends StatelessWidget {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       // Show a loading indicator while the authentication state is being fetched
                       return LoadingScreen(
-                        toasterLogo: true,
+                        plateRatesLogo: true,
                       );
                     } else {
                       print(snapshot.data);

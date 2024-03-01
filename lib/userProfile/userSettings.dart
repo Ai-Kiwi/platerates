@@ -1,5 +1,5 @@
-import 'package:Toaster/libs/usefullWidgets.dart';
-import 'package:Toaster/userProfile/accountInfoSettings.dart';
+import 'package:PlateRates/libs/usefullWidgets.dart';
+import 'package:PlateRates/userProfile/accountInfoSettings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -93,7 +93,7 @@ class _UserSettingsState extends State<UserSettings> {
                 settingIcon: Icons.help,
                 settingName: "contact support",
                 ontap: () {
-                  launchUrl(Uri.parse("mailto:toaster@aikiwi.dev"));
+                  launchUrl(Uri.parse("mailto:support@platerates.com"));
                 },
               ),
               SettingItem(

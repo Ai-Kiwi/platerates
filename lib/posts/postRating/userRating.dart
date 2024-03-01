@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/timeMaths.dart';
-import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/notifications/appNotificationHandler.dart';
-import 'package:Toaster/posts/fullPagePost.dart';
-import 'package:Toaster/posts/postRating/fullPageRating.dart';
-import 'package:Toaster/userProfile/userProfile.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/timeMaths.dart';
+import 'package:PlateRates/libs/userAvatar.dart';
+import 'package:PlateRates/notifications/appNotificationHandler.dart';
+import 'package:PlateRates/posts/fullPagePost.dart';
+import 'package:PlateRates/posts/postRating/fullPageRating.dart';
+import 'package:PlateRates/userProfile/userProfile.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

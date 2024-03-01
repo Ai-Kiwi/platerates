@@ -1,5 +1,5 @@
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/userProfile/userProfile.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/userProfile/userProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

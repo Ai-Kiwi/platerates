@@ -202,7 +202,7 @@ router.post('/login', async (req : Request, res : Response) => {
         tokenNotExpiredCode: userData.tokenNotExpiredCode,
       }, privateKey, {expiresIn: '30d'});
 
-      await sendNotificationToDevices("New Login","A new device has logged into your toaster account","newLogin",[userId],"user-login");
+      await sendNotificationToDevices("New Login","A new device has logged into your PlateRates account","newLogin",[userId],"user-login");
 
       console.log("sent login info");
       res.status(200).json({
@@ -343,15 +343,15 @@ router.post('/login/reset-password', async (req, res) => {
 
 
     const resetPasswordCode : string = generateRandomString(64);
-    const resetPasswordUrl : string = `https://toaster.aikiwi.dev/reset-password?userId=${userCredentials.userId}&resetCode=${resetPasswordCode}`
+    const resetPasswordUrl : string = `https://platerates.com/reset-password?userId=${userCredentials.userId}&resetCode=${resetPasswordCode}`
 
     //send reset password
     console.log("sending email data")
     const emailData = await sendMail(
-      '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+      '"no-reply PlateRates" <accounts@noreply.platerates.com>',
       email as string,
-      "Password reset for toaster",
-      "Your reset password request from ip address " + ipAddress + "\nclick on this link to reset password : " + resetPasswordUrl + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact toaster support for help in app."
+      "Password reset for PlateRates",
+      "Your reset password request from ip address " + ipAddress + "\nclick on this link to reset password : " + resetPasswordUrl + "\nIf this wasn't you then you can safely ignore it, if someone keeps sending these requests to you, please contact PlateRates support for help in app."
     
     );
     if (emailData) {

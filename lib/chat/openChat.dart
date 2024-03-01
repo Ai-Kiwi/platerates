@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/report.dart';
-import 'package:Toaster/libs/userAvatar.dart' as toasterUserAvatar;
-import 'package:Toaster/libs/dataCollect.dart';
-import 'package:Toaster/login/userLogin.dart';
-import 'package:Toaster/main.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/report.dart';
+import 'package:PlateRates/libs/userAvatar.dart' as plateRatesUserAvatar;
+import 'package:PlateRates/libs/dataCollect.dart';
+import 'package:PlateRates/login/userLogin.dart';
+import 'package:PlateRates/main.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -79,7 +79,7 @@ class topUserBar extends StatelessWidget {
                 Navigator.pop(context);
               },
             ),
-            toasterUserAvatar.UserAvatar(
+            plateRatesUserAvatar.UserAvatar(
               avatarImage: chatImage,
               size: 35,
               roundness: 35,

@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:Toaster/libs/usefullWidgets.dart';
+import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:Toaster/chat/openChat.dart';
-import 'package:Toaster/libs/adminZone.dart';
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/lazyLoadPage.dart';
-import 'package:Toaster/libs/loadScreen.dart';
-import 'package:Toaster/login/userLogin.dart';
-import 'package:Toaster/main.dart';
-import 'package:Toaster/userProfile/userSettings.dart';
+import 'package:PlateRates/chat/openChat.dart';
+import 'package:PlateRates/libs/adminZone.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/lazyLoadPage.dart';
+import 'package:PlateRates/libs/loadScreen.dart';
+import 'package:PlateRates/login/userLogin.dart';
+import 'package:PlateRates/main.dart';
+import 'package:PlateRates/userProfile/userSettings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -246,7 +246,7 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     if (_isLoading == true) {
       return LoadingScreen(
-        toasterLogo: false,
+        plateRatesLogo: false,
       );
     }
     return Scaffold(

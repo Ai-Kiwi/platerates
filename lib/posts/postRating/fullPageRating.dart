@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/lazyLoadPage.dart';
-import 'package:Toaster/libs/usefullWidgets.dart';
-import 'package:Toaster/posts/postRating/userRating.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/lazyLoadPage.dart';
+import 'package:PlateRates/libs/usefullWidgets.dart';
+import 'package:PlateRates/posts/postRating/userRating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;

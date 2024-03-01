@@ -553,24 +553,24 @@ router.get('/use-create-account-code', async (req : Request, res : Response) => 
     const response: boolean = await createUser(newAccountEmail,NewUserPassword,newAccountUsername) 
     if (response === true) {
         const emailData: nodemailer.SentMessageInfo = await sendMail(
-            '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+            '"no-reply PlateRates" <accounts@noreply.platerates.com>>',
             newAccountEmail,
-            "Toaster account created",
+            "PlateRates account created",
             `
 Hi user,
-Your account has been created and you can log in at https://toaster.aikiwi.dev/. Your temporary password is below please change this once logged in using reset password on login page.
+Your account has been created and you can log in at https://platerates.com/. Your temporary password is below please change this once logged in using reset password on login page.
 
 Login email address : ${newAccountEmail}
 Temporary password : ${NewUserPassword}
 
-We hope you enjoy using Toaster! We're always looking for feedback, so please feel free to reach out to us with any questions or suggestions at toaster@aikiwi.dev.
+We hope you enjoy using PlateRates! We're always looking for feedback, so please feel free to reach out to us with any questions or suggestions at support@platerates.com.
 
-Welcome to the Toaster community! We're a welcoming community and we expect all users to follow our community guidelines at https://toaster.aikiwi.dev/CommunityGuidelines and terms of service at https://toaster.aikiwi.dev/termsofService
+Welcome to the PlateRates community! We're a welcoming community and we expect all users to follow our community guidelines at https://platerates.com/CommunityGuidelines and terms of service at https://platerates.com/termsofService
 
-For any concerns about data handling you can find our privacy policy at https://toaster.aikiwi.dev/privacyPolicy and our data deletion instructions at https://toaster.aikiwi.dev/deleteData. 
+For any concerns about data handling you can find our privacy policy at https://platerates.com/privacyPolicy and our data deletion instructions at https://platerates.com/deleteData. 
 
 Thanks,
-The Toaster Team`);
+The PlateRates Team`);
       if (emailData) {
           await databases.account_create_requests.deleteOne({requestId : requestId}) 
 
@@ -678,15 +678,15 @@ router.post('/createAccount', async (req : Request, res : Response) => {
     if (response.acknowledged === true){
 
             const emailData: nodemailer.SentMessageInfo = await sendMail(
-          '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+          '"no-reply PlateRates" <accounts@noreply.platerates.com>',
           newAccountEmail,
-          "Toaster account creation verification",
+          "PlateRates account creation verification",
           `
 Your account can be activated by going to the following link below
 
-https://toaster.aikiwi.dev/use-create-account-code?requestId=${requestId}
+https://platerates.com/use-create-account-code?requestId=${requestId}
 
-If you need any help with this or someone is spamming you with these you can reach out to us at toaster@aikiwi.dev `);
+If you need any help with this or someone is spamming you with these you can reach out to us at support@platerates.com `);
       if (emailData) {
         await ipAddressTimeout(userIpAddress,`create-account-${newAccountEmail}`, 7200); //timeout for 2 hours
         console.log("created request");

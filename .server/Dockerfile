@@ -20,7 +20,7 @@ COPY ./web/ ./web/
 COPY ./pages/ ./pages/
 
 #copy over android build
-COPY ./app-release.apk ./toaster.apk
+COPY ./app-release.apk ./PlateRates.apk
 
 #can't get rid of this idk why
 ENTRYPOINT []

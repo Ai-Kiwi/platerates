@@ -55,10 +55,10 @@ app.post("/latestVersion", async (req : Request, res : Response) => {
   }
 })
 
-app.get('/toaster.apk', async (req : Request, res : Response) => {
+app.get('/PlateRates.apk', async (req : Request, res : Response) => {
   console.log(" => user download app")
   try{
-    return res.status(200).sendFile(__dirname + "/toaster.apk");
+    return res.status(200).sendFile(__dirname + "/PlateRates.apk");
   }catch(err){
     console.log(err);
     return res.status(500).send("server error")
@@ -117,5 +117,5 @@ app.use('/', chatSystem);
 
 
 app.listen(port, () => {
-  console.log(`Toaster server listening on port ${port}`)
+  console.log(`PlateRates server listening on port ${port}`)
 })
