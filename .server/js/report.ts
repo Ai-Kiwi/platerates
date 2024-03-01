@@ -89,16 +89,16 @@ router.post('/report', [confirmTokenValid, confirmActiveAccount], async (req : R
 
         if (userCredentials !== null){
         sendMail(
-          '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
+          '"no-reply PlateRates" <reports@noreply.platerates.com>',
           userCredentials.email,
           "reported item",
-          "thank you for reporting an item on toaster, we will get back to you shortly with our response to your report."
+          "thank you for reporting an item on PlateRates, we will get back to you shortly with our response to your report."
           );
         }
 
         sendMail(
-          '"no-reply toaster" <toaster@noreply.aikiwi.dev>',
-          "toaster@aikiwi.dev",
+          '"no-reply PlateRates" <reports@noreply.platerates.com>',
+          "contact@aikiwi.dev",
           "reported item",
           "RING RING! NEW ITEM HAS BEEN REPORTED!\nYOU BETTER GET ONTO THIS ASAP"
         );

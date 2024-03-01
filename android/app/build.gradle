@@ -40,8 +40,8 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "dev.aikiwi.toaster"
-    compileSdkVersion 33
+    namespace "dev.aikiwi.platerates"
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -61,7 +61,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "dev.aikiwi.toaster"
+        applicationId "dev.aikiwi.platerates"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 33

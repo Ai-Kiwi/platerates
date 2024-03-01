@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:Toaster/chat/openChat.dart';
-import 'package:Toaster/libs/dataCollect.dart';
-import 'package:Toaster/libs/lazyLoadPage.dart';
-import 'package:Toaster/libs/userAvatar.dart';
-import 'package:Toaster/main.dart';
+import 'package:PlateRates/chat/openChat.dart';
+import 'package:PlateRates/libs/dataCollect.dart';
+import 'package:PlateRates/libs/lazyLoadPage.dart';
+import 'package:PlateRates/libs/userAvatar.dart';
+import 'package:PlateRates/main.dart';
 import 'package:flutter/material.dart';
 //import 'package:http/http.dart' as http;
 

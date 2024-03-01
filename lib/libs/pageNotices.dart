@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/errorHandler.dart';
-import 'package:Toaster/login/userLogin.dart';
-import 'package:Toaster/main.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/errorHandler.dart';
+import 'package:PlateRates/login/userLogin.dart';
+import 'package:PlateRates/main.dart';
 import 'package:app_installer/app_installer.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 //import 'package:android_package_installer/android_package_installer.dart';
@@ -44,9 +44,9 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
       print("downloading app");
       //get info for download
       final appDir = await getTemporaryDirectory();
-      final String downloadPath = '${appDir.path}/toaster.apk';
-      //final String url = "$serverDomain/toaster.apk";
-      final String url = "https://dev.toaster.aikiwi.dev/toaster.apk";
+      final String downloadPath = '${appDir.path}/PlateRates.apk';
+      //final String url = "$serverDomain/PlateRates.apk";
+      final String url = "https://platerates.com/PlateRates.apk";
 
       if (await File(downloadPath).exists() == true) {
         File(downloadPath).deleteSync();
@@ -95,7 +95,7 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
         //String? taskId = await FlutterDownloader.enqueue(
         //  url: url,
         //  savedDir: appDir.path,
-        //  fileName: 'toaster.apk',
+        //  fileName: 'PlateRates.apk',
         //  showNotification: true,
         //  openFileFromNotification: false,
         //);
@@ -160,7 +160,7 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
                 child: Text(
-                  "you must update your client to keep using toaster\ncurrently auto updating is not supported please uninstall then reinstall the app",
+                  "you must update your client to keep using PlateRates\ncurrently auto updating is not supported please uninstall then reinstall the app",
                   style: TextStyle(
                     color: Color.fromARGB(210, 255, 255, 255),
                     fontWeight: FontWeight.normal,
@@ -282,7 +282,7 @@ class migrateToAppPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "Toaster has moved",
+              "PlateRates has moved",
               style: TextStyle(
                 color: Color.fromARGB(210, 255, 255, 255),
                 fontWeight: FontWeight.bold,
@@ -298,7 +298,7 @@ class migrateToAppPage extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
               child: Text(
-                "Toaster has become a mobile app. To unlock its full potential, click 'Install' below, then install the downloaded file.\nTo install the APK file, enable 'Install from unknown sources' in your web browser or file explorer settings (should prompt when attempting open) then open it and follow the on-screen instructions for installation.",
+                "PlateRates has become a mobile app. To unlock its full potential, click 'Install' below, then install the downloaded file.\nTo install the APK file, enable 'Install from unknown sources' in your web browser or file explorer settings (should prompt when attempting open) then open it and follow the on-screen instructions for installation.",
                 style: TextStyle(
                   color: Color.fromARGB(210, 255, 255, 255),
                   fontWeight: FontWeight.normal,
@@ -332,7 +332,7 @@ class migrateToAppPage extends StatelessWidget {
                   onPressed: () async {
                     //downloadAndInstallApp();
                     if (!await launchUrl(
-                        Uri.parse('$serverDomain/toaster.apk'))) {
+                        Uri.parse('$serverDomain/PlateRates.apk'))) {
                       throw Exception('Could not launch domain');
                     }
                   },
@@ -653,7 +653,7 @@ class _PromptPromptUserBannedState extends State<PromptUserBanned> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              "We regret to inform you that your Toaster account has been suspended due to violations of our community guidelines and terms of service.\n\nIMPORTANT: Please refrain from creating another account to circumvent this suspension, as it is strictly prohibited and will result in further actions being taken against you.\n\nIf you believe this suspension is in error or wish to discuss the matter further, please contact our support team at toaster@aikiwi.dev.\n\nYour cooperation in adhering to our platform's rules is essential for maintaining a positive and respectful user environment.",
+              "We regret to inform you that your PlateRates account has been suspended due to violations of our community guidelines and terms of service.\n\nIMPORTANT: Please refrain from creating another account to circumvent this suspension, as it is strictly prohibited and will result in further actions being taken against you.\n\nIf you believe this suspension is in error or wish to discuss the matter further, please contact our support team at support@platerates.com.\n\nYour cooperation in adhering to our platform's rules is essential for maintaining a positive and respectful user environment.",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 15,

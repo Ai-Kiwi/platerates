@@ -1,4 +1,4 @@
-package dev.aikiwi.toaster
+package dev.aikiwi.platerates
 
 import io.flutter.embedding.android.FlutterActivity
 

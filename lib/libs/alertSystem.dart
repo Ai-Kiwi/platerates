@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:Toaster/libs/errorHandler.dart';
-import 'package:Toaster/login/userLogin.dart';
-import 'package:Toaster/main.dart';
+import 'package:PlateRates/libs/errorHandler.dart';
+import 'package:PlateRates/login/userLogin.dart';
+import 'package:PlateRates/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';

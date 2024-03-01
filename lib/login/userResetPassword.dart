@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/usefullWidgets.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 //import 'package:toggle_switch/toggle_switch.dart';

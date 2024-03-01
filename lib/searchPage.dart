@@ -1,4 +1,4 @@
-import 'package:Toaster/libs/lazyLoadPage.dart';
+import 'package:PlateRates/libs/lazyLoadPage.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {

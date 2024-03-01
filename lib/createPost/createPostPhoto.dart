@@ -1,7 +1,7 @@
-import 'package:Toaster/createPost/createPost.dart';
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/imageUtils.dart';
-import 'package:Toaster/libs/loadScreen.dart';
+import 'package:PlateRates/createPost/createPost.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/imageUtils.dart';
+import 'package:PlateRates/libs/loadScreen.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -326,7 +326,7 @@ class displayCamera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!cameraReady || cameras == null || cameras!.isEmpty) {
-      return LoadingScreen(toasterLogo: false);
+      return LoadingScreen(plateRatesLogo: false);
     }
 
     return ClipRRect(

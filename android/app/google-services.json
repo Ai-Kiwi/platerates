@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:36306452091:android:2e9f9a345b3d72983eecde",
+        "mobilesdk_app_id": "1:36306452091:android:3d3bdf2beca574f23eecde",
         "android_client_info": {
-          "package_name": "dev.aikiwi.toaster"
+          "package_name": "dev.aikiwi.platerates"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "36306452091-5njrc33c6j8957it507phbe4jj4ia4tl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD38Ko9F3bLTDe0BGnCE7YVhwCRYqEDi90"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "36306452091-5njrc33c6j8957it507phbe4jj4ia4tl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,6 +1,6 @@
-import 'package:Toaster/libs/lazyLoadPage.dart';
-import 'package:Toaster/libs/smoothTransitions.dart';
-import 'package:Toaster/searchPage.dart';
+import 'package:PlateRates/libs/lazyLoadPage.dart';
+import 'package:PlateRates/libs/smoothTransitions.dart';
+import 'package:PlateRates/searchPage.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 

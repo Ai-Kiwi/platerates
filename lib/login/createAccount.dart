@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/errorHandler.dart';
-import 'package:Toaster/libs/usefullWidgets.dart';
-import 'package:Toaster/main.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/errorHandler.dart';
+import 'package:PlateRates/libs/usefullWidgets.dart';
+import 'package:PlateRates/main.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

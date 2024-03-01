@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/libs/imageUtils.dart';
-import 'package:Toaster/libs/usefullWidgets.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/imageUtils.dart';
+import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

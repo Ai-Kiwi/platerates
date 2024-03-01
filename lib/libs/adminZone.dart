@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:Toaster/libs/errorHandler.dart';
-import 'package:Toaster/libs/usefullWidgets.dart';
+import 'package:PlateRates/libs/errorHandler.dart';
+import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;

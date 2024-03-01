@@ -1,4 +1,4 @@
-name: Toaster
+name: PlateRates
 description: The place to be for sharing and rating toast pictures.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

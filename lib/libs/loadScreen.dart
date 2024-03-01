@@ -3,13 +3,13 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoadingScreen extends StatelessWidget {
-  final bool toasterLogo;
+  final bool plateRatesLogo;
 
-  LoadingScreen({required this.toasterLogo});
+  LoadingScreen({required this.plateRatesLogo});
 
   @override
   Widget build(BuildContext context) {
-    if (toasterLogo) {
+    if (plateRatesLogo) {
       return Scaffold(
           body: SafeArea(
               child: Stack(children: [
@@ -19,7 +19,7 @@ class LoadingScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(
-              "Toaster",
+              "PlateRates",
               style: TextStyle(color: Colors.white, fontSize: 40),
             ),
           ),
@@ -32,7 +32,7 @@ class LoadingScreen extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
               child: Linkify(
-                text: "contact support at toaster@aikiwi.dev",
+                text: "contact support at support@platerates.com",
                 onOpen: (link) async {
                   if (!await launchUrl(Uri.parse(link.url))) {
                     throw Exception('Could not launch ${link.url}');

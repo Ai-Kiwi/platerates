@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:Toaster/chat/chatList.dart';
-import 'package:Toaster/libs/alertSystem.dart';
-import 'package:Toaster/notifications/notificationBarItem.dart';
-import 'package:Toaster/posts/postRating/userRating.dart';
-import 'package:Toaster/posts/userPost.dart';
+import 'package:PlateRates/chat/chatList.dart';
+import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/notifications/notificationBarItem.dart';
+import 'package:PlateRates/posts/postRating/userRating.dart';
+import 'package:PlateRates/posts/userPost.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

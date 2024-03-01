@@ -5,12 +5,12 @@ if [ "$releaseBranch" == "release" ]
 then
     BRANCH="latest"
     TargetDartFile="lib/main.dart"
-    URL="https://toaster.aikiwi.dev/latestVersion"
+    URL="https://platerates.com/latestVersion"
 elif [ "$releaseBranch" == "dev" ]
 then
     BRANCH="latest-dev"
     TargetDartFile="lib/main_dev.dart"
-    URL="https://dev.toaster.aikiwi.dev/latestVersion"
+    URL="https://platerates.com/latestVersion"
 else
     echo "unkown build release"
     exit 1
@@ -68,6 +68,7 @@ cp -R ./build/web ./.server/web/
 cp ./build/app/outputs/flutter-apk/app-release.apk ./.server/app-release.apk
 
 
+#docker server hasn't moved over it is still called toaster
 
 cd .server
 
