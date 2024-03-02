@@ -52,9 +52,13 @@ class _PostItemState extends State<PostItem> {
   bool? hasRated = true;
   var posterAvatar;
   String posterUserId = "";
-  var imageData;
+  var imagesData = {};
+  var imageCount = 0;
   bool errorOccurred = false;
   bool? viewerIsCreator;
+
+  final PageController _pageController = PageController();
+  int currentPage = 0;
 
   _PostItemState(
       {required this.postId,
@@ -68,16 +72,19 @@ class _PostItemState extends State<PostItem> {
       Map basicUserData = await dataCollect.getBasicUserData(
           jsonData['posterId'], context, false);
       dataCollect.updateBasicUserData(jsonData['posterId'], context, false);
-      print(basicUserData);
       Map avatarData = await dataCollect.getAvatarData(
           basicUserData["avatar"], context, false);
+      var firstImageData =
+          await dataCollect.getPostImageData(postId, 0, context, true);
 
       //print(basicUserData);
       setState(() {
+        imagesData[0] = base64Decode(firstImageData['imageData']);
         title = jsonData["title"];
         description = jsonData["description"];
         rating = double.parse('${jsonData["rating"]}');
-        imageData = base64Decode(jsonData['imageData']);
+        //imageData = base64Decode(jsonData['imageData']);
+        imageCount = jsonData["imageCount"];
         posterName = basicUserData["username"];
         posterUserId = jsonData['posterId'];
         postDate = jsonData['postDate'];
@@ -213,11 +220,38 @@ class _PostItemState extends State<PostItem> {
                   // image
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                      child: PostImage(
-                        imageData: imageData,
-                        imageRoundness: 16,
-                      )),
+                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        scrollDirection: Axis.horizontal,
+                        physics:
+                            const AlwaysScrollableScrollPhysics(), // Disable user scrolling
+                        itemCount: imageCount,
+                        itemBuilder: (context, index) {
+                          return PostImage(
+                            imageData: imagesData[index],
+                            imageRoundness: 16,
+                          );
+                        },
+                        onPageChanged: (page) async {
+                          if (imagesData[page] == null) {
+                            var tempImageData = await dataCollect
+                                .getPostImageData(postId, page, context, true);
+                            setState(() {
+                              imagesData[page] =
+                                  base64Decode(tempImageData['imageData']);
+                            });
+                          }
+
+                          //setState(() {
+                          //  currentPage = page;
+                          //});
+                        },
+                      ),
+                    ),
+                  ),
                 ),
 
                 //rating row

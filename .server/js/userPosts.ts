@@ -16,7 +16,8 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
     try{
       const title = req.body.title;
       const description = req.body.description;
-      const base64Image = req.body.image;
+      const base64Images = req.body.images;
+      var imagesData = [];
       const shareMode = req.body.shareMode;
       const userId : string = req.body.tokenUserId;
 
@@ -59,26 +60,43 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
         return res.status(400).send('description is empty.');
       }
 
-      //upload image
-      try{
-        const imageData : Buffer = Buffer.from(base64Image, 'base64');
+      if (base64Images.length < 1){
+        console.log("image is needed to upload")
+        return res.status(400).send('Image is needed to upload');
+      }
 
-        //make sure image is right size
-        const imageMetadata : sharp.Metadata = await sharp(imageData).metadata();
-        const { width, height } = imageMetadata;
-        const MAX_RESOLUTION = {
-          width: 1080,
-          height: 1080,
-        };
-        if ((width === MAX_RESOLUTION.width && height === MAX_RESOLUTION.height) === false) {
-          console.log("image resolution incorrect")
-          return res.status(400).send('Image resolution is incorrect.');
+      if (base64Images.length > 8){
+        console.log("To many images")
+        return res.status(400).send('To many images');
+      }
+
+      for (var i = 0; i < base64Images.length; i++) {
+        //upload image
+        try{
+          imagesData[i] = Buffer.from(base64Images[i], 'base64');
+
+          //make sure image is right size
+          const imageMetadata : sharp.Metadata = await sharp(imagesData[i]).metadata();
+          const { width, height } = imageMetadata;
+          const MAX_RESOLUTION = {
+            width: 1080,
+            height: 1080,
+          };
+          if ((width === MAX_RESOLUTION.width && height === MAX_RESOLUTION.height) === false) {
+            console.log("image resolution incorrect")
+            return res.status(400).send('Image resolution is incorrect.');
+          }
+
+          if (imagesData[i].length * 3 / 4 > 1000000) {
+            console.log("Image file size to large")
+            return res.status(400).send('Image file size to large');
+          }
+
+
+        } catch (err) {
+          reportError(err);
+          return res.status(500).send('error saving image');
         }
-
-
-      } catch (err) {
-        reportError(err);
-        return res.status(500).send('error saving image');
       }
 
       let response = await databases.posts.insertOne(
@@ -86,7 +104,7 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
           posterUserId: userId,
           title: title,
           description: description,
-          image: base64Image,
+          images: imagesData,
           postDate: Date.now(),
           shareMode: shareMode,
           postId: postId,
@@ -145,6 +163,13 @@ router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req 
 
       const viewerIsCreator = (userId == itemData.posterUserId);
       
+      var imageCount = 1
+      if (itemData.image != undefined) {
+        imageCount = 1
+      }else{
+        imageCount = (itemData.images).length
+      }
+
 
       console.log("sending post data");
       if (onlyUpdateChangeable === true) {
@@ -165,7 +190,7 @@ router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req 
         ratingsAmount : `${ratingsAmount}`, // converts to string as client software pefers that
         requesterRated :`${requesterHasRated}`,
         postId : postId,
-        imageData : itemData.image,
+        imageCount : imageCount,
         posterId : itemData.posterUserId,
         relativeViewerData : {
           viewerIsCreator : viewerIsCreator,
@@ -178,6 +203,42 @@ router.post('/post/data', [confirmTokenValid, confirmActiveAccount], async (req 
 })
 
 
+router.post('/post/image', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
+  console.log(" => user fetching post image data")
+    try{
+      const postId = req.body.postId;
+      const imageNumber : number = req.body.imageNumber;
+      const userId : string = req.body.tokenUserId;
+
+      
+      //Buffer.from(base64Images[i], 'base64');
+      
+
+      var itemData = await databases.posts.findOne({postId: postId})
+
+      if (itemData === null) {
+        console.log("invalid post");
+        return res.status(404).send("invalid post");
+      }
+
+      var imageData;
+
+      if (itemData.image != undefined){
+        imageData = itemData.image
+      }else{
+        imageData = itemData.images[imageNumber].toString('base64')
+      }
+
+
+      console.log("sending post image data");
+      return res.status(200).json({
+        imageData : imageData,
+      });
+    }catch(err){
+      reportError(err);
+      return res.status(500).send("server error")
+    }
+})
 
 router.post('/post/delete', [confirmTokenValid, confirmActiveAccount], async (req : Request, res : Response) => {
   console.log(" => user deleteing post")

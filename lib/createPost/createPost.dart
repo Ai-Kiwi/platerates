@@ -14,30 +14,30 @@ import '../main.dart';
 import '../login/userLogin.dart';
 
 class CreatePostPage extends StatefulWidget {
-  final List<int> imageData;
+  final List<dynamic> imagesData;
 
   CreatePostPage({
-    required this.imageData,
+    required this.imagesData,
   });
 
   @override
-  _CreatePostState createState() => _CreatePostState(imageData: imageData);
+  _CreatePostState createState() => _CreatePostState(imagesData: imagesData);
 }
 
 class _CreatePostState extends State<CreatePostPage> {
-  final List<int> imageData;
+  final List<dynamic> imagesData;
   late Uint8List convertedImageData;
   String _title = '';
   String _description = '';
   int shareModeSelected = 0;
   List<String> postCodeNames = ['public', 'friends'];
   List<String> postNamings = ['public post', 'friend\'s only post'];
+  final PageController _pageController = PageController();
 
-  _CreatePostState({required this.imageData});
+  _CreatePostState({required this.imagesData});
 
   @override
   Widget build(BuildContext context) {
-    convertedImageData = Uint8List.fromList(imageData);
     return Scaffold(
         body: PageBackButton(
       warnDiscardChanges: false,
@@ -58,18 +58,28 @@ class _CreatePostState extends State<CreatePostPage> {
           ),
           const SizedBox(height: 8.0),
           Padding(
+            // image
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Container(
-                width: double.infinity,
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.memory(
-                        convertedImageData,
-                        fit: BoxFit.cover,
-                      )),
-                )),
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(16.0)),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: PageView.builder(
+                  controller: _pageController,
+                  scrollDirection: Axis.horizontal,
+                  physics:
+                      const AlwaysScrollableScrollPhysics(), // Disable user scrolling
+                  itemCount: imagesData.length,
+                  itemBuilder: (context, index) {
+                    return Image.memory(
+                      Uint8List.fromList(imagesData[index]),
+                      fit: BoxFit.cover,
+                    );
+                  },
+                  onPageChanged: (page) async {},
+                ),
+              ),
+            ),
           ),
           const SizedBox(height: 16),
           Padding(
@@ -191,6 +201,12 @@ class _CreatePostState extends State<CreatePostPage> {
                           Navigator.pop(context);
 
                           try {
+                            var imagesUploading = [];
+                            for (var i = 0; i < imagesData.length; i++) {
+                              // TO DO
+                              imagesUploading.add(base64Encode(imagesData[i]));
+                            }
+
                             final response = await http.post(
                               Uri.parse("$serverDomain/post/upload"),
                               headers: <String, String>{
@@ -202,8 +218,9 @@ class _CreatePostState extends State<CreatePostPage> {
                                 "title": _title,
                                 "description": _description,
                                 "shareMode": postCodeNames[shareModeSelected],
-                                "image": base64Encode(
-                                    imageUtils.uintListToBytes(imageData)),
+                                "images": imagesUploading,
+                                //"image": base64Encode(
+                                //    imageUtils.uintListToBytes(imagesData)),
                               }),
                             );
 

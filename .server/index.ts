@@ -33,7 +33,7 @@ const app = express()
 const expressWs = require('express-ws')(app);
 const port: string = process.env.port || "3030";
 
-app.use(bodyParser.json({ limit: '2mb' }))       // to support JSON-encoded bodies
+app.use(bodyParser.json({ limit: '32mb' }))       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 

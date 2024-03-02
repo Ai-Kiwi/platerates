@@ -20,6 +20,7 @@ class _CameraPageState extends State<CameraPage> {
   bool _isCameraReady = false;
   int cameraIndex = 0;
   bool _takingPhoto = false;
+  var imagesTaken = [];
 
   @override
   void initState() {
@@ -204,19 +205,13 @@ class _CameraPageState extends State<CameraPage> {
                                     borderRadius: BorderRadius.circular(15.0),
                                   )),
                                   onPressed: () async {
-                                    final imagePath = await _takePicture();
+                                    final imageTakenData = await _takePicture();
 
-                                    if (imagePath != null) {
-                                      // You can handle the captured image path here, e.g., display it on a new page or save it.
+                                    if (imageTakenData != null) {
                                       // ignore: use_build_context_synchronously
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                CreatePostPage(
-                                                  imageData: imagePath,
-                                                )),
-                                      );
+                                      setState(() {
+                                        imagesTaken.add(imageTakenData);
+                                      });
                                     } else {
                                       // ignore: use_build_context_synchronously
                                       openAlert("error", "error loading camera",
@@ -280,13 +275,9 @@ class _CameraPageState extends State<CameraPage> {
 
                   if (imageData != null) {
                     // ignore: use_build_context_synchronously
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CreatePostPage(
-                                imageData: imageData,
-                              )),
-                    );
+                    setState(() {
+                      imagesTaken.add(imageData);
+                    });
                   }
                 } catch (err) {
                   // ignore: use_build_context_synchronously
@@ -302,6 +293,87 @@ class _CameraPageState extends State<CameraPage> {
                 style: TextStyle(fontSize: 18.0),
               ),
             ),
+          ),
+        ),
+        Visibility(
+          visible: imagesTaken.length > 0,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 150,
+                  child: ListView.builder(
+                    itemCount: imagesTaken.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      var convertedImageData =
+                          Uint8List.fromList(imagesTaken[index]);
+                      return Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(8.0)),
+                            child: AspectRatio(
+                                aspectRatio: 1,
+                                child: SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: Stack(children: [
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Image.memory(convertedImageData),
+                                      ),
+                                      Align(
+                                          alignment: Alignment.topRight,
+                                          child: IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  imagesTaken.removeAt(index);
+                                                });
+                                              },
+                                              icon: const Icon(
+                                                Icons.remove_circle,
+                                                color: Colors.red,
+                                                size: 32,
+                                              ))),
+                                    ]
+                                        //child: Text("e"),
+                                        ))),
+                          ));
+                    },
+                  ),
+                ),
+              ),
+              Padding(
+                //use photo present button
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                    )),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreatePostPage(
+                                  imagesData: imagesTaken,
+                                )),
+                      );
+                    },
+                    child: const Text(
+                      'Upload photos',
+                      style: TextStyle(fontSize: 18.0),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ])),
