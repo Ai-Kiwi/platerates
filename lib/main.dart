@@ -195,20 +195,21 @@ class MyApp extends StatelessWidget {
         // appleProvider: AppleProvider.appAttest,
       );
     }
+    if (kIsWeb == false) {
+      print("starting notifcation service");
+      await initNotificationHandler(); //also handles firebase
 
-    print("starting notifcation service");
-    await initNotificationHandler(); //also handles firebase
+      //load notfcation stuff if opened
+      var sharedPrefs = await SharedPreferences.getInstance();
 
-    //load notfcation stuff if opened
-    var sharedPrefs = await SharedPreferences.getInstance();
-
-    var notData = sharedPrefs.getString('notificationOnBootData');
-    print("noti thingy is $notData");
-    if (notData != null) {
-      if (notData != '') {
-        openNotificationOnBootData = notData;
-        print("loaded ");
-        sharedPrefs.setString('notificationOnBootData', '');
+      var notData = sharedPrefs.getString('notificationOnBootData');
+      print("noti thingy is $notData");
+      if (notData != null) {
+        if (notData != '') {
+          openNotificationOnBootData = notData;
+          print("loaded ");
+          sharedPrefs.setString('notificationOnBootData', '');
+        }
       }
     }
 
