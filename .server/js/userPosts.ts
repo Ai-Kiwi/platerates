@@ -88,7 +88,7 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
           }
 
           if (imagesData[i].length * 3 / 4 > 1000000) {
-            console.log("Image file size to large")
+            console.log("Image file size to large at " + (imagesData[i].length * 3 / 4) / 1000000 + "MB")
             return res.status(400).send('Image file size to large');
           }
 
