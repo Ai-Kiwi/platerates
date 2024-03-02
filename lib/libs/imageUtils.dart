@@ -47,7 +47,7 @@ class _imageUtils {
         return null;
       }
 
-      final List<int> editedBytes = img.encodeJpg(image, quality: 100);
+      final List<int> editedBytes = img.encodeJpg(image, quality: 75);
 
       return editedBytes;
     } on Exception catch (error, stackTrace) {
