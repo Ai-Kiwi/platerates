@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
       final tempDir = await getTemporaryDirectory();
       final box = await Hive.openBox<String>('appBox',
           path:
-              "${tempDir.path}/cacheData.toastyCache"); // it must be a Box<String>.
+              "${tempDir.path}/cacheData.tastyCache"); // it must be a Box<String>.
       jsonCache = JsonCacheMem(JsonCacheHive(box));
     }
 

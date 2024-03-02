@@ -135,13 +135,30 @@ router.ws('/chatWs', function(ws, req) {
 
             const sendTime = Date.now()
 
-            const dataSending = {
+            let dataSending = {
                 messageId : messageId,
                 text : jsonData["text"],
                 messagePoster : wsClients[connectionId].userId,
                 chatRoomId : wsClients[connectionId].chatRoomId,
                 sendTime : sendTime,
             }
+            if (jsonData["reply-message"] != null && jsonData["reply-message"] != undefined && jsonData["reply-message"] != "") {
+              const replyMessage = await databases.chat_messages.findOne({messageId : jsonData["reply-message"], chatRoomId: wsClients[connectionId].chatRoomId});
+              if (replyMessage != null){
+                dataSending['replyMessage'] = {
+                  messageId : jsonData["reply-message"],
+                  text : replyMessage.text,
+                  messagePoster : replyMessage.messagePoster
+                }
+              }else{
+                ws.send(JSON.stringify({
+                  success : false,
+                  reason : "invalid reply item"
+              }));
+              return;
+              }
+              
+            } 
 
 
             

@@ -119,7 +119,7 @@ async function sendNotification(notificationData : {userId : string | undefined,
 
             if (response.acknowledged === true){
               const notificationDataFromDatabase = await databases.user_notifications.findOne({ notificationId: notificationId })
-              sendNotificationToDevices(`Toast rating`,`${await fetchUsername(notificationData.userId!)} rated your toast`,`userRating`,[notificationData.receiverId], notificationId)
+              sendNotificationToDevices(`Post rating`,`${await fetchUsername(notificationData.userId!)} rated your post`,`userRating`,[notificationData.receiverId], notificationId)
               console.log("sent notification");
             }else{
               console.log("failed sending notification");
