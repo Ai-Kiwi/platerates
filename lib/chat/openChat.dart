@@ -409,6 +409,8 @@ class _fullPageChatState extends State<FullPageChat> {
               enableSwipeToSeeTime: true,
               enableReactionPopup: false,
               enablePagination: true,
+              enableOtherUserProfileAvatar: false,
+              enableDoubleTapToLike: false,
             ),
 
             currentUser: currentUser,
@@ -521,21 +523,21 @@ class _fullPageChatState extends State<FullPageChat> {
     }
   }
 }
+//TODO needed 
+//test if doesn't show new messages added
+//test everything in a live chat
+//split notifcations off for reply
+//add sending images
+//add voice chat
 
+
+//TODO not needed
 //add message read
 //message reactions
-//typing text should be different color
-//test if doesn't show new messages added
+//typing text
 //unsend messages
-///display if they are online or not, and if are in chat
-//prompt on first chat that we can't safe guard agensit everything, give advice on safety. 
-//split notifcations off for reply
-//add images
-//add voice chat
-//test everything in a live chat
+//display if they are online or not, and if are in chat
 //add back typing detection
 //add when user has seen messages
 //fix crash on websocket close
 //make message unloading when scrolling up
-//unsend messages
-//test if chat can load with nothing
