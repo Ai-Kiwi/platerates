@@ -10,8 +10,7 @@ import 'package:PlateRates/login/userLogin.dart';
 import 'package:PlateRates/main.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:chatview/chatview.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 //import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -31,12 +30,25 @@ String randomString() {
   return base64UrlEncode(values);
 }
 
-Future<types.User> getUserInfo(String userId, context) async {
+Future<ChatUser> getUserInfo(String userId, context) async {
   var userData = await dataCollect.getUserData(userId, context, false);
 
-  final returnUserData = types.User(
+  // ignore: prefer_typing_uninitialized_variables
+  var imageData;
+  if (userData["avatar"] != null) {
+    // ignore: use_build_context_synchronously
+    Map avatarData =
+        await dataCollect.getAvatarData(userData["avatar"], context, false);
+    imageData = avatarData["imageData"];
+  }
+
+  final returnUserData = ChatUser(
     id: userId,
-    firstName: userData['username'],
+    name: userData['username'],
+    //profilePhoto: Image.memory(base64Decode(imageData))
+    //
+    //
+    //imageData != null ? base64Decode(imageData) : imageData,
   );
 
   return returnUserData;
@@ -104,10 +116,9 @@ class topUserBar extends StatelessWidget {
 
 class _fullPageChatState extends State<FullPageChat> {
   final String chatRoomId;
-  final List<types.Message> _messages = [];
-  final List<types.User> _usersTyping = [];
+  var currentUser =
+      ChatUser(id: '', name: ''); //id of user who is person typing
   bool dataGathered = false;
-  var _user = const types.User(id: 'none');
   var channel =
       WebSocketChannel.connect(Uri.parse("$serverWebsocketDomain/chatWs"));
   int pastItemDate = 99999999999999;
@@ -118,6 +129,16 @@ class _fullPageChatState extends State<FullPageChat> {
   late String privateChatOtherUser;
   String groupName = "";
   var groupImage;
+
+  //this is temp data that gets overided because of my code awfull code, one of those things I should improve
+  var chatController = ChatController(
+    initialMessageList: [],
+    scrollController: ScrollController(),
+    chatUsers: [
+      ChatUser(id: '2', name: 'Simform'),
+      ChatUser(id: '3', name: "John")
+    ],
+  );
 
   _fullPageChatState({required this.chatRoomId});
 
@@ -146,21 +167,49 @@ class _fullPageChatState extends State<FullPageChat> {
             //  messageStatus = types.Status.seen;
             //}
 
-            final textMessage = types.TextMessage(
-              author:
-                  await getUserInfo(jsonData["data"]["messagePoster"], context),
-              createdAt: jsonData["data"]["sendTime"],
-              id: jsonData["data"]["messageId"],
-              text: jsonData["data"]["text"],
-              //status: messageStatus
-            );
+            var messageAdding;
 
-            _addMessage(
-                textMessage, (jsonData["action"] == "past_message") == true);
+            if (jsonData["data"]["replyMessage"] == null) {
+              messageAdding = Message(
+                id: jsonData["data"]["messageId"],
+                message: jsonData["data"]["text"],
+                createdAt: DateTime.fromMillisecondsSinceEpoch(
+                  jsonData["data"]["sendTime"],
+                  isUtc: true,
+                ),
+                sendBy: jsonData["data"]["messagePoster"],
+                messageType: MessageType.text,
+              );
+            } else {
+              print("reply message");
+              messageAdding = Message(
+                id: jsonData["data"]["messageId"],
+                message: jsonData["data"]["text"],
+                createdAt: DateTime.fromMillisecondsSinceEpoch(
+                  jsonData["data"]["sendTime"],
+                  isUtc: true,
+                ),
+                sendBy: jsonData["data"]["messagePoster"],
+                replyMessage: ReplyMessage(
+                  //  messageType: MessageType.text,
+                  message: jsonData["data"]["replyMessage"]["text"],
+                  replyBy: jsonData["data"]["messagePoster"],
+                  replyTo: jsonData["data"]["replyMessage"]["messagePoster"],
+                  messageId: jsonData["data"]["replyMessage"]["messageId"],
+                ),
+              );
+            }
+
+            if (jsonData["action"] == "past_message") {
+              chatController.loadMoreData([messageAdding]);
+            } else {
+              chatController.addMessage(messageAdding);
+            }
           } else if (jsonData["action"] == "authenticated") {
-            _user = await getUserInfo(jsonData["data"]["userId"], context);
+            currentUser =
+                await getUserInfo(jsonData["data"]["userId"], context);
+
             pastItemDate = 99999999999999;
-            _messages.clear();
             channel.sink.add(jsonEncode({
               "request": "past_messages",
               "pastItemDate": pastItemDate,
@@ -169,6 +218,16 @@ class _fullPageChatState extends State<FullPageChat> {
             privateChat = jsonData["data"]["privateChat"];
             if (privateChat == true) {
               privateChatOtherUser = jsonData["data"]["privateChatOtherUser"];
+
+              chatController = ChatController(
+                initialMessageList: [],
+                scrollController: ScrollController(),
+                chatUsers: [
+                  await getUserInfo(jsonData["data"]["userId"], context),
+                  await getUserInfo(
+                      jsonData["data"]["privateChatOtherUser"], context),
+                ],
+              );
 
               // ignore: use_build_context_synchronously
               Map fetchedData = await dataCollect.getUserData(
@@ -193,26 +252,26 @@ class _fullPageChatState extends State<FullPageChat> {
               });
             }
           } else if (jsonData["action"] == "user_typing") {
-            types.User userTypingData =
-                await getUserInfo(jsonData["userId"], context);
-
-            setState(() {
-              print(jsonData["typing"]);
-              if (jsonData["typing"] == true) {
-                if (_usersTyping.contains(userTypingData) == false) {
-                  _usersTyping.add(userTypingData);
-                } else {
-                  print("user already in list");
-                }
-              } else {
-                if (_usersTyping.contains(userTypingData)) {
-                  _usersTyping.remove(userTypingData);
-                } else {
-                  print("user not in list");
-                } //yeah this is working fully yet
-              }
-            });
-            print(userTypingData);
+            //types.User userTypingData =
+            //    await getUserInfo(jsonData["userId"], context);
+            //
+            //setState(() {
+            //  print(jsonData["typing"]);
+            //  if (jsonData["typing"] == true) {
+            //    if (_usersTyping.contains(userTypingData) == false) {
+            //      _usersTyping.add(userTypingData);
+            //    } else {
+            //      print("user already in list");
+            //    }
+            //  } else {
+            //    if (_usersTyping.contains(userTypingData)) {
+            //      _usersTyping.remove(userTypingData);
+            //    } else {
+            //      print("user not in list");
+            //    } //yeah this is working fully yet
+            //  }
+            //});
+            //print(userTypingData);
           }
         } on Exception catch (error, stackTrace) {
           FirebaseCrashlytics.instance.recordError(error, stackTrace);
@@ -243,71 +302,16 @@ class _fullPageChatState extends State<FullPageChat> {
     }));
   }
 
-  void _handlePreviewDataFetched(
-    types.TextMessage message,
-    types.PreviewData previewData,
-  ) {
-    final index = _messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
-      previewData: previewData,
-    );
-
-    setState(() {
-      _messages[index] = updatedMessage;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     _chatWebsocket();
   }
 
-  void _addMessage(types.Message message, bool addToEnd) {
-    setState(() {
-      if (addToEnd) {
-        _messages.add(message);
-      } else {
-        _messages.insert(0, message);
-      }
-    });
-  }
-
-  Future<void> _handleSendPressed(types.PartialText message) async {
-    channel.sink.add(jsonEncode({
-      "request": "send_message",
-      "token": userManager.token,
-      "text": message.text
-    }));
-    if (_typingTimer != null) {
-      if (_typingTimer!.isActive) {
-        _typingTimer?.cancel();
-        channel.sink.add(jsonEncode({
-          "request": "typing_indicator",
-          "token": userManager.token,
-          "typing": false,
-        }));
-        typing = false;
-      }
-    }
-  }
-
-  Future<void> _handleMessageHold(
-      BuildContext context, types.Message p1) async {
-    //openAlert("info", "message data", p1.id, context, null);
-    openAlert(
-        "custom_buttons", "select action for message", null, context, null, [
-      DialogButton(
-        color: Colors.red,
-        child: const Text(
-          '🚩 report comment',
-          style: TextStyle(fontSize: 16.0, color: Colors.white),
-        ),
-        onPressed: () async {
-          reportSystem.reportItem(context, "chat_message", p1.id);
-        },
-      )
-    ]);
+  @override
+  void dispose() {
+    _typingTimer?.cancel(); // Cancel the timer when disposing the widget.
+    super.dispose();
   }
 
   Timer? _typingTimer;
@@ -345,10 +349,31 @@ class _fullPageChatState extends State<FullPageChat> {
     }
   }
 
-  @override
-  void dispose() {
-    _typingTimer?.cancel(); // Cancel the timer when disposing the widget.
-    super.dispose();
+  void onSendTap(
+      String message, ReplyMessage replyMessage, MessageType messageType) {
+    //print(messageType.isText);
+    //print(replyMessage.messageId);
+    channel.sink.add(jsonEncode({
+      "request": "send_message",
+      "token": userManager.token,
+      "text": message,
+      "reply-message": replyMessage.messageId
+    }));
+    if (_typingTimer != null) {
+      if (_typingTimer!.isActive) {
+        _typingTimer?.cancel();
+        channel.sink.add(jsonEncode({
+          "request": "typing_indicator",
+          "token": userManager.token,
+          "typing": false,
+        }));
+        typing = false;
+      }
+    }
+    setState(() {
+      //gonna be honest for some reaosn data freezes after sending message and this fixes it, dont ask me why it does what it does lmao
+      dataGathered = true;
+    });
   }
 
   @override
@@ -356,32 +381,60 @@ class _fullPageChatState extends State<FullPageChat> {
     final ThemeData theme = Theme.of(context);
     if (dataGathered == true) {
       return Scaffold(
-          body: Stack(
-        children: [
-          Chat(
-            showUserAvatars: false,
-            showUserNames: true,
-            theme: DefaultChatTheme(
-              primaryColor: theme.primaryColor,
-              backgroundColor: const Color.fromRGBO(16, 16, 16, 1),
+        body: SafeArea(
+          bottom: true,
+          top: true,
+          child: ChatView(
+            appBar: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Color.fromRGBO(24, 24, 24, 1),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                ),
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: topUserBar(
+                  privateChat: privateChat,
+                  otherUserId: privateChatOtherUser,
+                  chatImage: groupImage,
+                  chatName: groupName,
+                ),
+              ),
             ),
-            typingIndicatorOptions: TypingIndicatorOptions(
-              typingMode: TypingIndicatorMode.both,
-              typingUsers: _usersTyping,
+            featureActiveConfig: const FeatureActiveConfig(
+              enableSwipeToReply: true,
+              enableSwipeToSeeTime: true,
+              enableReactionPopup: false,
+              enablePagination: true,
             ),
-            usePreviewData: true,
-            messages: _messages,
-            onSendPressed: _handleSendPressed,
-            user: _user,
-            onPreviewDataFetched: _handlePreviewDataFetched,
-            //onEndReachedThreshold: 80,
-            onMessageLongPress: (context, p1) {
-              _handleMessageHold(context, p1);
-            },
-            inputOptions: InputOptions(
-              onTextChanged: _handleTextChange,
+
+            currentUser: currentUser,
+            chatController: chatController,
+            onSendTap: onSendTap,
+            sendMessageConfig: SendMessageConfiguration(
+              replyMessageColor: Colors.green,
+              replyTitleColor: Colors.black54,
+              replyDialogColor: Colors.white,
+              textFieldConfig: TextFieldConfiguration(
+                textStyle: TextStyle(color: Colors.black),
+                onMessageTyping: (status) {
+                  // send composing/composed status to other client
+                  // your code goes here
+                  print("typing");
+                  print(status);
+                },
+
+                /// After typing stopped, the threshold time after which the composing
+                /// status to be changed to [TypeWriterStatus.typed].
+                /// Default is 1 second.
+                compositionThresholdTime: const Duration(seconds: 1),
+              ),
             ),
-            onEndReached: () async {
+            loadMoreData: () async {
+              print("load more");
               if (lastReachedTimeMessageTime != pastItemDate ||
                   lastReachedTopTime <
                       (DateTime.now().millisecondsSinceEpoch - (1000 * 5))) {
@@ -395,28 +448,70 @@ class _fullPageChatState extends State<FullPageChat> {
                 }));
               }
             },
-          ),
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Color.fromRGBO(24, 24, 24, 1),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8),
+            isLastPage: false,
+            chatViewState: ChatViewState
+                .hasMessages, // Add this state once data is available.
+            chatBubbleConfig: const ChatBubbleConfiguration(
+              outgoingChatBubbleConfig: ChatBubble(
+                senderNameTextStyle: TextStyle(color: Colors.white),
+                // Sender's message chat bubble
+                color: Colors.green,
+                textStyle: TextStyle(
+                  color: Colors.white,
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(2),
+                ),
+              ),
+              inComingChatBubbleConfig: ChatBubble(
+                senderNameTextStyle: TextStyle(color: Colors.white),
+                // Receiver's message chat bubble
+                color: Color.fromARGB(255, 75, 75, 75),
+                textStyle: TextStyle(
+                  color: Colors.white,
+                ),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(2),
+                ),
               ),
             ),
-            child: SafeArea(
-              bottom: false,
-              child: topUserBar(
-                privateChat: privateChat,
-                otherUserId: privateChatOtherUser,
-                chatImage: groupImage,
-                chatName: groupName,
+
+            repliedMessageConfig: const RepliedMessageConfiguration(
+              backgroundColor: Colors.green,
+              verticalBarColor: Colors.white70,
+              repliedMsgAutoScrollConfig: RepliedMsgAutoScrollConfig(
+                enableHighlightRepliedMsg: true,
+                highlightColor: Colors.green,
+                highlightScale: 1.1,
+              ),
+              textStyle: TextStyle(
+                color: Colors.white,
+                letterSpacing: 0.25,
+              ),
+              replyTitleTextStyle: TextStyle(color: Colors.white),
+            ),
+            swipeToReplyConfig: const SwipeToReplyConfiguration(
+              replyIconColor: Colors.grey,
+            ),
+
+            chatBackgroundConfig: const ChatBackgroundConfiguration(
+              backgroundColor: Color.fromRGBO(16, 16, 16, 1),
+              defaultGroupSeparatorConfig: DefaultGroupSeparatorConfiguration(
+                textStyle: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 15,
+                ),
               ),
             ),
           ),
-        ],
-      ));
+        ),
+      );
     } else {
       return const Scaffold(
         body: Center(
@@ -427,14 +522,20 @@ class _fullPageChatState extends State<FullPageChat> {
   }
 }
 
-//add typing
-//add when message last seen
-//add support for files and images
-//add support for avatars
-//support replying to messages
+//add message read
+//message reactions
+//typing text should be different color
+//test if doesn't show new messages added
+//unsend messages
+///display if they are online or not, and if are in chat
+//prompt on first chat that we can't safe guard agensit everything, give advice on safety. 
+//split notifcations off for reply
+//add images
+//add voice chat
+//test everything in a live chat
+//add back typing detection
+//add when user has seen messages
 //fix crash on websocket close
-//make top bar not green
-//make other user border not white
-//make some system for users color
 //make message unloading when scrolling up
 //unsend messages
+//test if chat can load with nothing
