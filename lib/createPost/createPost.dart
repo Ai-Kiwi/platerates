@@ -33,6 +33,7 @@ class _CreatePostState extends State<CreatePostPage> {
   List<String> postCodeNames = ['public', 'friends'];
   List<String> postNamings = ['public post', 'friend\'s only post'];
   final PageController _pageController = PageController();
+  int currentPage = 0;
 
   _CreatePostState({required this.imagesData});
 
@@ -63,22 +64,57 @@ class _CreatePostState extends State<CreatePostPage> {
             child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(16.0)),
               child: AspectRatio(
-                aspectRatio: 1,
-                child: PageView.builder(
-                  controller: _pageController,
-                  scrollDirection: Axis.horizontal,
-                  physics:
-                      const AlwaysScrollableScrollPhysics(), // Disable user scrolling
-                  itemCount: imagesData.length,
-                  itemBuilder: (context, index) {
-                    return Image.memory(
-                      Uint8List.fromList(imagesData[index]),
-                      fit: BoxFit.cover,
-                    );
-                  },
-                  onPageChanged: (page) async {},
-                ),
-              ),
+                  aspectRatio: 1,
+                  child: Stack(
+                    children: [
+                      PageView.builder(
+                        controller: _pageController,
+                        scrollDirection: Axis.horizontal,
+                        physics:
+                            const AlwaysScrollableScrollPhysics(), // Disable user scrolling
+                        itemCount: imagesData.length,
+
+                        itemBuilder: (context, index) {
+                          return Image.memory(
+                            Uint8List.fromList(imagesData[index]),
+                            fit: BoxFit.cover,
+                          );
+                        },
+                        onPageChanged: (page) {
+                          setState(() {
+                            currentPage = page;
+                          });
+                        },
+                      ),
+                      Visibility(
+                        visible: imagesData.length > 1,
+                        child: Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 9.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Color.fromARGB(200, 50, 50, 50),
+                              ),
+                              width: 50,
+                              height: 25,
+                              child: Center(
+                                child: Text(
+                                  '${currentPage + 1}/${imagesData.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
             ),
           ),
           const SizedBox(height: 16),

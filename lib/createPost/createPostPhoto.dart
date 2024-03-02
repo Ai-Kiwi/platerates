@@ -338,6 +338,27 @@ class _CameraPageState extends State<CameraPage> {
                                                 color: Colors.red,
                                                 size: 32,
                                               ))),
+                                      Visibility(
+                                        visible: index != 0,
+                                        child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    var swappingImage =
+                                                        imagesTaken[index - 1];
+                                                    imagesTaken[index - 1] =
+                                                        imagesTaken[index];
+                                                    imagesTaken[index] =
+                                                        swappingImage;
+                                                  });
+                                                },
+                                                icon: const Icon(
+                                                  Icons.arrow_back,
+                                                  color: Colors.grey,
+                                                  size: 32,
+                                                ))),
+                                      ),
                                     ]
                                         //child: Text("e"),
                                         ))),
