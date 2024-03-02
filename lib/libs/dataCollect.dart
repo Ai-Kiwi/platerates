@@ -200,6 +200,16 @@ class DataCollect {
         expectError, const Duration(milliseconds: 0));
   }
 
+  Future<Map> getPostImageData(
+      String postId, num imageNumber, context, expectError) async {
+    return getData({
+      'token': userManager.token,
+      "postId": postId,
+      "imageNumber": imageNumber,
+    }, "$serverDomain/post/image", 'imageData-$postId-$imageNumber', context,
+        expectError);
+  }
+
   //not had a chance todo for anything yet
   //will add for the following
   //chatroom
