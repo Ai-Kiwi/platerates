@@ -10,6 +10,7 @@ import 'package:PlateRates/posts/fullPagePost.dart';
 import 'package:PlateRates/posts/postRating/fullPageRating.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
@@ -103,6 +104,9 @@ Future<void> sendNotification(
 }
 
 Future<void> informServerNotificationToken(String? token) async {
+  if (kIsWeb == true) {
+    return; //dont wanna overide it with fake web data that can't be sent too
+  }
   if (userManager.token == '') {
     return; //does nothing as program still being init
   }
