@@ -222,35 +222,66 @@ class _PostItemState extends State<PostItem> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(16.0)),
                     child: AspectRatio(
-                      aspectRatio: 1,
-                      child: PageView.builder(
-                        controller: _pageController,
-                        scrollDirection: Axis.horizontal,
-                        physics:
-                            const AlwaysScrollableScrollPhysics(), // Disable user scrolling
-                        itemCount: imageCount,
-                        itemBuilder: (context, index) {
-                          return PostImage(
-                            imageData: imagesData[index],
-                            imageRoundness: 16,
-                          );
-                        },
-                        onPageChanged: (page) async {
-                          if (imagesData[page] == null) {
-                            var tempImageData = await dataCollect
-                                .getPostImageData(postId, page, context, true);
-                            setState(() {
-                              imagesData[page] =
-                                  base64Decode(tempImageData['imageData']);
-                            });
-                          }
+                        aspectRatio: 1,
+                        child: Stack(
+                          children: [
+                            PageView.builder(
+                              controller: _pageController,
+                              scrollDirection: Axis.horizontal,
+                              physics:
+                                  const AlwaysScrollableScrollPhysics(), // Disable user scrolling
+                              itemCount: imageCount,
+                              itemBuilder: (context, index) {
+                                return PostImage(
+                                  imageData: imagesData[index],
+                                  imageRoundness: 16,
+                                );
+                              },
+                              onPageChanged: (page) async {
+                                if (imagesData[page] == null) {
+                                  var tempImageData =
+                                      await dataCollect.getPostImageData(
+                                          postId, page, context, true);
+                                  setState(() {
+                                    imagesData[page] = base64Decode(
+                                        tempImageData['imageData']);
+                                  });
+                                }
 
-                          //setState(() {
-                          //  currentPage = page;
-                          //});
-                        },
-                      ),
-                    ),
+                                setState(() {
+                                  currentPage = page;
+                                });
+                              },
+                            ),
+                            Visibility(
+                              visible: imageCount > 1,
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 9.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      color: Color.fromARGB(200, 50, 50, 50),
+                                    ),
+                                    width: 50,
+                                    height: 25,
+                                    child: Center(
+                                      child: Text(
+                                        '${currentPage + 1}/$imageCount',
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
                   ),
                 ),
 
