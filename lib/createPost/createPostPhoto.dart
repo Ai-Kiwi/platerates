@@ -147,7 +147,7 @@ class _CameraPageState extends State<CameraPage> {
             visible: kIsWeb,
             child: Column(children: [
               Padding(
-                  //closed beta reminder
+                  //web verison reminded
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: SizedBox(
                       width: double.infinity,

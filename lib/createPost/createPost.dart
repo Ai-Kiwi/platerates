@@ -267,8 +267,8 @@ class _CreatePostState extends State<CreatePostPage> {
                             } else {
                               ErrorHandler.httpError(
                                   response.statusCode, response.body, context);
-                              openAlert("error", "error uploading post", null,
-                                  context, null, null);
+                              openAlert("error", "error uploading post",
+                                  response.body, context, null, null);
                             }
                           } on Exception catch (error, stackTrace) {
                             FirebaseCrashlytics.instance
