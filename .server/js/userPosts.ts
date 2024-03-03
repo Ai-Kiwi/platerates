@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { databases } from './database';
+import { b2, b2_uploadAuthToken, b2_uploadUrl, databases } from './database';
 import { generateRandomString } from './utilFunctions';
 import sharp, { Sharp } from 'sharp';
 import { userTimeout, userTimeoutTest } from './timeouts';
@@ -99,12 +99,41 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
         }
       }
 
+      let uploadedFileids = [];
+
+      for (var i = 0; i < base64Images.length; i++) {
+        console.log(b2_uploadUrl)
+        let fileUploadResponse = await b2.uploadFile({ 
+          uploadUrl: b2_uploadUrl,
+          uploadAuthToken: b2_uploadAuthToken,
+          fileName: `postImage-${i}-${postId}`,
+          //contentLength: 0, // optional data length, will default to data.byteLength or data.length if not provided
+          //mime: '', // optional mime type, will default to 'b2/x-auto' if not provided
+          data: imagesData[i], // this is expecting a Buffer, not an encoded string
+          //hash: 'sha1-hash', // optional data hash, will use sha1(data) if not provided
+          //info: {
+          //    // optional info headers, prepended with X-Bz-Info- when sent, throws error if more than 10 keys set
+          //    // valid characters should be a-z, A-Z and '-', all other characters will cause an error to be thrown
+          //    key1: 'value',
+          //    key2: 'value'
+          //},
+          onUploadProgress: (event) => {}, // progress monitoring
+          // ...common arguments (optional)
+        });  // returns promise
+        if (fileUploadResponse.status != 200) {
+          console.log("Failed uploading ")
+          return res.status(400).send('Failed uploading image');
+        }
+        uploadedFileids.push(fileUploadResponse['data']['fileId'])
+
+      }
+
       let response = await databases.posts.insertOne(
         {
           posterUserId: userId,
           title: title,
           description: description,
-          images: imagesData,
+          images: uploadedFileids,
           postDate: Date.now(),
           shareMode: shareMode,
           postId: postId,
@@ -226,7 +255,17 @@ router.post('/post/image', [confirmTokenValid, confirmActiveAccount], async (req
       if (itemData.image != undefined){
         imageData = itemData.image
       }else{
-        imageData = itemData.images[imageNumber].toString('base64')
+
+        let fileDownloadResponse = await b2.downloadFileById({
+          fileId: itemData.images[imageNumber],
+          responseType: 'arraybuffer', // options are as in axios: 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
+          onDownloadProgress: (event) => {} // progress monitoring
+          // ...common arguments (optional)
+        });
+        imageData = Buffer.from(fileDownloadResponse['data']).toString("base64")
+
+        console.log(imageData)
+        
       }
 
 

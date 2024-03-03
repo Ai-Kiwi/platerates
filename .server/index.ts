@@ -112,10 +112,11 @@ app.use('/', notificationSystem);
 import {router as chatSystem} from "./js/chatSystem"; 
 app.use('/', chatSystem);
 
+import {GetBucket as GetBucket} from "./js/database"; 
 
-
-
-
-app.listen(port, () => {
-  console.log(`PlateRates server listening on port ${port}`)
+console.log("connecting to file server...")
+GetBucket().then(() => {
+  app.listen(port, () => {
+    console.log(`PlateRates server listening on port ${port}`)
+  })
 })
