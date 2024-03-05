@@ -1,7 +1,6 @@
 import express from 'express';
 const router = express.Router();
 import fs from 'fs';
-import safeCompare from 'safe-compare';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import crypto, { privateEncrypt } from 'crypto';
 import { databases } from './database';
@@ -17,15 +16,33 @@ import { buffer } from 'stream/consumers';
 import { confirmActiveAccount, confirmTokenValid } from './securityUtils';
 import { reportError } from './errorHandler';
 import { sendNotificationToDevices } from './notificationSystem';
+import bcrypt from 'bcrypt'
 
 require('dotenv').config();
 
 const privateKeyRaw = process.env.loginKey;
 if (privateKeyRaw === undefined){
+  console.log("here is a key that you could use")
   console.log(crypto.randomBytes(512).toString('base64')) //128 bit keys
   error("no private key input")
 }
 const privateKey : Buffer = Buffer.from(privateKeyRaw as string, 'base64');
+
+const saltRounds = 10;
+
+async function testPasswordHash(password,hash) {
+  return await bcrypt.compareSync(password, hash);
+}
+
+async function createPasswordHash(password) {
+  try {
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+  } catch (error) {
+    throw new Error('Hashing failed ' + error);
+  }
+}
 
 
 async function updateUserPassword(rawEmail : string, newPassword : string) {
@@ -34,19 +51,13 @@ async function updateUserPassword(rawEmail : string, newPassword : string) {
     // Retrieve the user document using the email
 
     // Generate a new hashed password
-    const passwordSalt : string = crypto.randomBytes(16).toString('hex');
-    const hashedPassword : string = crypto.createHash("sha256")
-    .update(newPassword)
-    .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
-    .digest("hex");
-
+    const hashedPassword = await createPasswordHash(newPassword)
     const tokenNotExpiedCode : string = generateRandomString(16);
     // Update the user document with the new hashed password
     let collectionUpdate = await databases.user_credentials.updateOne(
       { email: email },
       { $set: {
         hashedPassword: hashedPassword,
-        passwordSalt: passwordSalt,
         tokenNotExpiredCode: tokenNotExpiedCode,
         deviceNotificationTokens : []
       }}
@@ -152,7 +163,6 @@ router.post('/login', async (req : Request, res : Response) => {
     }
 
     const hashedPassword : string = userData.hashedPassword;
-    const passwordSalt : string = userData.passwordSalt;
     const userId : string = userData.userId;
 
     //the way this works is abit werid so ima explain it.
@@ -187,13 +197,8 @@ router.post('/login', async (req : Request, res : Response) => {
     }
       
 
-    const hashedPasswordEntered : string = crypto.createHash("sha256")
-    .update(userPassword)
-    .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
-    .digest("hex");
-
     //if the username and password is the same
-    if(safeCompare(hashedPasswordEntered,hashedPassword)){
+    if(testPasswordHash(userPassword,hashedPassword)){
       //should add a system for when it fails to sign, then again probs not needed
       let token : string = jwt.sign({
         userId : userId,
@@ -355,11 +360,7 @@ router.post('/login/reset-password', async (req, res) => {
     
     );
     if (emailData) {
-      const passwordSalt : string = crypto.randomBytes(16).toString('hex');
-      const hashedPassword : string = crypto.createHash("sha256")
-      .update(newPassword)
-      .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
-      .digest("hex");
+      const hashedPassword = createPasswordHash(newPassword)
   
       const tokenNotExpiedCode : string = generateRandomString(16);
 
@@ -371,7 +372,6 @@ router.post('/login/reset-password', async (req, res) => {
           resetPassword : {
             code : resetPasswordCode,
             newPassword : hashedPassword,
-            newPasswordSalt :passwordSalt,
             newTokenNotExpiredCode : tokenNotExpiedCode,
             expireTime : expireTime,
           }
