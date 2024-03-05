@@ -47,35 +47,42 @@ class _CameraPageState extends State<CameraPage> {
       }
     }
     if (!mounted) return;
-    setState(() {
-      _isCameraReady = true;
-    });
+    if (_cameras != null && _cameras!.isNotEmpty) {
+      setState(() {
+        _isCameraReady = true;
+      });
+    } else {
+      openAlert("error", "no camera connected", null, context, null, null);
+    }
   }
 
   Future<void> _swapCamera() async {
-    _isCameraReady = false;
-    cameraIndex += 1;
-    setState(() {});
-    if (cameraIndex > (_cameras!.length - 1)) {
-      cameraIndex = 0;
-    }
-    _cameras = await availableCameras();
-    if (_cameras != null && _cameras!.isNotEmpty) {
-      _cameraController =
-          CameraController(_cameras![cameraIndex], ResolutionPreset.max);
-      try {
-        await _cameraController!.initialize().then((_) {
-          setState(() {});
-        });
-      } catch (e) {
-        // ignore: use_build_context_synchronously
-        openAlert("error", "failed loading camera", "$e", context, null, null);
+    if (_isCameraReady == true) {
+      _isCameraReady = false;
+      cameraIndex += 1;
+      setState(() {});
+      if (cameraIndex > (_cameras!.length - 1)) {
+        cameraIndex = 0;
       }
+      _cameras = await availableCameras();
+      if (_cameras != null && _cameras!.isNotEmpty) {
+        _cameraController =
+            CameraController(_cameras![cameraIndex], ResolutionPreset.max);
+        try {
+          await _cameraController!.initialize().then((_) {
+            setState(() {});
+          });
+        } catch (e) {
+          // ignore: use_build_context_synchronously
+          openAlert(
+              "error", "failed loading camera", "$e", context, null, null);
+        }
+      }
+      if (!mounted) return;
+      setState(() {
+        _isCameraReady = true;
+      });
     }
-    if (!mounted) return;
-    setState(() {
-      _isCameraReady = true;
-    });
   }
 
   @override
