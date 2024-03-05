@@ -3,12 +3,13 @@ import { reportError } from "./errorHandler";
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.mailgun.org",
-  port: 587,
-  secure: false,
+  // @ts-ignore
+  host: process.env.MailHost,
+  port: process.env.MailPort,
+  secure: process.env.MailSecure == "true",
   auth: {
-    user: 'postmaster@noreply.platerates.com',
-    pass: '15fbe28a1a0ee074fcd02e751b18365e-b7b36bc2-268b9f45'
+    user: process.env.MailAuthUser,
+    pass: process.env.MailAuthPass
   }
 });
 
