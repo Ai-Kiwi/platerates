@@ -102,7 +102,6 @@ router.post('/post/upload', [confirmTokenValid, confirmActiveAccount], async (re
       let uploadedFileids = [];
 
       for (var i = 0; i < base64Images.length; i++) {
-        console.log(b2_uploadUrl)
         let fileUploadResponse = await b2.uploadFile({ 
           uploadUrl: b2_uploadUrl,
           uploadAuthToken: b2_uploadAuthToken,
@@ -264,7 +263,6 @@ router.post('/post/image', [confirmTokenValid, confirmActiveAccount], async (req
         });
         imageData = Buffer.from(fileDownloadResponse['data']).toString("base64")
 
-        console.log(imageData)
         
       }
 
@@ -348,7 +346,6 @@ router.post('/post/feed', [confirmTokenValid, confirmActiveAccount], async (req 
 
       }else if (pageFetching === "followers"){
         const usersData = await databases.user_follows.find({follower: userId}).toArray();
-        console.log(usersData)
         const usersFollowing = [];
 
         for(var i = 0; i < usersData.length; i++) {
