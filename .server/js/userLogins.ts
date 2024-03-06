@@ -31,7 +31,12 @@ const privateKey : Buffer = Buffer.from(privateKeyRaw as string, 'base64');
 const saltRounds = 10;
 
 async function testPasswordHash(password,hash) {
-  return await bcrypt.compareSync(password, hash);
+  try {
+    return await bcrypt.compareSync(password, hash);
+  } catch (error) {
+    reportError(error)
+    return false;
+  }
 }
 
 async function createPasswordHash(password) {
@@ -198,7 +203,7 @@ router.post('/login', async (req : Request, res : Response) => {
       
 
     //if the username and password is the same
-    if(testPasswordHash(userPassword,hashedPassword)){
+    if(await testPasswordHash(userPassword,hashedPassword)){
       //should add a system for when it fails to sign, then again probs not needed
       let token : string = jwt.sign({
         userId : userId,
