@@ -474,4 +474,5 @@ export {
   router,
   testTokenValid,
   updateUserPassword,
+  createPasswordHash,
 };

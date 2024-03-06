@@ -1,6 +1,5 @@
 import express from 'express';
 const router = express.Router();
-import crypto, { checkPrimeSync } from 'crypto';
 import { databases } from './database';
 import { generateRandomString } from './utilFunctions';
 import sharp, { Sharp } from 'sharp';
@@ -12,6 +11,7 @@ import { appCheckVerification, confirmActiveAccount, confirmTokenValid } from '.
 import nodemailer from "nodemailer";
 import { sendMail } from './mailsender';
 import { reportError } from './errorHandler';
+import { createPasswordHash } from './userLogins';
 
 async function sendNoticeToAccount(userId : string, text : string, title : string){
   const collection: mongoDB.Collection = databases.account_notices.collection('account_notices');
@@ -712,11 +712,7 @@ If you need any help with this or someone is spamming you with these you can rea
 async function createUser(rawEmail : string,password : string, username : string){
     try{
       const email = cleanEmailAddress(rawEmail);
-      const passwordSalt : string = crypto.randomBytes(16).toString('hex');
-      const hashedPassword : string = crypto.createHash("sha256")
-      .update(password)
-      .update(crypto.createHash("sha256").update(passwordSalt, "utf8").digest("hex"))
-      .digest("hex");
+      const hashedPassword = createPasswordHash(password);
   
       //make sure email is not in use
       let emailInUse : boolean = true;
@@ -766,7 +762,6 @@ async function createUser(rawEmail : string,password : string, username : string
           userId: userId,
           email: email,
           hashedPassword: hashedPassword,
-          passwordSalt: passwordSalt,
           accountBanReason: "",
           accountBanExpiryDate: 0,
           failedLoginAttemptInfo: {},
