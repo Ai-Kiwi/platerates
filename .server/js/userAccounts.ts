@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { databases } from './database';
+import { b2, b2_uploadAuthToken, b2_uploadUrl, databases } from './database';
 import { generateRandomString } from './utilFunctions';
 import sharp, { Sharp } from 'sharp';
 import { IpAddressTimeoutTest, ipAddressTimeout, userTimeout, userTimeoutTest } from './timeouts';
@@ -12,6 +12,8 @@ import nodemailer from "nodemailer";
 import { sendMail } from './mailsender';
 import { reportError } from './errorHandler';
 import { createPasswordHash } from './userLogins';
+
+require('dotenv').config();
 
 async function sendNoticeToAccount(userId : string, text : string, title : string){
   const collection: mongoDB.Collection = databases.account_notices.collection('account_notices');
@@ -132,10 +134,10 @@ router.post('/profile/settings/change', [confirmTokenValid, confirmActiveAccount
       //stored on user data is the code to there avatar
       //the code links to document in avatar data collection
       //cache doesn't have update function as codes change not update already exist data on a code
-
+      let imageData : Buffer;
       //get data about image
       try{
-        const imageData : Buffer = Buffer.from(value, 'base64');
+        imageData = Buffer.from(value, 'base64');
 
         //make sure image is right size
         const imageMetadata : sharp.Metadata = await sharp(imageData).metadata();
@@ -149,50 +151,52 @@ router.post('/profile/settings/change', [confirmTokenValid, confirmActiveAccount
           return res.status(400).send('avatar image resolution is incorrect.');
         }
 
+        if (imageData.length * 3 / 4 > 1000000) {
+          console.log("Image file size to large at " + (imageData.length * 3 / 4) / 1000000 + "MB")
+          return res.status(400).send('Image file size to large');
+        }
+
 
       } catch (err) {
         reportError(err);
         return res.status(500).send('error saving avatar image');
       }
 
-      let avatarId: string | null = null;
-      while (true){
-        avatarId = generateRandomString(16);
-
-        let avatarIdInUse = await databases.user_avatars.findOne({avatarId: avatarId});
-        if (avatarIdInUse === null){
-          break
-        }
+      let avatarId = generateRandomString(16);
+      let fileUploadResponse = await b2.uploadFile({ 
+        uploadUrl: b2_uploadUrl,
+        uploadAuthToken: b2_uploadAuthToken,
+        fileName: `userAvatarImage-${avatarId}`,
+        //contentLength: 0, // optional data length, will default to data.byteLength or data.length if not provided
+        //mime: '', // optional mime type, will default to 'b2/x-auto' if not provided
+        data: imageData, // this is expecting a Buffer, not an encoded string
+        //hash: 'sha1-hash', // optional data hash, will use sha1(data) if not provided
+        //info: {
+        //    // optional info headers, prepended with X-Bz-Info- when sent, throws error if more than 10 keys set
+        //    // valid characters should be a-z, A-Z and '-', all other characters will cause an error to be thrown
+        //    key1: 'value',
+        //    key2: 'value'
+        //},
+        onUploadProgress: (event) => {}, // progress monitoring
+        // ...common arguments (optional)
+      });  // returns promise
+      if (fileUploadResponse.status != 200) {
+        console.log("Failed uploading ")
+        return res.status(400).send('Failed uploading image');
       }
 
-      const userData = await databases.user_data.findOne({userId : userId})
-      if (userData){
-        await databases.user_avatars.deleteOne({avatarId : userData["avatar"]})
-      }
-
-      let response = await databases.user_avatars.insertOne(
-        {
-          avatarId : avatarId,
-          imageData : value
-        }
+      
+      let response = await databases.user_data.updateOne(
+        {userId : userId},
+        { $set: {
+          avatar : avatarId
+        }}
       )
 
+
       if (response.acknowledged === true) {
-        let response = await databases.user_data.updateOne(
-          {userId : userId},
-          { $set: {
-            avatar : avatarId
-          }}
-          )
-
-
-        if (response.acknowledged === true) {
-          console.log("updated avatar");
-          return res.status(200).send("updated avatar");
-        }else{
-          console.log("failed to update avatar")
-          return res.status(500).send("failed to update avatar")
-        }
+        console.log("updated avatar");
+        return res.status(200).send("updated avatar");
       }else{
         console.log("failed to update avatar")
         return res.status(500).send("failed to update avatar")
@@ -289,21 +293,45 @@ router.post('/profile/avatar', [confirmTokenValid, confirmActiveAccount], async 
   try{
     const avatarId = req.body.avatarId;
 
-    if (avatarId === null){
+    if (avatarId === null || avatarId === undefined){
       console.log("no value no user");
       return res.status(200).send("no user no value");
     }
-        
-    const avatarData = await databases.user_avatars.findOne({ avatarId: avatarId });
-    if (avatarData === null){
-      console.log("failed as invalid avatar");
-      return res.status(404).send("unkown user");
+    console.log(avatarId)
+
+    let response;
+    try{
+      response = await b2.downloadFileByName({
+        bucketName: process.env.BLACKBLAZE_BUCKETID,
+        fileName: `userAvatarImage-${avatarId}`,
+        responseType: 'arraybuffer', // options are as in axios: 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
+        onDownloadProgress: (event) => {} // progress monitoring
+        // ...common arguments (optional)
+      });  // returns promise
+    }catch(err){
+      console.log(err)
+      console.log("error with finding avatar likely just doesn't exist")
+      return res.status(200).json({
+        avatarId: avatarId,
+        imageData: null,
+      });
+    }
+
+    //console.log(response)
+
+    let imageData = null;
+    if (response['status'] == 200){
+      imageData = Buffer.from(response['data']).toString("base64")
     }
     
+
+    //DefaultDeserializeradasdasd
+    //left off trying to get the avtar system working.
+    //seems to not make fiule or smth after you change avatar
     console.log("returning profile data");
     return res.status(200).json({
       avatarId: avatarId,
-      imageData: avatarData.imageData,
+      imageData: imageData,
     });
     
   }catch(err){
@@ -712,7 +740,7 @@ If you need any help with this or someone is spamming you with these you can rea
 async function createUser(rawEmail : string,password : string, username : string){
     try{
       const email = cleanEmailAddress(rawEmail);
-      const hashedPassword = createPasswordHash(password);
+      const hashedPassword = await createPasswordHash(password);
   
       //make sure email is not in use
       let emailInUse : boolean = true;

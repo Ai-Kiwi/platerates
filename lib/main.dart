@@ -59,6 +59,26 @@ late String version;
 late String buildNumber;
 bool acceptedAllLicenses = true;
 bool accountBanned = false;
+var primaryColor = Colors.green;
+const primaryColorCodes = {
+  "red": Colors.red,
+  "deepOrange": Colors.deepOrange,
+  "orange": Colors.orange,
+  "yellow": Colors.yellow,
+  "lime": Colors.lime,
+  "lightGreen": Colors.lightGreen,
+  "green": Colors.green,
+  "teal": Colors.teal,
+  "cyan": Colors.cyan,
+  "lightBlue": Colors.lightBlue,
+  "blue": Colors.blue,
+  "indigo": Colors.indigo,
+  "deepPurple": Colors.deepPurple,
+  "purple": Colors.purple,
+  "pink": Colors.pink,
+  "brown": Colors.brown,
+};
+var backgroundColor = const Color.fromRGBO(16, 16, 16, 1);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -85,6 +105,23 @@ class MyApp extends StatelessWidget {
           path:
               "${tempDir.path}/cacheData.tastyCache"); // it must be a Box<String>.
       jsonCache = JsonCacheMem(JsonCacheHive(box));
+    }
+
+    //open encrypted storage for some other data stored
+    var sharedPrefs = await SharedPreferences.getInstance();
+
+    String? colorThemePrimaryColor = sharedPrefs.getString('primaryColor');
+
+    print("setting main color");
+    if (colorThemePrimaryColor != null) {
+      if (primaryColorCodes[colorThemePrimaryColor] != null) {
+        primaryColor = primaryColorCodes[colorThemePrimaryColor]!;
+        print("set color to $colorThemePrimaryColor");
+      } else {
+        print("invalid value leaving default");
+      }
+    } else {
+      print("no value leaving default");
     }
 
     //if I change reset data this also needs to be changed in login script as well as logout script in alerts
@@ -200,17 +237,16 @@ class MyApp extends StatelessWidget {
       await initNotificationHandler(); //also handles firebase
 
       //load notfcation stuff if opened
-      var sharedPrefs = await SharedPreferences.getInstance();
 
-      var notData = sharedPrefs.getString('notificationOnBootData');
-      print("noti thingy is $notData");
-      if (notData != null) {
-        if (notData != '') {
-          openNotificationOnBootData = notData;
-          print("loaded ");
-          sharedPrefs.setString('notificationOnBootData', '');
-        }
-      }
+      //var notData = sharedPrefs.getString('notificationOnBootData');
+      //print("noti thingy is $notData");
+      //if (notData != null) {
+      //  if (notData != '') {
+      //    openNotificationOnBootData = notData;
+      //    print("loaded ");
+      //    sharedPrefs.setString('notificationOnBootData', '');
+      //  }
+      //}
     }
 
     print("testing login state");
@@ -230,9 +266,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlavorBanner(
         child: AnnotatedRegion<SystemUiOverlayStyle>(
-            value: const SystemUiOverlayStyle(
+            value: SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
-              systemNavigationBarColor: Colors.green,
+              systemNavigationBarColor: primaryColor,
               statusBarIconBrightness: Brightness.light,
               systemNavigationBarIconBrightness: Brightness.dark,
             ),
@@ -240,9 +276,9 @@ class MyApp extends StatelessWidget {
                 title: 'PlateRates',
                 theme: ThemeData(
                   useMaterial3: false,
-                  indicatorColor: Colors.green,
-                  primaryColor: Colors.green,
-                  primarySwatch: Colors.green,
+                  indicatorColor: primaryColor,
+                  primaryColor: primaryColor,
+                  primarySwatch: primaryColor,
 
                   //Theme.of(context).primarySwatch
                   dialogBackgroundColor: Color.fromRGBO(16, 16, 16, 1),

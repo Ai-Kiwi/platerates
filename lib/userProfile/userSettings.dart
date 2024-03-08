@@ -1,5 +1,7 @@
 import 'package:PlateRates/libs/usefullWidgets.dart';
+import 'package:PlateRates/userProfile/aboutApp.dart';
 import 'package:PlateRates/userProfile/accountInfoSettings.dart';
+import 'package:PlateRates/userProfile/userTheme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,22 +9,8 @@ import '../../main.dart';
 import '../libs/smoothTransitions.dart';
 import '../login/userResetPassword.dart';
 
-class UserSettings extends StatefulWidget {
-  const UserSettings({super.key});
-
-  //UserSettings({});
-
-  @override
-  _UserSettingsState createState() => _UserSettingsState();
-}
-
-class _UserSettingsState extends State<UserSettings> {
+class UserSettings extends StatelessWidget {
   //_UserSettingsState({});
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,51 +45,24 @@ class _UserSettingsState extends State<UserSettings> {
                 settingIcon: Icons.lock,
                 settingName: "password",
                 ontap: () {
-                  Navigator.of(context)
-                      .push(smoothTransitions.slideRight(ResetPasswordPage()));
+                  Navigator.of(context).push(
+                      smoothTransitions.slideRight(const ResetPasswordPage()));
                 },
               ),
               SettingItem(
-                settingIcon: Icons.book,
-                settingName: "change log",
-                ontap: () {
-                  launchUrl(Uri.parse("$serverDomain/changeLog"));
-                },
-              ),
-              SettingItem(
-                settingIcon: Icons.lock,
-                settingName: "privacy policy",
-                ontap: () {
-                  launchUrl(Uri.parse("$serverDomain/privacyPolicy"));
-                },
-              ),
-              SettingItem(
-                settingIcon: Icons.rule,
-                settingName: "Community guidelines",
-                ontap: () {
-                  launchUrl(Uri.parse("$serverDomain/CommunityGuidelines"));
-                },
-              ),
-              SettingItem(
-                settingIcon: Icons.hardware,
-                settingName: "terms of service",
-                ontap: () {
-                  launchUrl(Uri.parse("$serverDomain/termsOfService"));
-                },
-              ),
-              SettingItem(
-                settingIcon: Icons.help,
-                settingName: "contact support",
-                ontap: () {
-                  launchUrl(Uri.parse("mailto:support@platerates.com"));
-                },
-              ),
-              SettingItem(
-                settingIcon: Icons.info,
-                settingName: "licenses",
+                settingIcon: Icons.palette,
+                settingName: "theme",
                 ontap: () {
                   Navigator.of(context)
-                      .push(smoothTransitions.slideRight(const LicensePage()));
+                      .push(smoothTransitions.slideRight(UserThemeSettings()));
+                },
+              ),
+              SettingItem(
+                settingIcon: Icons.question_mark,
+                settingName: "about app",
+                ontap: () {
+                  Navigator.of(context)
+                      .push(smoothTransitions.slideRight(AboutAppPage()));
                 },
               ),
 

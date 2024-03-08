@@ -296,7 +296,7 @@ class _UserProfileState extends State<UserProfile> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const UserSettings()),
+                                  builder: (context) => UserSettings()),
                             );
                           },
                         ),
