@@ -365,7 +365,7 @@ router.post('/login/reset-password', async (req, res) => {
     
     );
     if (emailData) {
-      const hashedPassword = createPasswordHash(newPassword)
+      const hashedPassword = await createPasswordHash(newPassword)
   
       const tokenNotExpiedCode : string = generateRandomString(16);
 
@@ -430,7 +430,6 @@ router.get('/reset-password', async (req, res) => {
       { userId: userCredentials.userId },
         { $set: {
           hashedPassword : userCredentials.resetPassword.newPassword,
-          passwordSalt : userCredentials.resetPassword.newPasswordSalt,
           tokenNotExpiredCode : userCredentials.resetPassword.newTokenNotExpiredCode,
           deviceNotificationTokens : []
           }
