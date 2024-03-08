@@ -111,7 +111,10 @@ class _userRatingState extends State<userRating> {
       //  userFollowing = newFollowState;
       //});
       await _collectAndUpdateData();
-    } else {}
+    } else {
+      openAlert(
+          "error", "failed liking comment", response.body, context, null, null);
+    }
   }
 
   Future<void> _collectAndUpdateData() async {
