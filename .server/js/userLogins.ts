@@ -32,7 +32,7 @@ const saltRounds = 10;
 
 async function testPasswordHash(password,hash) {
   try {
-    return await bcrypt.compareSync(password, hash);
+    return bcrypt.compareSync(password, hash);
   } catch (error) {
     reportError(error)
     return false;
