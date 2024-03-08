@@ -75,7 +75,7 @@ class _UserThemeSettingsState extends State<UserThemeSettings> {
                             openAlert(
                                 "yes_or_no",
                                 "are you sure you want to change you primary color?",
-                                "Note: sometimes can require an app restart, feature is abit buggy atm",
+                                null,
                                 context,
                                 {
                                   "yes": () async {
@@ -83,6 +83,8 @@ class _UserThemeSettingsState extends State<UserThemeSettings> {
                                         await SharedPreferences.getInstance();
                                     await sharedPrefs.setString('primaryColor',
                                         colorCodesAsList[index]);
+                                    primaryColor = primaryColorCodes[
+                                        colorCodesAsList[index]]!;
                                     Phoenix.rebirth(context);
                                   },
                                   "no": () {

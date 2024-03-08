@@ -83,7 +83,33 @@ var backgroundColor = const Color.fromRGBO(16, 16, 16, 1);
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Stream<String> initializeApp() async* {
+  Stream<String> initializeApp(context) async* {
+    //open encrypted storage for some other data stored
+    var sharedPrefs = await SharedPreferences.getInstance();
+
+    String? colorThemePrimaryColor = sharedPrefs.getString('primaryColor');
+
+    print("setting main color");
+    if (colorThemePrimaryColor != null) {
+      if (primaryColorCodes[colorThemePrimaryColor] != null) {
+        if (primaryColor == Colors.green &&
+            primaryColorCodes[colorThemePrimaryColor] != Colors.green) {
+          //reloads if color changes that way you see it
+          primaryColor = primaryColorCodes[colorThemePrimaryColor]!;
+          print("set color to $colorThemePrimaryColor and reload");
+          Phoenix.rebirth(context);
+          return;
+        } else {
+          primaryColor = primaryColorCodes[colorThemePrimaryColor]!;
+          print("set color to $colorThemePrimaryColor no reload needed");
+        }
+      } else {
+        print("invalid value leaving default");
+      }
+    } else {
+      print("no value leaving default");
+    }
+
     //setup verison stuff
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     appName = packageInfo.appName;
@@ -105,23 +131,6 @@ class MyApp extends StatelessWidget {
           path:
               "${tempDir.path}/cacheData.tastyCache"); // it must be a Box<String>.
       jsonCache = JsonCacheMem(JsonCacheHive(box));
-    }
-
-    //open encrypted storage for some other data stored
-    var sharedPrefs = await SharedPreferences.getInstance();
-
-    String? colorThemePrimaryColor = sharedPrefs.getString('primaryColor');
-
-    print("setting main color");
-    if (colorThemePrimaryColor != null) {
-      if (primaryColorCodes[colorThemePrimaryColor] != null) {
-        primaryColor = primaryColorCodes[colorThemePrimaryColor]!;
-        print("set color to $colorThemePrimaryColor");
-      } else {
-        print("invalid value leaving default");
-      }
-    } else {
-      print("no value leaving default");
     }
 
     //if I change reset data this also needs to be changed in login script as well as logout script in alerts
@@ -285,7 +294,7 @@ class MyApp extends StatelessWidget {
                   scaffoldBackgroundColor: Color.fromRGBO(16, 16, 16, 1),
                 ),
                 home: StreamBuilder<String>(
-                  stream: initializeApp(),
+                  stream: initializeApp(context),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       // Show a loading indicator while the authentication state is being fetched
