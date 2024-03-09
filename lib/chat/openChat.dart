@@ -417,13 +417,13 @@ class _fullPageChatState extends State<FullPageChat> {
             chatController: chatController,
             onSendTap: onSendTap,
             sendMessageConfig: SendMessageConfiguration(
-              replyMessageColor: Colors.green,
+              replyMessageColor: Theme.of(context).primaryColor,
               replyTitleColor: Colors.black54,
               replyDialogColor: Colors.white,
               textFieldConfig: TextFieldConfiguration(
                 textStyle: TextStyle(color: Colors.black),
                 onMessageTyping: (status) {
-                  // send composing/composed status to other client
+                  // send composing/composemessageReactionConfig: MessageReactionConfiguration(),d status to other client
                   // your code goes here
                   print("typing");
                   print(status);
@@ -453,11 +453,11 @@ class _fullPageChatState extends State<FullPageChat> {
             isLastPage: false,
             chatViewState: ChatViewState
                 .hasMessages, // Add this state once data is available.
-            chatBubbleConfig: const ChatBubbleConfiguration(
+            chatBubbleConfig: ChatBubbleConfiguration(
               outgoingChatBubbleConfig: ChatBubble(
                 senderNameTextStyle: TextStyle(color: Colors.white),
                 // Sender's message chat bubble
-                color: Colors.green,
+                color: Theme.of(context).primaryColor,
                 textStyle: TextStyle(
                   color: Colors.white,
                 ),
@@ -484,12 +484,12 @@ class _fullPageChatState extends State<FullPageChat> {
               ),
             ),
 
-            repliedMessageConfig: const RepliedMessageConfiguration(
-              backgroundColor: Colors.green,
+            repliedMessageConfig: RepliedMessageConfiguration(
+              backgroundColor: Theme.of(context).primaryColor,
               verticalBarColor: Colors.white70,
               repliedMsgAutoScrollConfig: RepliedMsgAutoScrollConfig(
                 enableHighlightRepliedMsg: true,
-                highlightColor: Colors.green,
+                highlightColor: Theme.of(context).primaryColor,
                 highlightScale: 1.1,
               ),
               textStyle: TextStyle(
@@ -523,13 +523,12 @@ class _fullPageChatState extends State<FullPageChat> {
     }
   }
 }
-//TODO needed 
+//TODO needed
 //test if doesn't show new messages added
 //test everything in a live chat
 //split notifcations off for reply
 //add sending images
 //add voice chat
-
 
 //TODO not needed
 //add message read

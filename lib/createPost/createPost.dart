@@ -133,20 +133,21 @@ class _CreatePostState extends State<CreatePostPage> {
                   color: Colors.white,
                   fontSize: 15,
                 ),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   counterText: "",
                   labelText: 'Title',
                   labelStyle: TextStyle(color: Colors.white),
                   contentPadding: EdgeInsets.all(8.0),
                   prefixIcon: Icon(
                     Icons.text_fields,
-                    color: Colors.green,
+                    color: Theme.of(context).primaryColor,
                   ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green),
+                    borderSide:
+                        BorderSide(color: Theme.of(context).primaryColor),
                   ),
                 ),
               ),
@@ -167,7 +168,7 @@ class _CreatePostState extends State<CreatePostPage> {
                   _description = value;
                 },
                 style: TextStyle(color: Colors.white, fontSize: 15),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   counterText: "",
                   labelText: 'description',
                   labelStyle: TextStyle(
@@ -176,13 +177,14 @@ class _CreatePostState extends State<CreatePostPage> {
                   contentPadding: const EdgeInsets.all(16.0),
                   prefixIcon: Icon(
                     Icons.description,
-                    color: Colors.green,
+                    color: Theme.of(context).primaryColor,
                   ),
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.white),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green),
+                    borderSide:
+                        BorderSide(color: Theme.of(context).primaryColor),
                   ),
                 ),
               ),
