@@ -34,8 +34,9 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   //late String _realUserId;
 
   Future<void> _fetchAccountData() async {
-    await dataCollect.updateUserData(null, context, false);
-    var fetchedData = await dataCollect.getUserData(null, context, false);
+    await dataCollect.updateUserData(userManager.userId, context, false);
+    var fetchedData =
+        await dataCollect.getUserData(userManager.userId, context, false);
 
     Map avatarData =
         await dataCollect.getAvatarData(fetchedData["avatar"], context, false);
@@ -280,8 +281,13 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                       'userData-$_realUserId');
 
                                   // ignore: use_build_context_synchronously
-                                  openAlert("success", "changed settings", null,
-                                      context, null, null);
+                                  openAlert(
+                                      "success",
+                                      "changed settings, may take awhile to reflect for other users",
+                                      null,
+                                      context,
+                                      null,
+                                      null);
                                   setState(() {
                                     _savingData = false;
                                   });

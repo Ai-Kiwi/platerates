@@ -120,15 +120,16 @@ class _PostRatingListState extends State<fullPagePost> {
                                   TextStyle(color: Colors.white, fontSize: 25),
                             )),
                       ),
-                      extraUrlData: {
-                        "rootItem": {"type": "post", "data": rootItem}
+                      //should include you are fetching post data and which one
+                      urlToFetch: '/post/ratings', itemsPerPage: 5,
+                      headers: {
+                        "post_id": rootItem,
                       },
-                      urlToFetch: '/post/ratings',
                     ),
                   ),
                   Visibility(
                       //menu for you to rate the post
-                      visible: !hasRated,
+                      visible: !hasRated && userManager.loggedIn == true,
                       child: Container(
                           decoration: const BoxDecoration(
                               borderRadius: BorderRadius.only(

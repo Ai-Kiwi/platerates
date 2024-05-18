@@ -1,4 +1,5 @@
 import 'package:PlateRates/libs/lazyLoadPage.dart';
+import 'package:PlateRates/login/userLogin.dart';
 import 'package:flutter/material.dart';
 
 class notificationPageList extends StatefulWidget {
@@ -16,6 +17,9 @@ class _notificationPageListState extends State<notificationPageList> {
 
   @override
   Widget build(BuildContext context) {
+    if (userManager.loggedIn == false) {
+      return LoginPage();
+    }
     return const Scaffold(
       body: LazyLoadPage(
         urlToFetch: "/notification/list",
@@ -53,6 +57,8 @@ class _notificationPageListState extends State<notificationPageList> {
                 style: TextStyle(color: Colors.white, fontSize: 25),
               )),
         ),
+        itemsPerPage: 25,
+        headers: {},
       ),
     );
   }

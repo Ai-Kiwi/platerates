@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -15,7 +16,12 @@ class DataCollect {
         null, null);
   }
 
-  Future<Map> getData(Map headers, String url, String cacheCode, context,
+  Future<Map> getData(
+      //can also support Iterable
+      Map<String, String> headers,
+      String url,
+      String cacheCode,
+      context,
       bool expectError) async {
     try {
       var jsonData;
@@ -25,12 +31,22 @@ class DataCollect {
       }
 
       if (jsonData == null) {
-        final response = await http.post(
-          Uri.parse(url),
+        var subbedServerDomain = serverDomain.substring(0, 5);
+        var justDomainUrl;
+        if (subbedServerDomain == "https") {
+          justDomainUrl = Uri.https(serverDomain.substring(8), url, headers);
+        } else {
+          justDomainUrl = Uri.http(serverDomain.substring(7), url, headers);
+        }
+
+        //var fullUrl = Uri.https(subbedServerDomain, url, headers);
+        final response = await http.get(
+          justDomainUrl,
           headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
+            HttpHeaders.authorizationHeader: 'Token ${userManager.token}',
+            HttpHeaders.contentTypeHeader: 'application/json',
           },
-          body: jsonEncode(headers),
+          // body: jsonEncode(headers),
         );
         if (response.statusCode == 200) {
           //if true do nothing and then it will display
@@ -59,11 +75,18 @@ class DataCollect {
     }
   }
 
-  Future<bool> updateData(Map headers, String url, String cacheCode, context,
-      bool expectError, Duration cacheLiveTime) async {
+  Future<bool> updateData(
+      //can also support Iterable
+      Map<String, String> headers,
+      String url,
+      String cacheCode,
+      context,
+      bool expectError,
+      Duration cacheLiveTime) async {
     var dataUpdated = false;
     var headersUsing = headers;
-    headersUsing['onlyUpdateChangeable'] = true;
+    //this also needs to be changed to a string from a bool when added back
+    //headersUsing['onlyUpdateChangeable'] = true;
 
     var cachedData = await jsonCache.value(cacheCode);
     if (cachedData != null) {
@@ -74,11 +97,21 @@ class DataCollect {
       }
     }
 
-    final response = await http.post(Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(headers));
+    var subbedServerDomain = serverDomain.substring(0, 5);
+    var justDomainUrl;
+    if (subbedServerDomain == "https") {
+      justDomainUrl = Uri.https(serverDomain.substring(8), url, headers);
+    } else {
+      justDomainUrl = Uri.http(serverDomain.substring(7), url, headers);
+    }
+
+    final response = await http.get(
+      justDomainUrl,
+      headers: <String, String>{
+        HttpHeaders.authorizationHeader: 'Token ${userManager.token}',
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+    );
     if (response.statusCode == 200) {
       var inputData = await dataCollect.getData(
           headers, url, cacheCode, context, expectError);
@@ -106,69 +139,59 @@ class DataCollect {
     if (dataUpdated == true) {
       print("cache updated for $url stored at $cacheCode");
     }
-    return dataUpdated;
+    return true;
   }
 
   Future<Map> getBasicUserData(String userId, context, expectError) async {
     return getData({
-      'token': userManager.token,
       "userId": userId,
-    }, "$serverDomain/profile/basicData", 'basicUserData-$userId', context,
-        expectError);
+    }, "/profile/basicData", 'basicUserData-$userId', context, expectError);
   }
 
-  Future<bool> updateBasicUserData(String? userId, context, expectError) async {
+  Future<bool> updateBasicUserData(String userId, context, expectError) async {
     return updateData({
-      'token': userManager.token,
       'userId': userId,
-    }, "$serverDomain/profile/basicData", 'basicUserData-$userId', context,
-        expectError, const Duration(minutes: 15));
-  }
-
-  Future<Map> getUserData(String? userId, context, expectError) async {
-    return getData({
-      'token': userManager.token,
-      'userId': userId,
-    }, "$serverDomain/profile/data", 'userData-$userId', context, expectError);
-  }
-
-  Future<bool> updateUserData(String? userId, context, expectError) async {
-    return updateData({
-      'token': userManager.token,
-      'userId': userId,
-    }, "$serverDomain/profile/data", 'userData-$userId', context, expectError,
-        const Duration(hours: 24));
-  }
-
-  Future<Map> getPostData(String? postId, context, expectError) async {
-    return getData({
-      'token': userManager.token,
-      'postId': postId,
-    }, "$serverDomain/post/data", 'post-$postId', context, expectError);
-  }
-
-  Future<bool> updatePostData(String? postId, context, expectError) async {
-    return updateData({
-      'token': userManager.token,
-      'postId': postId,
-    }, "$serverDomain/post/data", 'post-$postId', context, expectError,
+    }, "/profile/basicData", 'basicUserData-$userId', context, expectError,
         const Duration(minutes: 15));
   }
 
-  Future<Map> getRatingData(String? ratingId, context, expectError) async {
+  Future<Map> getUserData(String userId, context, expectError) async {
     return getData({
-      'token': userManager.token,
-      'ratingId': ratingId,
-    }, "$serverDomain/post/rating/data", 'rating-$ratingId', context,
-        expectError);
+      'userId': userId,
+    }, "/profile/data", 'userData-$userId', context, expectError);
   }
 
-  Future<bool> updateRatingData(String? ratingId, context, expectError) async {
+  Future<bool> updateUserData(String userId, context, expectError) async {
     return updateData({
-      'token': userManager.token,
+      'userId': userId,
+    }, "/profile/data", 'userData-$userId', context, expectError,
+        const Duration(hours: 24));
+  }
+
+  Future<Map> getPostData(String postId, context, expectError) async {
+    return getData({
+      'postId': postId,
+    }, "/post/data", 'post-$postId', context, expectError);
+  }
+
+  Future<bool> updatePostData(String postId, context, expectError) async {
+    return updateData({
+      'postId': postId,
+    }, "/post/data", 'post-$postId', context, expectError,
+        const Duration(minutes: 15));
+  }
+
+  Future<Map> getRatingData(String ratingId, context, expectError) async {
+    return getData({
       'ratingId': ratingId,
-    }, "$serverDomain/post/rating/data", 'rating-$ratingId', context,
-        expectError, const Duration(minutes: 15));
+    }, "/post/rating/data", 'rating-$ratingId', context, expectError);
+  }
+
+  Future<bool> updateRatingData(String ratingId, context, expectError) async {
+    return updateData({
+      'ratingId': ratingId,
+    }, "/post/rating/data", 'rating-$ratingId', context, expectError,
+        const Duration(minutes: 15));
   }
 
   Future<Map> getAvatarData(String? avatarId, context, expectError) async {
@@ -177,37 +200,30 @@ class DataCollect {
     }
     print('sending $avatarId');
     return getData({
-      'token': userManager.token,
-      'avatarId': avatarId,
-    }, "$serverDomain/profile/avatar", 'avatar-$avatarId', context,
-        expectError);
+      'avatar_id': avatarId,
+    }, "/profile/avatar", 'avatar-$avatarId', context, expectError);
   }
 
-  Future<Map> getChatRoomData(String? chatRoomId, context, expectError) async {
+  Future<Map> getChatRoomData(String chatRoomId, context, expectError) async {
     return getData({
-      'token': userManager.token,
       'chatRoomId': chatRoomId,
-    }, "$serverDomain/chat/roomData", 'chatRoomId-$chatRoomId', context,
-        expectError);
+    }, "/chat/roomData", 'chatRoomId-$chatRoomId', context, expectError);
   }
 
   Future<bool> updateChatRoomData(
-      String? chatRoomId, context, expectError) async {
+      String chatRoomId, context, expectError) async {
     return updateData({
-      'token': userManager.token,
       'chatRoomId': chatRoomId,
-    }, "$serverDomain/chat/roomData", 'chatRoomId-$chatRoomId', context,
-        expectError, const Duration(milliseconds: 0));
+    }, "/chat/roomData", 'chatRoomId-$chatRoomId', context, expectError,
+        const Duration(milliseconds: 0));
   }
 
   Future<Map> getPostImageData(
-      String postId, num imageNumber, context, expectError) async {
+      String postId, String imageNumber, context, expectError) async {
     return getData({
-      'token': userManager.token,
       "postId": postId,
       "imageNumber": imageNumber,
-    }, "$serverDomain/post/image", 'imageData-$postId-$imageNumber', context,
-        expectError);
+    }, "/post/image", 'imageData-$postId-$imageNumber', context, expectError);
   }
 
   //not had a chance todo for anything yet

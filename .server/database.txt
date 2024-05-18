@@ -1,0 +1,223 @@
+-- info for how database setup. This whole thing is valid sql commands so can just be copy and pasted in
+
+-- //  user_data //
+
+CREATE TABLE user_data (
+  user_id TEXT UNIQUE PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  bio TEXT NOT NULL,
+  avatar_id TEXT,
+  administrator BOOLEAN NOT NULL DEFAULT false,
+  post_count INT NOT NULL DEFAULT 0,
+  rating_count INT NOT NULL DEFAULT 0,
+  followers_count INT NOT NULL DEFAULT 0,
+  following_count INT NOT NULL DEFAULT 0,
+  creation_date BIGINT NOT NULL
+);
+CREATE INDEX user_data_idx_username ON user_data (username);
+
+
+-- //  user_licenses //
+
+CREATE TABLE user_licenses (
+  user_id TEXT UNIQUE PRIMARY KEY REFERENCES user_data(user_id) ON DELETE CASCADE,
+  licenses JSONB NOT NULL
+);
+CREATE INDEX user_licenses_idx_user_id ON user_licenses (user_id);
+
+
+-- //  user_credentials //
+
+CREATE TABLE user_credentials (
+  user_id TEXT UNIQUE PRIMARY KEY REFERENCES user_data(user_id) ON DELETE CASCADE,
+  email TEXT UNIQUE NOT NULL,
+  hashed_password TEXT NOT NULL,
+  password_reset_time BIGINT NOT NULL DEFAULT 0,
+  last_login_attempt_time BIGINT NOT NULL DEFAULT 0,
+  login_attempt_number INT NOT NULL DEFAULT 0,
+  invalid_tokens TEXT[] NOT NULL DEFAULT ARRAY[]::text[],
+  tokens_expire_time BIGINT NOT NULL DEFAULT 0, 
+  notification_token TEXT
+);
+CREATE INDEX user_credentials_idx_email ON user_credentials (email);
+CREATE INDEX user_credentials_idx_user_id ON user_credentials (user_id);
+
+
+-- //  posts //
+
+CREATE TABLE posts (
+  post_id TEXT PRIMARY KEY UNIQUE NOT NULL,
+  poster_user_id TEXT NOT NULL REFERENCES user_data(user_id) ON DELETE CASCADE,
+  title TEXT,
+  description TEXT,
+  image_count INT NOT NULL,
+  post_date BIGINT NOT NULL,
+  rating REAL NOT NULL DEFAULT 0,
+  rating_count INT NOT NULL DEFAULT 0
+);
+CREATE INDEX posts_idx_post_id ON posts (post_id);
+CREATE INDEX posts_idx_post_date ON posts (post_date);
+
+
+-- //  chat_rooms  //
+
+CREATE TABLE chat_rooms (
+  chat_room_id TEXT PRIMARY KEY UNIQUE NOT NULL,
+  creation_date BIGINT NOT NULL,
+  chat_name TEXT NOT NULL,
+  chat_picture TEXT,
+  private_chat BOOLEAN NOT NULL,
+  latest_message_id TEXT --not refranced as you can't have 2 pointing to each other
+);
+CREATE INDEX chat_rooms_idx_chat_room_id ON chat_rooms (chat_room_id);
+
+
+-- //  chat_messages //
+
+CREATE TABLE chat_messages (
+   message_id TEXT PRIMARY KEY UNIQUE NOT NULL,
+   chat_room_id TEXT NOT NULL,
+   sender_user_id TEXT NOT NULL REFERENCES user_data(user_id) ON DELETE CASCADE,
+   text TEXT NOT NULL,
+   extra_data JSONB,
+   reply_message TEXT,        
+   send_time BIGINT NOT NULL,
+   FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(chat_room_id),
+   FOREIGN KEY (reply_message) REFERENCES chat_messages(message_id)
+);
+CREATE INDEX chat_messages_idx_message_id ON chat_messages (message_id);
+CREATE INDEX chat_messages_idx_chat_room_id ON chat_messages (chat_room_id);
+CREATE INDEX chat_messages_idx_send_time ON chat_messages (send_time);
+
+
+-- //  user_in_chat  //
+
+CREATE TABLE user_in_chat (
+  participant_id SERIAL PRIMARY KEY NOT NULL,
+  user_id TEXT NOT NULL,
+  chat_room_id TEXT NOT NULL,
+  last_read_message TEXT,
+  FOREIGN KEY (user_id) REFERENCES user_data(user_id) ON DELETE CASCADE,
+  FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(chat_room_id) ON DELETE CASCADE,
+  FOREIGN KEY (last_read_message) REFERENCES chat_messages(message_id),
+  CONSTRAINT unique_user_chat UNIQUE (user_id, chat_room_id)
+);
+CREATE INDEX user_in_chat_idx_user_id ON user_in_chat (user_id);
+CREATE INDEX user_in_chat_idx_chat_room_id ON user_in_chat (chat_room_id);
+
+
+-- //  user_follows  //
+
+CREATE TABLE user_follows (
+   follow_id SERIAL PRIMARY KEY NOT NULL,
+   follower TEXT NOT NULL,
+   followee TEXT NOT NULL,
+   FOREIGN KEY (follower) REFERENCES user_data(user_id) ON DELETE CASCADE,
+   FOREIGN KEY (followee) REFERENCES user_data(user_id) ON DELETE CASCADE,
+   CONSTRAINT unique_user_follow UNIQUE (follower, followee)
+);
+CREATE INDEX user_follows_idx_follower ON user_follows (follower);
+CREATE INDEX user_follows_idx_followee ON user_follows (followee);
+
+-- //  post_ratings  //
+
+CREATE TABLE post_ratings (
+   rating_id TEXT PRIMARY KEY UNIQUE NOT NULL,
+   text TEXT NOT NULL,
+   creation_date BIGINT NOT NULL,
+   rating REAL, -- Can be NULL if the parent is a rating
+   rating_creator TEXT NOT NULL,
+   parent_post_id TEXT, -- Reference to the parent post
+   parent_rating_id TEXT, -- Reference to the parent rating
+   rating_like_count INT NOT NULL DEFAULT 0,
+   CONSTRAINT check_parent_constraint CHECK (
+      (parent_post_id IS NOT NULL AND parent_rating_id IS NULL AND rating IS NOT NULL) OR
+      (parent_post_id IS NULL AND parent_rating_id IS NOT NULL AND rating IS NULL)
+   ),
+   FOREIGN KEY (parent_post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+   FOREIGN KEY (rating_creator) REFERENCES user_data(user_id) ON DELETE CASCADE,
+   FOREIGN KEY (parent_rating_id) REFERENCES post_ratings(rating_id) ON DELETE CASCADE
+);
+CREATE INDEX post_ratings_idx_creation_date ON post_ratings (creation_date);
+CREATE INDEX post_ratings_idx_parent_post_id ON post_ratings (parent_post_id);
+CREATE INDEX post_ratings_idx_creator ON post_ratings (rating_creator);
+CREATE INDEX post_ratings_idx_parent_rating_id ON post_ratings (parent_rating_id);
+
+-- //  post_rating_likes //
+
+CREATE TABLE post_rating_likes (
+   rating_like_id SERIAL PRIMARY KEY NOT NULL,
+   rating_id TEXT NOT NULL,
+   liker TEXT NOT NULL,
+   FOREIGN KEY (rating_id) REFERENCES post_ratings(rating_id) ON DELETE CASCADE,
+   FOREIGN KEY (liker) REFERENCES user_data(user_id) ON DELETE CASCADE,
+   CONSTRAINT unique_rating_like UNIQUE (rating_id, liker)
+);
+CREATE INDEX post_rating_likes_idx_rating_id ON post_rating_likes (rating_id);
+
+
+-- //  user_notifications  //
+
+CREATE TABLE user_notifications (
+   notification_id TEXT PRIMARY KEY NOT NULL,
+   notification_data JSONB NOT NULL,
+   receiver_id TEXT NOT NULL,
+   sent_date BIGINT NOT NULL,
+   read BOOLEAN NOT NULL DEFAULT false,
+   FOREIGN KEY (receiver_id) REFERENCES user_data(user_id)
+);
+CREATE INDEX user_notifications_idx_receiver_id ON user_notifications (receiver_id);
+CREATE INDEX user_notifications_idx_sent_date ON user_notifications (sent_date);
+
+
+-- //  reports  //
+
+CREATE TABLE reports (
+   report_id TEXT PRIMARY KEY NOT NULL,
+   report_text TEXT NOT NULL,
+   report_item_type TEXT NOT NULL,
+   report_item_id TEXT NOT NULL,
+   reporter_id TEXT NOT NULL,
+   report_date BIGINT NOT NULL,
+   FOREIGN KEY (reporter_id) REFERENCES user_data(user_id) ON DELETE CASCADE,
+   CONSTRAINT unique_report UNIQUE (report_item_type, report_item_id, reporter_id)
+);
+CREATE INDEX reports_idx_report_id ON reports (report_id);
+CREATE INDEX reports_idx_report_item_type ON reports (report_item_type);
+CREATE INDEX reports_idx_report_item_id ON reports (report_item_id);
+CREATE INDEX reports_idx_reporter_id ON reports (reporter_id);
+CREATE INDEX reports_idx_report_date ON reports (report_date);
+
+
+-- //  account_create_requests //
+
+CREATE TABLE account_create_requests (
+   request_code TEXT PRIMARY KEY NOT NULL,
+   username TEXT NOT NULL,
+   email TEXT NOT NULL,
+   creation_date BIGINT NOT NULL
+);
+CREATE INDEX account_create_requests_idx_request_code ON account_create_requests (request_code);
+
+
+-- //  account_bans  //
+
+CREATE TABLE account_bans (
+   user_id TEXT PRIMARY KEY NOT NULL,
+   ban_date BIGINT NOT NULL,
+   ban_expire_date BIGINT NOT NULL,
+   ban_reason TEXT NOT NULL,
+   FOREIGN KEY (user_id) REFERENCES user_data(user_id) ON DELETE CASCADE
+);
+CREATE INDEX account_bans_idx_user_id ON account_bans (user_id);
+
+-- sudo su - postgres -c "initdb --locale=C.UTF-8 --encoding=UTF8 -D /var/lib/postgres/data --data-checksums"
+-- sudo systemctl start postgresql
+
+-- sudo su - postgres -c "psql"
+-- sudo -u postgres psql -U toasteruser -d toasterdev
+-- \c toasterdev
+
+
+-- sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE toasterdev TO toasteruser; GRANT ALL PRIVILEGES ON SCHEMA public TO toasteruser;"
+-- ALTER DATABASE toasterdev OWNER TO toasteruser;

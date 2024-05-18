@@ -2,6 +2,7 @@ import 'package:PlateRates/createPost/createPost.dart';
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/imageUtils.dart';
 import 'package:PlateRates/libs/loadScreen.dart';
+import 'package:PlateRates/login/userLogin.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -25,7 +26,9 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    if (userManager.loggedIn == true) {
+      _initializeCamera();
+    }
   }
 
   Future<void> _initializeCamera() async {
@@ -124,6 +127,11 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (userManager.loggedIn == false) {
+      print("not logged in");
+      return LoginPage();
+    }
+
     if (_takingPhoto == true) {
       return const Scaffold(
           body: Center(

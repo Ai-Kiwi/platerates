@@ -52,3 +52,16 @@ app.*.map.json
 
 #firebase
 .server/adminKeys.json
+
+#just for me as I keep a copy of old server
+.old_server
+
+#for server
+.server/debug/
+.server/target/
+
+.server/Cargo.lock
+
+**/*.rs.bk
+
+*.pdb

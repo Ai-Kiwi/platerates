@@ -18,8 +18,9 @@ class LazyLoadPage extends StatefulWidget {
   final Widget widgetAddedToEnd;
   final Widget widgetAddedToBlank;
   final String urlToFetch;
-  final Map<dynamic, dynamic>? extraUrlData;
   final bool openFullContentTree;
+  final int itemsPerPage;
+  final Map<String, String> headers;
 
   const LazyLoadPage({
     Key? key,
@@ -28,17 +29,19 @@ class LazyLoadPage extends StatefulWidget {
     required this.widgetAddedToEnd,
     required this.widgetAddedToBlank,
     required this.openFullContentTree,
-    this.extraUrlData,
+    required this.itemsPerPage,
+    required this.headers,
   }) : super(key: key);
 
   @override
   State<LazyLoadPage> createState() => LazyLoadPageState(
         widgetAddedToTop: widgetAddedToTop,
         urlToFetch: urlToFetch,
-        extraUrlData: extraUrlData,
         widgetAddedToEnd: widgetAddedToEnd,
         widgetAddedToBlank: widgetAddedToBlank,
         openFullContentTree: openFullContentTree,
+        itemsPerPage: itemsPerPage,
+        headers: headers,
       );
 }
 
@@ -51,8 +54,9 @@ class LazyLoadPageState extends State<LazyLoadPage> {
   bool? perentRating = false;
   final double scrollDistence = 0.8;
   final String urlToFetch;
-  final Map<dynamic, dynamic>? extraUrlData;
   final bool openFullContentTree;
+  final int itemsPerPage;
+  final Map<String, String> headers;
 
   LazyLoadPageState({
     required this.widgetAddedToTop,
@@ -60,10 +64,11 @@ class LazyLoadPageState extends State<LazyLoadPage> {
     required this.widgetAddedToEnd,
     required this.widgetAddedToBlank,
     required this.openFullContentTree,
-    this.extraUrlData,
+    required this.itemsPerPage,
+    required this.headers,
   });
 
-  var lastItem;
+  int pageUpto = 0;
   var itemsCollected = [];
 
   Future<void> _fetchItems() async {
@@ -75,32 +80,38 @@ class LazyLoadPageState extends State<LazyLoadPage> {
       }
     }
     _isLoading = true; //say that it is loading more
-    //setup data for sending
-    Map<dynamic, dynamic> dataSending = {
-      'token': userManager.token,
-    };
-    //add all the extra parm's
-    if (extraUrlData != null) {
-      dataSending.addAll(extraUrlData!);
+
+    Map<String, String> sending_headers = Map();
+
+    headers.forEach((k, v) => sending_headers[k] = v);
+
+    sending_headers["page"] = pageUpto.toString();
+    sending_headers["pageSize"] = itemsPerPage.toString();
+
+    var subbedServerDomain = serverDomain.substring(0, 5);
+    var justDomainUrl;
+    if (subbedServerDomain == "https") {
+      justDomainUrl =
+          Uri.https(serverDomain.substring(8), "$urlToFetch", sending_headers);
+    } else {
+      justDomainUrl =
+          Uri.http(serverDomain.substring(7), "$urlToFetch", sending_headers);
     }
 
-    if (lastItem != null) {
-      dataSending['startPosPost'] = lastItem!;
-    }
-    final response = await http.post(
-      Uri.parse("$serverDomain$urlToFetch"),
+    final response = await http.get(
+      justDomainUrl,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(dataSending),
     );
     if (response.statusCode == 200) {
       try {
         if (mounted) {
           setState(() {
             var fetchedData = jsonDecode(response.body);
-            var postData = fetchedData["items"];
-            if (fetchedData["items"].isEmpty) {
+            print(fetchedData);
+            var postData = fetchedData;
+            if (fetchedData.isEmpty) {
               if (itemsCollected.isEmpty) {
                 itemsCollected.add("blank");
               } else {
@@ -110,8 +121,8 @@ class LazyLoadPageState extends State<LazyLoadPage> {
             }
             for (var post in postData) {
               itemsCollected.add(post);
-              lastItem = post;
             }
+            pageUpto++;
           });
         }
       } on Exception catch (error, stackTrace) {

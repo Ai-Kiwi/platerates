@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../libs/errorHandler.dart';
@@ -55,7 +56,6 @@ class _PostItemState extends State<PostItem> {
   var imagesData = {};
   var imageCount = 0;
   bool errorOccurred = false;
-  bool? viewerIsCreator;
 
   final PageController _pageController = PageController();
   int currentPage = 0;
@@ -75,7 +75,7 @@ class _PostItemState extends State<PostItem> {
       Map avatarData = await dataCollect.getAvatarData(
           basicUserData["avatar"], context, false);
       var firstImageData =
-          await dataCollect.getPostImageData(postId, 0, context, true);
+          await dataCollect.getPostImageData(postId, "0", context, true);
 
       //print(basicUserData);
       setState(() {
@@ -88,10 +88,9 @@ class _PostItemState extends State<PostItem> {
         posterName = basicUserData["username"];
         posterUserId = jsonData['posterId'];
         postDate = jsonData['postDate'];
-        ratingsAmount = int.parse(jsonData['ratingsAmount']);
-        viewerIsCreator = jsonData["relativeViewerData"]["viewerIsCreator"];
+        ratingsAmount = jsonData['ratingsAmount'];
         // ignore: sdk_version_since
-        hasRated = bool.tryParse(jsonData['requesterRated']);
+        hasRated = jsonData['requesterRated'];
         errorOccurred = false;
         if (avatarData["imageData"] != null) {
           posterAvatar = base64Decode(avatarData["imageData"]);
@@ -155,7 +154,7 @@ class _PostItemState extends State<PostItem> {
                 //user logo and name
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Container(
+                    child: SizedBox(
                         height: 35,
                         child: Row(children: <Widget>[
                           Flexible(
@@ -209,9 +208,10 @@ class _PostItemState extends State<PostItem> {
                           PostManageButton(
                             posterUserId: posterUserId,
                             postId: postId,
-                            viewerIsCreator: viewerIsCreator,
+                            viewerIsCreator:
+                                (userManager.userId == posterUserId),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 8,
                           )
                         ]))),
@@ -240,8 +240,8 @@ class _PostItemState extends State<PostItem> {
                               onPageChanged: (page) async {
                                 if (imagesData[page] == null) {
                                   var tempImageData =
-                                      await dataCollect.getPostImageData(
-                                          postId, page, context, true);
+                                      await dataCollect.getPostImageData(postId,
+                                          page.toString(), context, true);
                                   setState(() {
                                     imagesData[page] = base64Decode(
                                         tempImageData['imageData']);
@@ -305,14 +305,14 @@ class _PostItemState extends State<PostItem> {
                             direction: Axis.horizontal,
                           ),
                           Text(
-                            " ($ratingsAmount)",
+                            " (${numberFormatter.format(ratingsAmount)} ratings)",
                             style: TextStyle(color: Colors.white),
                           )
                         ],
                       )),
                   //display if you have rated yet
                   Visibility(
-                      visible: !hasRated!,
+                      visible: (!hasRated!) && userManager.loggedIn == true,
                       child: const Row(
                         children: [
                           SizedBox(width: 8),

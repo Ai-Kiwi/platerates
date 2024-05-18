@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:PlateRates/chat/openChat.dart';
 import 'package:PlateRates/libs/dataCollect.dart';
 import 'package:PlateRates/libs/lazyLoadPage.dart';
+import 'package:PlateRates/libs/pageNotices.dart';
 import 'package:PlateRates/libs/userAvatar.dart';
+import 'package:PlateRates/login/userLogin.dart';
 import 'package:PlateRates/main.dart';
 import 'package:flutter/material.dart';
 //import 'package:http/http.dart' as http;
@@ -132,6 +134,10 @@ class _fullPageChatListState extends State<FullPageChatList> {
 
   @override
   Widget build(BuildContext context) {
+    if (userManager.loggedIn == false) {
+      print("not logged in");
+      return LoginPage();
+    }
     // TODO: implement build
     return const LazyLoadPage(
       openFullContentTree: false,
@@ -168,6 +174,8 @@ class _fullPageChatListState extends State<FullPageChatList> {
               style: TextStyle(color: Colors.white, fontSize: 25),
             )),
       ),
+      itemsPerPage: 15,
+      headers: {},
     );
   }
 }

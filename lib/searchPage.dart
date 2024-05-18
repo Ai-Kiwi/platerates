@@ -33,8 +33,11 @@ class _SearchPageState extends State<SearchPage> {
         body: LazyLoadPage(
       key: UniqueKey(),
       openFullContentTree: true,
+      //should be added to include data like what you are searching for, filters, text feild search etc
+      headers: {
+        "text": textSearching,
+      },
       urlToFetch: urlSearching,
-      extraUrlData: {"searchText": textSearching},
       widgetAddedToBlank: const Center(),
       widgetAddedToEnd: const Center(
         child: Padding(
@@ -125,6 +128,7 @@ class _SearchPageState extends State<SearchPage> {
           thickness: 1.0,
         ),
       ])),
+      itemsPerPage: 15,
     ));
 
     //return Center();

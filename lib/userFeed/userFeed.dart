@@ -31,7 +31,6 @@ class _UserFeedState extends State<userFeed> {
       openFullContentTree: true,
       key: UniqueKey(),
       urlToFetch: "/post/feed",
-      extraUrlData: {"pageFetching": pageOpen},
       widgetAddedToTop: Center(
           child: Column(children: [
         const SizedBox(height: 32),
@@ -137,6 +136,8 @@ class _UserFeedState extends State<userFeed> {
               style: TextStyle(color: Colors.white, fontSize: 25),
             )),
       ),
+      itemsPerPage: 5,
+      headers: {},
     );
   }
 }

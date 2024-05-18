@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/chat/chatList.dart';
 import 'package:PlateRates/firebase_options.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:json_cache/json_cache.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:http/http.dart' as http;
@@ -79,6 +81,8 @@ const primaryColorCodes = {
   "brown": Colors.brown,
 };
 var backgroundColor = const Color.fromRGBO(16, 16, 16, 1);
+final numberFormatter =
+    NumberFormat.compact(locale: "en_US", explicitSign: false);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -186,12 +190,12 @@ class MyApp extends StatelessWidget {
     print("asking server for the latest verison");
     //contact server and get verison
     try {
-      final response = await http.post(
+      print("$serverDomain/latestVersion");
+      final response = await http.get(
         Uri.parse("$serverDomain/latestVersion"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({}),
       );
       if (response.statusCode == 200) {
         if (response.body != '$version+$buildNumber') {
@@ -261,13 +265,8 @@ class MyApp extends StatelessWidget {
     print("testing login state");
     //respond with if token is valid
     var loginStateData = await userManager.checkLoginState();
-    if (loginStateData == true) {
-      yield "valid-token";
-      return;
-    } else {
-      yield "invalid-token";
-      return;
-    }
+    yield "success";
+    return;
   }
 
   // This widget is the root of your application.
@@ -282,7 +281,7 @@ class MyApp extends StatelessWidget {
               systemNavigationBarIconBrightness: Brightness.dark,
             ),
             child: MaterialApp(
-                title: 'PlateRates',
+                title: 'Platerates',
                 theme: ThemeData(
                   useMaterial3: false,
                   indicatorColor: primaryColor,
@@ -304,8 +303,8 @@ class MyApp extends StatelessWidget {
                     } else {
                       print(snapshot.data);
                       //if (snapshot.hasData && snapshot.data == true) {
-                      if (snapshot.data == "valid-token") {
-                        // User is logged in, navigate to home page
+                      if (snapshot.data == "success") {
+                        // navigate to home page finished everything
                         return MyHomePage();
                       } else if (snapshot.data == "server-contact-error") {
                         //error contacting server
@@ -317,7 +316,9 @@ class MyApp extends StatelessWidget {
                             errorMessage: "client-out-of-date");
                       } else {
                         // User is not logged in, navigate to login page
-                        return const LoginPage();
+                        return DisplayErrorMessagePage(
+                            errorMessage:
+                                "unkown problem with starting platerates");
                       }
                     }
                   },
@@ -335,7 +336,7 @@ List<Widget> pages = <Widget>[
   FullPageChatList(),
   CameraPage(),
   notificationPageList(),
-  UserProfile(openedOntopMenu: false),
+  LoggedInUserTab(),
 ];
 
 Future<void> testNotificationOnBootData(context) async {
@@ -376,27 +377,32 @@ class _MyHomePageState extends State<MyHomePage> {
   int unreadMessagesCount = 0;
 
   Future<void> _updateUnreadNotificationCount() async {
-    var response = await http.post(
-      Uri.parse("$serverDomain/notification/unreadCount"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'token': userManager.token,
-      }),
-    );
+    try {
+      var response = await http.post(
+        Uri.parse("$serverDomain/notification/unreadCount"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: userManager.token,
+        },
+        body: jsonEncode(<String, String>{
+          'token': userManager.token,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      print(response.body);
-      var jsonData = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(response.body);
+        var jsonData = jsonDecode(response.body);
 
-      if (mounted) {
-        setState(() {
-          unreadNotificationCount = jsonData['unreadCount'];
-          unreadMessagesCount = jsonData['newChatMessages'];
-          //unreadMessageCount = jsonData['unreadMessageCount'];
-        });
+        if (mounted) {
+          setState(() {
+            unreadNotificationCount = jsonData['unreadCount'];
+            unreadMessagesCount = jsonData['newChatMessages'];
+            //unreadMessageCount = jsonData['unreadMessageCount'];
+          });
+        }
       }
+    } on Exception catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }
   }
 

@@ -44,9 +44,9 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
       print("downloading app");
       //get info for download
       final appDir = await getTemporaryDirectory();
-      final String downloadPath = '${appDir.path}/PlateRates.apk';
-      //final String url = "$serverDomain/PlateRates.apk";
-      final String url = "https://platerates.com/PlateRates.apk";
+      final String downloadPath = '${appDir.path}/Platerates.apk';
+      //final String url = "$serverDomain/Platerates.apk";
+      final String url = "https://platerates.com/Platerates.apk";
 
       if (await File(downloadPath).exists() == true) {
         File(downloadPath).deleteSync();
@@ -95,7 +95,7 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
         //String? taskId = await FlutterDownloader.enqueue(
         //  url: url,
         //  savedDir: appDir.path,
-        //  fileName: 'PlateRates.apk',
+        //  fileName: 'Platerates.apk',
         //  showNotification: true,
         //  openFileFromNotification: false,
         //);
@@ -160,7 +160,7 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
                 child: Text(
-                  "you must update your client to keep using PlateRates\ncurrently auto updating is not supported please uninstall then reinstall the app",
+                  "you must update your client to keep using Platerates\ncurrently auto updating is not supported please uninstall then reinstall the app",
                   style: TextStyle(
                     color: Color.fromARGB(210, 255, 255, 255),
                     fontWeight: FontWeight.normal,
@@ -282,7 +282,7 @@ class migrateToAppPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "PlateRates has moved",
+              "Platerates has moved",
               style: TextStyle(
                 color: Color.fromARGB(210, 255, 255, 255),
                 fontWeight: FontWeight.bold,
@@ -298,7 +298,7 @@ class migrateToAppPage extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
               child: Text(
-                "PlateRates has become a mobile app. To unlock its full potential, click 'Install' below, then install the downloaded file.\nTo install the APK file, enable 'Install from unknown sources' in your web browser or file explorer settings (should prompt when attempting open) then open it and follow the on-screen instructions for installation.",
+                "Platerates has become a mobile app. To unlock its full potential, click 'Install' below, then install the downloaded file.\nTo install the APK file, enable 'Install from unknown sources' in your web browser or file explorer settings (should prompt when attempting open) then open it and follow the on-screen instructions for installation.",
                 style: TextStyle(
                   color: Color.fromARGB(210, 255, 255, 255),
                   fontWeight: FontWeight.normal,
@@ -332,7 +332,7 @@ class migrateToAppPage extends StatelessWidget {
                   onPressed: () async {
                     //downloadAndInstallApp();
                     if (!await launchUrl(
-                        Uri.parse('$serverDomain/PlateRates.apk'))) {
+                        Uri.parse('$serverDomain/Platerates.apk'))) {
                       throw Exception('Could not launch domain');
                     }
                   },
@@ -653,7 +653,7 @@ class _PromptPromptUserBannedState extends State<PromptUserBanned> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              "We regret to inform you that your PlateRates account has been suspended due to violations of our community guidelines and terms of service.\n\nIMPORTANT: Please refrain from creating another account to circumvent this suspension, as it is strictly prohibited and will result in further actions being taken against you.\n\nIf you believe this suspension is in error or wish to discuss the matter further, please contact our support team at support@platerates.com.\n\nYour cooperation in adhering to our platform's rules is essential for maintaining a positive and respectful user environment.",
+              "We regret to inform you that your Platerates account has been suspended due to violations of our community guidelines and terms of service.\n\nIMPORTANT: Please refrain from creating another account to circumvent this suspension, as it is strictly prohibited and will result in further actions being taken against you.\n\nIf you believe this suspension is in error or wish to discuss the matter further, please contact our support team at support@platerates.com.\n\nYour cooperation in adhering to our platform's rules is essential for maintaining a positive and respectful user environment.",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 15,

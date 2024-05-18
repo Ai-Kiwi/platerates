@@ -109,16 +109,6 @@ Future<void> openAlert(
       style: alertStyle,
       buttons: [
         DialogButton(
-          color: Colors.red,
-          child: const Text(
-            "cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        DialogButton(
           color: Theme.of(context).primaryColor,
           child: const Text(
             "all",
@@ -141,6 +131,9 @@ Future<void> openAlert(
                 "expireTime": DateTime.now().day,
                 "clientVersion": '$version+$buildNumber'
               });
+              userManager.loggedIn = false;
+              userManager.token = "";
+              userManager.userId = "";
               Phoenix.rebirth(context);
             } else {
               ErrorHandler.httpError(
@@ -148,6 +141,16 @@ Future<void> openAlert(
               openAlert("error", "failed logging out", response.body, context,
                   null, null);
             }
+          },
+        ),
+        DialogButton(
+          color: Colors.red,
+          child: const Text(
+            "cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
       ],
@@ -161,20 +164,20 @@ Future<void> openAlert(
       style: alertStyle,
       buttons: [
         DialogButton(
-          onPressed: functionsToRunPerButton?["yes"],
-          color: Theme.of(context).primaryColor,
-          child: const Text(
-            "Yes",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-        ),
-        DialogButton(
           color: Colors.red,
           child: const Text(
             "No",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
           onPressed: functionsToRunPerButton?["no"],
+        ),
+        DialogButton(
+          onPressed: functionsToRunPerButton?["yes"],
+          color: Theme.of(context).primaryColor,
+          child: const Text(
+            "Yes",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
         )
       ],
     ).show();

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/timeMaths.dart';
@@ -55,7 +56,6 @@ class _userRatingState extends State<userRating> {
   var rootItem;
   var posterAvatar;
   final bool openFullContentTree;
-  bool? viewerIsCreator;
   int? creationDate;
 
   Future<void> _collectData() async {
@@ -71,7 +71,7 @@ class _userRatingState extends State<userRating> {
       setState(() {
         text = jsonData["text"];
         if (jsonData["rating"] != null) {
-          rating = jsonData["rating"] + 0.0;
+          rating = double.parse(jsonData["rating"]) + 0.0;
         }
         posterName = basicUserData['username'];
         posterUserId = jsonData['ratingPosterId'];
@@ -79,11 +79,10 @@ class _userRatingState extends State<userRating> {
         childRatingsAmount = jsonData['childRatingsAmount'];
         ratingLikes = jsonData['ratingLikes'];
         creationDate = jsonData["creationDate"];
-        viewerIsCreator = jsonData["relativeViewerData"]["viewerIsCreator"];
         if (avatarData["imageData"] != null) {
           posterAvatar = base64Decode(avatarData["imageData"]);
         }
-        ratingLiked = jsonData['relativeViewerData']['userLiked'];
+        ratingLiked = jsonData['requesterLiked'];
       });
       return;
     } catch (err, stackTrace) {
@@ -230,7 +229,7 @@ class _userRatingState extends State<userRating> {
                     openAlert("custom_buttons", "select action for message",
                         null, context, null, [
                       Visibility(
-                        visible: viewerIsCreator == true,
+                        visible: posterUserId == userManager.userId,
                         child: DialogButton(
                           color: Colors.red,
                           child: const Text(
@@ -349,7 +348,7 @@ class _userRatingState extends State<userRating> {
                   //    ),
                   //  ),
                   //),
-                  Text((ratingLikes ?? "").toString(),
+                  Text(numberFormatter.format(ratingLikes ?? 0),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,
@@ -364,7 +363,7 @@ class _userRatingState extends State<userRating> {
                       color: Colors.white,
                     )),
                   ),
-                  Text((childRatingsAmount ?? "").toString(),
+                  Text(numberFormatter.format(childRatingsAmount ?? 0),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,

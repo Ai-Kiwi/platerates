@@ -86,14 +86,19 @@ class _fullPageRatingState extends State<FullPageRating> {
                                   TextStyle(color: Colors.white, fontSize: 25),
                             )),
                       ),
-                      extraUrlData: {
-                        "rootItem": {"type": "rating", "data": rootItem}
-                      },
+                      //should include that you are fetching rating data and which one
                       urlToFetch: '/post/ratings',
+                      itemsPerPage: 5,
+                      headers: {
+                        "rating_id": rootItem,
+                      },
                     ),
                   ),
                   //menu for you to rate the post
-                  Container(
+                  Visibility(
+                    //menu for you to rate the post
+                    visible: userManager.loggedIn == true,
+                    child: Container(
                       decoration: const BoxDecoration(
                           borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(30.0),
@@ -200,7 +205,9 @@ class _fullPageRatingState extends State<FullPageRating> {
                             ),
                           )
                         ]),
-                      )),
+                      ),
+                    ),
+                  ),
                 ],
               ))),
     ));

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/login/createAccount.dart';
@@ -10,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 import '../libs/smoothTransitions.dart';
 import '../main.dart';
@@ -28,6 +30,8 @@ class LoginResponse {
 // User class
 class User {
   String token = "";
+  String userId = "";
+  bool loggedIn = false;
 
   //User({this.token});
   User();
@@ -36,8 +40,14 @@ class User {
     String? tokenValue = await storage.read(key: "token");
     if (tokenValue == null) {
       token = "";
+      userId = "";
+      loggedIn = false;
     } else {
       token = tokenValue.toString();
+      var decodedJwt = JWT.decode(token);
+      Map<String, dynamic> payloadData = decodedJwt.payload;
+      userId = payloadData["user_id"];
+      await checkLoginState();
     }
   }
 
@@ -50,14 +60,20 @@ class User {
         Uri.parse("$serverDomain/testToken"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: userManager.token,
         },
         body: jsonEncode(<String, String>{
           'token': token,
         }),
       );
       if (response.statusCode == 200) {
+        loggedIn = true;
         return true;
       } else {
+        loggedIn = false;
+        token = "";
+        userId = "";
+        await storage.delete(key: "token");
         return false;
       }
     } on Exception catch (error, stackTrace) {

@@ -42,7 +42,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
 
   Future<void> _collectData() async {
     Map basicUserData =
-        await dataCollect.getBasicUserData(userId, context, false);
+        await dataCollect.getBasicUserData(userId!, context, false);
     // ignore: use_build_context_synchronously
     Map avatarData = await dataCollect.getAvatarData(
         basicUserData["avatar"], context, false);
@@ -59,7 +59,8 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   Future<void> _collectAndUpdateData() async {
     await _collectData();
     // ignore: use_build_context_synchronously
-    if (await dataCollect.updateBasicUserData(userId, context, false) == true) {
+    if (await dataCollect.updateBasicUserData(userId!, context, false) ==
+        true) {
       await _collectData();
     }
   }
@@ -108,7 +109,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => UserProfile(
-                          userId: userId,
+                          userId: userId!,
                           openedOntopMenu: true,
                         )),
               );
@@ -119,10 +120,10 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
 }
 
 class UserProfile extends StatefulWidget {
-  final String? userId;
+  final String userId;
   final bool openedOntopMenu;
 
-  UserProfile({this.userId, required this.openedOntopMenu});
+  UserProfile({required this.userId, required this.openedOntopMenu});
 
   @override
   _UserProfileState createState() =>
@@ -130,7 +131,7 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  final String? userId;
+  final String userId;
   final bool openedOntopMenu;
   String realUserId = "";
   bool _isLoading = true;
@@ -160,6 +161,7 @@ class _UserProfileState extends State<UserProfile> {
       _isLoading = true;
     });
 
+    //print(userId);
     Map fetchedData = await dataCollect.getUserData(userId, context, false);
     Map avatarData =
         // ignore: use_build_context_synchronously
@@ -174,7 +176,7 @@ class _UserProfileState extends State<UserProfile> {
       followingCount = fetchedData['followingCount'];
       postCount = fetchedData['postCount'];
       ratingCount = fetchedData['ratingCount'];
-      userFollowing = fetchedData["relativeViewerData"]['following'];
+      userFollowing = fetchedData["requesterFollowing"];
       if (avatarData["imageData"] != null) {
         posterAvatar = base64Decode(avatarData["imageData"]);
       }
@@ -222,7 +224,9 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    _fetchAndUpdateProfile();
+    if (userId != null) {
+      _fetchAndUpdateProfile();
+    }
     //Timer.periodic(Duration(seconds: 1), (Timer t) => _fetchAndUpdateProfile());
   }
 
@@ -244,6 +248,7 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+    //user is not logged in so show login screen
     if (_isLoading == true) {
       return LoadingScreen(
         plateRatesLogo: false,
@@ -257,12 +262,12 @@ class _UserProfileState extends State<UserProfile> {
         openFullContentTree: true,
         key: UniqueKey(),
         urlToFetch: urlToSearch,
-        extraUrlData: {"userId": realUserId},
+        //should include you are fetching user id data and which one
         widgetAddedToTop: Column(
           children: [
             const SizedBox(height: 32),
             Visibility(
-                visible: userId == null,
+                visible: userId == userManager.userId,
                 child: SizedBox(
                     height: 30,
                     child: Center(
@@ -344,9 +349,7 @@ class _UserProfileState extends State<UserProfile> {
                               Column(
                                 children: [
                                   Text(
-                                    NumberFormat.compact(
-                                      locale: "en_US",
-                                    ).format(followersCount),
+                                    numberFormatter.format(followersCount),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -365,9 +368,7 @@ class _UserProfileState extends State<UserProfile> {
                               Column(
                                 children: [
                                   Text(
-                                    NumberFormat.compact(
-                                      locale: "en_US",
-                                    ).format(followingCount),
+                                    numberFormatter.format(followingCount),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -386,9 +387,7 @@ class _UserProfileState extends State<UserProfile> {
                               Column(
                                 children: [
                                   Text(
-                                    NumberFormat.compact(
-                                      locale: "en_US",
-                                    ).format(postCount),
+                                    numberFormatter.format(postCount),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -407,9 +406,7 @@ class _UserProfileState extends State<UserProfile> {
                               Column(
                                 children: [
                                   Text(
-                                    NumberFormat.compact(
-                                      locale: "en_US",
-                                    ).format(ratingCount),
+                                    numberFormatter.format(ratingCount),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -428,7 +425,7 @@ class _UserProfileState extends State<UserProfile> {
                             ],
                           ),
                           Visibility(
-                            visible: userId != null,
+                            visible: userId != userManager.userId,
                             child: Padding(
                               //follow button
                               padding:
@@ -598,6 +595,7 @@ class _UserProfileState extends State<UserProfile> {
                 style: TextStyle(color: Colors.white, fontSize: 25),
               )),
         ),
+        itemsPerPage: 5, headers: {"user_id": userId},
       ),
     ));
   }
@@ -732,5 +730,17 @@ class SingleVerifiedAccountItem extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class LoggedInUserTab extends StatelessWidget {
+  const LoggedInUserTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (userManager.userId == "" || userManager.loggedIn == false) {
+      return const LoginPage();
+    }
+    return UserProfile(userId: userManager.userId, openedOntopMenu: false);
   }
 }

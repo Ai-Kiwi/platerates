@@ -19,7 +19,7 @@ class LoadingScreen extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
             child: Text(
-              "PlateRates",
+              "Platerates",
               style: TextStyle(color: Colors.white, fontSize: 40),
             ),
           ),

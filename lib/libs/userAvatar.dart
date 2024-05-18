@@ -41,6 +41,15 @@ class UserAvatar extends StatelessWidget {
     }
   }
 
+//when I chose to add glow
+  //boxShadow: [
+  //  BoxShadow(
+  //    color: Colors.yellow
+  //        .withOpacity(0.5), // adjust opacity as needed
+  //    blurRadius: size / 10,
+  //    spreadRadius: size / 10,
+  //  ),
+  //],
   @override
   Widget build(BuildContext context) {
     if (avatarImage != null) {
