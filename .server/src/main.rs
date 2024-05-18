@@ -216,7 +216,6 @@ async fn main() {
 //   TODO /post/upload
 //   
 //    - ratings
-//   TODO /post/rating/delete
 //   TODO /post/rating/like
 //   TODO /post/rating/upload
 
