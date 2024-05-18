@@ -290,16 +290,6 @@ pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(
     };
 
     let post_id = &pagination.post_id;
-    
-    
-    let time_now: SystemTime = SystemTime::now();
-    let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
-        Ok(value) => value,
-        Err(err) => {
-            println!("failed to fetch time");
-            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
-        }
-    }.as_millis();
 
     let post_data = match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE post_id = $1")
     .bind(post_id)
@@ -313,7 +303,7 @@ pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(
     }
 
     let database_response = sqlx::query("DELETE FROM posts WHERE post_id=$1")
-    .bind(&user_id)
+    .bind(&post_id)
     .execute(&database_pool).await;
 
     match database_response {
@@ -336,9 +326,4 @@ pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(
         },
         Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete post".to_string())
     }
-
-    //later will be one to log out just the one user
-
-
-
 }

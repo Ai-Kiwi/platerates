@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/timeMaths.dart';
@@ -239,15 +240,15 @@ class _userRatingState extends State<userRating> {
                           ),
                           onPressed: () async {
                             final response = await http.post(
-                              Uri.parse("$serverDomain/post/rating/delete"),
+                              Uri.parse(
+                                  "$serverDomain/post/rating/delete?rating_id=$ratingId"),
                               headers: <String, String>{
                                 'Content-Type':
                                     'application/json; charset=UTF-8',
+                                HttpHeaders.authorizationHeader:
+                                    userManager.token
                               },
-                              body: jsonEncode(<String, String>{
-                                'token': userManager.token,
-                                'ratingId': ratingId,
-                              }),
+                              body: jsonEncode(<String, String>{}),
                             );
                             if (response.statusCode == 200) {
                               openAlert("error", "rating deleted", null,

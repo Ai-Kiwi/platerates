@@ -23,7 +23,7 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use tower::ServiceBuilder;
 
-use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}};
+use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::post_delete_rating_post};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 
@@ -159,6 +159,7 @@ async fn main() {
         .route("/testToken", post(post_test_token))
         .route("/login/logout", post(post_logout))
         .route("/post/delete", post(post_delete_post))
+        .route("/post/rating/delete", post(post_delete_rating_post))
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000

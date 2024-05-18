@@ -1,12 +1,12 @@
-use std::{collections::HashMap, fs, path::PathBuf};
+use std::{collections::HashMap, fs, path::PathBuf, time::SystemTime};
 use axum::{extract::{Query, State}, routing::get, Router};
 use data_encoding::BASE64;
-use hyper::StatusCode;
+use hyper::{HeaderMap, StatusCode};
 use serde::{de::value, Deserialize};
 use serde_json::{json, Number, Value};
 use sqlx::{pool, Pool, Postgres};
 
-use crate::AppState;
+use crate::{user_login::test_token_header, AppState};
 
 
 
@@ -129,4 +129,43 @@ pub async fn get_rating_data(pagination: Query<GetRatingPaginator>, State(app_st
 
 
     (StatusCode::OK, value)
+}
+
+
+#[derive(Deserialize)]
+pub struct PostDeleteRatingPostPaginator {
+    rating_id: String,
+}
+
+pub async fn post_delete_rating_post(pagination: Query<PostDeleteRatingPostPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {  //, Json(body): Json<UserLogin>)  just leaving for when I add logging out of 1 device
+    let token = test_token_header(&headers, &app_state).await;
+    let database_pool = app_state.database;
+
+    let user_id: String = match token {
+        Ok(value) => value.claims.user_id,
+        Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
+    };
+
+    let rating_id = &pagination.rating_id;
+
+    let rating_data = match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
+    .bind(&rating_id)
+    .fetch_one(&database_pool).await {
+        Ok(value) => value,
+        Err(err) => return (StatusCode::NOT_FOUND, "No rating found".to_string()),
+    };
+
+    if rating_data.rating_creator != user_id {
+        return (StatusCode::UNAUTHORIZED, "You do not own the post rating".to_string())
+    }
+
+    let database_response = sqlx::query("DELETE FROM post_ratings WHERE rating_id=$1")
+    .bind(&rating_id)
+    .execute(&database_pool).await;
+
+    match database_response {
+        Ok(value) => return (StatusCode::OK, "Rating deleted".to_string()),
+        Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete rating".to_string())
+    }
+
 }
