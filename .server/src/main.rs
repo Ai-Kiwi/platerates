@@ -23,7 +23,7 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use tower::ServiceBuilder;
 
-use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}};
+use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 
@@ -158,6 +158,7 @@ async fn main() {
         .route("/login", post(post_user_login))
         .route("/testToken", post(post_test_token))
         .route("/login/logout", post(post_logout))
+        .route("/post/delete", post(post_delete_post))
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000
@@ -168,7 +169,7 @@ async fn main() {
 //to test run
 // cargo watch -x run
 
-
+//   TODO 
 
 //TODO
 
@@ -212,7 +213,6 @@ async fn main() {
 //   
 //    - posts
 //   TODO /post/upload
-//   TODO /post/delete
 //   
 //    - ratings
 //   TODO /post/rating/delete
@@ -231,3 +231,5 @@ async fn main() {
 //add logout one user
 //move system over to refresh tokens instead
 //make sure log out all clears the list of tokens manuelly expired
+//add back admin users
+// allow to delete any post

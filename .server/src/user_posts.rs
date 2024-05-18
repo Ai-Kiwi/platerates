@@ -1,12 +1,12 @@
-use std::{collections::HashMap, fs, path::PathBuf};
+use std::{collections::HashMap, fs, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
 use axum::{extract::{Query, State}, routing::get, Router};
 use data_encoding::BASE64;
-use hyper::StatusCode;
+use hyper::{HeaderMap, StatusCode};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::{Pool, Postgres};
 
-use crate::{user_ratings::ratings_just_id, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
+use crate::{user_login::test_token_header, user_ratings::ratings_just_id, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
 
 
 #[derive(sqlx::FromRow)]
@@ -273,4 +273,72 @@ pub async fn get_post_ratings(pagination: Query<GetPostRatingPaginator>, State(a
     };
 
     (StatusCode::OK, value)
+}
+
+#[derive(Deserialize)]
+pub struct PostDeletePostPaginator {
+    post_id: String,
+}
+
+pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {  //, Json(body): Json<UserLogin>)  just leaving for when I add logging out of 1 device
+    let token = test_token_header(&headers, &app_state).await;
+    let database_pool = app_state.database;
+
+    let user_id: String = match token {
+        Ok(value) => value.claims.user_id,
+        Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
+    };
+
+    let post_id = &pagination.post_id;
+    
+    
+    let time_now: SystemTime = SystemTime::now();
+    let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
+        Ok(value) => value,
+        Err(err) => {
+            println!("failed to fetch time");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
+        }
+    }.as_millis();
+
+    let post_data = match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE post_id = $1")
+    .bind(post_id)
+    .fetch_one(&database_pool).await {
+        Ok(value) => value,
+        Err(err) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
+    };
+
+    if post_data.poster_user_id != user_id {
+        return (StatusCode::UNAUTHORIZED, "You do not own the post".to_string())
+    }
+
+    let database_response = sqlx::query("DELETE FROM posts WHERE post_id=$1")
+    .bind(&user_id)
+    .execute(&database_pool).await;
+
+    match database_response {
+        Ok(value) => {
+            let mut i = 0;
+
+            //delete all the images added to the post
+            while i < (post_data.image_count ) {
+                let image_file_name = format!("{}-{}.jpeg",&post_id,i);
+                
+                let file_path: PathBuf = DATA_IMAGE_POSTS_FOLDER_PATH.join(image_file_name);
+                match fs::remove_file(file_path){
+                    Ok(value) => value,
+                    Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete post image".to_string()),
+                };
+                i = i + 1;
+            }
+
+            return (StatusCode::OK, "Post deleted".to_string())
+        },
+        Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete post".to_string())
+    }
+
+    //later will be one to log out just the one user
+
+
+
 }

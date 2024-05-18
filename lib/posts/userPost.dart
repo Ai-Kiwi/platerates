@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/dataCollect.dart';
@@ -457,14 +458,13 @@ class PostManageButton extends StatelessWidget {
                     {
                       "yes": () async {
                         final response = await http.post(
-                          Uri.parse("$serverDomain/post/delete"),
+                          Uri.parse(
+                              "$serverDomain/post/delete?post_id=$postId"),
                           headers: <String, String>{
                             'Content-Type': 'application/json; charset=UTF-8',
+                            HttpHeaders.authorizationHeader: userManager.token
                           },
-                          body: jsonEncode(<String, String>{
-                            'token': userManager.token,
-                            'postId': postId,
-                          }),
+                          body: jsonEncode(<String, String>{}),
                         );
                         if (response.statusCode == 200) {
                           // ignore: use_build_context_synchronously

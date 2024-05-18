@@ -99,6 +99,10 @@ class User {
         var returnData = jsonDecode(response.body);
         token = returnData["token"];
         await storage.write(key: "token", value: token);
+        var decodedJwt = JWT.decode(token);
+        Map<String, dynamic> payloadData = decodedJwt.payload;
+        userId = payloadData["user_id"];
+        await checkLoginState();
         return LoginResponse(error: null, success: true);
       } else {
         return LoginResponse(error: response.body, success: false);

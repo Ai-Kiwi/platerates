@@ -28,10 +28,10 @@ pub struct UserLogin {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct JwtClaims {
-    user_id: String,
-    last_reset_password_time: u64,
-    exp: usize,
-    creation_date: u128,
+    pub user_id: String,
+    pub last_reset_password_time: u64,
+    pub exp: usize,
+    pub creation_date: u128,
 }
 
 #[derive(sqlx::FromRow)]

@@ -59,6 +59,8 @@ app.*.map.json
 #for server
 .server/debug/
 .server/target/
+.server/data
+.server/static_data
 
 .server/Cargo.lock
 
