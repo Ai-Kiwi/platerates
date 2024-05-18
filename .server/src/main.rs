@@ -231,5 +231,3 @@ async fn main() {
 //add logout one user
 //move system over to refresh tokens instead
 //make sure log out all clears the list of tokens manuelly expired
-//switch to sqlx macros instead
-//finish setting up test token
