@@ -1,6 +1,6 @@
 //jwt make sure I do veirfy as well
 
-use std::{alloc::System, collections::HashMap, thread, time::{Duration, SystemTime, UNIX_EPOCH}};
+use std::{alloc::System, borrow::BorrowMut, collections::HashMap, sync::Arc, thread, time::{Duration, SystemTime, UNIX_EPOCH}};
 //test token
 //
 use argon2::{
@@ -18,7 +18,6 @@ use serde_json::Value;
 use sqlx::{postgres::{PgPoolOptions, Postgres}, Pool};
 use axum::http::Request;
 use axum::body::Body;
-
 use crate::AppState;
 
 #[derive(Deserialize)]
@@ -76,9 +75,9 @@ fn wait_time(start_time: u128) {
 }
 
 
-pub async fn test_token(token : &String, state: AppState<'_>) -> Result<TokenData<JwtClaims>,()> {
-    let decode_key: DecodingKey = state.jwt_decode_key;
-    let sqlx_pool: Pool<Postgres> = state.database;
+pub async fn test_token(token : &String, state: &AppState<'_>) -> Result<TokenData<JwtClaims>,()> {
+    let decode_key: &DecodingKey = &state.jwt_decode_key;
+    let sqlx_pool: &Pool<Postgres> = &state.database;
 
 
     let jwt_token: TokenData<JwtClaims> = match decode::<JwtClaims>(token, &decode_key, &Validation::new(Algorithm::HS512)){
@@ -95,7 +94,7 @@ pub async fn test_token(token : &String, state: AppState<'_>) -> Result<TokenDat
 
     let user_credential_data: UserCredentials = match sqlx::query_as::<_, UserCredentials>("SELECT * FROM user_credentials WHERE user_id = $1")
     .bind(&user_id)
-    .fetch_one(&sqlx_pool).await {
+    .fetch_one(&*sqlx_pool).await {
         Ok(value) => value,
         Err(err) => {
             println!("{} ({err})","didn't find a valid user assigned to token".to_owned());
@@ -119,20 +118,26 @@ pub async fn test_token(token : &String, state: AppState<'_>) -> Result<TokenDat
     Ok(jwt_token)
 }
 
-pub async fn test_token_header(headers : &axum::http::HeaderMap, state: AppState<'_>) -> Result<TokenData<JwtClaims>,()> {
+pub async fn test_token_header(headers : &axum::http::HeaderMap, state: &AppState<'_>) -> Result<TokenData<JwtClaims>,()> {
     return match headers.get("authorization"){
         Some(value) => match value.to_str() {
             Ok(value) => test_token(&value.to_string(), state).await,
-            Err(_) => Err(())
+            Err(_) => {
+                println!("can't convert token header token to string");
+                Err(())
+            }
         },
-        None => Err(()),
+        None => {
+            println!("no header token");
+            Err(())
+        },
     }; 
 }
 
 pub async fn post_test_token(State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {
     println!("user testing token");
+    let token = test_token_header(&headers, &app_state).await;
     let decode_key = &app_state.jwt_decode_key;
-    let token = test_token_header(&headers, app_state).await;
 
     match token {
         Ok(_) => return (StatusCode::OK, "vaild token".to_owned()),
@@ -142,28 +147,41 @@ pub async fn post_test_token(State(app_state): State<AppState<'_>>, headers: Hea
 
 
 
-//pub async post_logout(State(app_state): State<AppState<'_>>) -> (StatusCode, String) {  //, Json(body): Json<UserLogin>)  just leaving for when I add logging out of 1 device
-//    let time_now: SystemTime = SystemTime::now();
-//    let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
-//        Ok(value) => value,
-//        Err(err) => {
-//            println!("failed to fetch time");
-//            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
-//        }
-//    }.as_millis();
-//
-//
-//    let database_response = sqlx::query("UPDATE user_credentials SET tokens_expire_time = $1 = $2 WHERE user_id = $2")
-//    .bind(time_now_ms as i64)
-//    .bind(&user_credential_data.user_id)
-//    .fetch_one(&database_pool).await;
-//
-//
-//    //later will be one to log out just the one user
-//
-//
-//
-//}
+pub async fn post_logout(State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {  //, Json(body): Json<UserLogin>)  just leaving for when I add logging out of 1 device
+    let token = test_token_header(&headers, &app_state).await;
+    let database_pool = app_state.database;
+
+    let user_id: String = match token {
+        Ok(value) => value.claims.user_id,
+        Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
+    };
+    
+    
+    let time_now: SystemTime = SystemTime::now();
+    let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
+        Ok(value) => value,
+        Err(err) => {
+            println!("failed to fetch time");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
+        }
+    }.as_millis();
+
+
+    let database_response = sqlx::query("UPDATE user_credentials SET tokens_expire_time = $1 WHERE user_id = $2")
+    .bind(time_now_ms as i64)
+    .bind(&user_id)
+    .execute(&database_pool).await;
+
+    match database_response {
+        Ok(value) => return (StatusCode::OK, "Logged out".to_string()),
+        Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to log out".to_string())
+    }
+
+    //later will be one to log out just the one user
+
+
+
+}
 
 pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): Json<UserLogin>) -> (StatusCode, String) {
     println!("user logging in");

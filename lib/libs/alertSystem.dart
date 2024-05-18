@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:PlateRates/libs/errorHandler.dart';
@@ -120,6 +121,7 @@ Future<void> openAlert(
               Uri.parse("$serverDomain/login/logout"),
               headers: <String, String>{
                 'Content-Type': 'application/json; charset=UTF-8',
+                HttpHeaders.authorizationHeader: userManager.token,
               },
               body: jsonEncode(<String, String>{
                 'token': userManager.token,

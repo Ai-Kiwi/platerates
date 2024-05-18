@@ -4,7 +4,7 @@ mod user_ratings;
 mod user_login;
 
 use core::panic;
-use std::{any, collections::HashMap, fs::{self, File}, hash::Hash, io::Read, iter::Map, ptr::null, string, task::Poll, vec};
+use std::{any, collections::HashMap, fs::{self, File}, hash::Hash, io::Read, iter::Map, ptr::null, string, sync::Arc, task::Poll, vec};
 
 use argon2::Argon2;
 use axum::{
@@ -23,7 +23,7 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use tower::ServiceBuilder;
 
-use crate::{user_login::post_test_token, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}};
+use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 
@@ -157,6 +157,7 @@ async fn main() {
         .route("/profile/avatar", get(get_profile_avatar))
         .route("/login", post(post_user_login))
         .route("/testToken", post(post_test_token))
+        .route("/login/logout", post(post_logout))
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000
@@ -206,9 +207,6 @@ async fn main() {
 //   TODO /createAccount
 //   
 //    - userLogins 
-//   testToken
-//   TODO /login/logout
-//   TODO /testToken
 //   TODO /login/reset-password
 //   TODO /reset-password
 //   

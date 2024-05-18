@@ -88,6 +88,7 @@ class User {
         Uri.parse("$serverDomain/login"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: userManager.token,
         },
         body: jsonEncode(<String, String>{
           'email': emailAddress,
