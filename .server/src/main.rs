@@ -227,9 +227,7 @@ async fn main() {
 //bring over flutter website host part
 //bring over apk download
 //bring over tos websites info
-//write bechmark code
 //test if number of comment replys is working as it seems to show 1 when there is non
-//add login token to invalid users
 //add logout one user
 //move system over to refresh tokens instead
 //make sure log out all clears the list of tokens manuelly expired
