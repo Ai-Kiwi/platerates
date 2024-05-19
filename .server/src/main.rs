@@ -214,9 +214,6 @@ async fn main() {
 //   TODO /login/reset-password
 //   TODO /reset-password
 //   
-//    - posts
-//   TODO /post/upload
-//   
 //    - ratings
 //   TODO /post/rating/like
 //   TODO /post/rating/upload
@@ -236,3 +233,4 @@ async fn main() {
 //add back admin users
 // allow to delete any post
 //move everything over to be underscore based instead of camel case for website requests
+//add propper display to say if you have rated a post yet instead of just saying you have
