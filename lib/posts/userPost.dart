@@ -94,6 +94,7 @@ class _PostItemState extends State<PostItem> {
 
       var imageValid = await isImageValid(imagesData[0]);
       if (imageValid == false) {
+        errorOccurred = true;
         return;
       }
 
@@ -261,6 +262,7 @@ class _PostItemState extends State<PostItem> {
                                 var imageValid =
                                     await isImageValid(imagesData[page]);
                                 if (imageValid == false) {
+                                  errorOccurred = true;
                                   return;
                                 }
 
