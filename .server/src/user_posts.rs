@@ -1,12 +1,12 @@
 use std::{collections::HashMap, fs, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
-use axum::{extract::{Query, State}, routing::get, Router};
+use axum::{extract::{Query, State}, routing::{get, post}, Json, Router};
 use data_encoding::BASE64;
 use hyper::{HeaderMap, StatusCode};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_ratings::ratings_just_id, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
+use crate::{user_login::test_token_header, user_ratings::ratings_just_id, utils::createItemId, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
 
 
 #[derive(sqlx::FromRow)]
@@ -326,4 +326,124 @@ pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(
         },
         Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete post".to_string())
     }
+}
+
+
+#[derive(Deserialize)]
+pub struct PostUpload {
+    title : String,
+    description : String,
+    images : Vec<String>,
+    //share_mode : String
+
+}
+
+pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<PostUpload>) -> (StatusCode, String) {
+    let post_id: String = createItemId(); //could be already used inthat case postgres errors, chance is like crazy low tho
+    let post_title: &String = &body.title;
+    let post_description: &String = &body.description;
+    let images: &Vec<String> = &body.images;
+    let image_count: usize = images.len();
+
+    let token = test_token_header(&headers, &app_state).await;
+    let user_id = match token {
+        Ok(value) => value.claims.user_id,
+        Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
+    };
+    let database_pool = &app_state.database;
+
+    let time_now: SystemTime = SystemTime::now();
+    let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
+        Ok(value) => value,
+        Err(err) => {
+            println!("failed to fetch time");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
+        }
+    }.as_millis();
+
+    if post_title.len() > 50 {
+        return (StatusCode::BAD_REQUEST, "title is to large".to_string());
+    }
+    if post_title.len() < 5 {
+        return (StatusCode::BAD_REQUEST, "title is to short".to_string());
+    }
+
+    if post_description.len() > 250 {
+        return (StatusCode::BAD_REQUEST, "description is to large".to_string());
+    }
+    if post_description.len() < 5 {
+        return (StatusCode::BAD_REQUEST, "description is to short".to_string());
+    }
+
+    if image_count > 8 {
+        return (StatusCode::BAD_REQUEST, "To many images".to_string());
+    }
+    if image_count < 1 {
+        return (StatusCode::BAD_REQUEST, "Image has to be added".to_string());
+    }
+
+    let mut images_data: Vec<Vec<u8>> = vec![];
+
+    for image in images.iter() {
+        let image_data: Vec<u8> = match BASE64.decode(image.as_bytes()) {
+            Ok(value) => value,
+            Err(_) => return (StatusCode::BAD_REQUEST, "Image invalid".to_string()),
+        };
+
+        if image_data.len() > 500000{//around 0.5 migabytes
+            return (StatusCode::BAD_REQUEST, "Image to large".to_string());
+        } 
+
+        images_data.push(image_data);
+    }
+
+
+    //test when last post by user was make sure was awhile ago
+    match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE poster_user_id = $1 ORDER BY post_date DESC")
+    .bind(&user_id)
+    .fetch_one(database_pool).await {
+        Ok(value) => {
+            println!("{}",value.title);
+            if value.post_date > (time_now_ms as i64) - (20 * 1000){
+                return (StatusCode::REQUEST_TIMEOUT, "Timed out for 20 seconds".to_string());
+            }
+        },
+        Err(err) => {
+            println!("failed to find post for timeout ({})", err)
+        },
+    };
+
+
+    //add post to database
+    let result = sqlx::query(
+        "INSERT INTO posts (post_id, poster_user_id, title, description, image_count, post_date, rating, rating_count) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
+        .bind(&post_id)
+        .bind(&user_id)
+        .bind(post_title)
+        .bind(post_description)
+        .bind(image_count as i32)
+        .bind(time_now_ms as i64)
+        .bind(0.0)
+        .bind(0)
+        .execute(database_pool).await;
+
+    let mut image_upto = 0;
+    for image in images_data.iter() {
+        let image_file_name = format!("{}-{}.jpeg",&post_id,image_upto);
+    
+        let file_path: PathBuf = DATA_IMAGE_POSTS_FOLDER_PATH.join(image_file_name);
+
+        let _ = fs::write(file_path, image);
+
+        image_upto = image_upto + 1;
+    }
+
+    match result {
+        Ok(_) => (StatusCode::CREATED,"Post created".to_owned()),
+        Err(err) => {
+            println!("failed to create post + ({})", err);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to create post".to_owned());
+        },
+    }
+
 }

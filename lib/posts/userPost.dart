@@ -92,7 +92,8 @@ class _PostItemState extends State<PostItem> {
       var firstImageData =
           await dataCollect.getPostImageData(postId, "0", context, true);
 
-      var imageValid = await isImageValid(imagesData[0]);
+      var imageValid =
+          await isImageValid(base64Decode(firstImageData['imageData']));
       if (imageValid == false) {
         errorOccurred = true;
         return;
@@ -259,26 +260,32 @@ class _PostItemState extends State<PostItem> {
                                 );
                               },
                               onPageChanged: (page) async {
-                                var imageValid =
-                                    await isImageValid(imagesData[page]);
-                                if (imageValid == false) {
-                                  errorOccurred = true;
-                                  return;
-                                }
+                                try {
+                                  if (imagesData[page] == null) {
+                                    var tempImageData =
+                                        await dataCollect.getPostImageData(
+                                            postId,
+                                            page.toString(),
+                                            context,
+                                            true);
+                                    var imageValid = await isImageValid(
+                                        base64Decode(
+                                            tempImageData['imageData']));
+                                    if (imageValid == false) {
+                                      errorOccurred = true;
+                                      return;
+                                    }
 
-                                if (imagesData[page] == null) {
-                                  var tempImageData =
-                                      await dataCollect.getPostImageData(postId,
-                                          page.toString(), context, true);
+                                    setState(() {
+                                      imagesData[page] = base64Decode(
+                                          tempImageData['imageData']);
+                                    });
+                                  }
+
                                   setState(() {
-                                    imagesData[page] = base64Decode(
-                                        tempImageData['imageData']);
+                                    currentPage = page;
                                   });
-                                }
-
-                                setState(() {
-                                  currentPage = page;
-                                });
+                                } on Exception {}
                               },
                             ),
                             Visibility(

@@ -2,6 +2,7 @@ mod user_posts;
 mod user_profiles;
 mod user_ratings;
 mod user_login;
+mod utils;
 
 use core::panic;
 use std::{any, collections::HashMap, fs::{self, File}, hash::Hash, io::Read, iter::Map, ptr::null, string, sync::Arc, task::Poll, vec};
@@ -23,7 +24,7 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use tower::ServiceBuilder;
 
-use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::post_delete_rating_post};
+use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::post_delete_rating_post};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 
@@ -160,6 +161,7 @@ async fn main() {
         .route("/login/logout", post(post_logout))
         .route("/post/delete", post(post_delete_post))
         .route("/post/rating/delete", post(post_delete_rating_post))
+        .route("/post/upload", post(post_create_upload))
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000
@@ -233,3 +235,4 @@ async fn main() {
 //make sure log out all clears the list of tokens manuelly expired
 //add back admin users
 // allow to delete any post
+//move everything over to be underscore based instead of camel case for website requests

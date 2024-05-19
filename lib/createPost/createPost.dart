@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/imageUtils.dart';
@@ -250,9 +251,10 @@ class _CreatePostState extends State<CreatePostPage> {
                               headers: <String, String>{
                                 'Content-Type':
                                     'application/json; charset=UTF-8',
+                                HttpHeaders.authorizationHeader:
+                                    userManager.token,
                               },
                               body: jsonEncode({
-                                "token": userManager.token,
                                 "title": _title,
                                 "description": _description,
                                 "shareMode": postCodeNames[shareModeSelected],
