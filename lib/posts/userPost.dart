@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/dataCollect.dart';
@@ -22,6 +23,19 @@ import 'package:url_launcher/url_launcher.dart';
 import '../libs/errorHandler.dart';
 import '../libs/report.dart';
 import '../main.dart';
+
+Future<bool> isImageValid(List<int> rawList) async {
+  final uInt8List =
+      rawList is Uint8List ? rawList : Uint8List.fromList(rawList);
+
+  try {
+    final codec = await instantiateImageCodec(uInt8List, targetWidth: 32);
+    final frameInfo = await codec.getNextFrame();
+    return frameInfo.image.width > 0;
+  } catch (e) {
+    return false;
+  }
+}
 
 class PostItem extends StatefulWidget {
   final String postId;
@@ -77,6 +91,11 @@ class _PostItemState extends State<PostItem> {
           basicUserData["avatar"], context, false);
       var firstImageData =
           await dataCollect.getPostImageData(postId, "0", context, true);
+
+      var imageValid = await isImageValid(imagesData[0]);
+      if (imageValid == false) {
+        return;
+      }
 
       //print(basicUserData);
       setState(() {
@@ -239,6 +258,12 @@ class _PostItemState extends State<PostItem> {
                                 );
                               },
                               onPageChanged: (page) async {
+                                var imageValid =
+                                    await isImageValid(imagesData[page]);
+                                if (imageValid == false) {
+                                  return;
+                                }
+
                                 if (imagesData[page] == null) {
                                   var tempImageData =
                                       await dataCollect.getPostImageData(postId,
