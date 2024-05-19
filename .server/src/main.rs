@@ -235,3 +235,4 @@ async fn main() {
 // allow to delete any post
 //move everything over to be underscore based instead of camel case for website requests
 //add propper display to say if you have rated a post yet instead of just saying you have
+//add back post feed for users you follow
