@@ -2,11 +2,12 @@ use std::{collections::HashMap, fs, path::PathBuf, time::{SystemTime, UNIX_EPOCH
 use axum::{extract::{Query, State}, routing::{get, post}, Json, Router};
 use data_encoding::BASE64;
 use hyper::{HeaderMap, StatusCode};
+use jsonwebtoken::TokenData;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_ratings::ratings_just_id, utils::createItemId, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
+use crate::{user_login::test_token_header, user_ratings::{ratings, ratings_just_id}, utils::createItemId, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
 
 
 #[derive(sqlx::FromRow)]
@@ -82,9 +83,10 @@ pub struct posts {
 }
 
 
-pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
+pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {
     let pagination: GetPostPaginator = pagination.0;
-    let database_pool: Pool<Postgres> = app_state.database;
+    let database_pool: &Pool<Postgres> = &app_state.database;
+    let token = test_token_header(&headers, &app_state).await;
     
     let mut data_returning: HashMap<String, Value> = HashMap::new();
 
@@ -92,7 +94,7 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
 
     let post_data = match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE post_id = $1")
     .bind(post_id)
-    .fetch_one(&database_pool).await {
+    .fetch_one(database_pool).await {
         Ok(value) => value,
         Err(err) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
     };
@@ -101,7 +103,26 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
     data_returning.insert("description".to_string(), Value::String(post_data.description));
     data_returning.insert("postDate".to_string(), Value::Number(post_data.post_date.into()));
     data_returning.insert("ratingsAmount".to_string(), Value::Number(post_data.rating_count.into()));
-    data_returning.insert("requesterRated".to_string(), Value::Bool(false));
+    match token {
+        Ok(value) => {
+            let rated = match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_post_id = $2 ORDER BY creation_date DESC")
+            .bind(&value.claims.user_id)
+            .bind(&post_id)
+            .fetch_one(database_pool).await {
+                Ok(_) => {
+                    true
+                    
+                },
+                Err(err) => {
+                    false
+                }
+            };
+            data_returning.insert("requesterRated".to_string(), Value::Bool(rated));
+        }
+        Err(_) => {
+            data_returning.insert("requesterRated".to_string(), Value::Bool(false));
+        },
+    }
     data_returning.insert("postId".to_string(), Value::String(post_data.post_id));
     data_returning.insert("imageCount".to_string(), Value::Number(post_data.image_count.into()));
     data_returning.insert("posterId".to_string(), Value::String(post_data.poster_user_id));
@@ -335,7 +356,6 @@ pub struct PostUpload {
     description : String,
     images : Vec<String>,
     //share_mode : String
-
 }
 
 pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<PostUpload>) -> (StatusCode, String) {

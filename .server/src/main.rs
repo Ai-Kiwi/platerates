@@ -24,7 +24,7 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use tower::ServiceBuilder;
 
-use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::post_delete_rating_post};
+use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::{post_create_rating, post_delete_rating_post}};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 
@@ -162,6 +162,7 @@ async fn main() {
         .route("/post/delete", post(post_delete_post))
         .route("/post/rating/delete", post(post_delete_rating_post))
         .route("/post/upload", post(post_create_upload))
+        .route("/post/rating/upload", post(post_create_rating))
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000
@@ -196,6 +197,7 @@ async fn main() {
 //   TODO /notification/list
 //   TODO /notification/read
 //   TODO /notification/unreadCount
+//   //when respond to rating
 //   
 //    - report
 //   TODO /report
@@ -216,7 +218,6 @@ async fn main() {
 //   
 //    - ratings
 //   TODO /post/rating/like
-//   TODO /post/rating/upload
 
 //make program for loading .env
 // //postgresql connection

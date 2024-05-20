@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/lazyLoadPage.dart';
@@ -165,15 +166,15 @@ class _fullPageRatingState extends State<FullPageRating> {
                                   headers: <String, String>{
                                     'Content-Type':
                                         'application/json; charset=UTF-8',
+                                    HttpHeaders.authorizationHeader:
+                                        userManager.token,
                                   },
                                   body: jsonEncode({
                                     "token": userManager.token,
                                     "text": uploadingRatingText,
-                                    "shareMode": "public",
-                                    "rootItem": {
-                                      "type": "rating",
-                                      "data": rootItem
-                                    },
+                                    //"shareMode": "public",
+                                    "root_type": "rating",
+                                    "root_data": rootItem
                                   }),
                                 );
 

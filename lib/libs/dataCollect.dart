@@ -43,7 +43,7 @@ class DataCollect {
         final response = await http.get(
           justDomainUrl,
           headers: <String, String>{
-            HttpHeaders.authorizationHeader: 'Token ${userManager.token}',
+            HttpHeaders.authorizationHeader: userManager.token,
             HttpHeaders.contentTypeHeader: 'application/json',
           },
           // body: jsonEncode(headers),
@@ -108,7 +108,7 @@ class DataCollect {
     final response = await http.get(
       justDomainUrl,
       headers: <String, String>{
-        HttpHeaders.authorizationHeader: 'Token ${userManager.token}',
+        HttpHeaders.authorizationHeader: userManager.token,
         HttpHeaders.contentTypeHeader: 'application/json',
       },
     );

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/lazyLoadPage.dart';
@@ -33,13 +34,15 @@ class _PostRatingListState extends State<fullPagePost> {
       Uri.parse("$serverDomain/post/rating/upload"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token
       },
       body: jsonEncode({
-        "token": userManager.token,
-        "rootItem": {"type": "post", "data": rootItem},
         "text":
             "this shouldn't have uploaded, massive server error right here.",
-        "shareMode": "public",
+        //"shareMode": "public",
+        "rating": 10,
+        "root_type": "post",
+        "root_data": rootItem
       }),
     );
 
@@ -218,16 +221,15 @@ class _PostRatingListState extends State<fullPagePost> {
                                       headers: <String, String>{
                                         'Content-Type':
                                             'application/json; charset=UTF-8',
+                                        HttpHeaders.authorizationHeader:
+                                            userManager.token
                                       },
                                       body: jsonEncode({
-                                        "token": userManager.token,
                                         "text": uploadingRatingText,
-                                        "shareMode": "public",
+                                        //"shareMode": "public",
                                         "rating": uploadingRating,
-                                        "rootItem": {
-                                          "type": "post",
-                                          "data": rootItem
-                                        },
+                                        "root_type": "post",
+                                        "root_data": rootItem
                                       }),
                                     );
 
