@@ -227,7 +227,7 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
         .bind(&root_data)
         .fetch_one(database_pool).await {
             Ok(value) => {
-                return (StatusCode::CONFLICT, "Already posted".to_string());
+                return (StatusCode::CONFLICT, "you have already rated".to_string());
                 
             },
             Err(err) => {
