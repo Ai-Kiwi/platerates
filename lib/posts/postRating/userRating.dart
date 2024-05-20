@@ -76,7 +76,10 @@ class _userRatingState extends State<userRating> {
         }
         posterName = basicUserData['username'];
         posterUserId = jsonData['ratingPosterId'];
-        rootItem = jsonData['rootItem'];
+        rootItem = {
+          "data": jsonData['rootItemData'],
+          "type": jsonData['rootItemType'],
+        };
         childRatingsAmount = jsonData['childRatingsAmount'];
         ratingLikes = jsonData['ratingLikes'];
         creationDate = jsonData["creationDate"];
