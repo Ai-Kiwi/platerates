@@ -28,6 +28,10 @@ use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_da
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 
+use tower_http::{
+    services::{ServeDir, ServeFile},
+    trace::TraceLayer,
+};
 
 #[macro_use]
 extern crate lazy_static;
@@ -142,9 +146,6 @@ async fn main() {
 
     // build our application with a route
     let app: Router = Router::new()
-        // `GET /` goes to `root`
-        .route("/", get(root))
-        // `POST /users` goes to `create_user`
         .route("/latestVersion", get(get_latest_version))
         .route("/profile/basicData", get(get_profile_basic_data))
         .route("/profile/data", get(get_profile_data))
@@ -163,6 +164,7 @@ async fn main() {
         .route("/post/rating/delete", post(post_delete_rating_post))
         .route("/post/upload", post(post_create_upload))
         .route("/post/rating/upload", post(post_create_rating))
+        .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("path"))) //host web dir
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000
@@ -224,8 +226,8 @@ async fn main() {
 // //folder for data
 // //extra like hosting info folder
 // //mail info
-//bring over flutter website host part
-//bring over apk download
+//test if flutter website has error with CORS
+//bring over apk download link
 //bring over tos websites info
 //test if number of comment replys is working as it seems to show 1 when there is non
 //add logout one user
