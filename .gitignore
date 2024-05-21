@@ -61,6 +61,7 @@ app.*.map.json
 .server/target/
 .server/data
 .server/static_data
+.server/hidden.txt
 
 .server/Cargo.lock
 
