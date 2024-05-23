@@ -119,7 +119,9 @@ class LazyLoadPageState extends State<LazyLoadPage> {
               return;
             }
             for (var post in postData) {
-              itemsCollected.add(post);
+              if (itemsCollected.contains(post) == false) {
+                itemsCollected.add(post);
+              }
             }
             pageUpto++;
           });
