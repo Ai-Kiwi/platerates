@@ -216,6 +216,8 @@ async fn main() {
 //   
 //    - report
 //   TODO /report
+//   //likly gonna redo and just completly remove links, this way its way more open to whatever
+//   //also will add a browse thing to browse reported posts, from there can click ignore or remove or ban account. 
 //   
 //    - searchSystem
 //   TODO /search/users
