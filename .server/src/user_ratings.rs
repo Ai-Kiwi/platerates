@@ -1,28 +1,27 @@
-use std::{collections::HashMap, fs, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
-use axum::{extract::{Query, State}, routing::get, Json, Router};
-use data_encoding::BASE64;
+use std::{collections::HashMap, time::{SystemTime, UNIX_EPOCH}};
+use axum::{extract::{Query, State}, Json};
 use hyper::{HeaderMap, StatusCode};
-use serde::{de::value, Deserialize};
-use serde_json::{json, Number, Value};
-use sqlx::{pool, Pool, Postgres};
+use serde::Deserialize;
+use serde_json::Value;
+use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_posts::posts, utils::createItemId, AppState};
+use crate::{user_login::test_token_header, user_posts::Posts, utils::createItemId, AppState};
 
 
 
 
 #[derive(sqlx::FromRow)]
-pub struct ratings_just_id { 
+pub struct RatingsJustId { 
     pub rating_id: String, 
 }
 
 #[derive(Deserialize)]
 pub struct GetRatingPaginator {
-    ratingId: String,
+    rating_id: String,
 }
 
 #[derive(sqlx::FromRow)]
-pub struct ratings { 
+pub struct Ratings { 
     rating_id: String, 
     text: String,
     creation_date: i64, 
@@ -39,13 +38,13 @@ pub async fn get_rating_data(pagination: Query<GetRatingPaginator>, State(app_st
     let mut data_returning: HashMap<String, Value> = HashMap::new();
     let database_pool: Pool<Postgres> = app_state.database;
 
-    let rating_id: &String = &pagination.ratingId;
+    let rating_id: &String = &pagination.rating_id;
 
-    let rating_data = match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
+    let rating_data = match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
     .bind(rating_id)
     .fetch_one(&database_pool).await {
         Ok(value) => value,
-        Err(err) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
+        Err(_) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
     };
 
     match rating_data.rating {
@@ -148,11 +147,11 @@ pub async fn post_delete_rating_post(pagination: Query<PostDeleteRatingPostPagin
 
     let rating_id = &pagination.rating_id;
 
-    let rating_data = match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
+    let rating_data = match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
     .bind(&rating_id)
     .fetch_one(&database_pool).await {
         Ok(value) => value,
-        Err(err) => return (StatusCode::NOT_FOUND, "No rating found".to_string()),
+        Err(_) => return (StatusCode::NOT_FOUND, "No rating found".to_string()),
     };
 
     if rating_data.rating_creator != user_id {
@@ -164,7 +163,7 @@ pub async fn post_delete_rating_post(pagination: Query<PostDeleteRatingPostPagin
     .execute(&database_pool).await;
 
     match database_response {
-        Ok(value) => return (StatusCode::OK, "Rating deleted".to_string()),
+        Ok(_) => return (StatusCode::OK, "Rating deleted".to_string()),
         Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to delete rating".to_string())
     }
 
@@ -197,7 +196,7 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
     let time_now: SystemTime = SystemTime::now();
     let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
         Ok(value) => value,
-        Err(err) => {
+        Err(_) => {
             println!("failed to fetch time");
             return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
         }
@@ -212,7 +211,7 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
 
 
     if root_type == "post" {
-        match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE post_id = $1")
+        match sqlx::query_as::<_, Posts>("SELECT * FROM posts WHERE post_id = $1")
         .bind(&root_data)
         .fetch_one(database_pool).await {
             Ok(_) => (),
@@ -222,13 +221,12 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
             },
         };
 
-        match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_post_id = $2 ORDER BY creation_date DESC")
+        match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_post_id = $2 ORDER BY creation_date DESC")
         .bind(&user_id)
         .bind(&root_data)
         .fetch_one(database_pool).await {
-            Ok(value) => {
+            Ok(_) => {
                 return (StatusCode::CONFLICT, "you have already rated".to_string());
-                
             },
             Err(err) => {
                 println!("not already posted ({})", err)
@@ -265,7 +263,7 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
 
 
     }else if root_type == "rating" {
-        match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
+        match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
         .bind(&root_data)
         .fetch_one(database_pool).await {
             Ok(_) => (),
@@ -275,7 +273,7 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
             },
         };
 
-        match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_rating_id = $2 ORDER BY creation_date DESC")
+        match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_rating_id = $2 ORDER BY creation_date DESC")
         .bind(&user_id)
         .bind(&root_data)
         .fetch_one(database_pool).await {
@@ -309,5 +307,4 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
     }else{
         return (StatusCode::BAD_REQUEST, "Invalid parent rating item".to_string());
     }
-    (StatusCode::INTERNAL_SERVER_ERROR,"Not finished coding yet".to_owned())
 }

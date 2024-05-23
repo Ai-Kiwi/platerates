@@ -2,7 +2,6 @@ import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:PlateRates/userProfile/aboutApp.dart';
 import 'package:PlateRates/userProfile/accountInfoSettings.dart';
 import 'package:PlateRates/userProfile/userTheme.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../main.dart';

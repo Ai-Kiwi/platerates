@@ -123,9 +123,7 @@ Future<void> openAlert(
                 'Content-Type': 'application/json; charset=UTF-8',
                 HttpHeaders.authorizationHeader: userManager.token,
               },
-              body: jsonEncode(<String, String>{
-                'token': userManager.token,
-              }),
+              body: jsonEncode(<String, String>{}),
             );
             if (response.statusCode == 200) {
               await jsonCache.clear();

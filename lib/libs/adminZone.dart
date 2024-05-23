@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/errorHandler.dart';
 import 'package:PlateRates/libs/usefullWidgets.dart';
@@ -93,9 +94,10 @@ class _AdminZonePageState extends State<AdminZonePage> {
                               headers: <String, String>{
                                 'Content-Type':
                                     'application/json; charset=UTF-8',
+                                HttpHeaders.authorizationHeader:
+                                    userManager.token
                               },
                               body: jsonEncode(<String, String>{
-                                'token': userManager.token,
                                 "username": accountUsername,
                                 "email": accountEmail,
                               }),
@@ -200,10 +202,12 @@ class _AdminZonePageState extends State<AdminZonePage> {
                               headers: <String, String>{
                                 'Content-Type':
                                     'application/json; charset=UTF-8',
+                                HttpHeaders.authorizationHeader:
+                                    userManager.token
                               },
                               body: jsonEncode(<String, String>{
                                 'token': userManager.token,
-                                "userId": accountUserId,
+                                "user_id": accountUserId,
                                 "reason": accountBanReason,
                                 "time": accountBanTime,
                               }),

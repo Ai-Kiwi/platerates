@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/login/userLogin.dart';
 import 'package:PlateRates/main.dart';
@@ -14,14 +15,10 @@ class errorHandlerClass {
         Uri.parse("$serverDomain/login/logout"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: userManager.token
         },
-        body: jsonEncode(<String, String>{
-          'token': userManager.token,
-        }),
+        body: jsonEncode(<String, String>{}),
       );
-      userManager.loggedIn = false;
-      userManager.userId = "";
-      userManager.token = "";
       Phoenix.rebirth(context);
     } else if (errorMessage == "not accepted licenses") {
       acceptedAllLicenses = false;

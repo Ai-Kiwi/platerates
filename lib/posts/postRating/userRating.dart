@@ -105,7 +105,7 @@ class _userRatingState extends State<userRating> {
       body: jsonEncode({
         "token": userManager.token,
         "liking": newLikeState,
-        "ratingId": ratingId
+        "rating_id": ratingId
       }),
     );
     if (response.statusCode == 200) {

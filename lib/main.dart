@@ -264,7 +264,6 @@ class MyApp extends StatelessWidget {
 
     print("testing login state");
     //respond with if token is valid
-    var loginStateData = await userManager.checkLoginState();
     yield "success";
     return;
   }
@@ -384,9 +383,7 @@ class _MyHomePageState extends State<MyHomePage> {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: userManager.token,
         },
-        body: jsonEncode(<String, String>{
-          'token': userManager.token,
-        }),
+        body: jsonEncode(<String, String>{}),
       );
 
       if (response.statusCode == 200) {

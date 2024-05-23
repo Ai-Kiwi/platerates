@@ -13,7 +13,7 @@ def send_requests(thread_id):
     for i in range(requests_per_thread):
         try:
             #get post feed
-            response = requests.get(url + "/post/feed?page=0&pageSize=5")
+            response = requests.get(url + "/post/feed?page=0&page_size=5")
             if response.status_code != 200:
                 print("request failed")
 

@@ -9,7 +9,6 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
-import '../login/userLogin.dart';
 import '../userProfile/userProfile.dart';
 import 'errorHandler.dart';
 
@@ -86,7 +85,7 @@ class LazyLoadPageState extends State<LazyLoadPage> {
     headers.forEach((k, v) => sending_headers[k] = v);
 
     sending_headers["page"] = pageUpto.toString();
-    sending_headers["pageSize"] = itemsPerPage.toString();
+    sending_headers["page_size"] = itemsPerPage.toString();
 
     var subbedServerDomain = serverDomain.substring(0, 5);
     var justDomainUrl;

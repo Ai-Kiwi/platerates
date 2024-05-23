@@ -5,7 +5,6 @@ import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/login/createAccount.dart';
 import 'package:PlateRates/login/userResetPassword.dart';
 import 'package:PlateRates/notifications/appNotificationHandler.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';

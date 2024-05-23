@@ -136,7 +136,7 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                     if (file != null) {
                                       final List<int>? tempNewUserImage =
                                           await imageUtils.resizePhoto(
-                                              await file?.readAsBytes());
+                                              await file.readAsBytes());
 
                                       setState(() {
                                         if (tempNewUserImage != null) {

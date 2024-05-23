@@ -13,10 +13,7 @@ import 'package:PlateRates/login/userLogin.dart';
 import 'package:PlateRates/main.dart';
 import 'package:PlateRates/userProfile/userSettings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-//import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../libs/dataCollect.dart';
@@ -42,7 +39,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
 
   Future<void> _collectData() async {
     Map basicUserData =
-        await dataCollect.getBasicUserData(userId!, context, false);
+        await dataCollect.getBasicUserData(userId, context, false);
     // ignore: use_build_context_synchronously
     Map avatarData = await dataCollect.getAvatarData(
         basicUserData["avatar"], context, false);
@@ -59,8 +56,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
   Future<void> _collectAndUpdateData() async {
     await _collectData();
     // ignore: use_build_context_synchronously
-    if (await dataCollect.updateBasicUserData(userId!, context, false) ==
-        true) {
+    if (await dataCollect.updateBasicUserData(userId, context, false) == true) {
       await _collectData();
     }
   }
@@ -109,7 +105,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => UserProfile(
-                          userId: userId!,
+                          userId: userId,
                           openedOntopMenu: true,
                         )),
               );
@@ -203,7 +199,7 @@ class _UserProfileState extends State<UserProfile> {
       body: jsonEncode({
         "token": userManager.token,
         "following": newFollowState,
-        "userId": userId
+        "user_id": userId
       }),
     );
     if (response.statusCode == 200) {
@@ -224,9 +220,7 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    if (userId != null) {
-      _fetchAndUpdateProfile();
-    }
+    _fetchAndUpdateProfile();
     //Timer.periodic(Duration(seconds: 1), (Timer t) => _fetchAndUpdateProfile());
   }
 
@@ -472,7 +466,7 @@ class _UserProfileState extends State<UserProfile> {
                                           },
                                           body: jsonEncode({
                                             "token": userManager.token,
-                                            "chatUserId": realUserId,
+                                            "chat_user_id": realUserId,
                                           }),
                                         );
 
@@ -527,7 +521,7 @@ class _UserProfileState extends State<UserProfile> {
               ),
             ),
             Visibility(
-              visible: (userBio != null && userBio != ""),
+              visible: (userBio != ""),
               child: Padding(
                   //description
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -722,7 +716,7 @@ class SingleVerifiedAccountItem extends StatelessWidget {
             Center(
               child: Text(
                 accountUsername,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
             const SizedBox(width: 2),

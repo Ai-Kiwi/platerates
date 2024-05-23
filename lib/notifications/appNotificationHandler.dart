@@ -120,7 +120,7 @@ Future<void> informServerNotificationToken(String? token) async {
         },
         body: jsonEncode(<String, String>{
           'token': userManager.token,
-          'newToken': token,
+          'new_token': token,
         }),
       );
     } on Exception catch (error) {
@@ -248,7 +248,7 @@ Future<Map> openNotification(notificationData, context) async {
     },
     body: jsonEncode(<String, String>{
       'token': userManager.token,
-      'notificationId': jsonData['notificationId'],
+      'notification_id': jsonData['notificationId'],
     }),
   );
 

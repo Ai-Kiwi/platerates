@@ -90,7 +90,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
           },
           body: jsonEncode(<String, String>{
             'token': userManager.token,
-            'notificationId': jsonData['notificationId'],
+            'notification_id': jsonData['notificationId'],
           }),
         );
       }

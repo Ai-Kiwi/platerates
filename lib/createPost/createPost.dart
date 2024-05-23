@@ -257,7 +257,7 @@ class _CreatePostState extends State<CreatePostPage> {
                               body: jsonEncode({
                                 "title": _title,
                                 "description": _description,
-                                "shareMode": postCodeNames[shareModeSelected],
+                                "share_mode": postCodeNames[shareModeSelected],
                                 "images": imagesUploading,
                                 //"image": base64Encode(
                                 //    imageUtils.uintListToBytes(imagesData)),

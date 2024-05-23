@@ -5,36 +5,25 @@ mod user_login;
 mod utils;
 mod reset_password;
 
-use core::panic;
-use std::{any, collections::HashMap, fs::{self, File}, hash::Hash, io::Read, iter::Map, ptr::null, string, sync::Arc, task::Poll, vec};
 
+use std::{fs::{self}, vec};
 use argon2::Argon2;
 use axum::{
-    extract::{Path, Query, State}, http::StatusCode, response::IntoResponse, routing::{get, post}, Json, Router
+    routing::{get, post}, Router
 };
-use hyper::header;
-use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header};
-use lettre::{message::header::ContentType, transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
-use serde::{de::value, Deserialize, Serialize};
-
-use serde_json::{Number, Value};
+use jsonwebtoken::{DecodingKey, EncodingKey};
+use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use std::env;
 use std::path::PathBuf;
-use data_encoding::BASE64;
 use sqlx::{postgres::{PgPoolOptions, Postgres}, Pool};
 use rand::rngs::OsRng;
 use rand::RngCore;
-use tower::ServiceBuilder;
-
 use crate::{reset_password::{get_reset_password, post_create_reset_password_code, post_use_reset_password_code}, user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::{post_create_rating, post_delete_rating_post}, utils::create_reset_code};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 use clap::Parser;
 
-use tower_http::{
-    services::{ServeDir, ServeFile},
-    trace::TraceLayer,
-};
+use tower_http::services::ServeDir;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -80,11 +69,6 @@ const CLIENT_VERSION: &str = "2.0.0+1";
 
 async fn get_latest_version() -> &'static str {
     CLIENT_VERSION
-}
-
-// basic handler that responds with a static string
-async fn root() -> &'static str {
-    "this is a root response return"
 }
 
 
@@ -138,9 +122,6 @@ async fn main() {
 
     // initialize tracing
     tracing_subscriber::fmt::init();
-
-    //setup jsonwebtokens
-    let mut header = Header::new(Algorithm::HS512);
 
     let example_hmac_secret_key = generate_hmac_secret_key(32); //256 bits
 

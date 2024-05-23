@@ -51,10 +51,10 @@ class ReportSystem {
                 },
                 body: jsonEncode({
                   "token": userManager.token,
-                  "reportItem": {
-                    "type": postItemType,
-                    "data": postItem,
-                  },
+                  //"reportItem": {
+                  //  "type": postItemType,
+                  //  "data": postItem,
+                  //},
                   "reason": reportReason,
                 }),
               );

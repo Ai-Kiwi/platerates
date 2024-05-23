@@ -390,9 +390,9 @@ class _PromptUserToAcceptNewLicensesState
       Uri.parse('$serverDomain/licenses/update'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token
       },
       body: jsonEncode({
-        "token": userManager.token,
         "licenses": latestLisenseVersions,
       }),
     );
@@ -417,10 +417,9 @@ class _PromptUserToAcceptNewLicensesState
       Uri.parse('$serverDomain/licenses/unaccepted'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token
       },
-      body: jsonEncode({
-        "token": userManager.token,
-      }),
+      body: jsonEncode({}),
     );
     if (response.statusCode == 200) {
       var dataFetched = response.body;

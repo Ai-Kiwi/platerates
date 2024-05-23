@@ -1,21 +1,17 @@
-use std::{borrow::Borrow, string, time::{SystemTime, UNIX_EPOCH}};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use argon2::Argon2;
 use axum::{
-  extract::{Path, Query, State}, http::StatusCode, response::{IntoResponse, Response, Html}, routing::{get, post}, Json, Router
+  extract::State, http::StatusCode, response::Html, Json
   
 };
 use lettre::{message::{header::ContentType, Mailbox}, Message, Transport};
-use serde::{de::value, Deserialize};
+use serde::Deserialize;
 use sqlx::{Pool, Postgres};
-use argon2::{
-  password_hash::{
-      rand_core::OsRng,
-      PasswordHash, PasswordHasher, PasswordVerifier, SaltString
-  },
-  
-};
-use crate::{reset_password, user_login::UserCredentials, utils::{createItemId, create_reset_code}, AppState};
+use argon2::password_hash::{
+      rand_core::OsRng, PasswordHasher, SaltString
+  };
+use crate::{user_login::UserCredentials, utils::create_reset_code, AppState};
 extern crate lettre;
 
 #[derive(Deserialize)]
@@ -35,7 +31,7 @@ pub async fn post_use_reset_password_code(State(app_state): State<AppState<'_>>,
   let time_now: SystemTime = SystemTime::now();
   let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
       Ok(value) => value,
-      Err(err) => {
+      Err(_) => {
           println!("Failed to get system time");
           return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to get system time".to_string());
       }
@@ -82,12 +78,8 @@ pub async fn post_use_reset_password_code(State(app_state): State<AppState<'_>>,
   }
 }
 
-#[derive(Deserialize)]
-pub struct GetResetPagePaginator {
-  reset_code: String
-}
 
-pub async fn get_reset_password(_pagination: Query<GetResetPagePaginator>, State(_app_state): State<AppState<'_>>) -> Html<String> {
+pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<String> {
   let body: String = "<!DOCTYPE html>
     <html lang=\"en\">
     <head>
@@ -247,7 +239,7 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
   let time_now: SystemTime = SystemTime::now();
   let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
       Ok(value) => value,
-      Err(err) => {
+      Err(_) => {
           println!("failed to fetch time");
           return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
       }

@@ -1,23 +1,20 @@
 //jwt make sure I do veirfy as well
 
-use std::{alloc::System, borrow::BorrowMut, collections::HashMap, sync::Arc, thread, time::{Duration, SystemTime, UNIX_EPOCH}};
+use std::{collections::HashMap, thread, time::{Duration, SystemTime, UNIX_EPOCH}};
 //test token
 //
 use argon2::{
     password_hash::{
-        rand_core::OsRng,
-        PasswordHash, PasswordHasher, PasswordVerifier, SaltString
+        PasswordHash, PasswordVerifier
     },
     Argon2
 };
-use axum::{extract::State, middleware::Next, response::Response, Json};
+use axum::{extract::State, Json};
 use hyper::{HeaderMap, StatusCode};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation};
-use serde::{de::value, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::{postgres::{PgPoolOptions, Postgres}, Pool};
-use axum::http::Request;
-use axum::body::Body;
+use sqlx::{postgres::Postgres, Pool};
 use crate::AppState;
 
 #[derive(Deserialize)]
@@ -52,7 +49,7 @@ fn wait_time(start_time: u128) {
     let time_now: SystemTime = SystemTime::now();
     let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
         Ok(value) => value,
-        Err(err) => {
+        Err(_) => {
             println!("failed to get time for 500ms timeout");
             Duration::from_millis(0)
         }
@@ -137,8 +134,7 @@ pub async fn test_token_header(headers : &axum::http::HeaderMap, state: &AppStat
 
 pub async fn post_test_token(State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {
     println!("user testing token");
-    let token = test_token_header(&headers, &app_state).await;
-    let decode_key = &app_state.jwt_decode_key;
+    let token: Result<TokenData<JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
 
     match token {
         Ok(_) => return (StatusCode::OK, "vaild token".to_owned()),
@@ -161,7 +157,7 @@ pub async fn post_logout(State(app_state): State<AppState<'_>>, headers: HeaderM
     let time_now: SystemTime = SystemTime::now();
     let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
         Ok(value) => value,
-        Err(err) => {
+        Err(_) => {
             println!("failed to fetch time");
             return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
         }
@@ -174,7 +170,7 @@ pub async fn post_logout(State(app_state): State<AppState<'_>>, headers: HeaderM
     .execute(&database_pool).await;
 
     match database_response {
-        Ok(value) => return (StatusCode::OK, "Logged out".to_string()),
+        Ok(_) => return (StatusCode::OK, "Logged out".to_string()),
         Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to log out".to_string())
     }
 
@@ -210,7 +206,7 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
     let time_now: SystemTime = SystemTime::now();
     let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
         Ok(value) => value,
-        Err(err) => {
+        Err(_) => {
             println!("failed to fetch time");
             return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
         }
@@ -271,7 +267,7 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
         .execute(&database_pool).await;
 
         match database_response {
-            Ok(value) => (),
+            Ok(_) => (),
             Err(err) => {
                 println!("failed to increase login timeout values ({})", err);
                 return (StatusCode::INTERNAL_SERVER_ERROR, "failed to timeout".to_string())

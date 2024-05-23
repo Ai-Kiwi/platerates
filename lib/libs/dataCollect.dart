@@ -144,52 +144,52 @@ class DataCollect {
 
   Future<Map> getBasicUserData(String userId, context, expectError) async {
     return getData({
-      "userId": userId,
+      "user_id": userId,
     }, "/profile/basicData", 'basicUserData-$userId', context, expectError);
   }
 
   Future<bool> updateBasicUserData(String userId, context, expectError) async {
     return updateData({
-      'userId': userId,
+      'user_id': userId,
     }, "/profile/basicData", 'basicUserData-$userId', context, expectError,
         const Duration(minutes: 15));
   }
 
   Future<Map> getUserData(String userId, context, expectError) async {
     return getData({
-      'userId': userId,
+      'user_id': userId,
     }, "/profile/data", 'userData-$userId', context, expectError);
   }
 
   Future<bool> updateUserData(String userId, context, expectError) async {
     return updateData({
-      'userId': userId,
+      'user_id': userId,
     }, "/profile/data", 'userData-$userId', context, expectError,
         const Duration(hours: 24));
   }
 
   Future<Map> getPostData(String postId, context, expectError) async {
     return getData({
-      'postId': postId,
+      'post_id': postId,
     }, "/post/data", 'post-$postId', context, expectError);
   }
 
   Future<bool> updatePostData(String postId, context, expectError) async {
     return updateData({
-      'postId': postId,
+      'post_id': postId,
     }, "/post/data", 'post-$postId', context, expectError,
         const Duration(minutes: 15));
   }
 
   Future<Map> getRatingData(String ratingId, context, expectError) async {
     return getData({
-      'ratingId': ratingId,
+      'rating_id': ratingId,
     }, "/post/rating/data", 'rating-$ratingId', context, expectError);
   }
 
   Future<bool> updateRatingData(String ratingId, context, expectError) async {
     return updateData({
-      'ratingId': ratingId,
+      'rating_id': ratingId,
     }, "/post/rating/data", 'rating-$ratingId', context, expectError,
         const Duration(minutes: 15));
   }
@@ -206,14 +206,14 @@ class DataCollect {
 
   Future<Map> getChatRoomData(String chatRoomId, context, expectError) async {
     return getData({
-      'chatRoomId': chatRoomId,
+      'chat_room_id': chatRoomId,
     }, "/chat/roomData", 'chatRoomId-$chatRoomId', context, expectError);
   }
 
   Future<bool> updateChatRoomData(
       String chatRoomId, context, expectError) async {
     return updateData({
-      'chatRoomId': chatRoomId,
+      'chat_room_id': chatRoomId,
     }, "/chat/roomData", 'chatRoomId-$chatRoomId', context, expectError,
         const Duration(milliseconds: 0));
   }
@@ -221,8 +221,8 @@ class DataCollect {
   Future<Map> getPostImageData(
       String postId, String imageNumber, context, expectError) async {
     return getData({
-      "postId": postId,
-      "imageNumber": imageNumber,
+      "post_id": postId,
+      "image_number": imageNumber,
     }, "/post/image", 'imageData-$postId-$imageNumber', context, expectError);
   }
 

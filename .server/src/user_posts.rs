@@ -1,24 +1,23 @@
 use std::{collections::HashMap, fs, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
-use axum::{extract::{Query, State}, routing::{get, post}, Json, Router};
+use axum::{extract::{Query, State}, Json};
 use data_encoding::BASE64;
 use hyper::{HeaderMap, StatusCode};
-use jsonwebtoken::TokenData;
 use serde::Deserialize;
-use serde_json::{json, Value};
+use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_ratings::{ratings, ratings_just_id}, utils::createItemId, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
+use crate::{user_login::test_token_header, user_ratings::{Ratings, RatingsJustId}, utils::createItemId, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
 
 
 #[derive(sqlx::FromRow)]
-pub struct posts_just_post_id { 
+pub struct PostsJustPostId { 
     pub post_id: String, 
 }
 
 #[derive(Deserialize)]
 pub struct GetPostFeed {
     page : String,
-    pageSize : String,
+    page_size : String,
 }
 
 pub async fn get_post_feed(pagination: Query<GetPostFeed>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
@@ -29,12 +28,12 @@ pub async fn get_post_feed(pagination: Query<GetPostFeed>, State(app_state): Sta
         Ok(value) => value,
         Err(_) => return (StatusCode::BAD_REQUEST, "Invalid page number".to_string()),
     };
-    let page_size: i64 = match pagination.pageSize.parse::<i64>() {
+    let page_size: i64 = match pagination.page_size.parse::<i64>() {
         Ok(value) => value,
         Err(_) => return (StatusCode::BAD_REQUEST, "Invalid page size".to_string()),
     };
     
-    let posts_data: Vec<posts_just_post_id> = match sqlx::query_as::<_, posts_just_post_id>("SELECT post_id FROM posts ORDER BY post_date DESC LIMIT $1 OFFSET $2")
+    let posts_data: Vec<PostsJustPostId> = match sqlx::query_as::<_, PostsJustPostId>("SELECT post_id FROM posts ORDER BY post_date DESC LIMIT $1 OFFSET $2")
     .bind(page_size)
     .bind(page_number * page_size)
     .fetch_all(&database_pool).await {
@@ -67,11 +66,11 @@ pub async fn get_post_feed(pagination: Query<GetPostFeed>, State(app_state): Sta
 
 #[derive(Deserialize)]
 pub struct GetPostPaginator {
-    postId: String,
+    post_id: String,
 }
 
 #[derive(sqlx::FromRow)]
-pub struct posts { 
+pub struct Posts { 
     post_id: String, 
     poster_user_id: String,
     title: String, 
@@ -90,13 +89,13 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
     
     let mut data_returning: HashMap<String, Value> = HashMap::new();
 
-    let post_id: &String = &pagination.postId;
+    let post_id: &String = &pagination.post_id;
 
-    let post_data = match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE post_id = $1")
+    let post_data = match sqlx::query_as::<_, Posts>("SELECT * FROM posts WHERE post_id = $1")
     .bind(post_id)
     .fetch_one(database_pool).await {
         Ok(value) => value,
-        Err(err) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
+        Err(_) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
     };
 
     data_returning.insert("title".to_string(), Value::String(post_data.title));
@@ -105,7 +104,7 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
     data_returning.insert("ratingsAmount".to_string(), Value::Number(post_data.rating_count.into()));
     match token {
         Ok(value) => {
-            let rated = match sqlx::query_as::<_, ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_post_id = $2 ORDER BY creation_date DESC")
+            let rated = match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_post_id = $2 ORDER BY creation_date DESC")
             .bind(&value.claims.user_id)
             .bind(&post_id)
             .fetch_one(database_pool).await {
@@ -113,7 +112,7 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
                     true
                     
                 },
-                Err(err) => {
+                Err(_) => {
                     false
                 }
             };
@@ -145,13 +144,13 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
 
 #[derive(Deserialize)]
 pub struct GetPostImagePaginator {
-    postId: String,
-    imageNumber: String,
+    post_id: String,
+    image_number: String,
 }
 
 pub async fn get_post_image_data(pagination: Query<GetPostImagePaginator>) -> (StatusCode, String) {
     let pagination: GetPostImagePaginator = pagination.0;
-    let image_number: String = pagination.imageNumber;
+    let image_number: String = pagination.image_number;
     //println!("{}", image_number);
 
     if image_number.contains(".") {
@@ -164,7 +163,7 @@ pub async fn get_post_image_data(pagination: Query<GetPostImagePaginator>) -> (S
         return (StatusCode::BAD_REQUEST, "image number contains invalid char".to_string());
     }
 
-    let post_id: String = pagination.postId;
+    let post_id: String = pagination.post_id;
     if post_id.contains(".") {
         return (StatusCode::BAD_REQUEST, "post id contains invalid char".to_string());
     }
@@ -207,7 +206,7 @@ pub async fn get_post_image_data(pagination: Query<GetPostImagePaginator>) -> (S
 #[derive(Deserialize)]
 pub struct GetPostRatingPaginator {
     page : String,
-    pageSize : String,
+    page_size : String,
     post_id: Option<String>,
     rating_id: Option<String>,
 }
@@ -221,7 +220,7 @@ pub async fn get_post_ratings(pagination: Query<GetPostRatingPaginator>, State(a
         Ok(value) => value,
         Err(_) => return (StatusCode::BAD_REQUEST, "Invalid page number".to_string()),
     };
-    let page_size: i64 = match pagination.pageSize.parse::<i64>() {
+    let page_size: i64 = match pagination.page_size.parse::<i64>() {
         Ok(value) => value,
         Err(_) => return (StatusCode::BAD_REQUEST, "Invalid page size".to_string()),
     };
@@ -247,8 +246,8 @@ pub async fn get_post_ratings(pagination: Query<GetPostRatingPaginator>, State(a
     //    Err(_) => return (StatusCode::BAD_REQUEST, "No user id added".to_string()),
     //};
     
-    let ratings_data: Vec<ratings_just_id> = if parent_type == "post"{
-        match sqlx::query_as::<_, ratings_just_id>("SELECT rating_id FROM post_ratings WHERE parent_post_id = $1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3")
+    let ratings_data: Vec<RatingsJustId> = if parent_type == "post"{
+        match sqlx::query_as::<_, RatingsJustId>("SELECT rating_id FROM post_ratings WHERE parent_post_id = $1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3")
         .bind(parent_data)
         .bind(page_size)
         .bind(page_number * page_size)
@@ -260,7 +259,7 @@ pub async fn get_post_ratings(pagination: Query<GetPostRatingPaginator>, State(a
             },
         }
     }else{
-        match sqlx::query_as::<_, ratings_just_id>("SELECT rating_id FROM post_ratings WHERE parent_rating_id = $1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3")
+        match sqlx::query_as::<_, RatingsJustId>("SELECT rating_id FROM post_ratings WHERE parent_rating_id = $1 ORDER BY creation_date DESC LIMIT $2 OFFSET $3")
         .bind(parent_data)
         .bind(page_size)
         .bind(page_number * page_size)
@@ -312,11 +311,11 @@ pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(
 
     let post_id = &pagination.post_id;
 
-    let post_data = match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE post_id = $1")
+    let post_data = match sqlx::query_as::<_, Posts>("SELECT * FROM posts WHERE post_id = $1")
     .bind(post_id)
     .fetch_one(&database_pool).await {
         Ok(value) => value,
-        Err(err) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
+        Err(_) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
     };
 
     if post_data.poster_user_id != user_id {
@@ -328,7 +327,7 @@ pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(
     .execute(&database_pool).await;
 
     match database_response {
-        Ok(value) => {
+        Ok(_) => {
             let mut i = 0;
 
             //delete all the images added to the post
@@ -375,7 +374,7 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
     let time_now: SystemTime = SystemTime::now();
     let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
         Ok(value) => value,
-        Err(err) => {
+        Err(_) => {
             println!("failed to fetch time");
             return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
         }
@@ -419,7 +418,7 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
 
 
     //test when last post by user was make sure was awhile ago
-    match sqlx::query_as::<_, posts>("SELECT * FROM posts WHERE poster_user_id = $1 ORDER BY post_date DESC")
+    match sqlx::query_as::<_, Posts>("SELECT * FROM posts WHERE poster_user_id = $1 ORDER BY post_date DESC")
     .bind(&user_id)
     .fetch_one(database_pool).await {
         Ok(value) => {

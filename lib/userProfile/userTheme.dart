@@ -1,17 +1,12 @@
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/usefullWidgets.dart';
-import 'package:PlateRates/userProfile/aboutApp.dart';
-import 'package:PlateRates/userProfile/accountInfoSettings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../main.dart';
-import '../libs/smoothTransitions.dart';
-import '../login/userResetPassword.dart';
 
 class UserThemeSettings extends StatefulWidget {
   @override
