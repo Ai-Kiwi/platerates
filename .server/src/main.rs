@@ -3,6 +3,7 @@ mod user_profiles;
 mod user_ratings;
 mod user_login;
 mod utils;
+mod reset_password;
 
 use core::panic;
 use std::{any, collections::HashMap, fs::{self, File}, hash::Hash, io::Read, iter::Map, ptr::null, string, sync::Arc, task::Poll, vec};
@@ -13,6 +14,7 @@ use axum::{
 };
 use hyper::header;
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header};
+use lettre::{message::header::ContentType, transport::smtp::authentication::Credentials, Message, SmtpTransport, Transport};
 use serde::{de::value, Deserialize, Serialize};
 
 use serde_json::{Number, Value};
@@ -24,14 +26,32 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use tower::ServiceBuilder;
 
-use crate::{user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::{post_create_rating, post_delete_rating_post}};
+use crate::{reset_password::{get_reset_password, post_create_reset_password_code, post_use_reset_password_code}, user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::{post_create_rating, post_delete_rating_post}, utils::create_reset_code};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
+use clap::Parser;
 
 use tower_http::{
     services::{ServeDir, ServeFile},
     trace::TraceLayer,
 };
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(long)]
+    database_url: String,
+
+    #[arg(long)]
+    smpt_host: String,
+
+    #[arg(long)]
+    smpt_auth_user: String,
+
+    #[arg(long)]
+    smpt_auth_password: String,
+}
+
 
 #[macro_use]
 extern crate lazy_static;
@@ -39,11 +59,7 @@ extern crate lazy_static;
 lazy_static! {
     static ref ARGS: Vec<String> = env::args().collect();
 
-    static ref DATA_FOLDER_PATH: PathBuf = match ARGS.get(1){
-        Some(value) => PathBuf::from(value),
-        //nothing loaded by user so load the current work path
-        None => env::current_dir().expect("failed to find data path").join("data"),
-    };
+    static ref DATA_FOLDER_PATH: PathBuf = env::current_dir().expect("failed to find data path").join("data");
 
     static ref DATA_IMAGE_FOLDER_PATH: PathBuf = DATA_FOLDER_PATH.to_owned().join("images");
     static ref DATA_IMAGE_POSTS_FOLDER_PATH: PathBuf = DATA_FOLDER_PATH.to_owned().join("images").join("posts");
@@ -51,11 +67,7 @@ lazy_static! {
 
     //static data is regular data but static!
     //its stuff like website builds, app downloads and jwt keys
-    static ref STATIC_DATA_FOLDER_PATH: PathBuf = match ARGS.get(2){
-        Some(value) => PathBuf::from(value),
-        //nothing loaded by user so load the current work path
-        None => env::current_dir().expect("failed to find static_data path").join("static_data"),
-    };
+    static ref STATIC_DATA_FOLDER_PATH: PathBuf = env::current_dir().expect("failed to find static_data path").join("static_data");
 
     static ref PRIVATE_JWT_KEY_FILE: PathBuf = STATIC_DATA_FOLDER_PATH.to_owned().join("jwt.key");
 }
@@ -89,12 +101,23 @@ pub struct AppState<'a> {
     database : Pool<Postgres>,
     jwt_encode_key : EncodingKey,
     jwt_decode_key : DecodingKey,
-    argon2 : Argon2<'a>
+    argon2 : Argon2<'a>,
+    mailer : SmtpTransport,
 }
 
 
 #[tokio::main]
 async fn main() {
+    //load args
+    let args: Args = Args::parse();
+    let database_url: String = args.database_url;
+    let smpt_host: String = args.smpt_host;
+    let smpt_auth_user: String = args.smpt_auth_user;
+    let smpt_auth_password: String = args.smpt_auth_password;
+
+    println!("{}",create_reset_code());
+
+
     //creates needed data storage data
     let _ = fs::create_dir_all(&*DATA_IMAGE_FOLDER_PATH).expect("failed to create data dir");
     let _ = fs::create_dir_all(&*DATA_IMAGE_POSTS_FOLDER_PATH).expect("failed to create data image dir");
@@ -109,7 +132,7 @@ async fn main() {
     let database_pool: Pool<Postgres> = PgPoolOptions::new()
     .max_connections(5)
     //don't bother trying to be sneaky this is my test server info
-    .connect("postgres://toasteruser:X4F0p7Q95dbXjNJ8fu80Ompl4CxREfrtr2T62eVUdJrrI0w8v16uymNFMiIacKyw@127.0.0.1/toasterdev").await.expect("Failed to connect to postgres database");
+    .connect(&database_url).await.expect("Failed to connect to postgres database");
 
     println!("connected to database");
 
@@ -135,13 +158,22 @@ async fn main() {
     //setup Argon2
     //if I change Algorithm in here it needs to be changed in test token part too
     let argon2: Argon2 = Argon2::default();
-    
+
+    //setup email server
+    let creds: Credentials = Credentials::new(smpt_auth_user, smpt_auth_password);
+
+    // Open a remote connection to gmail
+    let mailer: SmtpTransport = SmtpTransport::relay(&smpt_host)
+        .unwrap()
+        .credentials(creds)
+        .build();
 
     let state: AppState = AppState { 
         database: database_pool, 
         jwt_encode_key: encoding_key,
         jwt_decode_key: decoding_key,
         argon2: argon2,
+        mailer: mailer
     };
 
     // build our application with a route
@@ -164,6 +196,9 @@ async fn main() {
         .route("/post/rating/delete", post(post_delete_rating_post))
         .route("/post/upload", post(post_create_upload))
         .route("/post/rating/upload", post(post_create_rating))
+        .route("/reset-password", get(get_reset_password))
+        .route("/login/reset-password", post(post_create_reset_password_code))
+        .route("/use-reset-password-code", post(post_use_reset_password_code))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("path"))) //host web dir
         .with_state(state);
 
@@ -189,9 +224,6 @@ async fn main() {
 //   TODO /licenses/unaccepted
 //   TODO /licenses/update
 //   
-//    - mailsender
-//   TODO sendMail
-//   
 //    - notifcation system
 //   TODO sendMailToDevice
 //   TODO /notification/updateDeviceToken
@@ -214,24 +246,13 @@ async fn main() {
 //   TODO /use-create-account-code
 //   TODO /createAccount
 //   
-//    - userLogins 
-//   TODO /login/reset-password
-//   TODO /reset-password
-//   
 //    - ratings
 //   TODO /post/rating/like
 
-//make program for loading .env
-// //postgresql connection
-// //folder for data
-// //extra like hosting info folder
-// //mail info
 //test if flutter website has error with CORS
 //bring over apk download link
 //bring over tos websites info
 //test if number of comment replys is working as it seems to show 1 when there is non
-//add logout one user
-//move system over to refresh tokens instead
 //make sure log out all clears the list of tokens manuelly expired
 //add back admin users
 // allow to delete any post

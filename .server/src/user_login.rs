@@ -36,15 +36,16 @@ pub struct JwtClaims {
 
 #[derive(sqlx::FromRow)]
 pub struct UserCredentials { 
-    user_id: String,
-    email: String,
-    hashed_password: String,
-    password_reset_time: i64,
-    last_login_attempt_time: i64,
-    login_attempt_number: i32,
-    notification_token: Option<String>,
-    invalid_tokens: Vec<String>,
-    tokens_expire_time: i64
+    pub user_id: String,
+    pub email: String,
+    pub hashed_password: String,
+    pub password_reset_time: i64,
+    pub last_login_attempt_time: i64,
+    pub login_attempt_number: i32,
+    pub notification_token: Option<String>,
+    pub invalid_tokens: Vec<String>,
+    pub tokens_expire_time: i64,
+    pub password_reset_code: Option<String>
 }
 
 fn wait_time(start_time: u128) {

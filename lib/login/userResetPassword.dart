@@ -16,8 +16,6 @@ class ResetPasswordPage extends StatefulWidget {
 }
 
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
-  String _NewPassword = "";
-  String _confirmNewPassword = "";
   String _email = "";
 
   @override
@@ -66,56 +64,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               ),
             ),
           ),
-          const SizedBox(height: 24.0),
-          Padding(
-            //password input feild
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextFormField(
-              onChanged: (value) {
-                _NewPassword = value;
-              },
-              autofillHints: const [AutofillHints.password],
-              obscureText: true,
-              style: const TextStyle(color: Colors.white, fontSize: 20),
-              decoration: InputDecoration(
-                labelText: 'New Password',
-                labelStyle:
-                    const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                contentPadding: const EdgeInsets.all(8.0),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          Padding(
-            //confirm password input feild
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: TextFormField(
-              onChanged: (value) {
-                _confirmNewPassword = value;
-              },
-              autofillHints: const [AutofillHints.password],
-              obscureText: true,
-              style: const TextStyle(color: Colors.white, fontSize: 20),
-              decoration: InputDecoration(
-                labelText: 'Confirm Password',
-                labelStyle:
-                    const TextStyle(color: Color.fromARGB(255, 200, 200, 200)),
-                contentPadding: const EdgeInsets.all(8.0),
-                enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
-                ),
-              ),
-            ),
-          ),
           const SizedBox(height: 16.0),
           Padding(
             //login button
@@ -129,8 +77,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   borderRadius: BorderRadius.circular(15.0),
                 )),
                 onPressed: () async {
-                  if (_NewPassword != _confirmNewPassword) {
-                    openAlert("error", "passwords don't match", null, context,
+                  if (_email == "") {
+                    openAlert("error", "email can't be nothing", null, context,
                         null, null);
                   } else {
                     final response = await http.post(
@@ -140,7 +88,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       },
                       body: jsonEncode(<String, String>{
                         'email': _email,
-                        'newPassword': _NewPassword
                       }),
                     );
                     if (response.statusCode == 200) {
