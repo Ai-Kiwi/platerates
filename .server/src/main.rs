@@ -204,6 +204,8 @@ async fn main() {
 //    - lisences
 //   TODO /licenses/unaccepted
 //   TODO /licenses/update
+//   //on boot it'll ask the server if some lisences have been not accepted
+//   //if some are in the list open the lisence menu
 //   
 //    - notifcation system
 //   TODO sendMailToDevice
