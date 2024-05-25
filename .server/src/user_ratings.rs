@@ -5,7 +5,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_posts::Posts, utils::createItemId, AppState};
+use crate::{user_login::test_token_header, user_posts::Posts, utils::create_item_id, AppState};
 
 
 
@@ -46,6 +46,8 @@ pub async fn get_rating_data(pagination: Query<GetRatingPaginator>, State(app_st
         Ok(value) => value,
         Err(_) => return (StatusCode::NOT_FOUND, "No post found".to_string()),
     };
+
+    let _ = rating_data.rating_id; //purely to get rid of unused warning lmao
 
     match rating_data.rating {
         Some(value) => data_returning.insert("rating".to_string(),Value::String(value.to_string())),
@@ -180,7 +182,7 @@ pub struct RatingCreate {
 }             
 
 pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<RatingCreate>) -> (StatusCode, String) {
-    let rating_id: String = createItemId();
+    let rating_id: String = create_item_id();
     let text: &String = &body.text;
     let root_type: &String = &body.root_type;
     let root_data: &String = &body.root_data;

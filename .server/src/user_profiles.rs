@@ -36,6 +36,7 @@ pub async fn get_profile_basic_data(pagination: Query<GetUserInfoPaginator>, Sta
         Err(_) => return (StatusCode::NOT_FOUND, "No user found".to_string()),
     };
 
+    let _ = user_data.user_id; //purely to get rid of unused warning lmao
     data_returning.insert("username".to_string(), Value::String(user_data.username));
     match user_data.avatar_id {
         Some(value) => data_returning.insert("avatar".to_string(), Value::String(value)),
@@ -82,6 +83,7 @@ pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app
         Err(err) => return (StatusCode::NOT_FOUND, "User not found".to_string() + &err.to_string()),
     };
 
+    let _ = user_data.creation_date; //purely to get rid of unused warning lmao
     data_returning.insert("username".to_string(), Value::String(user_data.username));
     data_returning.insert("bio".to_string(), Value::String(user_data.bio));
     data_returning.insert("administrator".to_string(), Value::Bool(user_data.administrator));

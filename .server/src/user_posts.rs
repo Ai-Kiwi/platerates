@@ -6,7 +6,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_ratings::{Ratings, RatingsJustId}, utils::createItemId, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
+use crate::{user_login::test_token_header, user_ratings::{Ratings, RatingsJustId}, utils::create_item_id, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
 
 
 #[derive(sqlx::FromRow)]
@@ -225,17 +225,13 @@ pub async fn get_post_ratings(pagination: Query<GetPostRatingPaginator>, State(a
         Err(_) => return (StatusCode::BAD_REQUEST, "Invalid page size".to_string()),
     };
 
-    let mut parent_type = "".to_string();
-
-    let parent_data = match pagination.post_id {
+    let (parent_data, parent_type) = match pagination.post_id {
         Some(value) => {
-            parent_type = "post".to_owned();
-            value
+            (value, "post".to_owned())
         },
         None => match pagination.rating_id {
             Some(value) => {
-                parent_type = "rating".to_owned();
-                value
+                (value, "rating".to_owned())
             },
             None => return (StatusCode::BAD_REQUEST, "no rating or post provided".to_owned()),
         }
@@ -358,7 +354,7 @@ pub struct PostUpload {
 }
 
 pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<PostUpload>) -> (StatusCode, String) {
-    let post_id: String = createItemId(); //could be already used inthat case postgres errors, chance is like crazy low tho
+    let post_id: String = create_item_id(); //could be already used inthat case postgres errors, chance is like crazy low tho
     let post_title: &String = &body.title;
     let post_description: &String = &body.description;
     let images: &Vec<String> = &body.images;
