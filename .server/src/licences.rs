@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use axum::extract::State;
 use hyper::{HeaderMap, StatusCode};
-use serde::{de::value, Deserialize};
+use serde::Deserialize;
 use sqlx::types::Json;
 
 use crate::{user_login::test_token_header, user_profiles::UserData, AppState, LICENSES};
@@ -26,7 +26,7 @@ pub async fn get_unaccepted_licenses(State(app_state): State<AppState<'_>>, head
     .bind(user_id)
     .fetch_one(database_pool).await {
         Ok(value) => value,
-        Err(err) => return (StatusCode::NOT_FOUND, "User not found".to_string()),
+        Err(_) => return (StatusCode::NOT_FOUND, "User not found".to_string()),
     };
 
     let user_licenses: Json<HashMap<String, i32>> = user_data.licenses;

@@ -208,12 +208,13 @@ async fn main() {
 
 //    - adminZone
 //   TODO /admin/banUser
+//    add back admin users
+//    allow to delete any post
 //   
 //    - chatSystem
 //   TODO all of it
 //   
 //    - lisences
-//   TODO /licenses/unaccepted
 //   TODO /licenses/update
 //   //on boot it'll ask the server if some lisences have been not accepted
 //   //if some are in the list open the lisence menu
@@ -250,9 +251,6 @@ async fn main() {
 //bring over tos websites info
 //test if number of comment replys is working as it seems to show 1 when there is non
 //make sure log out all clears the list of tokens manuelly expired
-//add back admin users
-// allow to delete any post
-//add propper display to say if you have rated a post yet instead of just saying you have
 //add back post feed for users you follow
 //add get profile ratings, not sure if fully done and code is not used or code is half done
-//run through rust code and remoe all the warnings that I can
+//test if display for if post is rated is working
