@@ -262,7 +262,26 @@ class MyApp extends StatelessWidget {
       //}
     }
 
-    print("testing login state");
+    //test licenses
+    print("testing if license is the all accepted");
+    var response = await http.get(
+      Uri.parse("$serverDomain/licenses/unaccepted"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token
+      },
+    );
+    print(response.body);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = await jsonDecode(response.body);
+
+      if (jsonResponse.isNotEmpty) {
+        yield "invalid-licenses";
+        return;
+      }
+    }
+
     //respond with if token is valid
     yield "success";
     return;
@@ -313,6 +332,8 @@ class MyApp extends StatelessWidget {
                         //  //client is out of date
                         return DisplayErrorMessagePage(
                             errorMessage: "client-out-of-date");
+                      } else if (snapshot.data == "invalid-licenses") {
+                        return const PromptUserToAcceptNewLicenses();
                       } else {
                         // User is not logged in, navigate to login page
                         return DisplayErrorMessagePage(

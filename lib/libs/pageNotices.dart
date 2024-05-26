@@ -413,13 +413,12 @@ class _PromptUserToAcceptNewLicensesState
   }
 
   Future<void> _fetchData() async {
-    final response = await http.post(
+    final response = await http.get(
       Uri.parse('$serverDomain/licenses/unaccepted'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: userManager.token
       },
-      body: jsonEncode({}),
     );
     if (response.statusCode == 200) {
       var dataFetched = response.body;

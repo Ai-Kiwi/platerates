@@ -12,18 +12,10 @@ CREATE TABLE user_data (
   rating_count INT NOT NULL DEFAULT 0,
   followers_count INT NOT NULL DEFAULT 0,
   following_count INT NOT NULL DEFAULT 0,
-  creation_date BIGINT NOT NULL
+  creation_date BIGINT NOT NULL,
+  licenses JSONB NOT NULL default '{}'::jsonb -- Add one different for tos and what not
 );
 CREATE INDEX user_data_idx_username ON user_data (username);
-
-
--- //  user_licenses //
-
-CREATE TABLE user_licenses (
-  user_id TEXT UNIQUE PRIMARY KEY REFERENCES user_data(user_id) ON DELETE CASCADE,
-  licenses JSONB NOT NULL
-);
-CREATE INDEX user_licenses_idx_user_id ON user_licenses (user_id);
 
 
 -- //  user_credentials //

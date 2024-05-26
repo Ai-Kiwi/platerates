@@ -4,9 +4,9 @@ mod user_ratings;
 mod user_login;
 mod utils;
 mod reset_password;
+mod licences;
 
-
-use std::{fs::{self}, vec};
+use std::{collections::HashMap, fs, vec};
 use argon2::Argon2;
 use axum::{
     routing::{get, post}, Router
@@ -18,7 +18,7 @@ use std::path::PathBuf;
 use sqlx::{postgres::{PgPoolOptions, Postgres}, Pool};
 use rand::rngs::OsRng;
 use rand::RngCore;
-use crate::{reset_password::{get_reset_password, post_create_reset_password_code, post_use_reset_password_code}, user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::{post_create_rating, post_delete_rating_post}, utils::create_reset_code};
+use crate::{licences::get_unaccepted_licenses, reset_password::{get_reset_password, post_create_reset_password_code, post_use_reset_password_code}, user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::{post_create_rating, post_delete_rating_post}, utils::create_reset_code};
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 use clap::Parser;
@@ -59,6 +59,16 @@ lazy_static! {
     static ref STATIC_DATA_FOLDER_PATH: PathBuf = env::current_dir().expect("failed to find static_data path").join("static_data");
 
     static ref PRIVATE_JWT_KEY_FILE: PathBuf = STATIC_DATA_FOLDER_PATH.to_owned().join("jwt.key");
+
+    static ref LICENSES: HashMap<String, i32> = {
+        let mut m: HashMap<String, i32> = HashMap::new();
+        m.insert("CommunityGuidelines".to_string(), 1);
+        m.insert("deleteData".to_string(), 3);
+        m.insert("privacyPolicy".to_string(), 3);
+        m.insert("termsofService".to_string(), 1);
+        m
+    };
+
 }
 
 
@@ -180,6 +190,7 @@ async fn main() {
         .route("/reset-password", get(get_reset_password))
         .route("/login/reset-password", post(post_create_reset_password_code))
         .route("/use-reset-password-code", post(post_use_reset_password_code))
+        .route("/licenses/unaccepted", get(get_unaccepted_licenses))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("path"))) //host web dir
         .with_state(state);
 

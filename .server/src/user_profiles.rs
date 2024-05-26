@@ -55,16 +55,17 @@ pub async fn get_profile_basic_data(pagination: Query<GetUserInfoPaginator>, Sta
 
 #[derive(sqlx::FromRow)]
 pub struct UserData { 
-    user_id: String,
-    username: String,
-    bio: String,
-    avatar_id: Option<String>,
-    administrator : bool,
-    post_count: i32,
-    rating_count: i32,
-    followers_count: i32,
-    following_count: i32,
-    creation_date: i64,
+    pub user_id: String,
+    pub username: String,
+    pub bio: String,
+    pub avatar_id: Option<String>,
+    pub administrator : bool,
+    pub post_count: i32,
+    pub rating_count: i32,
+    pub followers_count: i32,
+    pub following_count: i32,
+    pub creation_date: i64,
+    pub licenses: sqlx::types::Json<HashMap<String,i32>>
 }
 
 pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
