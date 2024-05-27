@@ -73,44 +73,6 @@ pub struct UpdateLicenses {
 //updates all the liceneses to the latest version
 
 
-
-//router.post('/licenses/unaccepted', [confirmTokenValid], async (req : Request, res : Response) => {
-//    console.log(" => user fetching unread licenses")
-//    try{
-//        const userId = req.body.tokenUserId;
-//
-//        const userLicenses = await database.user_licenses
-//        .where({user_id : userId})
-//    
-//        if (userLicenses.length === 0){
-//            console.log("user id from token invalid")
-//            res.status(404).send(`user id from token invalid`);
-//            return;
-//        }
-//
-//        var LicensesToUpdate = {}
-//    
-//        for (const key in Licenses) {
-//            if (userLicenses.length === 0){
-//                LicensesToUpdate[key] = Licenses[key];
-//            }else{
-//                if (Licenses[key] != userLicenses[0].licenses[key]){
-//                    LicensesToUpdate[key] = Licenses[key];
-//                }
-//            }
-//        }
-//
-//        console.log("send unaccepted licenses")
-//        return res.status(200).send(JSON.stringify(LicensesToUpdate))
-//      
-//    }catch(err){
-//    reportError(err);
-//      return res.status(500).send("server error")
-//    }
-//})
-
-
-
 //router.post('/licenses/update', [confirmTokenValid], async (req : Request, res : Response) => {
 //    console.log(" => user updating licenses")
 //    try{
