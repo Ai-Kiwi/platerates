@@ -191,7 +191,7 @@ async fn main() {
         .route("/login/reset-password", post(post_create_reset_password_code))
         .route("/use-reset-password-code", post(post_use_reset_password_code))
         .route("/licenses/unaccepted", get(get_unaccepted_licenses))
-        .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("path"))) //host web dir
+        .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000
