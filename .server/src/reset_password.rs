@@ -70,7 +70,7 @@ pub async fn post_use_reset_password_code(State(app_state): State<AppState<'_>>,
     .execute(database_pool).await;
 
     match database_response {
-        Ok(_) => return (StatusCode::OK, "Password has been reset\nPage can be closed".to_string()),
+        Ok(_) => return (StatusCode::OK, "Password has been resetnPage can be closed".to_string()),
         Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update password".to_string()),
     }
 
@@ -80,8 +80,8 @@ pub async fn post_use_reset_password_code(State(app_state): State<AppState<'_>>,
 
 
 pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<String> {
-  let body: String = "<!DOCTYPE html>
-    <html lang=\"en\">
+  let body: String = r#"<!DOCTYPE html>
+    <html lang="en">
     <head>
       <title>PlateRates: Reset Password</title>
       <style>
@@ -112,7 +112,7 @@ pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<
           font-weight: bold;
           color: #333; /* Black text color */
         }
-        input[type=\"password\"] {
+        input[type="password"] {
           width: 100%;
           padding: 12px 10px;
           border: 1px solid #ccc;
@@ -148,20 +148,20 @@ pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<
       </style>
     </head>
     <body>
-      <div class=\"container\">
+      <div class="container">
         <h1>Reset Your Password</h1>
-          <div class=\"form-group\">
-            <label for=\"new-password\">New Password</label>
-            <input type=\"password\" id=\"new-password\" name=\"new-password\" required>
-            <span class=\"error\" id=\"new-password-error\"></span>
+          <div class="form-group">
+            <label for="new-password">New Password</label>
+            <input type="password" id="new-password" name="new-password" required>
+            <span class="error" id="new-password-error"></span>
             </div>
-          <div class=\"form-group\">
-            <label for=\"confirm-password\">Confirm Password</label>
-            <input type=\"password\" id=\"confirm-password\" name=\"confirm-password\" required>
-            <span class=\"error\" id=\"confirm-password-error\"></span>
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
+            <span class="error" id="confirm-password-error"></span>
           </div>
-          <button id=\"reset-button\">Reset Password</button>
-        <div class=\"password-tips\">
+          <button id="reset-button">Reset Password</button>
+        <div class="password-tips">
           <p>**Password Tips:**</p>
           <ul>
             <li>Use a strong password with at least 8 characters.</li>
@@ -172,7 +172,7 @@ pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<
         </div>
       </div>
       <script>
-      document.getElementById(\"reset-button\").onclick = () => {    
+      document.getElementById("reset-button").onclick = () => {    
           const newPassword = document.getElementById('new-password').value;
           const confirmPassword = document.getElementById('confirm-password').value;
           const newPasswordError = document.getElementById('new-password-error');
@@ -219,7 +219,7 @@ pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<
         };
       </script>
       </body>
-    </html>".to_owned();
+    </html>"#.to_owned();
   Html(body)
 }
 
@@ -269,12 +269,12 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
 
     match database_response {
         Ok(_) => {
-          let email_html: String = "
+          let email_html: String = r#"
           <!DOCTYPE html>
-      <html lang=\"en\">
+      <html lang="en">
       <head>
-        <meta charset=\"UTF-8\">
-        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>PlateRates: Reset Your Password</title>
         <style>
           body {
@@ -320,25 +320,25 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
         </style>
       </head>
       <body>
-        <div class=\"container\">
-          <div class=\"header\">
-            <img src=\"https://aikiwi.dev/platerates-logo.svg\" alt=\"platerates Logo\" class=\"logo\">
+        <div class="container">
+          <div class="header">
+            <img src="https://aikiwi.dev/platerates-logo.svg" alt="platerates Logo" class="logo">
           </div>
-          <div class=\"content\">
+          <div class="content">
             <p>Hi there,</p>
             <p>We received a request to reset your password for your platerates account.</p>
             <p>If you requested this reset, click the button below to choose a new password.</p>
             <p>**If you did not request a password reset, please ignore this email.**</p>
-            <a href=\"https://platerates.com/reset-password?reset_code=".to_owned() + &password_reset_code + "\" class=\"reset-button\">Reset Password</a>
+            <a href="https://platerates.com/reset-password?reset_code=".to_owned() + &password_reset_code + "" class="reset-button">Reset Password</a>
             <p>This link will expire in 1 hour for your security.</p>
           </div>
-          <div class=\"footer\">
-            <p>Having trouble? Contact us at <a href=\"mailto:support@platerates.com\">support@platerates.com</a></p>
+          <div class="footer">
+            <p>Having trouble? Contact us at <a href="mailto:support@platerates.com">support@platerates.com</a></p>
             <p>The platerates Team</p>
           </div>
         </div>
       </body>
-      </html>";
+      </html>"#.to_owned();
 
           let email_receiving: Mailbox = match user_credential_data.email.parse() {
             Ok(value) => value,
