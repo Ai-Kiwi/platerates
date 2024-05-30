@@ -5,6 +5,7 @@ mod user_login;
 mod utils;
 mod reset_password;
 mod licences;
+mod pages;
 
 use std::{collections::HashMap, fs, vec};
 use argon2::Argon2;
@@ -13,6 +14,7 @@ use axum::{
 };
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
+use pages::{get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
 use std::env;
 use std::path::PathBuf;
 use sqlx::{postgres::{PgPoolOptions, Postgres}, Pool};
@@ -191,6 +193,11 @@ async fn main() {
         .route("/login/reset-password", post(post_create_reset_password_code))
         .route("/use-reset-password-code", post(post_use_reset_password_code))
         .route("/licenses/unaccepted", get(get_unaccepted_licenses))
+        .route("/deleteData", get(get_page_delete_data))
+        .route("/privacyPolicy", get(get_page_privacy_policy))
+        .route("/CommunityGuidelines",get(get_page_community_guidelines))
+        .route("/termsOfService", get(get_page_terms_of_service))
+        .route("/styles.css", get(get_page_styles))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .with_state(state);
 
@@ -248,7 +255,6 @@ async fn main() {
 
 //test if flutter website has error with CORS
 //bring over apk download link
-//bring over tos websites info
 //test if number of comment replys is working as it seems to show 1 when there is non
 //make sure log out all clears the list of tokens manuelly expired
 //add back post feed for users you follow
