@@ -365,29 +365,3 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
   }
   
 }
-
-
-
-
-//notes for creating this
-//change in app to just be 1 link for reset password
-//email will then be limited to 1 send per hour
-//email will have link you can open
-//on link above will be sent that will be what you want to change password to
-//after that your accounts password will be changed
-
-
-
-
-
-//let email = Message::builder()
-//.from("test <nobody@noreply.platerates.com>".parse().unwrap())
-//.to("jsowry936@gmail.com".parse().unwrap())
-//.subject("Happy new year")
-//.header(ContentType::TEXT_PLAIN)
-//.body(String::from("Be happy!"))
-//.unwrap();
-//
-//let _ = mailer.send(&email);
-
-
