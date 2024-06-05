@@ -140,35 +140,23 @@ pub async fn get_page_privacy_policy() -> Html<&'static str> {
   <p>When requesting a password reset, your IP address will be logged and sent to your registered email address for security purposes.</p>
 
   <br>
-  <h1>2. Storage Services</h1>
-  <p>We use MongoDB Atlas, a cloud database service, and Backblaze, a cloud storage provider, for storing data in our App. MongoDB Atlas provides a reliable database solution, while Backblaze offers secure cloud storage. Here's how these services are integrated into our App:</p>
-
-  <h2>2.1 MongoDB Atlas</h2>
-  <p>We utilize MongoDB Atlas as our primary database solution to store user information, content, and application data. MongoDB Atlas ensures scalability, reliability, and performance for our App's data storage needs.</p>
-  <p>For more information on how MongoDB Atlas handles your data, please refer to their <a href="https://www.mongodb.com/legal/privacy/privacy-policy">privacy policy</a>.</p>
-
-  <h2>2.2 Backblaze</h2>
-  <p>For additional data backup and storage, we leverage Backblaze's secure cloud storage services. Backblaze provides redundant storage and encryption features to safeguard our users' data.</p>
-  <p>For more information on how Backblaze handles your data, please refer to their <a href="https://www.backblaze.com/company/policy/privacy">privacy policy</a>.</p>
-  
-  <br>
-  <h1>3. Firebase Services</h1>
+  <h1>2. Firebase Services</h1>
   <p>We use Firebase, a mobile and web application development platform provided by Google, to enhance the functionality and features of our App. Firebase may collect and process certain data for these purposes. Here's how Firebase is integrated into our App:</p>
 
-  <h2>3.1 Firebase Crashlytics</h2>
+  <h2>2.1 Firebase Crashlytics</h2>
   <p>We employ Firebase Crashlytics to enhance the stability and performance of our App. Firebase Crashlytics helps us identify and resolve issues, crashes, and errors, allowing us to provide you with a smoother and more reliable user experience.</p>
   <p>When you use our App, Firebase Crashlytics may automatically collect and process data related to application crashes and errors, which may include device information, application logs, and the sequence of events leading to a crash. This data is used solely for debugging and improving the App's performance.</p>
   <p>We want to assure you that the data collected by Firebase Crashlytics is anonymized and does not personally identify you. It is solely intended to help us maintain the quality and reliability of our App.</p>
 
-  <h2>3.2 Firebase Cloud Messaging (FCM)</h2>
+  <h2>2.2 Firebase Cloud Messaging (FCM)</h2>
   <p>Our App utilizes Firebase Cloud Messaging (FCM) to deliver push notifications to your device. FCM enables us to send you important announcements, updates, and personalized messages to enhance your experience with the App.</p>
   <p>When you use our App, FCM may collect and process data that includes your device's unique identifiers, such as the Firebase Instance ID, and your device's operating system information. This information is used solely for the purpose of delivering notifications and improving your interaction with the App.</p>
   <p>If you wish to opt out of receiving push notifications from our App, you can manage your notification preferences in your device settings. Please note that opting out may result in missing important updates and information related to the App.</p>
  
-  <h2>3.3 Firebase Analytics</h2>
+  <h2>2.3 Firebase Analytics</h2>
   <p>Our App uses Firebase Analytics to collect anonymous data on user interactions and behaviors. This information helps us understand user preferences and improve the App's performance. Firebase Analytics may collect data such as device information, user interactions, and geographic location. This data is used solely for analytical and performance enhancement purposes.</p>
   
-  <h2>3.4 Firebase App Check</h2>
+  <h2>2.4 Firebase App Check</h2>
   <p>We have implemented Firebase App Check as a security measure to protect the integrity of our App and your data. Firebase App Check is a service provided by Google that helps us ensure that only genuine and safe client devices are able to interact with our services.</p>  
   <p>When you use our App, Firebase App Check may collect and process data related to your device's interactions with our services. This data includes device information, requests made to our servers, and other security-related events. This information is used solely for the purpose of verifying the authenticity of your device and preventing unauthorized or malicious access to our services.</p> 
   <p>We want to assure you that the data collected by Firebase App Check is not used to personally identify you and is not shared with third parties. It is used solely to enhance the security and reliability of our App.</p> 
@@ -182,29 +170,29 @@ pub async fn get_page_privacy_policy() -> Html<&'static str> {
 
 
   <br>
-  <h1>4. Use of Information</h1>
+  <h1>3. Use of Information</h1>
   <p>We use the collected information for the following purposes:</p>
 
-  <h2>4.1 To Provide and Improve Services:</h2>
+  <h2>3.1 To Provide and Improve Services:</h2>
   <p>We use the information to provide, operate, and maintain the App, personalize your experience, and improve our services and features.</p>
 
-  <h2>4.2 Communication:</h2>
+  <h2>3.2 Communication:</h2>
   <p>We may use your email address to send you important announcements, updates, and changes related to the App.</p>
 
-  <h2>4.3 User-Generated Content:</h2>
+  <h2>3.3 User-Generated Content:</h2>
   <p>Your posts and ratings will be publicly displayed on the App to other users, as intended by the App's functionality.</p>
 
-  <h2>4.4 Crash Detection and Debugging:</h2>
+  <h2>3.4 Crash Detection and Debugging:</h2>
   <p>Anonymous information collected may be used for crash detection and debugging to ensure a smooth user experience.</p>
 
   <br>
-  <h1>5. Disclosure of Information</h1>
+  <h1>4. Disclosure of Information</h1>
   <p>We will not disclose your personal information to third parties except in the following circumstances:</p>
 
-  <h2>5.1 Service Providers:</h2>
+  <h2>4.1 Service Providers:</h2>
   <p>We may share certain information with trusted third-party service providers who assist us in operating the App and delivering services to you. These providers are bound by confidentiality obligations and are prohibited from using your information for any other purpose.</p>
 
-  <h2>5.2 Compliance with Legal Requirements:</h2>
+  <h2>4.2 Compliance with Legal Requirements:</h2>
   <p>We may disclose your information if required by law, government request, or when necessary to protect our rights, privacy, safety, or the public.</p>
 
   <br>
