@@ -1,15 +1,8 @@
 use std::collections::HashMap;
-
-use axum::extract::State;
+use axum::{extract::State, Json};
 use hyper::{HeaderMap, StatusCode};
 use serde::Deserialize;
-use sqlx::types::Json;
-
 use crate::{user_login::test_token_header, user_profiles::UserData, AppState, LICENSES};
-
-
-//get unsigned lisences
-//accept licenes
 
 
 pub async fn get_unaccepted_licenses(State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {
@@ -29,9 +22,9 @@ pub async fn get_unaccepted_licenses(State(app_state): State<AppState<'_>>, head
         Err(_) => return (StatusCode::NOT_FOUND, "User not found".to_string()),
     };
 
-    let user_licenses: Json<HashMap<String, i32>> = user_data.licenses;
+    let user_licenses: sqlx::types::Json<HashMap<String, i32>> = user_data.licenses;
  
-    let mut not_accepted_licenses : sqlx::types::Json<HashMap<String,i32>> = Json(HashMap::new());
+    let mut not_accepted_licenses : sqlx::types::Json<HashMap<String,i32>> = sqlx::types::Json(HashMap::new());
 
     for license in LICENSES.iter() {
         //println!("{}, {}",license.0, license.1);
@@ -64,74 +57,42 @@ pub async fn get_unaccepted_licenses(State(app_state): State<AppState<'_>>, head
 
 #[derive(Deserialize)]
 pub struct UpdateLicenses {
-
+    licenses : Vec<String>
 }
 
-//pub async fn post_licenses_update(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<UpdateLicenses>){
-//
-//}
-//updates all the liceneses to the latest version
+pub async fn post_licenses_update(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<UpdateLicenses>) -> (StatusCode, String) {
+    let accepted_licenses: Vec<String> = body.licenses;
+    let database_pool: &sqlx::Pool<sqlx::Postgres> = &app_state.database;
+    let token_data: jsonwebtoken::TokenData<crate::user_login::JwtClaims> = match test_token_header(&headers, &app_state).await {
+        Ok(value) => value,
+        Err(_) => return (StatusCode::UNAUTHORIZED,"User not logged in".to_owned()),
+    };
 
+    for license in accepted_licenses.iter() {
 
-//router.post('/licenses/update', [confirmTokenValid], async (req : Request, res : Response) => {
-//    console.log(" => user updating licenses")
-//    try{
-//        const userId = req.body.tokenUserId;
-//        const licensesUserAccepted = req.body.licenses;
-//
-//        const userLicenses = await database.user_licenses
-//        .where({ user_id : userId })
-//    
-//        var licenses = {}
-//
-//        //if (userData === null){
-//        //    console.log("user id from token invalid")
-//        //    res.status(404).send(`user id from token invalid`);
-//        //    return;
-//        //}
-//
-//        if (userLicenses.length > 0){
-//            licenses = userLicenses[0].licenses
-//        }
-//        
-//        for (const key in licensesUserAccepted) {
-//            
-//            if (Licenses[key] == licensesUserAccepted[key]){
-//                licenses[key] = licensesUserAccepted[key];
-//
-//            }
-//        }
-//
-//        var response;
-//        
-//        if (userLicenses.length == 0){
-//            response = await database.user_licenses
-//            .insert({
-//                user_id : userId,
-//                licenses : licenses
-//            })
-//        }else{
-//            response = await database.user_licenses
-//            .where({ user_id : userId })
-//            .update({
-//                licenses : licenses
-//            })
-//        }
-//
-//        if (response > 0){
-//            console.log("updated licenses")
-//            return res.status(200).send("updated licenses")
-//        }else{
-//            console.log("failed to update licenses")
-//            return res.status(500).send("failed to update licenses")
-//        }
-//
-//
-//
-//
-//      
-//    }catch(err){
-//        reportError(err);
-//        return res.status(500).send("server error")
-//    }
-//})
+        let latest_version = match LICENSES.get(license) {
+            Some(value) => value,
+            None => return (StatusCode::INTERNAL_SERVER_ERROR,"Invalid license".to_owned()),
+        };
+
+        let mut license_path: Vec<String> = Vec::new();
+        license_path.push(license.to_string());
+
+        let database_response = sqlx::query("UPDATE user_data SET licenses = jsonb_set( COALESCE(licenses, '{}'), $1::text[], to_jsonb($2), true) WHERE user_id = $3")
+        .bind(license_path)
+        .bind(latest_version)
+        .bind(&token_data.claims.user_id)
+        .execute(database_pool).await;
+        
+        match database_response {
+            Ok(_) => (),
+            Err(err) => {
+                println!("update license failed {}", err);
+                return (StatusCode::INTERNAL_SERVER_ERROR,"Failed to update license".to_owned());
+        },
+        }
+
+    }
+
+    return (StatusCode::OK, "Updated licenses".to_string())
+}

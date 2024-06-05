@@ -1,5 +1,5 @@
 [package]
-name = "platrates_server"
+name = "platerates_server"
 version = "0.1.0"
 edition = "2021"
 

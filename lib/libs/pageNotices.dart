@@ -393,14 +393,14 @@ class _PromptUserToAcceptNewLicensesState
         HttpHeaders.authorizationHeader: userManager.token
       },
       body: jsonEncode({
-        "licenses": latestLisenseVersions,
+        "licenses": _lisensesToAccept,
       }),
     );
     // ignore: use_build_context_synchronously
     if (response.statusCode == 200) {
       acceptedAllLicenses = true;
       // ignore: use_build_context_synchronously
-      updateHomePage();
+      Phoenix.rebirth(context);
     } else {
       // ignore: use_build_context_synchronously
       await ErrorHandler.httpError(response.statusCode, response.body, context);

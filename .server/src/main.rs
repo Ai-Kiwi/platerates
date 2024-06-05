@@ -14,6 +14,7 @@ use axum::{
 };
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
+use licences::post_licenses_update;
 use pages::{get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
 use std::env;
 use std::path::PathBuf;
@@ -193,6 +194,7 @@ async fn main() {
         .route("/login/reset-password", post(post_create_reset_password_code))
         .route("/use-reset-password-code", post(post_use_reset_password_code))
         .route("/licenses/unaccepted", get(get_unaccepted_licenses))
+        .route("/licenses/update", post(post_licenses_update))
         .route("/deleteData", get(get_page_delete_data))
         .route("/privacyPolicy", get(get_page_privacy_policy))
         .route("/CommunityGuidelines",get(get_page_community_guidelines))
