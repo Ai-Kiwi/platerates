@@ -270,10 +270,6 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
 }
 
 class migrateToAppPage extends StatelessWidget {
-  VoidCallback ignorePrompt;
-
-  migrateToAppPage({required this.ignorePrompt});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -349,7 +345,7 @@ class migrateToAppPage extends StatelessWidget {
                       ),
                       backgroundColor: Colors.red),
                   onPressed: () {
-                    ignorePrompt();
+                    Navigator.pop(context);
                   },
                   child: const Text(
                     'ignore',

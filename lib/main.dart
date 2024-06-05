@@ -372,7 +372,6 @@ var updateUnreadNotificationCount;
 var updateHomePage;
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool userAcceptedMigration = false;
   int _selectedIndex = 0;
   double containerWidth = 200.0;
   double containerHeight = 300.0;
@@ -439,16 +438,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
       if (aspectRatio < 1.5) {
         return DisplayErrorMessagePage(errorMessage: "screen to wide");
-      }
-
-      if (userAcceptedMigration == false) {
-        return migrateToAppPage(
-          ignorePrompt: () {
-            setState(() {
-              userAcceptedMigration = true;
-            });
-          },
-        );
       }
     }
 

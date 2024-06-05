@@ -1,6 +1,8 @@
 import 'package:PlateRates/libs/lazyLoadPage.dart';
+import 'package:PlateRates/libs/pageNotices.dart';
 import 'package:PlateRates/libs/smoothTransitions.dart';
 import 'package:PlateRates/searchPage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -90,6 +92,37 @@ class _UserFeedState extends State<userFeed> {
         const SizedBox(
           height: 16,
         ),
+        Visibility(
+            visible: kIsWeb,
+            child: Column(children: [
+              Padding(
+                  //web verison reminded
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: SizedBox(
+                      width: double.infinity,
+                      height: 60.0,
+                      child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                                smoothTransitions.slideUp(migrateToAppPage()));
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 231, 38, 38),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: const Center(
+                                  child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text(
+                                    "You are using web version.\nIt is recommended to download the app if you can\nClick here to download",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    )),
+                              )))))),
+              const SizedBox(height: 16.0),
+            ])),
         //DropdownButton(
         //    focusColor: Colors.green,
         //    hint: new Text("Select a user"),
