@@ -353,7 +353,6 @@ class MyHomePage extends StatefulWidget {
 
 List<Widget> pages = <Widget>[
   userFeed(),
-  FullPageChatList(),
   CameraPage(),
   notificationPageList(),
   LoggedInUserTab(),

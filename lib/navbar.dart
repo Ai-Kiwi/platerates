@@ -42,39 +42,39 @@ class UserNavbar extends StatelessWidget {
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: FittedBox(
-              child: Stack(
-                alignment: Alignment.topLeft,
-                children: [
-                  const Align(
-                    alignment: Alignment.center,
-                    child: Icon(Icons.chat_bubble_outline),
-                  ),
-                  Visibility(
-                    visible: unreadMessagesCount > 0.9,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.red),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 3),
-                        child: Text(
-                          "$unreadMessagesCount",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            activeIcon: const Icon(Icons.chat_bubble),
-            label: 'Chat',
-          ),
+          //BottomNavigationBarItem(
+          //  icon: FittedBox(
+          //    child: Stack(
+          //      alignment: Alignment.topLeft,
+          //      children: [
+          //        const Align(
+          //          alignment: Alignment.center,
+          //          child: Icon(Icons.chat_bubble_outline),
+          //        ),
+          //        Visibility(
+          //          visible: unreadMessagesCount > 0.9,
+          //          child: Container(
+          //            decoration: BoxDecoration(
+          //                borderRadius: BorderRadius.circular(16),
+          //                color: Colors.red),
+          //            child: Padding(
+          //              padding: EdgeInsets.symmetric(horizontal: 3),
+          //              child: Text(
+          //                "$unreadMessagesCount",
+          //                style: const TextStyle(
+          //                  color: Colors.white,
+          //                  fontSize: 10,
+          //                ),
+          //              ),
+          //            ),
+          //          ),
+          //        ),
+          //      ],
+          //    ),
+          //  ),
+          //  activeIcon: const Icon(Icons.chat_bubble),
+          //  label: 'Chat',
+          //),
           const BottomNavigationBarItem(
             icon: Icon(Icons.add_outlined),
             activeIcon: Icon(Icons.add),
