@@ -71,14 +71,14 @@ pub struct GetPostPaginator {
 
 #[derive(sqlx::FromRow)]
 pub struct Posts { 
-    post_id: String, 
-    poster_user_id: String,
-    title: String, 
-    description: String, 
-    image_count: i32, 
-    post_date: i64,
-    rating: f32, 
-    rating_count: i32, 
+    pub post_id: String, 
+    pub poster_user_id: String,
+    pub title: String, 
+    pub description: String, 
+    pub image_count: i32, 
+    pub post_date: i64,
+    pub rating: f32, 
+    pub rating_count: i32, 
 }
 
 

@@ -1,7 +1,7 @@
 use std::{collections::HashMap, time::{SystemTime, UNIX_EPOCH}};
 use axum::{extract::{Query, State}, Json};
 use hyper::{HeaderMap, StatusCode};
-use serde::Deserialize;
+use serde::{de::value, Deserialize};
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
@@ -189,7 +189,7 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
     let rating: Option<f32> = body.rating;
 
     let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
-    let user_id = match token {
+    let user_id: String = match token {
         Ok(value) => value.claims.user_id,
         Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
     };
@@ -205,23 +205,27 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
     }.as_millis();
 
     if text.len() > 500 {
-        return (StatusCode::BAD_REQUEST, "text is to large".to_string());
+        return (StatusCode::BAD_REQUEST, "rating text is to large".to_string());
     }
     if text.len() < 5 {
-        return (StatusCode::BAD_REQUEST, "text is to short".to_string());
+        return (StatusCode::BAD_REQUEST, "rating text is to short".to_string());
     }
 
 
     if root_type == "post" {
-        match sqlx::query_as::<_, Posts>("SELECT * FROM posts WHERE post_id = $1")
+        let parent_post_data: Posts = match sqlx::query_as::<_, Posts>("SELECT * FROM posts WHERE post_id = $1")
         .bind(&root_data)
         .fetch_one(database_pool).await {
-            Ok(_) => (),
+            Ok(value) => value,
             Err(err) => {
                 println!("Not a valid post rating ({})", err);
                 return (StatusCode::NOT_FOUND, "Not a valid post being rated".to_string());
             },
         };
+
+        if &parent_post_data.poster_user_id == &user_id {
+            return (StatusCode::CONFLICT, "you can not rate your own post".to_string());
+        }
 
         match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_post_id = $2 ORDER BY creation_date DESC")
         .bind(&user_id)
