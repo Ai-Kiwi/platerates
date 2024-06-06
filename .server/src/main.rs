@@ -220,10 +220,6 @@ async fn main() {
 //    add back admin users
 //    allow to delete any post
 //   
-//    - chatSystem
-//   TODO all of it
-//   
-//   
 //    - notifcation system
 //   TODO sendMailToDevice
 //   TODO /notification/updateDeviceToken
