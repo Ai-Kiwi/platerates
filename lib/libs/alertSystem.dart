@@ -110,6 +110,16 @@ Future<void> openAlert(
       style: alertStyle,
       buttons: [
         DialogButton(
+          color: Colors.red,
+          child: const Text(
+            "cancel",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        DialogButton(
           color: Theme.of(context).primaryColor,
           child: const Text(
             "all",
@@ -141,16 +151,6 @@ Future<void> openAlert(
               openAlert("error", "failed logging out", response.body, context,
                   null, null);
             }
-          },
-        ),
-        DialogButton(
-          color: Colors.red,
-          child: const Text(
-            "cancel",
-            style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
           },
         ),
       ],

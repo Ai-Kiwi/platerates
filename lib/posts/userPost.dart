@@ -475,6 +475,9 @@ class PostManageButton extends StatelessWidget {
                     null,
                     context,
                     {
+                      "no": () {
+                        Navigator.pop(context);
+                      },
                       "yes": () async {
                         final response = await http.post(
                           Uri.parse(
@@ -499,9 +502,6 @@ class PostManageButton extends StatelessWidget {
                           openAlert("error", "failed deleting post",
                               response.body, context, null, null);
                         }
-                      },
-                      "no": () {
-                        Navigator.pop(context);
                       },
                     },
                     null);

@@ -43,6 +43,16 @@ class ReportSystem {
         ),
         buttons: [
           DialogButton(
+            color: Colors.red,
+            child: const Text(
+              "cancel",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          DialogButton(
             onPressed: () async {
               final response = await http.post(
                 Uri.parse("$serverDomain/report"),
@@ -72,16 +82,6 @@ class ReportSystem {
               "report",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
-          ),
-          DialogButton(
-            color: Colors.red,
-            child: const Text(
-              "cancel",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
           )
         ]).show();
   }

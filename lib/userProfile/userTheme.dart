@@ -73,6 +73,9 @@ class _UserThemeSettingsState extends State<UserThemeSettings> {
                                 null,
                                 context,
                                 {
+                                  "no": () {
+                                    Navigator.pop(context);
+                                  },
                                   "yes": () async {
                                     var sharedPrefs =
                                         await SharedPreferences.getInstance();
@@ -81,9 +84,6 @@ class _UserThemeSettingsState extends State<UserThemeSettings> {
                                     primaryColor = primaryColorCodes[
                                         colorCodesAsList[index]]!;
                                     Phoenix.rebirth(context);
-                                  },
-                                  "no": () {
-                                    Navigator.pop(context);
                                   },
                                 },
                                 null);

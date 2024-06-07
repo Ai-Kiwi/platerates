@@ -236,6 +236,9 @@ class _CreatePostState extends State<CreatePostPage> {
                       null,
                       context,
                       {
+                        "no": () {
+                          Navigator.pop(context);
+                        },
                         "yes": () async {
                           Navigator.pop(context);
 
@@ -280,9 +283,6 @@ class _CreatePostState extends State<CreatePostPage> {
                             openAlert("error", "unkown error contacting serer",
                                 null, context, null, null);
                           }
-                        },
-                        "no": () {
-                          Navigator.pop(context);
                         },
                       },
                       null);
