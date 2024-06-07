@@ -109,35 +109,21 @@ class _userRatingState extends State<userRating> {
       }),
     );
     if (response.statusCode == 200) {
-      //setState(() {
-      //  userFollowing = newFollowState;
-      //});
-      await _collectAndUpdateData();
+      setState(() {
+        ratingLiked = newLikeState;
+      });
+      //await dataCollect.clear
+      //await _collectData();
     } else {
       openAlert(
           "error", "failed liking comment", response.body, context, null, null);
     }
   }
 
-  Future<void> _collectAndUpdateData() async {
-    //fixes mounting error having try here, am too lazy to fix myself
-    try {
-      await _collectData();
-      if (await dataCollect.updateRatingData(ratingId, context, false) ==
-              true ||
-          await dataCollect.updateBasicUserData(posterUserId, context, false) ==
-              true) {
-        await _collectData();
-      }
-    } on Exception catch (error, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _collectAndUpdateData();
+    _collectData();
   }
 
   _userRatingState(

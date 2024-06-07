@@ -85,7 +85,6 @@ class _PostItemState extends State<PostItem> {
       var jsonData = await dataCollect.getPostData(postId, context, false);
       Map basicUserData = await dataCollect.getBasicUserData(
           jsonData['posterId'], context, false);
-      dataCollect.updateBasicUserData(jsonData['posterId'], context, false);
       Map avatarData = await dataCollect.getAvatarData(
           basicUserData["avatar"], context, false);
       var firstImageData =
@@ -125,25 +124,12 @@ class _PostItemState extends State<PostItem> {
     }
   }
 
-  Future<void> _collectDataAndUpdate() async {
-    //as non of these have returned error it must have found data
-    try {
-      await _collectData();
-      if (await dataCollect.updatePostData(postId, context, false) == true) {
-        await _collectData();
-      }
-    } catch (err, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(err, stackTrace);
-      print(err);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     //no idea why the hell the error happens but this if statement fixes it
     if (mounted && title.isEmpty) {
-      _collectDataAndUpdate();
+      _collectData();
     }
   }
 

@@ -34,7 +34,6 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
   //late String _realUserId;
 
   Future<void> _fetchAccountData() async {
-    await dataCollect.updateUserData(userManager.userId, context, false);
     var fetchedData =
         await dataCollect.getUserData(userManager.userId, context, false);
 
@@ -272,13 +271,8 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
                                     await _changeSetting("bio", _bio);
                                   }
                                   await dataCollect
-                                      .clearCacheForItem('basicUserData-null');
-                                  await dataCollect
-                                      .clearCacheForItem('userData-null');
-                                  await dataCollect.clearCacheForItem(
-                                      'basicUserData-$_realUserId');
-                                  await dataCollect.clearCacheForItem(
-                                      'userData-$_realUserId');
+                                      .clearBasicUserData(_realUserId);
+                                  await dataCollect.clearUserData(_realUserId);
 
                                   // ignore: use_build_context_synchronously
                                   openAlert(

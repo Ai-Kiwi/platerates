@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
@@ -22,12 +23,19 @@ class DataCollect {
       String url,
       String cacheCode,
       context,
-      bool expectError) async {
+      bool expectError,
+      num expireTime) async {
     try {
       var jsonData;
       var extractedData = await jsonCache.value(cacheCode);
       if (extractedData != null) {
         jsonData = jsonDecode(extractedData["data"]);
+        //test if it is expired
+        if (extractedData["expire"] <
+            DateTime.timestamp().millisecondsSinceEpoch) {
+          print("cache is old ignoring it");
+          jsonData = null;
+        }
       }
 
       if (jsonData == null) {
@@ -53,7 +61,8 @@ class DataCollect {
           jsonData = jsonDecode(response.body);
           await jsonCache.refresh(cacheCode, {
             "data": response.body,
-            "lastUpdated": DateTime.timestamp().millisecondsSinceEpoch
+            "lastUpdated": DateTime.timestamp().millisecondsSinceEpoch,
+            "expire": DateTime.timestamp().millisecondsSinceEpoch + expireTime
           });
         } else {
           ErrorHandler.httpError(response.statusCode, response.body, context);
@@ -75,123 +84,69 @@ class DataCollect {
     }
   }
 
-  Future<bool> updateData(
-      //can also support Iterable
-      Map<String, String> headers,
-      String url,
-      String cacheCode,
-      context,
-      bool expectError,
-      Duration cacheLiveTime) async {
-    var dataUpdated = false;
-    var headersUsing = headers;
-    //this also needs to be changed to a string from a bool when added back
-    //headersUsing['onlyUpdateChangeable'] = true;
-
-    var cachedData = await jsonCache.value(cacheCode);
-    if (cachedData != null) {
-      if (cachedData["lastUpdated"] >
-          DateTime.timestamp().millisecondsSinceEpoch -
-              cacheLiveTime.inMilliseconds) {
-        return false;
-      }
-    }
-
-    var subbedServerDomain = serverDomain.substring(0, 5);
-    var justDomainUrl;
-    if (subbedServerDomain == "https") {
-      justDomainUrl = Uri.https(serverDomain.substring(8), url, headers);
-    } else {
-      justDomainUrl = Uri.http(serverDomain.substring(7), url, headers);
-    }
-
-    final response = await http.get(
-      justDomainUrl,
-      headers: <String, String>{
-        HttpHeaders.authorizationHeader: userManager.token,
-        HttpHeaders.contentTypeHeader: 'application/json',
-      },
-    );
-    if (response.statusCode == 200) {
-      var inputData = await dataCollect.getData(
-          headers, url, cacheCode, context, expectError);
-
-      var jsonData = jsonDecode(response.body);
-
-      jsonData.forEach((key, value) {
-        if (inputData[key] != value) {
-          inputData[key] = value;
-          dataUpdated = true;
-        }
-      });
-
-      await jsonCache.refresh(cacheCode, {
-        "data": jsonEncode(inputData),
-        "lastUpdated": DateTime.timestamp().millisecondsSinceEpoch
-      });
-    } else {
-      ErrorHandler.httpError(response.statusCode, response.body, context);
-      if (expectError == false) {
-        reportError(response.body, "updated data", context);
-      }
-      return false;
-    }
-    if (dataUpdated == true) {
-      print("cache updated for $url stored at $cacheCode");
-    }
-    return true;
+  Future<void> removeCacheData(String cacheName) async {
+    jsonCache.remove(cacheName);
   }
 
   Future<Map> getBasicUserData(String userId, context, expectError) async {
-    return getData({
-      "user_id": userId,
-    }, "/profile/basicData", 'basicUserData-$userId', context, expectError);
+    return getData(
+      {
+        "user_id": userId,
+      },
+      "/profile/basicData",
+      'basicUserData-$userId',
+      context,
+      expectError,
+      1000 * 60 * 60 * 24, //lasts a day before expire
+    );
   }
 
-  Future<bool> updateBasicUserData(String userId, context, expectError) async {
-    return updateData({
-      'user_id': userId,
-    }, "/profile/basicData", 'basicUserData-$userId', context, expectError,
-        const Duration(minutes: 15));
+  Future<void> clearBasicUserData(String userId) async {
+    return removeCacheData('basicUserData-$userId');
   }
 
   Future<Map> getUserData(String userId, context, expectError) async {
-    return getData({
-      'user_id': userId,
-    }, "/profile/data", 'userData-$userId', context, expectError);
+    return getData(
+      {
+        'user_id': userId,
+      },
+      "/profile/data",
+      'userData-$userId',
+      context,
+      expectError,
+      1000 * 60 * 60 * 24 //lasts a day before expire
+      ,
+    );
   }
 
-  Future<bool> updateUserData(String userId, context, expectError) async {
-    return updateData({
-      'user_id': userId,
-    }, "/profile/data", 'userData-$userId', context, expectError,
-        const Duration(hours: 24));
+  Future<void> clearUserData(String userId) async {
+    return removeCacheData('userData-$userId');
   }
 
   Future<Map> getPostData(String postId, context, expectError) async {
-    return getData({
-      'post_id': postId,
-    }, "/post/data", 'post-$postId', context, expectError);
-  }
-
-  Future<bool> updatePostData(String postId, context, expectError) async {
-    return updateData({
-      'post_id': postId,
-    }, "/post/data", 'post-$postId', context, expectError,
-        const Duration(minutes: 15));
+    return getData(
+      {
+        'post_id': postId,
+      },
+      "/post/data",
+      'post-$postId',
+      context,
+      expectError,
+      1000 * 60 * 5, //lasts 5m before expire
+    );
   }
 
   Future<Map> getRatingData(String ratingId, context, expectError) async {
-    return getData({
-      'rating_id': ratingId,
-    }, "/post/rating/data", 'rating-$ratingId', context, expectError);
-  }
-
-  Future<bool> updateRatingData(String ratingId, context, expectError) async {
-    return updateData({
-      'rating_id': ratingId,
-    }, "/post/rating/data", 'rating-$ratingId', context, expectError,
-        const Duration(minutes: 15));
+    return getData(
+      {
+        'rating_id': ratingId,
+      },
+      "/post/rating/data",
+      'rating-$ratingId',
+      context,
+      expectError,
+      1000 * 60 * 60 * 24, //lasts a day before expire
+    );
   }
 
   Future<Map> getAvatarData(String? avatarId, context, expectError) async {
@@ -199,31 +154,52 @@ class DataCollect {
       return {};
     }
     print('sending $avatarId');
-    return getData({
-      'avatar_id': avatarId,
-    }, "/profile/avatar", 'avatar-$avatarId', context, expectError);
+    return getData(
+      {
+        'avatar_id': avatarId,
+      },
+      "/profile/avatar",
+      'avatar-$avatarId',
+      context,
+      expectError,
+      1000 *
+          60 *
+          60 *
+          24 *
+          7, //lasts a week before expire, doesn't change really much so can be ages
+    );
   }
 
   Future<Map> getChatRoomData(String chatRoomId, context, expectError) async {
-    return getData({
-      'chat_room_id': chatRoomId,
-    }, "/chat/roomData", 'chatRoomId-$chatRoomId', context, expectError);
-  }
-
-  Future<bool> updateChatRoomData(
-      String chatRoomId, context, expectError) async {
-    return updateData({
-      'chat_room_id': chatRoomId,
-    }, "/chat/roomData", 'chatRoomId-$chatRoomId', context, expectError,
-        const Duration(milliseconds: 0));
+    return getData(
+      {
+        'chat_room_id': chatRoomId,
+      },
+      "/chat/roomData",
+      'chatRoomId-$chatRoomId',
+      context,
+      expectError,
+      1, //non for the moment as it is gonna cause issues no matter how I do it lol
+    );
   }
 
   Future<Map> getPostImageData(
       String postId, String imageNumber, context, expectError) async {
-    return getData({
-      "post_id": postId,
-      "image_number": imageNumber,
-    }, "/post/image", 'imageData-$postId-$imageNumber', context, expectError);
+    return getData(
+      {
+        "post_id": postId,
+        "image_number": imageNumber,
+      },
+      "/post/image",
+      'imageData-$postId-$imageNumber',
+      context,
+      expectError,
+      1000 *
+          60 *
+          60 *
+          24 *
+          7, //lasts a week before expire, doesn't change really much so can be ages
+    );
   }
 
   //not had a chance todo for anything yet
@@ -231,9 +207,6 @@ class DataCollect {
   //chatroom
   //user settings change
   //really any notifcations
-  Future<void> clearCacheForItem(String cacheName) async {
-    jsonCache.remove(cacheName);
-  }
 }
 
 DataCollect dataCollect = DataCollect();

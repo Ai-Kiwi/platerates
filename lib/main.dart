@@ -147,7 +147,7 @@ class MyApp extends StatelessWidget {
         "clientVersion": '$version+$buildNumber'
       });
     } else {
-      if (expireTime["expireTime"] < (DateTime.now().day - 7)) {
+      if (expireTime["expireTime"] < (DateTime.now().day - 30)) {
         print("cache expire time has expired");
         await jsonCache.clear();
         await jsonCache.refresh("expire-data", {

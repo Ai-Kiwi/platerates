@@ -53,20 +53,12 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
     });
   }
 
-  Future<void> _collectAndUpdateData() async {
-    await _collectData();
-    // ignore: use_build_context_synchronously
-    if (await dataCollect.updateBasicUserData(userId, context, false) == true) {
-      await _collectData();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     //no idea why the hell the error happens but this if statement fixes it
     if (mounted && username.isEmpty) {
-      _collectAndUpdateData();
+      _collectData();
     }
   }
 
@@ -181,14 +173,6 @@ class _UserProfileState extends State<UserProfile> {
     });
   }
 
-  Future<void> _fetchAndUpdateProfile() async {
-    await _fetchProfile();
-    // ignore: use_build_context_synchronously
-    if (await dataCollect.updateUserData(userId, context, false) == true) {
-      await _fetchProfile();
-    }
-  }
-
   Future<void> _followToggle() async {
     var newFollowState = !userFollowing;
     final response = await http.post(
@@ -220,7 +204,7 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    _fetchAndUpdateProfile();
+    _fetchProfile();
     //Timer.periodic(Duration(seconds: 1), (Timer t) => _fetchAndUpdateProfile());
   }
 

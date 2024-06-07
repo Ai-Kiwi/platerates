@@ -56,19 +56,11 @@ class _chatBarItemState extends State<chatBarItem> {
     }
   }
 
-  Future<void> _fetchAndUpdateOpenChatData() async {
-    await _fetchOpenChatData();
-    if (await dataCollect.updateChatRoomData(chatItem, context, false) ==
-        true) {
-      await _fetchOpenChatData();
-    }
-  }
-
   @override
   void initState() {
     //jsonData = jsonDecode(notificationData);
     super.initState();
-    _fetchAndUpdateOpenChatData();
+    _fetchOpenChatData();
     updateUnreadNotificationCount();
   }
 
