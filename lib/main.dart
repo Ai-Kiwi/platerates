@@ -168,23 +168,27 @@ class MyApp extends StatelessWidget {
       }
     }
 
-    print("starting flutter downloader");
-    if (FlutterDownloader.initialized == false) {
-      await FlutterDownloader.initialize(
-          debug:
-              true, // optional: set to false to disable printing logs to console (default: true)
-          ignoreSsl:
-              true // option: set to false to disable working with http links (default: false)
-          );
+    if (kIsWeb == false) {
+      print("starting flutter downloader");
+      if (FlutterDownloader.initialized == false) {
+        await FlutterDownloader.initialize(
+            debug:
+                true, // optional: set to false to disable printing logs to console (default: true)
+            ignoreSsl:
+                true // option: set to false to disable working with http links (default: false)
+            );
+      }
     }
 
-    print("starting firebase");
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    if (kIsWeb == false) {
+      print("starting firebase");
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
 
-    if (kDebugMode == true) {
-      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+      if (kDebugMode == true) {
+        FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+      }
     }
 
     print("asking server for the latest verison");
@@ -219,32 +223,31 @@ class MyApp extends StatelessWidget {
       await userManager.loadTokenFromStoreage();
     }
 
-    print("starting app check");
-    if (kDebugMode == false) {
-      await FirebaseAppCheck.instance.activate(
-        //webRecaptchaSiteKey: 'recaptcha-v3-site-key',
-        androidProvider: AndroidProvider.playIntegrity,
-        // Default provider for iOS/macOS is the Device Check provider. You can use the "AppleProvider" enum to choose
-        // your preferred provider. Choose from:
-        // 1. Debug provider
-        // 2. Device Check provider
-        // 3. App Attest provider
-        // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
-        // appleProvider: AppleProvider.appAttest,
-      );
-    } else {
-      await FirebaseAppCheck.instance.activate(
-        //webRecaptchaSiteKey: 'recaptcha-v3-site-key',
-        androidProvider: AndroidProvider.debug,
-        // Default provider for iOS/macOS is the Device Check provider. You can use the "AppleProvider" enum to choose
-        // your preferred provider. Choose from:
-        // 1. Debug provider
-        // 2. Device Check provider
-        // 3. App Attest provider
-        // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
-        // appleProvider: AppleProvider.appAttest,
-      );
-    }
+    //if (kDebugMode == false) {
+    //  await FirebaseAppCheck.instance.activate(
+    //    //webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+    //    androidProvider: AndroidProvider.playIntegrity,
+    //    // Default provider for iOS/macOS is the Device Check provider. You can use the "AppleProvider" enum to choose
+    //    // your preferred provider. Choose from:
+    //    // 1. Debug provider
+    //    // 2. Device Check provider
+    //    // 3. App Attest provider
+    //    // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
+    //    // appleProvider: AppleProvider.appAttest,
+    //  );
+    //} else {
+    //  await FirebaseAppCheck.instance.activate(
+    //    //webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+    //    androidProvider: AndroidProvider.debug,
+    //    // Default provider for iOS/macOS is the Device Check provider. You can use the "AppleProvider" enum to choose
+    //    // your preferred provider. Choose from:
+    //    // 1. Debug provider
+    //    // 2. Device Check provider
+    //    // 3. App Attest provider
+    //    // 4. App Attest provider with fallback to Device Check provider (App Attest provider is only available on iOS 14.0+, macOS 14.0+)
+    //    // appleProvider: AppleProvider.appAttest,
+    //  );
+    //}
     if (kIsWeb == false) {
       print("starting notifcation service");
       await initNotificationHandler(); //also handles firebase
@@ -428,39 +431,153 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb == true) {
-      // Get the screen dimensions
-      double screenWidth = MediaQuery.of(context).size.width;
-      double screenHeight = MediaQuery.of(context).size.height;
-
-      // Calculate the aspect ratio
-      double aspectRatio = screenHeight / screenWidth;
-
-      if (aspectRatio < 1.5) {
-        return DisplayErrorMessagePage(errorMessage: "screen to wide");
-      }
-    }
-
-    //see if notifcation has been clicked and if so display it
-    //testNotificationOnBootData(context);
-
     if (acceptedAllLicenses == false) {
       return PromptUserToAcceptNewLicenses();
     } else if (accountBanned == true) {
       return PromptUserBanned();
     }
 
-    return Scaffold(
-        extendBody: true,
+    double screenWidth = MediaQuery.of(context).size.width;
+    print(screenWidth);
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    if (kIsWeb == true && screenWidth > 750) {
+      return Scaffold(
         body: Center(
-          child: pages.elementAt(_selectedIndex),
-        ),
-        bottomNavigationBar: UserNavbar(
-          notificationCount: unreadNotificationCount,
-          unreadMessagesCount: unreadMessagesCount,
-          selectedIndex: _selectedIndex,
-          onClicked: _onItemSelected,
-        ));
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 64,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: _selectedIndex == 0
+                        ? const Icon(
+                            Icons.home,
+                            color: Colors.white,
+                            size: 32,
+                          )
+                        : const Icon(
+                            Icons.home_outlined,
+                            color: Colors.white60,
+                            size: 32,
+                          ),
+                    onPressed: () {
+                      _onItemSelected(0);
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  IconButton(
+                    icon: _selectedIndex == 1
+                        ? const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 32,
+                          )
+                        : const Icon(
+                            Icons.add_outlined,
+                            color: Colors.white60,
+                            size: 32,
+                          ),
+                    onPressed: () {
+                      _onItemSelected(1);
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  IconButton(
+                    icon: _selectedIndex == 2
+                        ? const Icon(
+                            Icons.notifications,
+                            color: Colors.white,
+                            size: 32,
+                          )
+                        : SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: Stack(
+                              alignment: Alignment.topLeft,
+                              children: [
+                                const Align(
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.notifications_outlined,
+                                    color: Colors.white60,
+                                    size: 32,
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: unreadNotificationCount > -0.9,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.red),
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 1),
+                                      child: Text(
+                                        "$unreadNotificationCount",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                    onPressed: () {
+                      _onItemSelected(2);
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  IconButton(
+                    icon: _selectedIndex == 3
+                        ? const Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 32,
+                          )
+                        : const Icon(
+                            Icons.person_outlined,
+                            color: Colors.white60,
+                            size: 32,
+                          ),
+                    onPressed: () {
+                      _onItemSelected(3);
+                    },
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 750),
+              height: double.infinity,
+              child: Center(
+                child: pages.elementAt(_selectedIndex),
+              ),
+            ),
+          ],
+        )),
+      );
+    } else {
+      return Scaffold(
+          extendBody: true,
+          body: Center(
+            child: pages.elementAt(_selectedIndex),
+          ),
+          bottomNavigationBar: UserNavbar(
+            notificationCount: unreadNotificationCount,
+            unreadMessagesCount: unreadMessagesCount,
+            selectedIndex: _selectedIndex,
+            onClicked: _onItemSelected,
+          ));
+    }
   }
 }
 

@@ -66,32 +66,32 @@ class _UserFeedState extends State<userFeed> {
           color: Color.fromARGB(255, 110, 110, 110),
           thickness: 1.0,
         ),
-        Padding(
-          //share mode selection
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: ToggleSwitch(
-              minWidth: double.infinity,
-              cornerRadius: 15.0,
-              initialLabelIndex: pageItemIndex,
-              totalSwitches: 2,
-              activeBgColors: [
-                [Theme.of(context).primaryColor],
-                [Theme.of(context).primaryColor]
-              ],
-              centerText: true,
-              activeFgColor: Colors.white,
-              inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
-              inactiveFgColor: Colors.white,
-              labels: const ['Recent Posts', 'Followers Posts'],
-              onToggle: changePageOpen,
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 16,
-        ),
+        //Padding(
+        //  //share mode selection
+        //  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        //  child: SizedBox(
+        //    width: double.infinity,
+        //    child: ToggleSwitch(
+        //      minWidth: double.infinity,
+        //      cornerRadius: 15.0,
+        //      initialLabelIndex: pageItemIndex,
+        //      totalSwitches: 2,
+        //      activeBgColors: [
+        //        [Theme.of(context).primaryColor],
+        //        [Theme.of(context).primaryColor]
+        //      ],
+        //      centerText: true,
+        //      activeFgColor: Colors.white,
+        //      inactiveBgColor: const Color.fromARGB(255, 40, 40, 40),
+        //      inactiveFgColor: Colors.white,
+        //      labels: const ['Recent Posts', 'Followers Posts'],
+        //      onToggle: changePageOpen,
+        //    ),
+        //  ),
+        //),
+        ///const SizedBox(
+        ///  height: 16,
+        ///),
         Visibility(
             visible: kIsWeb,
             child: Column(children: [
