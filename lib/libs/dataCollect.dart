@@ -149,7 +149,7 @@ class DataCollect {
       'rating-$ratingId',
       context,
       expectError,
-      1000 * 60 * 10, //lasts 10m before expire
+      1000 * 60 * 5, //lasts 5m before expire
     );
   }
 

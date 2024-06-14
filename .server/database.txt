@@ -46,8 +46,8 @@ CREATE TABLE posts (
   description TEXT,
   image_count INT NOT NULL,
   post_date BIGINT NOT NULL,
-  rating REAL NOT NULL DEFAULT 0,
-  rating_count INT NOT NULL DEFAULT 0
+  -- rating REAL NOT NULL DEFAULT 0,
+  -- rating_count INT NOT NULL DEFAULT 0
 );
 CREATE INDEX posts_idx_post_id ON posts (post_id);
 CREATE INDEX posts_idx_post_date ON posts (post_date);

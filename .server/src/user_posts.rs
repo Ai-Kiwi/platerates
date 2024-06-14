@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs, path::PathBuf, time::{SystemTime, UNIX_EPOCH
 use axum::{extract::{Query, State}, Json};
 use data_encoding::BASE64;
 use hyper::{HeaderMap, StatusCode};
-use serde::Deserialize;
+use serde::{de::value, Deserialize};
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
@@ -77,8 +77,8 @@ pub struct Posts {
     pub description: String, 
     pub image_count: i32, 
     pub post_date: i64,
-    pub rating: f32, 
-    pub rating_count: i32, 
+    //pub rating: f32, 
+    //pub rating_count: i32, 
 }
 
 
@@ -101,7 +101,23 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
     data_returning.insert("title".to_string(), Value::String(post_data.title));
     data_returning.insert("description".to_string(), Value::String(post_data.description));
     data_returning.insert("postDate".to_string(), Value::Number(post_data.post_date.into()));
-    data_returning.insert("ratingsAmount".to_string(), Value::Number(post_data.rating_count.into()));
+
+    let row: (i64,) = match sqlx::query_as(
+        "SELECT COUNT(*) FROM post_ratings WHERE parent_post_id = $1"
+    )
+    .bind(&post_id)
+    .fetch_one(database_pool)
+    .await {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to count post ratings");
+            (-1,)
+        },
+    };
+
+    let rating_count: i64 = row.0;
+
+    data_returning.insert("ratingsAmount".to_string(), Value::Number(rating_count.into()));
     match token {
         Ok(value) => {
             let rated = match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_creator = $1 AND parent_post_id = $2 ORDER BY creation_date DESC")
@@ -125,7 +141,25 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
     data_returning.insert("postId".to_string(), Value::String(post_data.post_id));
     data_returning.insert("imageCount".to_string(), Value::Number(post_data.image_count.into()));
     data_returning.insert("posterId".to_string(), Value::String(post_data.poster_user_id));
-    data_returning.insert("rating".to_string(), Value::String(post_data.rating.to_string()));
+
+    
+    let row: Option<(f64,)> = match sqlx::query_as(
+        "SELECT AVG(rating) FROM post_ratings WHERE parent_post_id = $1"
+    )
+    .bind(&post_id)
+    .fetch_optional(database_pool)
+    .await {
+        Ok(value) => value,
+        Err(_) => Some((-1.0,)),
+    };
+    
+    
+    let post_rating: f64 = match row {
+        Some(value) => value.0,
+        None => 0.0,
+    };
+
+    data_returning.insert("rating".to_string(), Value::String(post_rating.to_string()));
 
 
     let mut relative_viewer_data: HashMap<String, Value> = HashMap::new();
