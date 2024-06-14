@@ -136,6 +136,10 @@ class DataCollect {
     );
   }
 
+  Future<void> clearPostData(String postId) async {
+    return removeCacheData('post-$postId');
+  }
+
   Future<Map> getRatingData(String ratingId, context, expectError) async {
     return getData(
       {
@@ -145,8 +149,12 @@ class DataCollect {
       'rating-$ratingId',
       context,
       expectError,
-      1000 * 60 * 60 * 24, //lasts a day before expire
+      1000 * 60 * 10, //lasts 10m before expire
     );
+  }
+
+  Future<void> clearRatingData(String ratingId) async {
+    return removeCacheData('rating-$ratingId');
   }
 
   Future<Map> getAvatarData(String? avatarId, context, expectError) async {

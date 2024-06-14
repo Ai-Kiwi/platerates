@@ -123,7 +123,6 @@ CREATE TABLE post_ratings (
    rating_creator TEXT NOT NULL,
    parent_post_id TEXT, -- Reference to the parent post
    parent_rating_id TEXT, -- Reference to the parent rating
-   rating_like_count INT NOT NULL DEFAULT 0,
    CONSTRAINT check_parent_constraint CHECK (
       (parent_post_id IS NOT NULL AND parent_rating_id IS NULL AND rating IS NOT NULL) OR
       (parent_post_id IS NULL AND parent_rating_id IS NOT NULL AND rating IS NULL)
@@ -143,6 +142,7 @@ CREATE TABLE post_rating_likes (
    rating_like_id SERIAL PRIMARY KEY NOT NULL,
    rating_id TEXT NOT NULL,
    liker TEXT NOT NULL,
+   like_date BIGINT NOT NULL,
    FOREIGN KEY (rating_id) REFERENCES post_ratings(rating_id) ON DELETE CASCADE,
    FOREIGN KEY (liker) REFERENCES user_data(user_id) ON DELETE CASCADE,
    CONSTRAINT unique_rating_like UNIQUE (rating_id, liker)

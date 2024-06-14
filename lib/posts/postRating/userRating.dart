@@ -96,21 +96,27 @@ class _userRatingState extends State<userRating> {
   }
 
   Future<void> _toggleLike() async {
+    if (ratingLikes == null) {
+      return;
+    }
     var newLikeState = !(ratingLiked ?? false);
     final response = await http.post(
       Uri.parse('$serverDomain/post/rating/like'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token,
       },
-      body: jsonEncode({
-        "token": userManager.token,
-        "liking": newLikeState,
-        "rating_id": ratingId
-      }),
+      body: jsonEncode({"liking": newLikeState, "rating_id": ratingId}),
     );
     if (response.statusCode == 200) {
       setState(() {
         ratingLiked = newLikeState;
+        if (newLikeState == true) {
+          ratingLikes = ratingLikes! + 1;
+        } else {
+          ratingLikes = ratingLikes! - 1;
+        }
+        dataCollect.clearRatingData(ratingId);
       });
       //await dataCollect.clear
       //await _collectData();
@@ -307,9 +313,7 @@ class _userRatingState extends State<userRating> {
                               ),
                       ),
                       onTap: () {
-                        setState(() {
-                          _toggleLike();
-                        });
+                        _toggleLike();
                       },
                     ),
                   ),

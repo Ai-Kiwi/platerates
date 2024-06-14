@@ -4,6 +4,7 @@ use hyper::{HeaderMap, StatusCode};
 use serde::{de::value, Deserialize};
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
+use sqlx_error::{sqlx_error, SqlxError};
 
 use crate::{user_login::test_token_header, user_posts::Posts, utils::create_item_id, AppState};
 
@@ -27,13 +28,17 @@ pub struct Ratings {
     creation_date: i64, 
     rating : Option<f32>,
     rating_creator : String,
-    rating_like_count : i32,
     parent_post_id : Option<String>,
     parent_rating_id : Option<String>,
 }
 
-pub async fn get_rating_data(pagination: Query<GetRatingPaginator>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
+pub async fn get_rating_data(pagination: Query<GetRatingPaginator>, headers: HeaderMap, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
     let pagination: GetRatingPaginator = pagination.0;
+    let token = test_token_header(&headers, &app_state).await;
+    let user_id: Option<String> = match token {
+        Ok(value) => Some(value.claims.user_id),
+        Err(_) => None,
+    };
     
     let mut data_returning: HashMap<String, Value> = HashMap::new();
     let database_pool: Pool<Postgres> = app_state.database;
@@ -73,55 +78,64 @@ pub async fn get_rating_data(pagination: Query<GetRatingPaginator>, State(app_st
         },
     };
 
-    let count_response = sqlx::query_scalar(r#"
-    WITH RECURSIVE PostRatingsHierarchy AS (
-        SELECT rating_id, parent_rating_id
-        FROM post_ratings
-        WHERE rating_id = $1
 
-        UNION ALL
-
-        SELECT pr.rating_id, pr.parent_rating_id
-        FROM post_ratings pr
-        INNER JOIN PostRatingsHierarchy ph ON pr.parent_rating_id = ph.rating_id
+    let count_row: (i64,) = match sqlx::query_as(
+        "SELECT COUNT(*) FROM post_ratings WHERE parent_rating_id = $1"
     )
-    SELECT COUNT(*) AS total_children_posts
-    FROM PostRatingsHierarchy;
-    "#,)
     .bind(rating_id)
-    .fetch_one(&database_pool).await;
-
-    let count: i64 = match count_response {
+    .fetch_one(&database_pool)
+    .await {
         Ok(value) => value,
         Err(_) => {
             println!("failed to count child ratings");
-            return (StatusCode::INTERNAL_SERVER_ERROR, "no children ratings".to_string())
+            (-1,)
         },
     };
 
-    data_returning.insert("childRatingsAmount".to_string(),Value::Number(count.into()));
-    data_returning.insert("ratingLikes".to_string(),Value::Number(rating_data.rating_like_count.into()));
+    let count_response: i64 = count_row.0;   
+    data_returning.insert("childRatingsAmount".to_string(),Value::Number(count_response.into()));
+
+
+    let row: (i64,) = match sqlx::query_as(
+        "SELECT COUNT(*) FROM post_rating_likes WHERE rating_id = $1"
+    )
+    .bind(rating_id)
+    .fetch_one(&database_pool)
+    .await {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to count rating likes");
+            (-1,)
+        },
+    };
+
+    let like_count = row.0;
+
+    data_returning.insert("ratingLikes".to_string(),Value::Number(like_count.into()));
+
+    let rating_liked: bool = match user_id {
+        Some(safe_user_id) => {
+            match sqlx::query_as::<_, RatingLike>("SELECT * FROM post_rating_likes WHERE rating_id = $1 AND liker = $2")
+            .bind(&rating_id)
+            .bind(&safe_user_id)
+            .fetch_one(&database_pool).await {
+                Ok(_) => true,
+                Err(err) => {
+                    match err {
+                        sqlx::Error::RowNotFound => false,
+                        _ => {
+                            println!("Failed to fetch if rated liked ({})", err);
+                            return (StatusCode::NOT_FOUND, "Failed to fetch rating liked".to_string());
+                        }
+                    }
+                },
+            }
+        }
+        None => false,
+    };
+
+    data_returning.insert("requesterLiked".to_string(),Value::Bool(rating_liked));
     data_returning.insert("creationDate".to_string(),Value::Number(rating_data.creation_date.into()));
-
-    data_returning.insert("requesterLiked".to_string(),Value::Bool(false));
-
-    
-
-
-
-    //requesterRated
-
-    //{
-    //    title : itemData[0].title,
-    //    description : itemData[0].description,
-    //    rating : itemData[0].rating,
-    //    postDate : itemData[0].post_date,
-    //    ratingsAmount : itemData[0].rating_count, // converts to string as client software pefers that
-    //    requesterRated :`${requesterHasRated}`,
-    //    postId : postId,
-    //    imageCount : itemData[0].image_count,
-    //    posterId : itemData[0].poster_user_id,
-    //}    
     
     let value = match serde_json::to_string(&data_returning) {
         Ok(value) => value,
@@ -312,5 +326,103 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
 
     }else{
         return (StatusCode::BAD_REQUEST, "Invalid parent rating item".to_string());
+    }
+}
+
+#[derive(Deserialize)]
+pub struct RatingLikeBody {
+    rating_id : String,
+    liking: bool,
+}    
+
+#[derive(sqlx::FromRow)]
+pub struct RatingLike { 
+    //rating_like_id: String, 
+    rating_id: String,
+    liker: String, 
+}
+
+
+pub async fn post_like_rating(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<RatingLikeBody>) -> (StatusCode, String) {
+    let rating_id: String = body.rating_id;
+    let liking: bool = body.liking;
+
+    let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
+    let user_id: String = match token {
+        Ok(value) => value.claims.user_id,
+        Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
+    };
+    let database_pool = &app_state.database;
+
+    let time_now: SystemTime = SystemTime::now();
+    let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to fetch time");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
+        }
+    }.as_millis();
+
+    let rating_data: Ratings = match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
+    .bind(&rating_id)
+    .fetch_one(database_pool).await {
+        Ok(value) => value,
+        Err(err) => {
+            println!("Not a valid post rating ({})", err);
+            return (StatusCode::NOT_FOUND, "Not a valid post being rated".to_string());
+        },
+    };
+
+    if &rating_data.rating_creator == &user_id {
+        return (StatusCode::CONFLICT, "you can not like your own rating".to_string());
+    }
+
+    let already_liked: bool = match sqlx::query_as::<_, RatingLike>("SELECT * FROM post_rating_likes WHERE rating_id = $1 AND liker = $2")
+    .bind(&rating_id)
+    .bind(&user_id)
+    .fetch_one(database_pool).await {
+        Ok(_) => true,
+        Err(err) => {
+            match err {
+                sqlx::Error::RowNotFound => false,
+                _ => {
+                    println!("Failed to fetch if rated ({})", err);
+                    return (StatusCode::NOT_FOUND, "Failed to fetch if rated".to_string());
+                }
+            }
+        },
+    };
+
+    if liking == true && already_liked == true {
+        return (StatusCode::CONFLICT, "Already liked rating".to_string());
+    }
+    if liking == false && already_liked == false {
+        return (StatusCode::NOT_FOUND, "Already not liked rating".to_string());
+    }
+
+    if liking == true {
+        match sqlx::query(
+            "INSERT INTO post_rating_likes (rating_id, liker, like_date) VALUES ($1, $2, $3)")
+            .bind(&rating_id)
+            .bind(&user_id)
+            .bind(time_now_ms as i64)
+            .execute(database_pool).await {
+                Ok(_) => return (StatusCode::OK, "Like added to rating".to_string()),
+                Err(err) => {
+                    println!("Failed to add like to rating ({})", err);
+                    return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to add like to rating".to_string());
+                },
+            }
+    }else{
+        match sqlx::query("DELETE FROM post_rating_likes WHERE rating_id = $1 AND liker = $2")
+        .bind(&rating_id)
+        .bind(&user_id)
+        .execute(database_pool).await {
+            Ok(_) => return (StatusCode::OK, "Like removed from rating".to_string()),
+            Err(err) => {
+                println!("Failed to add like to rating ({})", err);
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to remove like from rating".to_string());
+            },
+        }
     }
 }

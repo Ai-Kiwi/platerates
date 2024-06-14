@@ -16,6 +16,7 @@ use jsonwebtoken::{DecodingKey, EncodingKey};
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use licences::post_licenses_update;
 use pages::{get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
+use user_ratings::post_like_rating;
 use std::env;
 use std::path::PathBuf;
 use sqlx::{postgres::{PgPoolOptions, Postgres}, Pool};
@@ -190,6 +191,7 @@ async fn main() {
         .route("/post/rating/delete", post(post_delete_rating_post))
         .route("/post/upload", post(post_create_upload))
         .route("/post/rating/upload", post(post_create_rating))
+        .route("/post/rating/like", post(post_like_rating))
         .route("/reset-password", get(get_reset_password))
         .route("/login/reset-password", post(post_create_reset_password_code))
         .route("/use-reset-password-code", post(post_use_reset_password_code))
@@ -243,13 +245,9 @@ async fn main() {
 //   TODO /profile/follow
 //   TODO /use-create-account-code
 //   TODO /createAccount
-//   
-//    - ratings
-//   TODO /post/rating/like
 
 //test if flutter website has error with CORS
 //bring over apk download link
-//test if number of comment replys is working as it seems to show 1 when there is non
 //make sure log out all clears the list of tokens manuelly expired
 //add back post feed for users you follow
 //add get profile ratings, not sure if fully done and code is not used or code is half done

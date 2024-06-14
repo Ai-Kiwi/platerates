@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/libs/dataCollect.dart';
 import 'package:PlateRates/libs/lazyLoadPage.dart';
 import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:PlateRates/posts/userPost.dart';
@@ -237,7 +238,7 @@ class _PostRatingListState extends State<fullPagePost> {
                                       // ignore: use_build_context_synchronously
                                       openAlert("success", "uploaded rating",
                                           null, context, null, null);
-                                      await jsonCache.remove('post-$rootItem');
+                                      dataCollect.clearPostData(rootItem);
                                       // ignore: use_build_context_synchronously
                                       Navigator.pop(context);
                                       // ignore: use_build_context_synchronously
