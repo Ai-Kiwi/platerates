@@ -251,4 +251,3 @@ async fn main() {
 //make sure log out all clears the list of tokens manuelly expired
 //add back post feed for users you follow
 //add get profile ratings, not sure if fully done and code is not used or code is half done
-//test if display for if post is rated is working
