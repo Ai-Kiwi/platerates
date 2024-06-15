@@ -150,7 +150,6 @@ class _fullPageChatState extends State<FullPageChat> {
       (message) async {
         try {
           Map jsonData = jsonDecode(message);
-          print(jsonData);
 
           if (jsonData["action"] == "new_message" ||
               (jsonData["action"] == "past_message" &&
@@ -279,7 +278,6 @@ class _fullPageChatState extends State<FullPageChat> {
           print(error);
         }
 
-        print("data got");
         //channel.sink.add('received!');
         //channel.sink.close();
       },

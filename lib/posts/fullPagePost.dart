@@ -50,7 +50,6 @@ class _PostRatingListState extends State<fullPagePost> {
     setState(() {
       if (response.body == "you have already rated" ||
           response.body == "you can not rate your own post") {
-        print(response.body);
         hasRated = true;
       } else {
         ErrorHandler.httpError(response.statusCode, response.body, context);

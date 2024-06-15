@@ -274,8 +274,6 @@ class MyApp extends StatelessWidget {
         HttpHeaders.authorizationHeader: userManager.token
       },
     );
-    print(response.body);
-    print(response.statusCode);
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonResponse = await jsonDecode(response.body);
 
@@ -322,7 +320,6 @@ class MyApp extends StatelessWidget {
                         plateRatesLogo: true,
                       );
                     } else {
-                      print(snapshot.data);
                       //if (snapshot.hasData && snapshot.data == true) {
                       if (snapshot.data == "success") {
                         // navigate to home page finished everything
@@ -409,7 +406,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
       if (response.statusCode == 200) {
-        print(response.body);
         var jsonData = jsonDecode(response.body);
 
         if (mounted) {
@@ -438,7 +434,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     double screenWidth = MediaQuery.of(context).size.width;
-    print(screenWidth);
     double screenHeight = MediaQuery.of(context).size.height;
 
     if (kIsWeb == true && screenWidth > 750) {

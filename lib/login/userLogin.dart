@@ -107,6 +107,7 @@ class User {
         return LoginResponse(error: response.body, success: false);
       }
     } catch (err) {
+      print(err);
       return LoginResponse(error: "error contacting server", success: false);
     }
   }

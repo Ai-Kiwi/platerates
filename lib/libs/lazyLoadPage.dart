@@ -108,7 +108,6 @@ class LazyLoadPageState extends State<LazyLoadPage> {
         if (mounted) {
           setState(() {
             var fetchedData = jsonDecode(response.body);
-            print(fetchedData);
             var postData = fetchedData;
             if (fetchedData.isEmpty) {
               if (itemsCollected.isEmpty) {
