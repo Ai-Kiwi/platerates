@@ -13,7 +13,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -168,17 +167,17 @@ class MyApp extends StatelessWidget {
       }
     }
 
-    if (kIsWeb == false) {
-      print("starting flutter downloader");
-      if (FlutterDownloader.initialized == false) {
-        await FlutterDownloader.initialize(
-            debug:
-                true, // optional: set to false to disable printing logs to console (default: true)
-            ignoreSsl:
-                true // option: set to false to disable working with http links (default: false)
-            );
-      }
-    }
+    //if (kIsWeb == false) {
+    //  print("starting flutter downloader");
+    //  if (FlutterDownloader.initialized == false) {
+    //    await FlutterDownloader.initialize(
+    //        debug:
+    //            true, // optional: set to false to disable printing logs to console (default: true)
+    //        ignoreSsl:
+    //            true // option: set to false to disable working with http links (default: false)
+    //        );
+    //  }
+    //}
 
     if (kIsWeb == false) {
       print("starting firebase");
