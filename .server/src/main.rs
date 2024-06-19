@@ -234,6 +234,7 @@ async fn main() {
 //   TODO /report
 //   //likly gonna redo and just completly remove links, this way its way more open to whatever
 //   //also will add a browse thing to browse reported posts, from there can click ignore or remove or ban account. 
+//   //might have a try with go_router first as I want to get links for the user to review when they report
 //   
 //    - searchSystem
 //   TODO /search/users
