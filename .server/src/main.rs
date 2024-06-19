@@ -223,13 +223,12 @@ async fn main() {
 //    allow to delete any post
 //   
 //    - notifcation system
-//   TODO sendMailToDevice
 //   TODO /notification/updateDeviceToken
 //   TODO sendNotification
 //   TODO /notification/list
 //   TODO /notification/read
 //   TODO /notification/unreadCount
-//   //when respond to rating
+//   //when respond to rating, posts
 //   
 //    - report
 //   TODO /report
