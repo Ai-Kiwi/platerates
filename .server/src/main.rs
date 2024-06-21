@@ -249,4 +249,3 @@ async fn main() {
 
 //test if flutter website has error with CORS
 //bring over apk download link
-//make sure log out all clears the list of tokens manuelly expired
