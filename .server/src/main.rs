@@ -16,6 +16,7 @@ use jsonwebtoken::{DecodingKey, EncodingKey};
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use licences::post_licenses_update;
 use pages::{get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
+use user_profiles::post_user_follow;
 use user_ratings::post_like_rating;
 use std::env;
 use std::path::PathBuf;
@@ -184,6 +185,7 @@ async fn main() {
         .route("/profile/ratings", get(get_profile_ratings))
         .route("/post/rating/data", get(get_rating_data))
         .route("/profile/avatar", get(get_profile_avatar))
+        .route("/profile/follow", post(post_user_follow))
         .route("/login", post(post_user_login))
         .route("/testToken", post(post_test_token))
         .route("/login/logout", post(post_logout))
@@ -242,7 +244,6 @@ async fn main() {
 //    - userAccounts
 //   TODO /profile/settings/change
 //   TODO /profile/ratings
-//   TODO /profile/follow
 //   TODO /use-create-account-code
 //   TODO /createAccount
 

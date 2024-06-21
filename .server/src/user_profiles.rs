@@ -1,12 +1,12 @@
-use std::{collections::HashMap, fs, path::PathBuf};
-use axum::extract::{Query, State};
+use std::{collections::HashMap, fs, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
+use axum::{extract::{Query, State}, Json};
 use data_encoding::BASE64;
-use hyper::StatusCode;
+use hyper::{HeaderMap, StatusCode};
 use serde::Deserialize;
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
-use crate::{user_posts::PostsJustPostId, user_ratings::RatingsJustId, AppState, DATA_IMAGE_AVATARS_FOLDER_PATH};
+use crate::{user_login::test_token_header, user_posts::PostsJustPostId, user_ratings::RatingsJustId, AppState, DATA_IMAGE_AVATARS_FOLDER_PATH};
 
 #[derive(Deserialize)]
 pub struct GetUserInfoPaginator {
@@ -68,10 +68,15 @@ pub struct UserData {
     pub licenses: sqlx::types::Json<HashMap<String,i32>>
 }
 
-pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
+pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap,) -> (StatusCode, String) {
     println!("user fetch profile data");
     let pagination: GetUserInfoPaginator = pagination.0;
-    let database_pool: Pool<Postgres> = app_state.database;
+    let database_pool: &Pool<Postgres> = &app_state.database;
+    let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
+    let logged_in_user_id: Option<String> = match token {
+        Ok(value) => Some(value.claims.user_id),
+        Err(_) => None,
+    };
     
     let mut data_returning: HashMap<String, Value> = HashMap::new();
 
@@ -79,7 +84,7 @@ pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app
     
     let user_data: UserData = match sqlx::query_as::<_, UserData>("SELECT * FROM user_data WHERE user_id = $1")
     .bind(user_id)
-    .fetch_one(&database_pool).await {
+    .fetch_one(database_pool).await {
         Ok(value) => value,
         Err(err) => return (StatusCode::NOT_FOUND, "User not found".to_string() + &err.to_string()),
     };
@@ -93,7 +98,29 @@ pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app
     data_returning.insert("followingCount".to_string(), Value::Number(user_data.following_count.into()));
     data_returning.insert("postCount".to_string(), Value::Number(user_data.post_count.into()));
     data_returning.insert("ratingCount".to_string(), Value::Number(user_data.rating_count.into()));
-    data_returning.insert("requesterFollowing".to_string(), Value::Bool(false));
+
+    let following: bool = match logged_in_user_id {
+        Some(safe_logged_in_user_id) => {
+            match sqlx::query_as::<_, UserFollow>("SELECT * FROM user_follows WHERE follower = $1 AND followee = $2")
+            .bind(&safe_logged_in_user_id)
+            .bind(&user_id)
+            .fetch_one(database_pool).await {
+                Ok(_) => true,
+                Err(err) => {
+                    match err {
+                        sqlx::Error::RowNotFound => false,
+                        _ => {
+                            println!("Failed to fetch if following ({})", err);
+                            return (StatusCode::NOT_FOUND, "Failed to fetch if following already".to_string());
+                        }
+                    }
+                },
+            }
+        },
+        None => false,
+    };
+
+    data_returning.insert("requesterFollowing".to_string(), Value::Bool(following));
     match user_data.avatar_id {
         Some(value) => data_returning.insert("avatar".to_string(), Value::String(value)),
         None => data_returning.insert("avatar".to_string(), Value::Null),
@@ -275,4 +302,98 @@ pub async fn get_profile_ratings(pagination: Query<GetProfileRatings>, State(app
     };
 
     (StatusCode::OK, value)
+}
+
+#[derive(Deserialize)]
+pub struct FollowUserBody {
+    pub user_id : String,
+    pub following: bool,
+}    
+#[derive(sqlx::FromRow)]
+pub struct UserFollow { 
+    pub follower: String,
+    pub followee: String,
+}
+
+pub async fn post_user_follow(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<FollowUserBody>) -> (StatusCode, String) {
+    let following_user_id: String = body.user_id;
+    let following: bool = body.following;
+
+    let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
+    let user_id: String = match token {
+        Ok(value) => value.claims.user_id,
+        Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
+    };
+    let database_pool = &app_state.database;
+
+    let time_now: SystemTime = SystemTime::now();
+    let time_now_ms: u128 = match time_now.duration_since(UNIX_EPOCH) {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to fetch time");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch time".to_string());
+        }
+    }.as_millis();
+
+    let follow_data: UserData = match sqlx::query_as::<_, UserData>("SELECT * FROM user_data WHERE user_id = $1")
+    .bind(&following_user_id)
+    .fetch_one(database_pool).await {
+        Ok(value) => value,
+        Err(err) => {
+            println!("Not a valid user following ({})", err);
+            return (StatusCode::NOT_FOUND, "Not a valid user being followed".to_string());
+        },
+    };
+
+    if &follow_data.user_id == &user_id {
+        return (StatusCode::CONFLICT, "you can not follow yourself".to_string());
+    }
+
+    let already_following: bool = match sqlx::query_as::<_, UserFollow>("SELECT * FROM user_follows WHERE follower = $1 AND followee = $2")
+    .bind(&user_id)
+    .bind(&following_user_id)
+    .fetch_one(database_pool).await {
+        Ok(_) => true,
+        Err(err) => {
+            match err {
+                sqlx::Error::RowNotFound => false,
+                _ => {
+                    println!("Failed to fetch if following ({})", err);
+                    return (StatusCode::NOT_FOUND, "Failed to fetch if following already".to_string());
+                }
+            }
+        },
+    };
+
+    if following == true && already_following == true {
+        return (StatusCode::CONFLICT, "Already following".to_string());
+    }
+    if following == false && already_following == false {
+        return (StatusCode::NOT_FOUND, "Already not following".to_string());
+    }
+
+    if following == true {
+        match sqlx::query(
+            "INSERT INTO user_follows (follower, followee) VALUES ($1, $2)")
+            .bind(&user_id)
+            .bind(&following_user_id)
+            .execute(database_pool).await {
+                Ok(_) => return (StatusCode::OK, "Now following".to_string()),
+                Err(err) => {
+                    println!("Failed to follow ({})", err);
+                    return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to follow".to_string());
+                },
+            }
+    }else{
+        match sqlx::query("DELETE FROM user_follows WHERE follower = $1 AND followee = $2")
+        .bind(&user_id)
+        .bind(&following_user_id)
+        .execute(database_pool).await {
+            Ok(_) => return (StatusCode::OK, "unfollowed".to_string()),
+            Err(err) => {
+                println!("Failed to unfollow ({})", err);
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to unfollow".to_string());
+            },
+        }
+    }
 }

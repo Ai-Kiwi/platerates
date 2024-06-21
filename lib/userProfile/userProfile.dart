@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -179,11 +180,11 @@ class _UserProfileState extends State<UserProfile> {
       Uri.parse('$serverDomain/profile/follow'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token
       },
       body: jsonEncode({
-        "token": userManager.token,
         "following": newFollowState,
-        "user_id": userId
+        "user_id": userId,
       }),
     );
     if (response.statusCode == 200) {
@@ -195,6 +196,8 @@ class _UserProfileState extends State<UserProfile> {
           followersCount = followersCount - 1;
         }
       });
+      dataCollect.clearBasicUserData(userId);
+      dataCollect.clearUserData(userId);
     } else {
       openAlert(
           "error", "failed to change follow state", null, context, null, null);
