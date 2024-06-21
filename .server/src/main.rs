@@ -243,7 +243,6 @@ async fn main() {
 //   
 //    - userAccounts
 //   TODO /profile/settings/change
-//   TODO /profile/ratings
 //   TODO /use-create-account-code
 //   TODO /createAccount
 
