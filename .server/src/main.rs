@@ -269,5 +269,3 @@ async fn main() {
 
 //test if flutter website has error with CORS
 //make sure that after adding r# it is still working with sending link in email
-
-//fix opening posts on web version with wide screens
