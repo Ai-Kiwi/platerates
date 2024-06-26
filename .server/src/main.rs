@@ -13,6 +13,7 @@ use argon2::Argon2;
 use axum::{
     routing::{get, post}, Router
 };
+use hyper::Method;
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use licences::post_licenses_update;
@@ -23,7 +24,7 @@ use user_profiles::post_user_follow;
 use user_ratings::post_like_rating;
 use std::env;
 use std::path::PathBuf;
-use sqlx::{postgres::{PgPoolOptions, Postgres}, Pool};
+use sqlx::{postgres::{PgPoolOptions, Postgres}, Any, Pool};
 use rand::rngs::OsRng;
 use rand::RngCore;
 use crate::{licences::get_unaccepted_licenses, reset_password::{get_reset_password, post_create_reset_password_code, post_use_reset_password_code}, user_login::{post_logout, post_test_token}, user_posts::{get_post_data, get_post_feed, get_post_image_data, get_post_ratings, post_create_upload, post_delete_post}, user_profiles::{get_profile_avatar, get_profile_basic_data, get_profile_data, get_profile_posts, get_profile_ratings}, user_ratings::{post_create_rating, post_delete_rating_post}, utils::create_reset_code};
@@ -31,6 +32,7 @@ use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 use clap::Parser;
 use gcp_auth::{CustomServiceAccount, TokenProvider};
+use tower_http::cors::{AllowOrigin, CorsLayer};
 
 use tower_http::{body, services::ServeDir};
 
@@ -197,6 +199,34 @@ async fn main() {
         panic!()
     }
 
+    let cors = if cfg!(debug_assertions) {
+        // Debug/testing environment: Allow requests from all origins (not recommended for production)
+        CorsLayer::new()       
+        .allow_origin(AllowOrigin::predicate(|origin, _req| {
+            // Allow all localhost origins or any other specific conditions
+            origin.as_bytes().starts_with(b"http://localhost") || origin.as_bytes().starts_with(b"http://127.0.0.1") || origin.as_bytes().starts_with(b"http://192.168.0.")
+        }))
+        .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers(vec![
+            "content-type".parse().unwrap(),
+            "authorization".parse().unwrap(),
+        ])
+        .allow_credentials(true) // Allow credentials (e.g., cookies)
+    } else {
+        // Production environment: Allow requests only from the production domain
+        CorsLayer::new()
+            .allow_origin(AllowOrigin::predicate(|origin, _req| {
+                // Allow all localhost origins or any other specific conditions
+                origin.as_bytes().starts_with(b"https://platerates.com")
+            }))
+            .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
+            .allow_headers(vec![
+                "content-type".parse().unwrap(),
+                "authorization".parse().unwrap(),
+            ])
+            .allow_credentials(true) // Allow credentials (e.g., cookies)
+    };
+
     // build our application with a route
     let app: Router = Router::new()
         .route("/latestVersion", get(get_latest_version))
@@ -234,6 +264,7 @@ async fn main() {
         .route("/notification/read", post(post_mark_notification_read))
         .route("/notification/unreadCount", get(get_notifications_unread))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
+        .layer(cors)
         .with_state(state);
 
     // run our app with hyper, listening globally on port 3000
