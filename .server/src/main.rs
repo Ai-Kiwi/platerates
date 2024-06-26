@@ -269,6 +269,5 @@ async fn main() {
 
 //test if flutter website has error with CORS
 //make sure that after adding r# it is still working with sending link in email
-//look into adding sqlx macros (part with ! to stop errors and better type safety)
 
 //fix opening posts on web version with wide screens
