@@ -348,7 +348,7 @@ class migrateToAppPage extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   child: const Text(
-                    'ignore',
+                    'close',
                     style: TextStyle(fontSize: 18.0),
                   ),
                 ),
