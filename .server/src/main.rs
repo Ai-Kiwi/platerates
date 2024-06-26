@@ -192,6 +192,11 @@ async fn main() {
         firebase_project_id: firebase_project_id,
     };
 
+    if STATIC_DATA_FOLDER_PATH.join("web").join("Platerates.apk").exists() == false {
+        println!("Platerates.apk file not found");
+        panic!()
+    }
+
     // build our application with a route
     let app: Router = Router::new()
         .route("/latestVersion", get(get_latest_version))
@@ -263,7 +268,6 @@ async fn main() {
 //   TODO /createAccount
 
 //test if flutter website has error with CORS
-//bring over apk download link
 //make sure that after adding r# it is still working with sending link in email
 //look into adding sqlx macros (part with ! to stop errors and better type safety)
 
