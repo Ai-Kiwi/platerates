@@ -15,7 +15,7 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{postgres::Postgres, Pool};
-use crate::AppState;
+use crate::{notifications::{send_notification_to_user_id, NotificationType}, AppState};
 
 #[derive(Deserialize)]
 pub struct UserLogin {
@@ -186,10 +186,10 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
     let user_password = &body.password;
     let user_password_bytes: &[u8] = user_password.as_bytes();
 
-    let database_pool: Pool<Postgres> = app_state.database;
-    let encode_key: EncodingKey = app_state.jwt_encode_key;
+    let database_pool: &Pool<Postgres> = &app_state.database;
+    let encode_key: &EncodingKey = &app_state.jwt_encode_key;
 
-    let argon2: Argon2 = app_state.argon2;
+    let argon2: &Argon2 = &app_state.argon2;
 
 
     //this code is left here just for debugging
@@ -214,7 +214,7 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
 
     let user_credential_data: UserCredentials = match sqlx::query_as::<_, UserCredentials>("SELECT * FROM user_credentials WHERE email = $1")
     .bind(&user_email)
-    .fetch_one(&database_pool).await {
+    .fetch_one(database_pool).await {
         Ok(value) => value,
         Err(err) => {
             println!("{} ({err})","didn't find a valid user".to_owned());
@@ -233,7 +233,7 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
         .bind(time_now_ms as i64)
         .bind(1)
         .bind(&user_credential_data.user_id)
-        .execute(&database_pool).await;
+        .execute(database_pool).await;
 
         match database_response {
             Ok(_) => (),
@@ -264,7 +264,7 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
         .bind(time_now_ms as i64)
         .bind(&user_credential_data.login_attempt_number + 1)
         .bind(&user_credential_data.user_id)
-        .execute(&database_pool).await;
+        .execute(database_pool).await;
 
         match database_response {
             Ok(_) => (),
@@ -335,6 +335,8 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
             return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to convert token data to json".to_string())
         }
     };
+
+    send_notification_to_user_id(&app_state,"",&user_credential_data.user_id.clone(), "", NotificationType::UserLogin).await;
 
     wait_time(time_now_ms);
     (StatusCode::OK, value)

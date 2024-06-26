@@ -154,7 +154,9 @@ CREATE INDEX post_rating_likes_idx_rating_id ON post_rating_likes (rating_id);
 
 CREATE TABLE user_notifications (
    notification_id TEXT PRIMARY KEY NOT NULL,
-   notification_data JSONB NOT NULL,
+   item_id TEXT NOT NULL,
+   item_type TEXT NOT NULL,
+   source_user_id TEXT NOT NULL,
    receiver_id TEXT NOT NULL,
    sent_date BIGINT NOT NULL,
    read BOOLEAN NOT NULL DEFAULT false,

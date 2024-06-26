@@ -250,18 +250,6 @@ class MyApp extends StatelessWidget {
     if (kIsWeb == false) {
       print("starting notifcation service");
       await initNotificationHandler(); //also handles firebase
-
-      //load notfcation stuff if opened
-
-      //var notData = sharedPrefs.getString('notificationOnBootData');
-      //print("noti thingy is $notData");
-      //if (notData != null) {
-      //  if (notData != '') {
-      //    openNotificationOnBootData = notData;
-      //    print("loaded ");
-      //    sharedPrefs.setString('notificationOnBootData', '');
-      //  }
-      //}
     }
 
     //test licenses
@@ -357,16 +345,6 @@ List<Widget> pages = <Widget>[
   LoggedInUserTab(),
 ];
 
-Future<void> testNotificationOnBootData(context) async {
-  if (openNotificationOnBootData != "") {
-    openNotification(openNotificationOnBootData, context);
-
-    openNotificationOnBootData = "";
-    var sharedPrefs = await SharedPreferences.getInstance();
-    sharedPrefs.setString('notificationOnBootData', '');
-  }
-}
-
 var updateUnreadNotificationCount;
 var updateHomePage;
 
@@ -395,13 +373,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _updateUnreadNotificationCount() async {
     try {
-      var response = await http.post(
+      var response = await http.get(
         Uri.parse("$serverDomain/notification/unreadCount"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: userManager.token,
         },
-        body: jsonEncode(<String, String>{}),
       );
 
       if (response.statusCode == 200) {
@@ -414,6 +391,9 @@ class _MyHomePageState extends State<MyHomePage> {
             //unreadMessageCount = jsonData['unreadMessageCount'];
           });
         }
+      } else {
+        print("failed to update unread notifications");
+        print(response.body);
       }
     } on Exception catch (error, stackTrace) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);

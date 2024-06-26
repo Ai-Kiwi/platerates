@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:PlateRates/libs/alertSystem.dart';
@@ -110,6 +111,8 @@ Future<void> informServerNotificationToken(String? token) async {
   if (userManager.token == '') {
     return; //does nothing as program still being init
   }
+  print("noti token");
+  print(token);
 
   if (token != null) {
     try {
@@ -117,10 +120,10 @@ Future<void> informServerNotificationToken(String? token) async {
         Uri.parse("$serverDomain/notification/updateDeviceToken"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: userManager.token,
         },
         body: jsonEncode(<String, String>{
-          'token': userManager.token,
-          'new_token': token,
+          'notification_token': token,
         }),
       );
     } on Exception catch (error) {
@@ -201,20 +204,27 @@ Future<void> initNotificationHandler() async {
 }
 
 Future<void> openUserItemContent(perentData, context) async {
-  if (perentData["type"] == "rating") {
+  if (perentData["item_type"] == "rating") {
     Map ratingData =
         await dataCollect.getRatingData(perentData["data"], context, true);
-    var rootItem = ratingData['rootItem'];
+    var rootItem = {
+      "item_type": ratingData["rootItemType"],
+      "data": ratingData["rootItemData"]
+    };
     if (rootItem != null) {
       await openUserItemContent(rootItem, context);
     }
     Navigator.of(context).push(smoothTransitions
         .slideUp(FullPageRating(ratingId: perentData["data"])));
     return;
-  } else if (perentData["type"] == "post") {
+  } else if (perentData["item_type"] == "post") {
     Map postData =
         await dataCollect.getPostData(perentData["data"], context, true);
-    var rootItem = postData['rootItem'];
+    var rootItem = {
+      "item_type": postData["rootItemType"],
+      "data": postData["rootItemData"]
+    };
+
     if (rootItem != null) {
       await openUserItemContent(rootItem, context);
     }
@@ -227,36 +237,40 @@ Future<void> openUserItemContent(perentData, context) async {
 }
 
 Future<Map> openNotification(notificationData, context) async {
-  final jsonData = jsonDecode(notificationData);
+  final jsonData = notificationData;
 
-  if (jsonData['action'] == "user_rated_post") {
+  if (jsonData['item_type'] == "userRating") {
     await openUserItemContent({
-      "type": "rating",
-      "data": jsonData['itemId'],
+      "item_type": "rating",
+      "data": jsonData['item_id'],
     }, context);
-  } else if (jsonData['action'] == "user_reply_post_rating") {
+  } else if (jsonData['item_type'] == "userComment") {
     await openUserItemContent({
-      "type": "rating",
-      "data": jsonData['itemId'],
+      "item_type": "rating",
+      "data": jsonData['item_id'],
     }, context);
-  }
-
-  var response = await http.post(
-    Uri.parse("$serverDomain/notification/read"),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'token': userManager.token,
-      'notification_id': jsonData['notificationId'],
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    jsonData['read'] = true;
   } else {
-    openAlert("error", "failed marking notification read", response.body,
-        context, null, null);
+    print("unkown notification type trying to open");
+  }
+  if (jsonData["read"] == false) {
+    var response = await http.post(
+      Uri.parse("$serverDomain/notification/read"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token
+      },
+      body: jsonEncode(<String, String>{
+        'token': userManager.token,
+        'notification_id': jsonData['notification_id'],
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      jsonData['read'] = true;
+    } else {
+      openAlert("error", "failed marking notification read", response.body,
+          context, null, null);
+    }
   }
 
   updateUnreadNotificationCount();

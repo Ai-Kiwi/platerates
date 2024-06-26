@@ -6,6 +6,7 @@ mod utils;
 mod reset_password;
 mod licences;
 mod pages;
+mod notifications;
 
 use std::{collections::HashMap, fs, vec};
 use argon2::Argon2;
@@ -15,7 +16,9 @@ use axum::{
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use licences::post_licenses_update;
+use notifications::{get_notifications_list, get_notifications_unread, post_mark_notification_read, post_update_notification_token, send_notification_to_user_id};
 use pages::{get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
+use serde_json::Value;
 use user_profiles::post_user_follow;
 use user_ratings::post_like_rating;
 use std::env;
@@ -27,8 +30,9 @@ use crate::{licences::get_unaccepted_licenses, reset_password::{get_reset_passwo
 use crate::user_ratings::get_rating_data;
 use crate::user_login::post_user_login;
 use clap::Parser;
+use gcp_auth::{CustomServiceAccount, TokenProvider};
 
-use tower_http::services::ServeDir;
+use tower_http::{body, services::ServeDir};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -44,6 +48,12 @@ struct Args {
 
     #[arg(long)]
     smpt_auth_password: String,
+
+    #[arg(long)]
+    firebase_auth_file: String,
+
+    #[arg(long)]
+    firebase_project_id: String,
 }
 
 
@@ -102,6 +112,8 @@ pub struct AppState<'a> {
     jwt_decode_key : DecodingKey,
     argon2 : Argon2<'a>,
     mailer : SmtpTransport,
+    firebase_token: std::sync::Arc<gcp_auth::Token>,
+    firebase_project_id: String
 }
 
 
@@ -113,8 +125,8 @@ async fn main() {
     let smpt_host: String = args.smpt_host;
     let smpt_auth_user: String = args.smpt_auth_user;
     let smpt_auth_password: String = args.smpt_auth_password;
-
-    println!("{}",create_reset_code());
+    let firebase_auth_file_path: String = args.firebase_auth_file;
+    let firebase_project_id: String = args.firebase_project_id;
 
 
     //creates needed data storage data
@@ -158,18 +170,26 @@ async fn main() {
     //setup email server
     let creds: Credentials = Credentials::new(smpt_auth_user, smpt_auth_password);
 
-    // Open a remote connection to gmail
+    // Open a remote connection to email
     let mailer: SmtpTransport = SmtpTransport::relay(&smpt_host)
         .unwrap()
         .credentials(creds)
         .build();
+
+    //setup notifcation connection
+    let credentials_path: PathBuf = PathBuf::from(firebase_auth_file_path);
+    let service_account: CustomServiceAccount = CustomServiceAccount::from_file(credentials_path).expect("failed to load notifcation token file");
+    let scopes: &[&str; 1] = &["https://www.googleapis.com/auth/cloud-platform"];
+    let token: std::sync::Arc<gcp_auth::Token> = service_account.token(scopes).await.expect("failed to load notifcation token");
 
     let state: AppState = AppState { 
         database: database_pool, 
         jwt_encode_key: encoding_key,
         jwt_decode_key: decoding_key,
         argon2: argon2,
-        mailer: mailer
+        mailer: mailer,
+        firebase_token: token,
+        firebase_project_id: firebase_project_id,
     };
 
     // build our application with a route
@@ -204,6 +224,10 @@ async fn main() {
         .route("/CommunityGuidelines",get(get_page_community_guidelines))
         .route("/termsOfService", get(get_page_terms_of_service))
         .route("/styles.css", get(get_page_styles))
+        .route("/notification/list", get(get_notifications_list))
+        .route("/notification/updateDeviceToken", post(post_update_notification_token))
+        .route("/notification/read", post(post_mark_notification_read))
+        .route("/notification/unreadCount", get(get_notifications_unread))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .with_state(state);
 
@@ -216,27 +240,19 @@ async fn main() {
 // cargo watch -x run
 
 //   TODO 
-
-//TODO
-
+//
 //    - adminZone
 //   TODO /admin/banUser
 //    add back admin users
 //    allow to delete any post
-//   
-//    - notifcation system
-//   TODO /notification/updateDeviceToken
-//   TODO sendNotification
-//   TODO /notification/list
-//   TODO /notification/read
-//   TODO /notification/unreadCount
-//   //when respond to rating, posts
+//   admin allow to take down posts
 //   
 //    - report
 //   TODO /report
-//   //likly gonna redo and just completly remove links, this way its way more open to whatever
-//   //also will add a browse thing to browse reported posts, from there can click ignore or remove or ban account. 
-//   //might have a try with go_router first as I want to get links for the user to review when they report
+//   //custom admin screen menu with list of reported opens and link to open it
+//   // //will list ammount of reports and tell you what everyone said
+//   //when taken down it will have link to id and owner will be informed, reported will also be informed that it has been taken down. System will also alert all other users of it being taken down that have reviewed it
+//   //when item is reported it will email person who reported it saying item has been reported and for further info contact support
 //   
 //    - searchSystem
 //   TODO /search/users
@@ -248,3 +264,7 @@ async fn main() {
 
 //test if flutter website has error with CORS
 //bring over apk download link
+//make sure that after adding r# it is still working with sending link in email
+//look into adding sqlx macros (part with ! to stop errors and better type safety)
+
+//fix opening posts on web version with wide screens

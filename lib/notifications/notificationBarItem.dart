@@ -33,9 +33,9 @@ class _notificationBarItemState extends State<notificationBarItem> {
 
   Future<void> fetchNotificationData() async {
     try {
-      if (jsonData['action'] == "user_rated_post") {
+      if (jsonData['item_type'] == "userRating") {
         var ratingData =
-            await dataCollect.getRatingData(jsonData['itemId'], context, true);
+            await dataCollect.getRatingData(jsonData['item_id'], context, true);
         rootItem = ratingData['rootItem'];
         var userData = await dataCollect.getBasicUserData(
             ratingData['ratingPosterId'], context, true);
@@ -49,16 +49,16 @@ class _notificationBarItemState extends State<notificationBarItem> {
           if (userImage["imageData"] != null) {
             userImageData = base64Decode(userImage["imageData"]);
           }
-          notificationText = "${username} responded to your post";
+          notificationText = "${username} rated your post";
           if (jsonData['read'] == false) {
             notificationTextColor = Colors.white;
           } else {
             notificationTextColor = Colors.grey;
           }
         });
-      } else if (jsonData['action'] == "user_reply_post_rating") {
+      } else if (jsonData['item_type'] == "userComment") {
         var ratingData =
-            await dataCollect.getRatingData(jsonData['itemId'], context, true);
+            await dataCollect.getRatingData(jsonData['item_id'], context, true);
         rootItem = ratingData['rootItem'];
         var userData = await dataCollect.getBasicUserData(
             ratingData['ratingPosterId'], context, true);
@@ -81,19 +81,19 @@ class _notificationBarItemState extends State<notificationBarItem> {
         });
       }
     } catch (err) {
-      if (jsonData['read'] == false) {
-        //invalid noti and not read so should contact server to mark as read
-        await http.post(
-          Uri.parse("$serverDomain/notification/read"),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(<String, String>{
-            'token': userManager.token,
-            'notification_id': jsonData['notificationId'],
-          }),
-        );
-      }
+      //if (jsonData['read'] == false) {
+      //  //invalid noti and not read so should contact server to mark as read
+      //  await http.post(
+      //    Uri.parse("$serverDomain/notification/read"),
+      //    headers: <String, String>{
+      //      'Content-Type': 'application/json; charset=UTF-8',
+      //    },
+      //    body: jsonEncode(<String, String>{
+      //      'token': userManager.token,
+      //      'notification_id': jsonData['notificationId'],
+      //    }),
+      //  );
+      //}
       if (mounted) {
         setState(() {
           itemDeleted = true;
@@ -106,7 +106,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
 
   @override
   void initState() {
-    jsonData = jsonDecode(notificationData);
+    jsonData = notificationData;
     super.initState();
     fetchNotificationData();
   }
@@ -148,7 +148,7 @@ class _notificationBarItemState extends State<notificationBarItem> {
                 Text(
                   timeMaths.shortFormatDuration(
                       DateTime.now().millisecondsSinceEpoch -
-                          (jsonData['sentDate'] as int)),
+                          (jsonData['sent_date'] as int)),
                   style: TextStyle(color: notificationTextColor, fontSize: 32),
                 ),
               ],

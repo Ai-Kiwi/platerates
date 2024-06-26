@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/chat/chatList.dart';
 import 'package:PlateRates/libs/alertSystem.dart';
+import 'package:PlateRates/login/userLogin.dart';
 import 'package:PlateRates/notifications/notificationBarItem.dart';
 import 'package:PlateRates/posts/postRating/userRating.dart';
 import 'package:PlateRates/posts/userPost.dart';
@@ -87,6 +89,10 @@ class LazyLoadPageState extends State<LazyLoadPage> {
     sending_headers["page"] = pageUpto.toString();
     sending_headers["page_size"] = itemsPerPage.toString();
 
+    if (userManager.loggedIn == true) {
+      sending_headers["authorization"] = userManager.token;
+    }
+
     var subbedServerDomain = serverDomain.substring(0, 5);
     var justDomainUrl;
     if (subbedServerDomain == "https") {
@@ -101,6 +107,7 @@ class LazyLoadPageState extends State<LazyLoadPage> {
       justDomainUrl,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token
       },
     );
     if (response.statusCode == 200) {

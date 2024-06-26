@@ -6,7 +6,7 @@ use serde_json::Value;
 use sqlx::{Pool, Postgres};
 use sqlx_error::{sqlx_error, SqlxError};
 
-use crate::{user_login::test_token_header, user_posts::Posts, utils::create_item_id, AppState};
+use crate::{notifications::{send_notification_to_user_id, NotificationType}, user_login::test_token_header, user_posts::Posts, utils::create_item_id, AppState};
 
 
 
@@ -269,12 +269,15 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
             .bind(&text)
             .bind(time_now_ms as i64)
             .bind(rating)
-            .bind(user_id)
+            .bind(&user_id)
             .bind(root_data)
             .execute(database_pool).await;
 
         match result {
-            Ok(_) => return (StatusCode::CREATED, "Created rating".to_string()),
+            Ok(_) => {
+                send_notification_to_user_id(&app_state,&user_id,&parent_post_data.poster_user_id, &rating_id, NotificationType::PostRated).await;
+                return (StatusCode::CREATED, "Created rating".to_string())
+            },
             Err(_) => {
                 println!("failed to create rating");
                 return (StatusCode::BAD_REQUEST, "Failed creating rating".to_string());
@@ -283,10 +286,10 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
 
 
     }else if root_type == "rating" {
-        match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
+        let parent_rating_data = match sqlx::query_as::<_, Ratings>("SELECT * FROM post_ratings WHERE rating_id = $1")
         .bind(&root_data)
         .fetch_one(database_pool).await {
-            Ok(_) => (),
+            Ok(value) => value,
             Err(err) => {
                 println!("Not a valid rating commenting on ({})", err);
                 return (StatusCode::NOT_FOUND, "Not a valid post being rated".to_string());
@@ -312,12 +315,15 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
             .bind(&rating_id)
             .bind(&text)
             .bind(time_now_ms as i64)
-            .bind(user_id)
+            .bind(&user_id)
             .bind(root_data)
             .execute(database_pool).await;
 
         match result {
-            Ok(_) => return (StatusCode::CREATED, "Created rating".to_string()),
+            Ok(_) => {
+                send_notification_to_user_id(&app_state,&user_id,&parent_rating_data.rating_creator, &rating_id, NotificationType::RatingComment).await;
+                return (StatusCode::CREATED, "Created rating".to_string())
+            },
             Err(err) => {
                 println!("failed to create rating ({})",err);
                 return (StatusCode::BAD_REQUEST, "Failed creating rating".to_string());
