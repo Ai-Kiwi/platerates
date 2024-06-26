@@ -298,5 +298,4 @@ async fn main() {
 //   TODO /use-create-account-code
 //   TODO /createAccount
 
-//test if flutter website has error with CORS
 //make sure that after adding r# it is still working with sending link in email
