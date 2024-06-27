@@ -279,10 +279,6 @@ async fn main() {
 // cargo watch -x run
 
 //   TODO 
-//
-//    - adminZone
-//    allow to delete any post
-//   admin allow to take down posts
 //   
 //    - report
 //   TODO /report
