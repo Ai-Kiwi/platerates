@@ -286,6 +286,9 @@ async fn main() {
 //   
 //    - report
 //   TODO /report
+//   TODO /report/list
+//   TODO /report/accept
+//   // // can decline or accept with parm
 //   //custom admin screen menu with list of reported opens and link to open it
 //   // //will list ammount of reports and tell you what everyone said
 //   //when taken down it will have link to id and owner will be informed, reported will also be informed that it has been taken down. System will also alert all other users of it being taken down that have reviewed it
