@@ -275,9 +275,6 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-//to test run
-// cargo watch -x run
-
 //   TODO 
 //   
 //    - report
