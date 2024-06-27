@@ -15,7 +15,7 @@ use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{postgres::Postgres, Pool};
-use crate::{notifications::{send_notification_to_user_id, NotificationType}, AppState};
+use crate::{notifications::{send_notification_to_user_id, NotificationType}, utils::milliseconds_to_readable_short, AppState};
 
 #[derive(Deserialize)]
 pub struct UserLogin {
@@ -42,7 +42,10 @@ pub struct UserCredentials {
     pub notification_token: Option<String>,
     pub invalid_tokens: Vec<String>,
     pub tokens_expire_time: i64,
-    pub password_reset_code: Option<String>
+    pub password_reset_code: Option<String>,
+    pub ban_date: i64,
+    pub ban_expire_date: i64,
+    pub ban_reason: String
 }
 
 fn wait_time(start_time: u128) {
@@ -320,6 +323,9 @@ pub async fn post_user_login(State(app_state): State<AppState<'_>>, Json(body): 
         },
     };
     
+    if user_credential_data.ban_expire_date > time_now_ms as i64 {
+        return (StatusCode::UNAUTHORIZED, format!("account has been banned for {} it will be unbanned in {}", user_credential_data.ban_reason, milliseconds_to_readable_short( user_credential_data.ban_expire_date - (time_now_ms as i64) )))
+    }
 
     let mut data_returning: HashMap<String, Value> = HashMap::new();
 

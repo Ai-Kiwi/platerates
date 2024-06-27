@@ -7,8 +7,10 @@ mod reset_password;
 mod licences;
 mod pages;
 mod notifications;
+mod admin;
 
 use std::{collections::HashMap, fs, vec};
+use admin::post_ban_user;
 use argon2::Argon2;
 use axum::{
     routing::{get, post}, Router
@@ -263,6 +265,7 @@ async fn main() {
         .route("/notification/updateDeviceToken", post(post_update_notification_token))
         .route("/notification/read", post(post_mark_notification_read))
         .route("/notification/unreadCount", get(get_notifications_unread))
+        .route("/admin/banUser", post(post_ban_user))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .layer(cors)
         .with_state(state);
@@ -278,8 +281,6 @@ async fn main() {
 //   TODO 
 //
 //    - adminZone
-//   TODO /admin/banUser
-//    add back admin users
 //    allow to delete any post
 //   admin allow to take down posts
 //   

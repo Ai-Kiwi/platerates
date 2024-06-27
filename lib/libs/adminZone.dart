@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/errorHandler.dart';
 import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:flutter/material.dart';
@@ -48,101 +49,6 @@ class _AdminZonePageState extends State<AdminZonePage> {
                 thickness: 1.0,
               ),
               _AdminItem(
-                settingIcon: Icons.person_outline,
-                settingName: "create user",
-                ontap: () async {
-                  String accountUsername = "";
-                  String accountEmail = "";
-
-                  Alert(
-                      context: context,
-                      title: "create user",
-                      content: Column(
-                        children: <Widget>[
-                          TextField(
-                            style: const TextStyle(color: Colors.white),
-                            maxLengthEnforcement: MaxLengthEnforcement
-                                .truncateAfterCompositionEnds,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.account_circle),
-                              labelText: 'username',
-                            ),
-                            onChanged: (value) {
-                              accountUsername = value;
-                            },
-                          ),
-                          TextField(
-                            style: const TextStyle(color: Colors.white),
-                            maxLengthEnforcement: MaxLengthEnforcement
-                                .truncateAfterCompositionEnds,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.account_circle),
-                              labelText: 'email',
-                            ),
-                            onChanged: (value) {
-                              accountEmail = value;
-                            },
-                          ),
-                        ],
-                      ),
-                      buttons: [
-                        DialogButton(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                            final response = await http.post(
-                              Uri.parse("$serverDomain/admin/createUser"),
-                              headers: <String, String>{
-                                'Content-Type':
-                                    'application/json; charset=UTF-8',
-                                HttpHeaders.authorizationHeader:
-                                    userManager.token
-                              },
-                              body: jsonEncode(<String, String>{
-                                "username": accountUsername,
-                                "email": accountEmail,
-                              }),
-                            );
-                            if (response.statusCode == 200) {
-                              // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text(
-                                'user created',
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              )));
-                            } else {
-                              ErrorHandler.httpError(
-                                  response.statusCode, response.body, context);
-                              // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text(
-                                'failed creating user',
-                                style:
-                                    TextStyle(fontSize: 20, color: Colors.red),
-                              )));
-                            }
-                          },
-                          child: const Text(
-                            "create",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        ),
-                        DialogButton(
-                          color: Colors.red,
-                          child: const Text(
-                            "cancel",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        )
-                      ]).show();
-                },
-              ),
-              _AdminItem(
                 settingIcon: Icons.remove,
                 settingName: "ban user",
                 ontap: () async {
@@ -152,16 +58,24 @@ class _AdminZonePageState extends State<AdminZonePage> {
 
                   Alert(
                       context: context,
-                      title: "create user",
+                      title: "Ban user",
+                      style: alertStyle,
                       content: Column(
                         children: <Widget>[
                           TextField(
                             style: const TextStyle(color: Colors.white),
-                            maxLengthEnforcement: MaxLengthEnforcement
-                                .truncateAfterCompositionEnds,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.account_circle),
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.account_circle,
+                                  color: Colors.white),
                               labelText: 'userId',
+                              labelStyle: const TextStyle(color: Colors.white),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor),
+                              ),
                             ),
                             onChanged: (value) {
                               accountUserId = value;
@@ -169,11 +83,18 @@ class _AdminZonePageState extends State<AdminZonePage> {
                           ),
                           TextField(
                             style: const TextStyle(color: Colors.white),
-                            maxLengthEnforcement: MaxLengthEnforcement
-                                .truncateAfterCompositionEnds,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.account_circle),
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.account_circle,
+                                  color: Colors.white),
                               labelText: 'reason',
+                              labelStyle: const TextStyle(color: Colors.white),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor),
+                              ),
                             ),
                             onChanged: (value) {
                               accountBanReason = value;
@@ -181,11 +102,18 @@ class _AdminZonePageState extends State<AdminZonePage> {
                           ),
                           TextField(
                             style: const TextStyle(color: Colors.white),
-                            maxLengthEnforcement: MaxLengthEnforcement
-                                .truncateAfterCompositionEnds,
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.account_circle),
+                            decoration: InputDecoration(
+                              icon: const Icon(Icons.account_circle,
+                                  color: Colors.white),
                               labelText: 'time (seconds)',
+                              labelStyle: const TextStyle(color: Colors.white),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor),
+                              ),
                             ),
                             onChanged: (value) {
                               accountBanTime = value;
@@ -205,30 +133,26 @@ class _AdminZonePageState extends State<AdminZonePage> {
                                 HttpHeaders.authorizationHeader:
                                     userManager.token
                               },
-                              body: jsonEncode(<String, String>{
-                                'token': userManager.token,
+                              body: jsonEncode({
                                 "user_id": accountUserId,
                                 "reason": accountBanReason,
-                                "time": accountBanTime,
+                                "time": (int.tryParse(accountBanTime)! * 1000),
                               }),
                             );
                             if (response.statusCode == 200) {
                               // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text(
-                                'user banned',
-                                style:
-                                    TextStyle(fontSize: 20, color: Colors.red),
-                              )));
+                              openAlert("success", "User banned", null, context,
+                                  null, null);
                             } else {
                               ErrorHandler.httpError(
                                   response.statusCode, response.body, context);
                               // ignore: use_build_context_synchronously
+                              openAlert("error", "Failed to ban user",
+                                  response.body, context, null, null);
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(const SnackBar(
                                       content: Text(
-                                'failed banning user',
+                                'Failed banning user',
                                 style:
                                     TextStyle(fontSize: 20, color: Colors.red),
                               )));
