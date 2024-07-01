@@ -9,6 +9,7 @@ mod pages;
 mod notifications;
 mod admin;
 mod search;
+mod report;
 
 use std::{collections::HashMap, fs, vec};
 use admin::post_ban_user;
@@ -22,6 +23,7 @@ use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use licences::post_licenses_update;
 use notifications::{get_notifications_list, get_notifications_unread, post_mark_notification_read, post_update_notification_token, send_notification_to_user_id};
 use pages::{get_page_change_log, get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
+use report::post_report;
 use search::get_search_users;
 use serde_json::Value;
 use user_profiles::{post_setting_change, post_user_follow};
@@ -271,6 +273,7 @@ async fn main() {
         .route("/admin/banUser", post(post_ban_user))
         .route("/profile/settings/change", post(post_setting_change))
         .route("/search/users", get(get_search_users))
+        .route("/report", post(post_report))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .layer(cors)
         .with_state(state);
@@ -281,16 +284,6 @@ async fn main() {
 }
 
 //   TODO 
-//   
-//    - report
-//   TODO /report
-//   TODO /report/list
-//   TODO /report/accept
-//   // // can decline or accept with parm
-//   //custom admin screen menu with list of reported opens and link to open it
-//   // //will list ammount of reports and tell you what everyone said
-//   //when taken down it will have link to id and owner will be informed, reported will also be informed that it has been taken down. System will also alert all other users of it being taken down that have reviewed it
-//   //when item is reported it will email person who reported it saying item has been reported and for further info contact support
 //   
 //    - userAccounts
 //   TODO /use-create-account-code

@@ -30,6 +30,10 @@ class _PostRatingListState extends State<fullPagePost> {
   bool hasRated = true;
 
   Future<void> _testRated() async {
+    if (userManager.loggedIn == false) {
+      hasRated = true;
+      return;
+    }
     //attempt to upload post to see if you have posted yet
     final response = await http.post(
       Uri.parse("$serverDomain/post/rating/upload"),

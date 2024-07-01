@@ -386,10 +386,11 @@ class _PostItemState extends State<PostItem> {
             if (clickable == true) {
               if (openFullContentTree == true) {
                 openUserItemContent({
-                  "type": "post",
+                  "item_type": "post",
                   "data": postId,
                 }, context);
               } else {
+                print("nav");
                 Navigator.of(context).push(
                     smoothTransitions.slideUp(fullPagePost(postId: postId)));
               }

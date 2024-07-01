@@ -225,7 +225,7 @@ pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<
 
 #[derive(Deserialize)]
 pub struct UserResetPassword {
-  email: String,
+  pub email: String,
 }
 
 pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_>>, Json(body): Json<UserResetPassword>) -> (StatusCode, String) {

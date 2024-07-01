@@ -387,7 +387,7 @@ class _userRatingState extends State<userRating> {
           if (clickable == true) {
             if (openFullContentTree == true) {
               openUserItemContent({
-                "type": "rating",
+                "item_type": "rating",
                 "data": ratingId,
               }, context);
             } else {
