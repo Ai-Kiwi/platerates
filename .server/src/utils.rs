@@ -37,3 +37,33 @@ pub fn milliseconds_to_readable_short(time: i64) -> String {
         return format!("{} milliseconds", time)
     }
 }
+
+pub fn test_username(username : &String) -> (bool, String) {
+    if username.len() > 25 {
+        return (false, "username to large".to_owned());
+    }
+
+    if username.len() < 3 {
+        return (false, "username to short".to_owned());
+    }
+
+    //let allowed_chars = username.chars().all(char::is_alphanumeric);
+    //if allowed_chars {
+    //    return (false, "username contains invalid chars".to_owned());
+    //}
+
+    return (true, "".to_owned());
+}
+
+pub fn test_bio(username : &String) -> (bool, String) {
+    if username.len() > 500 {
+        return (false, "bio to large".to_owned());
+    }
+
+    //let allowed_chars = username.chars().all(char::is_alphanumeric);
+    //if allowed_chars {
+    //    return (false, "username contains invalid chars".to_owned());
+    //}
+
+    return (true, "".to_owned());
+}

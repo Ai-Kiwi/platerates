@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/usefullWidgets.dart';
@@ -64,9 +65,9 @@ class _AccountInfoSettingsState extends State<AccountInfoSettings> {
       Uri.parse("$serverDomain/profile/settings/change"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: userManager.token,
       },
       body: jsonEncode(<String, String>{
-        'token': userManager.token,
         "setting": setting,
         "value": value,
       }),

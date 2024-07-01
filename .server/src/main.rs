@@ -22,7 +22,7 @@ use licences::post_licenses_update;
 use notifications::{get_notifications_list, get_notifications_unread, post_mark_notification_read, post_update_notification_token, send_notification_to_user_id};
 use pages::{get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
 use serde_json::Value;
-use user_profiles::post_user_follow;
+use user_profiles::{post_setting_change, post_user_follow};
 use user_ratings::post_like_rating;
 use std::env;
 use std::path::PathBuf;
@@ -266,6 +266,7 @@ async fn main() {
         .route("/notification/read", post(post_mark_notification_read))
         .route("/notification/unreadCount", get(get_notifications_unread))
         .route("/admin/banUser", post(post_ban_user))
+        .route("/profile/settings/change", post(post_setting_change))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .layer(cors)
         .with_state(state);
@@ -291,7 +292,6 @@ async fn main() {
 //   TODO /search/users
 //   
 //    - userAccounts
-//   TODO /profile/settings/change
 //   TODO /use-create-account-code
 //   TODO /createAccount
 

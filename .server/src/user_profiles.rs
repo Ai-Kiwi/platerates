@@ -6,7 +6,7 @@ use serde::Deserialize;
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_posts::PostsJustPostId, user_ratings::RatingsJustId, AppState, DATA_IMAGE_AVATARS_FOLDER_PATH};
+use crate::{user_login::test_token_header, user_posts::PostsJustPostId, user_ratings::RatingsJustId, utils::{create_item_id, test_bio, test_username}, AppState, DATA_IMAGE_AVATARS_FOLDER_PATH};
 
 #[derive(Deserialize)]
 pub struct GetUserInfoPaginator {
@@ -395,5 +395,126 @@ pub async fn post_user_follow(State(app_state): State<AppState<'_>>, headers: He
                 return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to unfollow".to_string());
             },
         }
+    }
+}
+
+//update settings
+
+#[derive(Deserialize)]
+pub struct UserSettingChange { 
+    pub setting: String,
+    pub value: String,
+}
+
+pub async fn post_setting_change(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<UserSettingChange>) -> (StatusCode, String) {
+
+    let setting_name: String = body.setting;
+    let setting_value: String = body.value;
+    let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
+    let user_id: String = match token {
+        Ok(value) => value.claims.user_id,
+        Err(_) => return (StatusCode::UNAUTHORIZED, "Not logged in".to_string()),
+    };
+    let database_pool: &Pool<Postgres> = &app_state.database;
+
+    if setting_name == "username" {
+        let (username_valid, username_invalid_reason) = test_username(&setting_value);
+        if username_valid == false{
+            return (StatusCode::BAD_REQUEST, username_invalid_reason)
+        }
+
+        let database_response = sqlx::query("UPDATE user_data SET username = $1 WHERE user_id = $2")
+        .bind(setting_value)
+        .bind(&user_id)
+        .execute(database_pool).await;
+
+        match database_response {
+            Ok(_) => {
+                return (StatusCode::OK, "username updated".to_string())
+            },
+            Err(_) => {
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update username".to_string())
+            },
+        };
+
+    }else if setting_name == "bio" {
+        let (bio_valid, bio_invalid_reason) = test_bio(&setting_value);
+        if bio_valid == false{
+            return (StatusCode::BAD_REQUEST, bio_invalid_reason)
+        }
+
+        let database_response = sqlx::query("UPDATE user_data SET bio = $1 WHERE user_id = $2")
+        .bind(setting_value)
+        .bind(&user_id)
+        .execute(database_pool).await;
+
+        match database_response {
+            Ok(_) => {
+                return (StatusCode::OK, "bio updated".to_string())
+            },
+            Err(_) => {
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update bio".to_string())
+            },
+        };
+    }else if setting_name == "avatar" {
+        let avatar_id: String =  create_item_id();
+
+        let image_data: Vec<u8> = match BASE64.decode(&setting_value.as_bytes()) {
+            Ok(value) => value,
+            Err(_) => return (StatusCode::BAD_REQUEST, "Image invalid".to_string()),
+        };
+    
+        if image_data.len() > 1000000{  //around 1 migabytes
+            return (StatusCode::OK, "avatar file size to large".to_string());
+        }
+
+        let user_data: UserData = match sqlx::query_as::<_, UserData>("SELECT * FROM user_data WHERE user_id = $1")
+        .bind(&user_id)
+        .fetch_one(database_pool).await {
+            Ok(value) => value,
+            Err(err) => return (StatusCode::NOT_FOUND, "User not found".to_string() + &err.to_string()),
+        };       
+
+        //write the file to the disk
+        let image_file_name = format!("{}.jpeg",&avatar_id);
+        let file_path: PathBuf = DATA_IMAGE_AVATARS_FOLDER_PATH.join(image_file_name);
+        let file_response = fs::write(&file_path, image_data);
+        match file_response {
+            Ok(_) => (),
+            Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save avatar image to disk".to_string()),
+        }
+
+
+        let database_response = sqlx::query("UPDATE user_data SET avatar_id = $1 WHERE user_id = $2")
+        .bind(&avatar_id)
+        .bind(&user_id)
+        .execute(database_pool).await;
+
+        match database_response {
+            Ok(_) => {
+                //delete old avatar
+                match user_data.avatar_id {
+                    Some(value) => {
+                        let old_image_file_name = format!("{}.jpeg",&value);
+                        let old_file_path: PathBuf = DATA_IMAGE_AVATARS_FOLDER_PATH.join(old_image_file_name);
+                        let old_file_delete_response = fs::remove_file(&old_file_path);
+                        match old_file_delete_response {
+                            Ok(_) => (),
+                            Err(err) => {
+                                println!("failed to delete old avatar file {}",err);
+                            },
+                        }
+                    },
+                    None => (),
+                }
+                return (StatusCode::OK, "avatar updated".to_string())
+            },
+            Err(_) => {
+                let _ = fs::remove_file(&file_path);
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update avatar".to_string())
+            },
+        };
+    }else{
+        return (StatusCode::BAD_REQUEST, "Invalid setting to change".to_string())
     }
 }

@@ -40,8 +40,8 @@ void main() {
   //if (kDebugMode == true) {}
 
   if (FlavorConfig.instance.variables["release"] == "test") {
-    serverDomain = 'http://192.168.0.157:3030';
-    serverWebsocketDomain = 'ws://192.168.0.157:3030';
+    serverDomain = 'http://192.168.193.86:3030';
+    serverWebsocketDomain = 'ws://192.168.193.86:3030';
   } else if (FlavorConfig.instance.variables["release"] == "dev") {
     serverDomain = 'https://platerates.com';
     serverWebsocketDomain = 'wss://platerates.com';
