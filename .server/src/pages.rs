@@ -339,14 +339,16 @@ pub async fn get_page_terms_of_service() -> Html<&'static str> {
 pub async fn get_page_change_log() -> Html<&'static str> {
   Html(r#"
   <b> 2.0.0 </b> <br>
-  - improved chat
+  - for time being removed chat
   - switched name to PlateRates
   - moved over to being anything food related instead of just toast
   - added support for more then 1 image per post
   - moved backend database to postgresql
   - moved backend to use local file storage for post images
   - recoded backend in rust
-  - 
+  - improved support for web on desktop
+
+  <br>
  
  <b> 1.1.0 </b> <br>
   - Moved bio and username settings to the profile settings page. <br>
