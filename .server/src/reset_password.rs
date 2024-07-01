@@ -269,7 +269,7 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
 
     match database_response {
         Ok(_) => {
-          let email_html: String = r#"
+          let email_html: String = format!(r#"
           <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -277,29 +277,29 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>PlateRates: Reset Your Password</title>
         <style>
-          body {
+          body {{
             font-family: sans-serif;
             margin: 0;
             padding: 0;
-          }
-          .container {
+          }}
+          .container {{
             padding: 20px;
             max-width: 600px;
             margin: 0 auto;
             background-color: #f5f5f5;
-          }
-          .header {
+          }}
+          .header {{
             text-align: center;
-          }
-          .logo {
+          }}
+          .logo {{
             height: 50px; /* Adjust height as needed for your logo */
             width: 50px;  /* Adjust width as needed for your logo */
-          }
-          .content {
+          }}
+          .content {{
             padding: 20px;
             text-align: left;
-          }
-          .reset-button {
+          }}
+          .reset-button {{
             text-align: center;
             padding: 10px 20px;
             background-color: #3498db;
@@ -311,12 +311,12 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
             display: block;
             margin: 20px auto;
             width: 200px;
-          }
-          .footer {
+          }}
+          .footer {{
             text-align: center;
             font-size: 12px;
             padding: 10px;
-          }
+          }}
         </style>
       </head>
       <body>
@@ -329,7 +329,7 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
             <p>We received a request to reset your password for your platerates account.</p>
             <p>If you requested this reset, click the button below to choose a new password.</p>
             <p>**If you did not request a password reset, please ignore this email.**</p>
-            <a href="https://platerates.com/reset-password?reset_code=".to_owned() + &password_reset_code + "" class="reset-button">Reset Password</a>
+            <a href="https://platerates.com/reset-password?reset_code={}" class="reset-button">Reset Password</a>
             <p>This link will expire in 1 hour for your security.</p>
           </div>
           <div class="footer">
@@ -338,7 +338,7 @@ pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_
           </div>
         </div>
       </body>
-      </html>"#.to_owned();
+      </html>"#,&password_reset_code);
 
           let email_receiving: Mailbox = match user_credential_data.email.parse() {
             Ok(value) => value,

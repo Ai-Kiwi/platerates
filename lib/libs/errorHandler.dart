@@ -9,15 +9,18 @@ class errorHandlerClass {
   Future<void> httpError(errorCode, errorMessage, context) async {
     print("http error : $errorMessage code $errorCode");
     if (errorMessage == "invalid token" || errorMessage == "Not logged in") {
-      final response = await http.post(
-        Uri.parse("$serverDomain/login/logout"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          HttpHeaders.authorizationHeader: userManager.token
-        },
-        body: jsonEncode(<String, String>{}),
-      );
-      Phoenix.rebirth(context);
+      //final response = await http.post(
+      //  Uri.parse("$serverDomain/login/logout"),
+      //  headers: <String, String>{
+      //    'Content-Type': 'application/json; charset=UTF-8',
+      //    HttpHeaders.authorizationHeader: userManager.token
+      //  },
+      //  body: jsonEncode(<String, String>{}),
+      //);
+      var logged_in = await userManager.checkLoginState();
+      if (logged_in == false) {
+        Phoenix.rebirth(context);
+      }
     } else if (errorMessage == "not accepted licenses") {
       acceptedAllLicenses = false;
       Phoenix.rebirth(context);
