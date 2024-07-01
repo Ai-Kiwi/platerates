@@ -61,7 +61,7 @@ late String version;
 late String buildNumber;
 bool acceptedAllLicenses = true;
 bool accountBanned = false;
-var primaryColor = Colors.green;
+var primaryColor = Colors.blue;
 const primaryColorCodes = {
   "red": Colors.red,
   "deepOrange": Colors.deepOrange,
@@ -96,8 +96,8 @@ class MyApp extends StatelessWidget {
     print("setting main color");
     if (colorThemePrimaryColor != null) {
       if (primaryColorCodes[colorThemePrimaryColor] != null) {
-        if (primaryColor == Colors.green &&
-            primaryColorCodes[colorThemePrimaryColor] != Colors.green) {
+        if (primaryColor == Colors.blue &&
+            primaryColorCodes[colorThemePrimaryColor] != Colors.blue) {
           //reloads if color changes that way you see it
           primaryColor = primaryColorCodes[colorThemePrimaryColor]!;
           print("set color to $colorThemePrimaryColor and reload");
