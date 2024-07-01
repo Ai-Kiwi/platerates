@@ -47,7 +47,7 @@ class _SimpleUserProfileBarState extends State<SimpleUserProfileBar> {
 
     setState(() {
       username = basicUserData["username"];
-      rating = basicUserData["averagePostRating"] + 0.0;
+      //rating = basicUserData["averagePostRating"] + 0.0;
       if (avatarData["imageData"] != null) {
         posterAvatar = base64Decode(avatarData["imageData"]);
       }

@@ -8,6 +8,7 @@ mod licences;
 mod pages;
 mod notifications;
 mod admin;
+mod search;
 
 use std::{collections::HashMap, fs, vec};
 use admin::post_ban_user;
@@ -21,6 +22,7 @@ use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
 use licences::post_licenses_update;
 use notifications::{get_notifications_list, get_notifications_unread, post_mark_notification_read, post_update_notification_token, send_notification_to_user_id};
 use pages::{get_page_change_log, get_page_community_guidelines, get_page_delete_data, get_page_privacy_policy, get_page_styles, get_page_terms_of_service};
+use search::get_search_users;
 use serde_json::Value;
 use user_profiles::{post_setting_change, post_user_follow};
 use user_ratings::post_like_rating;
@@ -268,6 +270,7 @@ async fn main() {
         .route("/notification/unreadCount", get(get_notifications_unread))
         .route("/admin/banUser", post(post_ban_user))
         .route("/profile/settings/change", post(post_setting_change))
+        .route("/search/users", get(get_search_users))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .layer(cors)
         .with_state(state);
@@ -288,9 +291,6 @@ async fn main() {
 //   // //will list ammount of reports and tell you what everyone said
 //   //when taken down it will have link to id and owner will be informed, reported will also be informed that it has been taken down. System will also alert all other users of it being taken down that have reviewed it
 //   //when item is reported it will email person who reported it saying item has been reported and for further info contact support
-//   
-//    - searchSystem
-//   TODO /search/users
 //   
 //    - userAccounts
 //   TODO /use-create-account-code
