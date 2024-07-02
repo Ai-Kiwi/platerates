@@ -11,6 +11,11 @@ pub fn create_reset_code() -> String {
     string
 }
 
+pub fn create_create_account_code() -> String {
+    let string: String = generate(512, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+    string
+}
+
 pub fn milliseconds_to_readable_short(time: i64) -> String {
     if time > 1000 * 60 * 60 * 24 * 365 { // is in years
         let time_value = 1000 * 60 * 60 * 24 * 365 ;

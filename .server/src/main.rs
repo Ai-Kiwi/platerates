@@ -10,6 +10,7 @@ mod notifications;
 mod admin;
 mod search;
 mod report;
+mod create_account;
 
 use std::{collections::HashMap, fs, vec};
 use admin::post_ban_user;
@@ -17,6 +18,7 @@ use argon2::Argon2;
 use axum::{
     routing::{get, post}, Router
 };
+use create_account::{get_use_create_account_code, post_create_account};
 use hyper::Method;
 use jsonwebtoken::{DecodingKey, EncodingKey};
 use lettre::{transport::smtp::authentication::Credentials, SmtpTransport};
@@ -274,6 +276,8 @@ async fn main() {
         .route("/profile/settings/change", post(post_setting_change))
         .route("/search/users", get(get_search_users))
         .route("/report", post(post_report))
+        .route("/createAccount", post(post_create_account))
+        .route("/create-account", get(get_use_create_account_code))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .layer(cors)
         .with_state(state);
@@ -282,9 +286,3 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3030").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
-
-//   TODO 
-//   
-//    - userAccounts
-//   TODO /use-create-account-code
-//   TODO /createAccount

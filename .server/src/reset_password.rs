@@ -90,7 +90,7 @@ pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<
           justify-content: center;
           align-items: center;
           min-height: 100vh;
-          background-color: #f5f5f5;
+          background-color: #2196F3;
         }
         .container {
           max-width: 400px;

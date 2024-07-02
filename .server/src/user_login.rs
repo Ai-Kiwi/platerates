@@ -83,8 +83,8 @@ pub async fn test_token(token : &String, state: &AppState<'_>) -> Result<TokenDa
 
     let jwt_token: TokenData<JwtClaims> = match decode::<JwtClaims>(token, &decode_key, &Validation::new(Algorithm::HS512)){
         Ok(value) => value,
-        Err(err) => {
-            println!("token invalid ({})",err);
+        Err(_) => {
+            //println!("token invalid ({})",err);
             return Err(())
         },
     };
@@ -97,25 +97,25 @@ pub async fn test_token(token : &String, state: &AppState<'_>) -> Result<TokenDa
     .bind(&user_id)
     .fetch_one(&*sqlx_pool).await {
         Ok(value) => value,
-        Err(err) => {
-            println!("{} ({err})","didn't find a valid user assigned to token".to_owned());
+        Err(_) => {
+            //println!("{} ({err})","didn't find a valid user assigned to token".to_owned());
             return Err(())
         },
     };
 
     //test if all tokens have been expired since then
     if user_credential_data.tokens_expire_time > jwt_token.claims.creation_date as i64 {
-        println!("all token since creation expired");
+        //println!("all token since creation expired");
         return Err(())
     }
 
     //test if token is in list of manuelly expired tokens
     if user_credential_data.invalid_tokens.contains(token){
-        println!("token manuelly expired");
+        //println!("token manuelly expired");
         return Err(());
     }
 
-    println!("token valid");
+    //println!("token valid");
     Ok(jwt_token)
 }
 

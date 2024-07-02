@@ -28,7 +28,7 @@ CREATE TABLE user_credentials (
   login_attempt_number INT NOT NULL DEFAULT 0,
   invalid_tokens TEXT[] NOT NULL DEFAULT ARRAY[]::text[],
   tokens_expire_time BIGINT NOT NULL DEFAULT 0, 
-  notification_token TEXT,
+  notification_token TEXT UNIQUE,
   password_reset_time BIGINT NOT NULL DEFAULT 0,
   password_reset_code TEXT UNIQUE,
   ban_date BIGINT NOT NULL DEFAULT 0,
@@ -194,6 +194,7 @@ CREATE TABLE account_create_requests (
    request_code TEXT PRIMARY KEY NOT NULL,
    username TEXT NOT NULL,
    email TEXT NOT NULL,
+   password TEXT NOT NULL,
    creation_date BIGINT NOT NULL
 );
 CREATE INDEX account_create_requests_idx_request_code ON account_create_requests (request_code);
