@@ -344,6 +344,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
   - made app restart as soon as login to make licenses prompt as soon as you login instead of after reboot <br>
   - made wide mode on web not always show red icon for new notification <br>
   - added spacing on top of profiles that aren't yours<br>
+  - made background be profile pic for profiles<br>
   <br>
 
   <b> 2.0.0 </b> <br>
