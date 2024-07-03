@@ -91,7 +91,7 @@ pub async fn post_create_account((app_state): State<AppState<'_>>, Json(body): J
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PlateRates: Reset Your Password</title>
+  <title>PlateRates: Activate Your Account</title>
   <style>
     body {{
       font-family: sans-serif;
@@ -142,12 +142,12 @@ pub async fn post_create_account((app_state): State<AppState<'_>>, Json(body): J
     </div>
     <div class="content">
       <p>Hi there,</p>
-      <p>We received a request to reset your password for your platerates account.</p>
-      <p>If you requested this reset, click the button below to choose a new password.</p>
-      <p>**If you did not request a password reset, please ignore this email.**</p>
-      <a href="https://platerates.com/create-account?code={}" class="reset-button">Reset Password</a>
-      <p>This link will expire in 1 hour for your security.</p>
-      <p>If someone is spamming you with these requests please contact our support.</p>
+      <p>Welcome to PlateRates! We're excited to have you on board.</p>
+      <p>Please click the button below to activate your account and start exploring all the features we have to offer.</p>
+      <p>**If you did not create an account with us, please ignore this email.**</p>
+      <a href="https://platerates.com/create-account?code={}" class="reset-button">Activate Account</a>
+      <p>This link will expire in 1 hours for your security.</p>
+      <p>If you need any assistance, feel free to contact our support team.</p>
     </div>
     <div class="footer">
       <p>Having trouble? Contact us at <a href="mailto:support@platerates.com">support@platerates.com</a></p>
