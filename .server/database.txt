@@ -48,7 +48,7 @@ CREATE TABLE posts (
   title TEXT,
   description TEXT,
   image_count INT NOT NULL,
-  post_date BIGINT NOT NULL,
+  post_date BIGINT NOT NULL
   -- rating REAL NOT NULL DEFAULT 0,
   -- rating_count INT NOT NULL DEFAULT 0
 );
@@ -203,9 +203,13 @@ CREATE INDEX account_create_requests_idx_request_code ON account_create_requests
 -- sudo systemctl start postgresql
 
 -- sudo su - postgres -c "psql"
+
 -- sudo -u postgres psql -U toasteruser -d toasterdev
 -- \c toasterdev
 
 
 -- sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE toasterdev TO toasteruser; GRANT ALL PRIVILEGES ON SCHEMA public TO toasteruser;"
 -- ALTER DATABASE toasterdev OWNER TO toasteruser;
+
+-- CREATE USER plateratesuser;
+-- CREATE DATABASE platerates;

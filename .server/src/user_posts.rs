@@ -465,15 +465,13 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
 
     //add post to database
     let result = sqlx::query(
-        "INSERT INTO posts (post_id, poster_user_id, title, description, image_count, post_date, rating, rating_count) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
+        "INSERT INTO posts (post_id, poster_user_id, title, description, image_count, post_date) VALUES ($1, $2, $3, $4, $5, $6)")
         .bind(&post_id)
         .bind(&user_id)
         .bind(post_title)
         .bind(post_description)
         .bind(image_count as i32)
         .bind(time_now_ms as i64)
-        .bind(0.0)
-        .bind(0)
         .execute(database_pool).await;
 
     let mut image_upto = 0;
