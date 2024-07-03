@@ -338,6 +338,13 @@ pub async fn get_page_terms_of_service() -> Html<&'static str> {
 //I haven't done these yet
 pub async fn get_page_change_log() -> Html<&'static str> {
   Html(r#"
+  <b> 2.0.1 </b> <br>
+  - added support for back to android 9 <br>
+  - fixed creating account sending you an email incorrectly label reseting password <br>
+  - made app restart as soon as login to make licenses prompt as soon as you login instead of after reboot <br>
+  - made wide mode on web not always show red icon for new notification <br>
+  <br>
+
   <b> 2.0.0 </b> <br>
   - temporarily removed chat <br>
   - switched name to PlateRates <br>

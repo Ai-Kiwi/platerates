@@ -492,7 +492,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                 ),
                                 Visibility(
-                                  visible: unreadNotificationCount > -0.9,
+                                  visible: unreadNotificationCount > 0.9,
                                   child: Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(16),

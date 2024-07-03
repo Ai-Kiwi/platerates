@@ -9,6 +9,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
@@ -250,17 +251,14 @@ class _LoginPageState extends State<LoginPage> {
                                     });
                                     //save login
                                     TextInput.finishAutofillContext();
-                                    // ignore: use_build_context_synchronously
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MyHomePage()),
-                                    );
                                     //prompt server to save token
                                     final fcmToken = await FirebaseMessaging
                                         .instance
                                         .getToken();
-                                    informServerNotificationToken(fcmToken);
+                                    await informServerNotificationToken(
+                                        fcmToken);
+                                    // ignore: use_build_context_synchronously
+                                    Phoenix.rebirth(context);
                                   } else {
                                     // ignore: use_build_context_synchronously
                                     openAlert(
