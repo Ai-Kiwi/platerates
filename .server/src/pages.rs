@@ -343,6 +343,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
   - fixed creating account sending you an email incorrectly label reseting password <br>
   - made app restart as soon as login to make licenses prompt as soon as you login instead of after reboot <br>
   - made wide mode on web not always show red icon for new notification <br>
+  - added spacing on top of profiles that aren't yours<br>
   <br>
 
   <b> 2.0.0 </b> <br>

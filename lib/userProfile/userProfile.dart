@@ -247,12 +247,11 @@ class _UserProfileState extends State<UserProfile> {
         widgetAddedToTop: Column(
           children: [
             const SizedBox(height: 32),
-            Visibility(
-                visible: userId == userManager.userId,
-                child: SizedBox(
-                    height: 30,
-                    child: Center(
-                        child: Row(
+            SizedBox(
+              height: 30,
+              child: userId == userManager.userId
+                  ? Center(
+                      child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Visibility(
@@ -299,7 +298,9 @@ class _UserProfileState extends State<UserProfile> {
                         ),
                         const SizedBox(width: 16),
                       ],
-                    )))),
+                    ))
+                  : Center(),
+            ),
             Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
