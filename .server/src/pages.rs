@@ -339,7 +339,9 @@ pub async fn get_page_terms_of_service() -> Html<&'static str> {
 pub async fn get_page_change_log() -> Html<&'static str> {
   Html(r#"
   <b> 2.0.2 </b> <br>
-    - fixed rating count, post count, following count and followers count<br>
+   - fixed rating count, post count, following count and followers count <br>
+   - added blur to profile picture background image <br>
+   - made your own posts not say you haven't rated them yet <br>
   <br>
 
   <b> 2.0.1 </b> <br>

@@ -332,7 +332,9 @@ class _PostItemState extends State<PostItem> {
                       )),
                   //display if you have rated yet
                   Visibility(
-                      visible: (!hasRated!) && userManager.loggedIn == true,
+                      visible: (!hasRated!) &&
+                          userManager.loggedIn == true &&
+                          userManager.userId != posterUserId,
                       child: const Row(
                         children: [
                           SizedBox(width: 8),

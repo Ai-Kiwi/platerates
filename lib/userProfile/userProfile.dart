@@ -246,10 +246,14 @@ class _UserProfileState extends State<UserProfile> {
                     width: double.infinity,
                     height: double.infinity,
                     child: posterAvatar != null
-                        ? Image.memory(
-                            posterAvatar,
-                            fit: BoxFit.cover,
-                            alignment: Alignment.center,
+                        ? ImageFiltered(
+                            imageFilter:
+                                ImageFilter.blur(sigmaX: 7.5, sigmaY: 7.5),
+                            child: Image.memory(
+                              posterAvatar,
+                              fit: BoxFit.cover,
+                              alignment: Alignment.center,
+                            ),
                           )
                         : Center()),
                 Container(
@@ -257,9 +261,6 @@ class _UserProfileState extends State<UserProfile> {
                       Colors.black.withOpacity(posterAvatar != null ? 0.75 : 0),
                   width: double.infinity,
                   height: double.infinity,
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  ),
                 ),
                 LazyLoadPage(
                   openFullContentTree: true,
