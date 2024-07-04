@@ -60,10 +60,6 @@ pub struct UserData {
     pub bio: String,
     pub avatar_id: Option<String>,
     pub administrator : bool,
-    pub post_count: i32,
-    pub rating_count: i32,
-    pub followers_count: i32,
-    pub following_count: i32,
     pub creation_date: i64,
     pub licenses: sqlx::types::Json<HashMap<String,i32>>
 }
@@ -94,10 +90,63 @@ pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app
     data_returning.insert("bio".to_string(), Value::String(user_data.bio));
     data_returning.insert("administrator".to_string(), Value::Bool(user_data.administrator));
     data_returning.insert("userId".to_string(), Value::String(user_data.user_id));
-    data_returning.insert("followersCount".to_string(), Value::Number(user_data.followers_count.into()));
-    data_returning.insert("followingCount".to_string(), Value::Number(user_data.following_count.into()));
-    data_returning.insert("postCount".to_string(), Value::Number(user_data.post_count.into()));
-    data_returning.insert("ratingCount".to_string(), Value::Number(user_data.rating_count.into()));
+
+    let following_count_row: (i64,) = match sqlx::query_as(
+        "SELECT COUNT(*) FROM user_follows WHERE follower = $1"
+    )
+    .bind(&user_id)
+    .fetch_one(database_pool)
+    .await {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to count users being followed by");
+            (-1,)
+        },
+    };
+    data_returning.insert("followingCount".to_string(), Value::Number(following_count_row.0.into()));
+
+    let followers_count_row: (i64,) = match sqlx::query_as(
+        "SELECT COUNT(*) FROM user_follows WHERE followee = $1"
+    )
+    .bind(&user_id)
+    .fetch_one(database_pool)
+    .await {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to count users following");
+            (-1,)
+        },
+    };
+    data_returning.insert("followersCount".to_string(), Value::Number(followers_count_row.0.into()));
+
+    let post_count_row: (i64,) = match sqlx::query_as(
+        "SELECT COUNT(*) FROM posts WHERE poster_user_id = $1"
+    )
+    .bind(&user_id)
+    .fetch_one(database_pool)
+    .await {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to count posts");
+            (-1,)
+        },
+    };
+    data_returning.insert("postCount".to_string(), Value::Number(post_count_row.0.into()));
+
+
+    let rating_count_row: (i64,) = match sqlx::query_as(
+        "SELECT COUNT(*) FROM post_ratings WHERE rating_creator = $1 AND rating IS NOT NULL"
+    )
+    .bind(&user_id)
+    .fetch_one(database_pool)
+    .await {
+        Ok(value) => value,
+        Err(_) => {
+            println!("failed to count post ratings");
+            (-1,)
+        },
+    };
+    data_returning.insert("ratingCount".to_string(), Value::Number(rating_count_row.0.into()));
 
     let following: bool = match logged_in_user_id {
         Some(safe_logged_in_user_id) => {

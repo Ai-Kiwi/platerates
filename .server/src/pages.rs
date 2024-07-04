@@ -338,6 +338,10 @@ pub async fn get_page_terms_of_service() -> Html<&'static str> {
 //I haven't done these yet
 pub async fn get_page_change_log() -> Html<&'static str> {
   Html(r#"
+  <b> 2.0.2 </b> <br>
+    - fixed rating count, post count, following count and followers count<br>
+  <br>
+
   <b> 2.0.1 </b> <br>
   - added support for back to android 9 <br>
   - fixed creating account sending you an email incorrectly label reseting password <br>

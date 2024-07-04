@@ -8,10 +8,10 @@ CREATE TABLE user_data (
   bio TEXT NOT NULL,
   avatar_id TEXT,
   administrator BOOLEAN NOT NULL DEFAULT false,
-  post_count INT NOT NULL DEFAULT 0,
-  rating_count INT NOT NULL DEFAULT 0,
-  followers_count INT NOT NULL DEFAULT 0,
-  following_count INT NOT NULL DEFAULT 0,
+  -- post_count INT NOT NULL DEFAULT 0,
+  -- rating_count INT NOT NULL DEFAULT 0,
+  -- followers_count INT NOT NULL DEFAULT 0,
+  -- following_count INT NOT NULL DEFAULT 0,
   creation_date BIGINT NOT NULL,
   licenses JSONB NOT NULL default '{}'::jsonb -- Add one different for tos and what not
 );

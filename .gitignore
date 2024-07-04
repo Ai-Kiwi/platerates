@@ -68,3 +68,5 @@ app.*.map.json
 **/*.rs.bk
 
 *.pdb
+
+.server/benchmark/mass_email.py

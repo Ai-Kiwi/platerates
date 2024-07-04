@@ -1,6 +1,6 @@
 URL="https://platerates.com/latestVersion"
 
-response=$(curl -s -X POST -d "" "$URL")
+response=$(curl -s -X GET -d "" "$URL")
 clientVer=$(yq -r '.version' 'pubspec.yaml')
 
 echo ""
@@ -39,6 +39,7 @@ cargo build --release
 echo "done"
 
 echo " # injecting builds"
+rm -R build/
 mkdir -p build/
 mkdir -p build/static_data/
 cd ..
@@ -46,6 +47,7 @@ cd ..
 #only done now and wihtout sys link as not wanted to be included in typescript
 cp .server/target/release/platerates_server ./.server/build/platerates_server
 cp .server/static_data/jwt.key ./.server/build/static_data/jwt.key
+cp .server/static_data/firebase.json ./.server/build/static_data/firebase.json
 cp -R ./build/web ./.server/build/static_data/web/
 cp ./build/app/outputs/flutter-apk/app-release.apk ./.server/build/static_data/web/Platerates.apk
 
