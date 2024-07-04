@@ -366,20 +366,29 @@ class _userRatingState extends State<userRating> {
               const SizedBox(width: 8),
               Flexible(
                   //text for rating
-                  child: Container(
+                  child: SizedBox(
                       height: 150,
-                      child: ListView(padding: EdgeInsets.zero, children: [
-                        SelectableLinkify(
-                          onOpen: (link) async {
-                            if (!await launchUrl(Uri.parse(link.url))) {
-                              throw Exception('Could not launch ${link.url}');
-                            }
-                          },
-                          text: text,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 15),
-                        )
-                      ])))
+                      child: text != ""
+                          ? ListView(padding: EdgeInsets.zero, children: [
+                              SelectableLinkify(
+                                onOpen: (link) async {
+                                  if (!await launchUrl(Uri.parse(link.url))) {
+                                    throw Exception(
+                                        'Could not launch ${link.url}');
+                                  }
+                                },
+                                text: text,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 15),
+                              )
+                            ])
+                          : ListView(padding: EdgeInsets.zero, children: const [
+                              Text(
+                                "No rating text provided.",
+                                style: const TextStyle(
+                                    color: Colors.grey, fontSize: 15),
+                              )
+                            ])))
             ],
           ),
         ]),

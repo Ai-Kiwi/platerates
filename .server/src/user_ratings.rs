@@ -221,9 +221,6 @@ pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: 
     if text.len() > 500 {
         return (StatusCode::BAD_REQUEST, "rating text is to large".to_string());
     }
-    if text.len() < 5 {
-        return (StatusCode::BAD_REQUEST, "rating text is to short".to_string());
-    }
 
 
     if root_type == "post" {
