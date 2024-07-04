@@ -61,6 +61,7 @@ late String version;
 late String buildNumber;
 bool acceptedAllLicenses = true;
 bool accountBanned = false;
+bool updateNeeded = false;
 var primaryColor = Colors.blue;
 const primaryColorCodes = {
   "red": Colors.red,
@@ -202,11 +203,29 @@ class MyApp extends StatelessWidget {
         },
       );
       if (response.statusCode == 200) {
-        if (response.body != '$version+$buildNumber') {
-          print('server : ${response.body}');
-          print('client : $version+$buildNumber');
+        List<String> serverVersion = response.body.split(".");
+        List<String> clientVersion = version.split(".");
+        updateNeeded = false;
+        print('server : ${response.body}');
+        print(serverVersion);
+        print('client : $version');
+        print(clientVersion);
+
+        if (serverVersion[0] != clientVersion[0]) {
+          //major
           yield "client-out-of-date";
           return;
+        }
+
+        if (serverVersion[1] != clientVersion[1]) {
+          //api change
+          yield "client-out-of-date";
+          return;
+        }
+
+        if (serverVersion[2] != clientVersion[2]) {
+          //minor change
+          updateNeeded = true;
         }
       } else {
         yield "server-contact-error";

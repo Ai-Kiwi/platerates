@@ -338,6 +338,13 @@ pub async fn get_page_terms_of_service() -> Html<&'static str> {
 //I haven't done these yet
 pub async fn get_page_change_log() -> Html<&'static str> {
   Html(r#"
+  <b> Naming system </b> <br>
+  Names in this are split into 3 sections, example : 1.2.3 <br>
+  1 : at the moment stays at one <br>
+  2 : large changes to server api, meaning everyone must update <br> 
+  3 : small changes to client or server that doesn't break api <br>
+  <br>
+
   <b> 2.0.2 </b> <br>
    - fixed rating count, post count, following count and followers count <br>
    - added blur to profile picture background image <br>
@@ -348,6 +355,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - changed app backend code to com.platerates <br>
    - made page reopen when rating or comment posted instead of open ontop of current page <br>
    - removed open chat button. Will readd back when chats readded to app <br>
+   - allowed running older versions as long as no major change had been made <br>
   <br>
 
   <b> 2.0.1 </b> <br>
