@@ -356,6 +356,8 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - made page reopen when rating or comment posted instead of open ontop of current page <br>
    - removed open chat button. Will readd back when chats readded to app <br>
    - allowed running older versions as long as no major change had been made <br>
+   - added loading on create post as uploading <br>
+   - added loading as you are logging in <br>
   <br>
 
   <b> 2.0.1 </b> <br>

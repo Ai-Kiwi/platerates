@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/imageUtils.dart';
+import 'package:PlateRates/libs/loadScreen.dart';
 import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +36,15 @@ class _CreatePostState extends State<CreatePostPage> {
   List<String> postNamings = ['public post', 'friend\'s only post'];
   final PageController _pageController = PageController();
   int currentPage = 0;
+  bool uploadingPost = false;
 
   _CreatePostState({required this.imagesData});
 
   @override
   Widget build(BuildContext context) {
+    if (uploadingPost == true) {
+      return LoadingScreen(plateRatesLogo: false);
+    }
     return Scaffold(
         body: PageBackButton(
       warnDiscardChanges: false,
@@ -241,8 +246,11 @@ class _CreatePostState extends State<CreatePostPage> {
                         },
                         "yes": () async {
                           Navigator.pop(context);
-
                           try {
+                            setState(() {
+                              uploadingPost = true;
+                            });
+
                             var imagesUploading = [];
                             for (var i = 0; i < imagesData.length; i++) {
                               // TO DO
@@ -266,6 +274,9 @@ class _CreatePostState extends State<CreatePostPage> {
                                 //    imageUtils.uintListToBytes(imagesData)),
                               }),
                             );
+                            setState(() {
+                              uploadingPost = false;
+                            });
 
                             if (response.statusCode == 201) {
                               // ignore: use_build_context_synchronously
@@ -278,6 +289,9 @@ class _CreatePostState extends State<CreatePostPage> {
                                   response.body, context, null, null);
                             }
                           } on Exception catch (error, stackTrace) {
+                            setState(() {
+                              uploadingPost = false;
+                            });
                             FirebaseCrashlytics.instance
                                 .recordError(error, stackTrace);
                             openAlert("error", "unkown error contacting serer",

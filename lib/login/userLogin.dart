@@ -124,6 +124,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String _username = '';
   String _password = '';
+  bool loggingIn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -231,51 +232,68 @@ class _LoginPageState extends State<LoginPage> {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 16.0),
                             child: SizedBox(
-                              width: double.infinity,
-                              height: 50.0,
-                              child: ElevatedButton(
-                                style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                )),
-                                onPressed: () async {
-                                  LoginResponse correctLogin = await userManager
-                                      .loginUser(_username, _password);
+                                width: double.infinity,
+                                height: 50.0,
+                                child: loggingIn == false
+                                    ? ElevatedButton(
+                                        style: OutlinedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                        )),
+                                        onPressed: () async {
+                                          setState(() {
+                                            loggingIn = true;
+                                          });
 
-                                  if (correctLogin.success == true) {
-                                    //clear cache
-                                    await jsonCache.clear();
-                                    await jsonCache.refresh("expire-data", {
-                                      "expireTime": DateTime.now().day,
-                                      "clientVersion": '$version+$buildNumber'
-                                    });
-                                    //save login
-                                    TextInput.finishAutofillContext();
-                                    //prompt server to save token
-                                    final fcmToken = await FirebaseMessaging
-                                        .instance
-                                        .getToken();
-                                    await informServerNotificationToken(
-                                        fcmToken);
-                                    // ignore: use_build_context_synchronously
-                                    Phoenix.rebirth(context);
-                                  } else {
-                                    // ignore: use_build_context_synchronously
-                                    openAlert(
-                                        "error",
-                                        "invalid login",
-                                        correctLogin.error,
-                                        context,
-                                        null,
-                                        null);
-                                  }
-                                },
-                                child: const Text(
-                                  'Log in',
-                                  style: TextStyle(fontSize: 18.0),
-                                ),
-                              ),
-                            ),
+                                          LoginResponse correctLogin =
+                                              await userManager.loginUser(
+                                                  _username, _password);
+
+                                          if (correctLogin.success == true) {
+                                            //clear cache
+                                            await jsonCache.clear();
+                                            await jsonCache.refresh(
+                                                "expire-data", {
+                                              "expireTime": DateTime.now().day,
+                                              "clientVersion":
+                                                  '$version+$buildNumber'
+                                            });
+                                            //save login
+                                            TextInput.finishAutofillContext();
+                                            //prompt server to save token
+                                            final fcmToken =
+                                                await FirebaseMessaging.instance
+                                                    .getToken();
+                                            await informServerNotificationToken(
+                                                fcmToken);
+                                            setState(() {
+                                              loggingIn = false;
+                                            });
+                                            // ignore: use_build_context_synchronously
+                                            Phoenix.rebirth(context);
+                                          } else {
+                                            setState(() {
+                                              loggingIn = false;
+                                            });
+                                            // ignore: use_build_context_synchronously
+                                            openAlert(
+                                                "error",
+                                                "invalid login",
+                                                correctLogin.error,
+                                                context,
+                                                null,
+                                                null);
+                                          }
+                                        },
+                                        child: const Text(
+                                          'Log in',
+                                          style: TextStyle(fontSize: 18.0),
+                                        ),
+                                      )
+                                    : Center(
+                                        child: CircularProgressIndicator(),
+                                      )),
                           ),
                           TextButton(
                             // reset password
