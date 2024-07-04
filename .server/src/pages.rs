@@ -347,6 +347,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - removed need to add text to rating <br>
    - changed app backend code to com.platerates <br>
    - made page reopen when rating or comment posted instead of open ontop of current page <br>
+   - removed open chat button. Will readd back when chats readded to app <br>
   <br>
 
   <b> 2.0.1 </b> <br>

@@ -468,69 +468,70 @@ class _UserProfileState extends State<UserProfile> {
                                                               fontSize: 16.0),
                                                         )),
                                             ),
-                                            const SizedBox(width: 4),
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                style: OutlinedButton.styleFrom(
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16.0),
-                                                  ),
-                                                  backgroundColor:
-                                                      Colors.grey[800],
-                                                ),
-                                                onPressed: () async {
-                                                  final response =
-                                                      await http.post(
-                                                    Uri.parse(
-                                                        "$serverDomain/chat/openChat"),
-                                                    headers: <String, String>{
-                                                      'Content-Type':
-                                                          'application/json; charset=UTF-8',
-                                                    },
-                                                    body: jsonEncode({
-                                                      "token":
-                                                          userManager.token,
-                                                      "chat_user_id":
-                                                          realUserId,
-                                                    }),
-                                                  );
-
-                                                  if (response.statusCode ==
-                                                      200) {
-                                                    final Map responseJsonData =
-                                                        jsonDecode(
-                                                            response.body);
-
-                                                    // ignore: use_build_context_synchronously
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                FullPageChat(
-                                                                  chatRoomId:
-                                                                      responseJsonData[
-                                                                          "chatRoomId"],
-                                                                )));
-                                                  } else {
-                                                    // ignore: use_build_context_synchronously
-                                                    openAlert(
-                                                        "error",
-                                                        "failed opening message chat",
-                                                        response.body,
-                                                        context,
-                                                        null,
-                                                        null);
-                                                  }
-                                                },
-                                                child: const Text(
-                                                  "open chat",
-                                                  style:
-                                                      TextStyle(fontSize: 16.0),
-                                                ),
-                                              ),
-                                            ),
+                                            //removed till I add feature back
+                                            //const SizedBox(width: 4),
+                                            //Expanded(
+                                            //  child: ElevatedButton(
+                                            //    style: OutlinedButton.styleFrom(
+                                            //      shape: RoundedRectangleBorder(
+                                            //        borderRadius:
+                                            //            BorderRadius.circular(
+                                            //                16.0),
+                                            //      ),
+                                            //      backgroundColor:
+                                            //          Colors.grey[800],
+                                            //    ),
+                                            //    onPressed: () async {
+                                            //      final response =
+                                            //          await http.post(
+                                            //        Uri.parse(
+                                            //            "$serverDomain/chat/openChat"),
+                                            //        headers: <String, String>{
+                                            //          'Content-Type':
+                                            //              'application/json; charset=UTF-8',
+                                            //        },
+                                            //        body: jsonEncode({
+                                            //          "token":
+                                            //              userManager.token,
+                                            //          "chat_user_id":
+                                            //              realUserId,
+                                            //        }),
+                                            //      );
+                                            //
+                                            //      if (response.statusCode ==
+                                            //          200) {
+                                            //        final Map responseJsonData =
+                                            //            jsonDecode(
+                                            //                response.body);
+                                            //
+                                            //        // ignore: use_build_context_synchronously
+                                            //        Navigator.push(
+                                            //            context,
+                                            //            MaterialPageRoute(
+                                            //                builder: (context) =>
+                                            //                    FullPageChat(
+                                            //                      chatRoomId:
+                                            //                          responseJsonData[
+                                            //                              "chatRoomId"],
+                                            //                    )));
+                                            //      } else {
+                                            //        // ignore: use_build_context_synchronously
+                                            //        openAlert(
+                                            //            "error",
+                                            //            "failed opening message chat",
+                                            //            response.body,
+                                            //            context,
+                                            //            null,
+                                            //            null);
+                                            //      }
+                                            //    },
+                                            //    child: const Text(
+                                            //      "open chat",
+                                            //      style:
+                                            //          TextStyle(fontSize: 16.0),
+                                            //    ),
+                                            //  ),
+                                            //),
                                           ],
                                         ),
                                       ),
