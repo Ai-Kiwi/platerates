@@ -21,6 +21,7 @@ pub struct CreateAccount {
 }
 
 pub async fn post_create_account((app_state): State<AppState<'_>>, Json(body): Json<CreateAccount>) -> (StatusCode, String) {
+    println!("user creating account");
     let user_password: &String = &body.password;
     let user_password_bytes: &[u8] = user_password.as_bytes();
     let salt = SaltString::generate(&mut OsRng);
@@ -288,6 +289,7 @@ pub struct ActivateAccountCodePaginator {
 }
 
 pub async fn get_use_create_account_code(pagination: Query<ActivateAccountCodePaginator>, State(app_state): State<AppState<'_>>) -> Html<String> {
+  println!("user using create account code");
     let database_pool: &Pool<Postgres> = &app_state.database;
     let pagination: ActivateAccountCodePaginator = pagination.0;
     let account_create_code: String = pagination.code;

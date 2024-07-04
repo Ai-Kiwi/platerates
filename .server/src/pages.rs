@@ -7,6 +7,7 @@ use hyper::{header::CONTENT_TYPE, Response, StatusCode};
 
 
 pub async fn get_page_community_guidelines() -> Html<&'static str> {
+  println!("fetching community guidelines");
     Html(r#"<!DOCTYPE html>
         <html>
         <head>
@@ -42,6 +43,7 @@ pub async fn get_page_community_guidelines() -> Html<&'static str> {
 
 
 pub async fn get_page_delete_data() -> Html<&'static str> {
+  println!("fetching deletion policies");
     Html(r#"
 <!DOCTYPE html>
 <html>
@@ -95,6 +97,7 @@ pub async fn get_page_delete_data() -> Html<&'static str> {
 }
 
 pub async fn get_page_privacy_policy() -> Html<&'static str> {
+  println!("fetching privacy policy");
     Html(r#"
 <!DOCTYPE html>
 <html>
@@ -225,6 +228,7 @@ pub async fn get_page_privacy_policy() -> Html<&'static str> {
 
 
 pub async fn get_page_styles() -> AxumResponse {
+  println!("fetching css styles page");
   let css_body = r#"
   body {
     background-color: #000;
@@ -250,31 +254,8 @@ pub async fn get_page_styles() -> AxumResponse {
   p, ol {
     font-size: 16px;
     line-height: 1.5;
-  }
-  
-  /* Style links */
-  a {
-    color: #00C853; /* Flutter's default green color */
-    text-decoration: none;
-  }
-  
-  /* Change link styles on hover */
-  a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Add a background color and padding to code revision section */
-  p.revision {
-    background-color: #00C853; /* Flutter's default green color */
-    color: #fff;
-    padding: 10px;
-    text-align: right;
-  }
-  
-  /* Container style for better readability */
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
+  }    println!("user updating licenses accepted");
+
     background-color: #000;
     padding: 20px;
     border: 1px solid #00C853; /* Flutter's default green color */
@@ -293,6 +274,7 @@ pub async fn get_page_styles() -> AxumResponse {
 
 
 pub async fn get_page_terms_of_service() -> Html<&'static str> {
+  println!("fetching terms of service");
   Html(r#"
 <!DOCTYPE html>
 <html>
@@ -337,6 +319,8 @@ pub async fn get_page_terms_of_service() -> Html<&'static str> {
 
 //I haven't done these yet
 pub async fn get_page_change_log() -> Html<&'static str> {
+  println!("fetching change log");
+  println!("user fetching changelog");
   Html(r#"
   <b> Naming system </b> <br>
   Names in this are split into 3 sections, example : 1.2.3 <br>

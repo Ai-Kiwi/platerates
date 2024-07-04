@@ -26,6 +26,7 @@ pub struct UserReportItem {
 }
 
 pub async fn post_report(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<UserReportItem>) -> (StatusCode, String) {
+    println!("user reporting item");
     let report_id: String = create_item_id();
     let item_type_resporting: String = body.item_type;
     let item_id_reporting: String = body.item_id;

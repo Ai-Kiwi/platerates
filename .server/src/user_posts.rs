@@ -21,6 +21,7 @@ pub struct GetPostFeed {
 }
 
 pub async fn get_post_feed(pagination: Query<GetPostFeed>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
+    println!("user getting feed");
     let pagination: GetPostFeed = pagination.0;
     let database_pool: Pool<Postgres> = app_state.database;
     
@@ -83,6 +84,7 @@ pub struct Posts {
 
 
 pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {
+    println!("user getting post data");
     let pagination: GetPostPaginator = pagination.0;
     let database_pool: &Pool<Postgres> = &app_state.database;
     let token = test_token_header(&headers, &app_state).await;
@@ -183,6 +185,7 @@ pub struct GetPostImagePaginator {
 }
 
 pub async fn get_post_image_data(pagination: Query<GetPostImagePaginator>) -> (StatusCode, String) {
+    println!("user geting post image");
     let pagination: GetPostImagePaginator = pagination.0;
     let image_number: String = pagination.image_number;
     //println!("{}", image_number);
@@ -246,7 +249,7 @@ pub struct GetPostRatingPaginator {
 }
 
 pub async fn get_post_ratings(pagination: Query<GetPostRatingPaginator>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
-
+    println!("user getting post ratings");
     let pagination: GetPostRatingPaginator = pagination.0;
     let database_pool = app_state.database;
     
@@ -331,6 +334,7 @@ pub struct PostDeletePostPaginator {
 }
 
 pub async fn post_delete_post(pagination: Query<PostDeletePostPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {  //, Json(body): Json<UserLogin>)  just leaving for when I add logging out of 1 device
+    println!("user deleting post");
     let token = test_token_header(&headers, &app_state).await;
     let database_pool = app_state.database;
 
@@ -388,6 +392,7 @@ pub struct PostUpload {
 }
 
 pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<PostUpload>) -> (StatusCode, String) {
+    println!("user uploading post");
     let post_id: String = create_item_id(); //could be already used inthat case postgres errors, chance is like crazy low tho
     let post_title: &String = &body.title;
     let post_description: &String = &body.description;

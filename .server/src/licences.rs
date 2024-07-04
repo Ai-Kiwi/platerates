@@ -6,7 +6,7 @@ use crate::{user_login::test_token_header, user_profiles::UserData, AppState, LI
 
 
 pub async fn get_unaccepted_licenses(State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {
-    println!("user fetching unaccepted licenses");
+    println!("user getting unaccepted licenses");
     let database_pool: &sqlx::Pool<sqlx::Postgres> = &app_state.database;
     let token_data: jsonwebtoken::TokenData<crate::user_login::JwtClaims> = match test_token_header(&headers, &app_state).await {
         Ok(value) => value,
@@ -61,6 +61,7 @@ pub struct UpdateLicenses {
 }
 
 pub async fn post_licenses_update(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<UpdateLicenses>) -> (StatusCode, String) {
+    println!("user updating licenses accepted");
     let accepted_licenses: Vec<String> = body.licenses;
     let database_pool: &sqlx::Pool<sqlx::Postgres> = &app_state.database;
     let token_data: jsonwebtoken::TokenData<crate::user_login::JwtClaims> = match test_token_header(&headers, &app_state).await {

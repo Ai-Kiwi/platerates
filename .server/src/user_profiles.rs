@@ -191,6 +191,7 @@ pub struct GetUserAvatarPaginator {
 }
 
 pub async fn get_profile_avatar(pagination: Query<GetUserAvatarPaginator>) -> (StatusCode, String) {
+    println!("user getting profile avatar");
     let pagination: GetUserAvatarPaginator = pagination.0;
     let avatar_id: String = pagination.avatar_id;
     //println!("{}", image_number);
@@ -244,7 +245,7 @@ pub struct GetProfilePosts {
 
 
 pub async fn get_profile_posts(pagination: Query<GetProfilePosts>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
-
+    println!("user geting posts from user");
     let pagination: GetProfilePosts = pagination.0;
     let database_pool: Pool<Postgres> = app_state.database;
     
@@ -303,7 +304,7 @@ pub struct GetProfileRatings {
 }
 
 pub async fn get_profile_ratings(pagination: Query<GetProfileRatings>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
-
+    println!("user getting ratings from user");
     let pagination: GetProfileRatings = pagination.0;
     let database_pool = app_state.database;
     
@@ -365,6 +366,7 @@ pub struct UserFollow {
 }
 
 pub async fn post_user_follow(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<FollowUserBody>) -> (StatusCode, String) {
+    println!("user following/unfollowing");
     let following_user_id: String = body.user_id;
     let following: bool = body.following;
 
@@ -456,7 +458,7 @@ pub struct UserSettingChange {
 }
 
 pub async fn post_setting_change(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<UserSettingChange>) -> (StatusCode, String) {
-
+    println!("user changing setting");
     let setting_name: String = body.setting;
     let setting_value: String = body.value;
     let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;

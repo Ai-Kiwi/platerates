@@ -148,6 +148,7 @@ pub async fn post_test_token(State(app_state): State<AppState<'_>>, headers: Hea
 
 
 pub async fn post_logout(State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {  //, Json(body): Json<UserLogin>)  just leaving for when I add logging out of 1 device
+    println!("user logging out");
     let token = test_token_header(&headers, &app_state).await;
     let database_pool = app_state.database;
 

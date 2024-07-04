@@ -21,6 +21,7 @@ pub struct UseResetPasswordCode {
 }
 
 pub async fn post_use_reset_password_code(State(app_state): State<AppState<'_>>, Json(body): Json<UseResetPasswordCode>) -> (StatusCode, String){
+  println!("user using reset password code");
   let user_password = &body.password;
   let user_password_bytes: &[u8] = user_password.as_bytes();
   let user_reset_code = &body.reset_code;
@@ -80,6 +81,7 @@ pub async fn post_use_reset_password_code(State(app_state): State<AppState<'_>>,
 
 
 pub async fn get_reset_password(State(_app_state): State<AppState<'_>>) -> Html<String> {
+  println!("fetch reset password page");
   let body: String = r#"<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -229,11 +231,10 @@ pub struct UserResetPassword {
 }
 
 pub async fn post_create_reset_password_code(State(app_state): State<AppState<'_>>, Json(body): Json<UserResetPassword>) -> (StatusCode, String) {
+  println!("user creating reset password code");
   let user_email: &String = &body.email;
   let database_pool: Pool<Postgres> = app_state.database;
   let emailer = app_state.mailer;
-
-  println!("user running email reset");
 
   //used for reset password time and also used for waiting 500ms before returning stopping time attacks
   let time_now: SystemTime = SystemTime::now();

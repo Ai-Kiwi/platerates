@@ -33,6 +33,7 @@ pub struct Ratings {
 }
 
 pub async fn get_rating_data(pagination: Query<GetRatingPaginator>, headers: HeaderMap, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
+    println!("user getting rating data");
     let pagination: GetRatingPaginator = pagination.0;
     let token = test_token_header(&headers, &app_state).await;
     let user_id: Option<String> = match token {
@@ -153,6 +154,7 @@ pub struct PostDeleteRatingPostPaginator {
 }
 
 pub async fn post_delete_rating_post(pagination: Query<PostDeleteRatingPostPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {  //, Json(body): Json<UserLogin>)  just leaving for when I add logging out of 1 device
+    println!("user deleting rating");
     let token = test_token_header(&headers, &app_state).await;
     let database_pool = app_state.database;
 
@@ -196,6 +198,7 @@ pub struct RatingCreate {
 }             
 
 pub async fn post_create_rating(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<RatingCreate>) -> (StatusCode, String) {
+    println!("user creating rating");
     let rating_id: String = create_item_id();
     let text: &String = &body.text;
     let root_type: &String = &body.root_type;
@@ -347,6 +350,7 @@ pub struct RatingLike {
 
 
 pub async fn post_like_rating(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<RatingLikeBody>) -> (StatusCode, String) {
+    println!("user liking post");
     let rating_id: String = body.rating_id;
     let liking: bool = body.liking;
 

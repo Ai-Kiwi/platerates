@@ -49,6 +49,7 @@ pub struct UserNotification {
 }
 
 pub async fn send_notification_to_user_id(app_state: &AppState<'_>, source_user_id : &str, user_id : &str, item_id: &str, notification_type : NotificationType ) {
+    println!("sending notifications to user");
     //get info about notifcation
     let token: &std::sync::Arc<gcp_auth::Token> = &app_state.firebase_token;
     let fireabase_id: &String = &app_state.firebase_project_id;
@@ -200,7 +201,7 @@ pub struct GetNotificationsListPaginator {
 }
 
 pub async fn get_notifications_list(pagination: Query<GetNotificationsListPaginator>, headers: HeaderMap, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
-
+    println!("user listing notifications");
     let pagination: GetNotificationsListPaginator = pagination.0;
     let database_pool: &sqlx::Pool<_> = &app_state.database;
     let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
@@ -268,6 +269,7 @@ pub struct NotificationTokenBody {
 }    
 
 pub async fn post_update_notification_token(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<NotificationTokenBody>) -> (StatusCode, String) {
+    println!("user updating notification token");
     let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
     let user_id: String = match token {
         Ok(value) => value.claims.user_id,
@@ -300,6 +302,7 @@ pub struct MarkNotificationReadBody {
 }    
 
 pub async fn post_mark_notification_read(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<MarkNotificationReadBody>) -> (StatusCode, String) {
+    println!("user marking notification as read");
     let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
     let user_id: String = match token {
         Ok(value) => value.claims.user_id,
@@ -346,6 +349,7 @@ pub async fn post_mark_notification_read(State(app_state): State<AppState<'_>>, 
 
 
 pub async fn get_notifications_unread(headers: HeaderMap, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
+    println!("user fetching unread notification count");
     let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
     let user_id: String = match token {
         Ok(value) => value.claims.user_id,

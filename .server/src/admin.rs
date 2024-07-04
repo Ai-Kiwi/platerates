@@ -34,6 +34,7 @@ pub struct BanUser {
 }
 
 pub async fn post_ban_user(State(app_state): State<AppState<'_>>, headers: HeaderMap, Json(body): Json<BanUser>) -> (StatusCode, String) {
+    println!("user banning user");
     let token = test_token_header(&headers, &app_state).await;
     let user_id: String = match token {
         Ok(value) => value.claims.user_id,

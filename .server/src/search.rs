@@ -21,7 +21,7 @@ pub struct GetSearchUsersPaginator {
 }
 
 pub async fn get_search_users(pagination: Query<GetSearchUsersPaginator>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
-
+    println!("user searching for users");
     let pagination: GetSearchUsersPaginator = pagination.0;
     let database_pool = &app_state.database;
     let search_text: String = pagination.text;
