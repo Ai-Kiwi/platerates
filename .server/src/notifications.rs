@@ -2,7 +2,7 @@ use std::{collections::HashMap, time::{SystemTime, UNIX_EPOCH}};
 
 use axum::{extract::{Query, State}, Json};
 use hyper::{HeaderMap, StatusCode};
-use serde::{Serialize, Deserialize};
+use serde::{de::value, Deserialize, Serialize};
 use serde_json::{json, to_string, Value};
 
 use crate::{user_login::{test_token_header, UserCredentials}, user_profiles::UserData, utils::create_item_id, AppState};
@@ -11,6 +11,10 @@ use crate::{user_login::{test_token_header, UserCredentials}, user_profiles::Use
 struct Notification {
     body: String,
     title: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Data {
     channel_id: String,
 }
 
@@ -18,6 +22,7 @@ struct Notification {
 struct Message {
     token: String,
     notification: Notification,
+    data: Data,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -131,27 +136,40 @@ pub async fn send_notification_to_user_id(app_state: &AppState<'_>, source_user_
     //let username: String = user_data.username;
     let source_username: String = source_user_data.username;
 
-    let notification: Notification = match notification_type {
-        NotificationType::PostRated => 
-        Notification {
-            title: "New rating".to_owned(),
-            body: format!("{} has rated your post.", source_username),
-            channel_id:"userRating".to_string()
+    let message: Message = match notification_type {
+        NotificationType::PostRated => Message {
+            token: notification_device_token,
+            notification: Notification {
+                title: "New rating".to_owned(),
+                body: format!("{} has rated your post.", source_username),
+            },
+            data: Data {
+                channel_id:"userRating".to_string()
+            }
         },
-        NotificationType::UserLogin => Notification {
-            title: "New account login".to_string(),
-            body: "A new device has logged into your account".to_string(),
-            channel_id:"newLogin".to_string(),
+        NotificationType::UserLogin => Message {
+            token: notification_device_token,
+            notification: Notification {
+                title: "New account login".to_string(),
+                body: "A new device has logged into your account".to_string(),
+            },
+            data: Data {
+                channel_id:"newLogin".to_string(),
+            }
         },
-        NotificationType::RatingComment => Notification {
-            title: "New reply to rating".to_string(),
-            body: format!("{} has replied your rating.", source_username),
-            channel_id:"userComment".to_string()
+        
+        
+    
+        NotificationType::RatingComment => Message {
+            token: notification_device_token,
+            notification: Notification {
+                title: "New reply to rating".to_string(),
+                body: format!("{} has replied your rating.", source_username),
+            },
+            data: Data {
+                channel_id:"userComment".to_string()
+            }
         },
-    };
-    let message: Message = Message {
-        token: notification_device_token,
-        notification,
     };
     let root: Root = Root { message };
     let json_string: String = to_string(&root).unwrap();
