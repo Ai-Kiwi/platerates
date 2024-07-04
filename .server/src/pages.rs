@@ -345,6 +345,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - allowed reading notifcations for deleted items <br>
    - fixed notifcations not sending to devices <br>
    - removed need to add text to rating <br>
+   - changed app backend code to com.platerates <br>
   <br>
 
   <b> 2.0.1 </b> <br>
