@@ -245,6 +245,8 @@ class _PostRatingListState extends State<fullPagePost> {
                                       // ignore: use_build_context_synchronously
                                       Navigator.pop(context);
                                       // ignore: use_build_context_synchronously
+                                      Navigator.pop(context);
+                                      // ignore: use_build_context_synchronously
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(

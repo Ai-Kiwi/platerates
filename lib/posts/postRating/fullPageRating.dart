@@ -185,6 +185,7 @@ class _fullPageRatingState extends State<FullPageRating> {
 
                                   await jsonCache.remove('rating-$rootItem');
                                   Navigator.pop(context);
+                                  Navigator.pop(context);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
