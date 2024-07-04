@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/dataCollect.dart';
 import 'package:PlateRates/libs/timeMaths.dart';
 import 'package:PlateRates/libs/userAvatar.dart';
@@ -98,7 +100,11 @@ class _notificationBarItemState extends State<notificationBarItem> {
         setState(() {
           itemDeleted = true;
           notificationText = "item deleted";
-          notificationTextColor = Colors.red;
+          if (jsonData['read'] == false) {
+            notificationTextColor = Colors.red;
+          } else {
+            notificationTextColor = Colors.orange;
+          }
         });
       }
     }
@@ -155,12 +161,33 @@ class _notificationBarItemState extends State<notificationBarItem> {
             ),
             onTap: () async {
               if (itemDeleted == false) {
-                jsonData = await openNotification(notificationData, context);
+                await openNotification(notificationData, context);
                 setState(() {
                   jsonData = jsonData;
                 });
-                fetchNotificationData();
               }
+              if (jsonData["read"] == false) {
+                var response = await http.post(
+                  Uri.parse("$serverDomain/notification/read"),
+                  headers: <String, String>{
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    HttpHeaders.authorizationHeader: userManager.token
+                  },
+                  body: jsonEncode(<String, String>{
+                    'token': userManager.token,
+                    'notification_id': jsonData['notification_id'],
+                  }),
+                );
+
+                if (response.statusCode == 200) {
+                  jsonData['read'] = true;
+                } else {
+                  openAlert("error", "failed marking notification read",
+                      response.body, context, null, null);
+                }
+              }
+              updateUnreadNotificationCount();
+              fetchNotificationData();
             }),
       ),
     );

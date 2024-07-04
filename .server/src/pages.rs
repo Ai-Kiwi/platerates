@@ -342,6 +342,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - fixed rating count, post count, following count and followers count <br>
    - added blur to profile picture background image <br>
    - made your own posts not say you haven't rated them yet <br>
+   - allowed reading notifcations for deleted items <br>
   <br>
 
   <b> 2.0.1 </b> <br>

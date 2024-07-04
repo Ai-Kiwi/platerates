@@ -236,7 +236,7 @@ Future<void> openUserItemContent(perentData, context) async {
   return;
 }
 
-Future<Map> openNotification(notificationData, context) async {
+Future<void> openNotification(notificationData, context) async {
   final jsonData = notificationData;
 
   if (jsonData['item_type'] == "userRating") {
@@ -252,28 +252,4 @@ Future<Map> openNotification(notificationData, context) async {
   } else {
     print("unkown notification type trying to open");
   }
-  if (jsonData["read"] == false) {
-    var response = await http.post(
-      Uri.parse("$serverDomain/notification/read"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        HttpHeaders.authorizationHeader: userManager.token
-      },
-      body: jsonEncode(<String, String>{
-        'token': userManager.token,
-        'notification_id': jsonData['notification_id'],
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      jsonData['read'] = true;
-    } else {
-      openAlert("error", "failed marking notification read", response.body,
-          context, null, null);
-    }
-  }
-
-  updateUnreadNotificationCount();
-
-  return jsonData;
 }
