@@ -346,6 +346,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - fixed notifcations not sending to devices <br>
    - removed need to add text to rating <br>
    - changed app backend code to com.platerates <br>
+   - made page reopen when rating or comment posted instead of open ontop of current page <br>
   <br>
 
   <b> 2.0.1 </b> <br>
