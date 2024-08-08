@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image/image.dart' as img;
 
 class _imageUtils {
@@ -12,7 +13,12 @@ class _imageUtils {
 
   Future<List<int>?> resizePhoto(inputImageData) async {
     try {
-      var image = img.decodeImage(inputImageData);
+      //remove exif data
+      var cleanImageBytes = await FlutterImageCompress.compressWithList(
+          inputImageData,
+          keepExif: false);
+
+      var image = img.decodeImage(cleanImageBytes);
 
       List<int> startImgSize = img.findTrim(image!);
 

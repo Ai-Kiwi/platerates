@@ -329,6 +329,11 @@ pub async fn get_page_change_log() -> Html<&'static str> {
   3 : small changes to client or server that doesn't break api <br>
   <br>
 
+  <b> 2.0.3 </b> <br>
+   - fixed notifcations not working <br>
+   - fixed leaked exif data <br>
+  <br>
+
   <b> 2.0.2 </b> <br>
    - fixed rating count, post count, following count and followers count <br>
    - added blur to profile picture background image <br>

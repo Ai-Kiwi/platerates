@@ -98,7 +98,7 @@ lazy_static! {
 
 
 
-const CLIENT_VERSION: &str = "2.0.2";
+const CLIENT_VERSION: &str = "2.0.3";
 
 
 
