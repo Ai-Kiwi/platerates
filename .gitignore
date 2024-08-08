@@ -70,3 +70,6 @@ app.*.map.json
 *.pdb
 
 .server/benchmark/mass_email.py
+android/app/google-services.json
+/lib/firebase_options.dart
+firebase.json

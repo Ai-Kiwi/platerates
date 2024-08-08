@@ -51,19 +51,20 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCRQz4L1kCkfO4lVOO5zXzO4hEYdCjDKJE',
-    appId: '1:36306452091:web:533364c6e3c69fd43eecde',
+    appId: '1:36306452091:web:07f933ede9297c1e3eecde',
     messagingSenderId: '36306452091',
     projectId: 'toaster-378805',
     authDomain: 'toaster-378805.firebaseapp.com',
     storageBucket: 'toaster-378805.appspot.com',
-    measurementId: 'G-1RJCM3XWD9',
+    measurementId: 'G-CTP6X7KTDL',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD38Ko9F3bLTDe0BGnCE7YVhwCRYqEDi90',
-    appId: '1:36306452091:android:3d3bdf2beca574f23eecde',
+    appId: '1:36306452091:android:d9b5e866a32e82ce3eecde',
     messagingSenderId: '36306452091',
     projectId: 'toaster-378805',
     storageBucket: 'toaster-378805.appspot.com',
   );
+
 }

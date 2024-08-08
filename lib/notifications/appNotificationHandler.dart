@@ -175,7 +175,7 @@ Future<void> initNotificationHandler() async {
       String title = '${dataValue['title']}';
       String desc = '${dataValue['body']}';
       String openData = '${dataValue['notificationId']}';
-      String channelId = '${dataValue['channelId']}';
+      String channelId = '${dataValue['channel_id']}';
 
       sendNotification(title, desc, openData, channelId);
     } on Exception catch (error, stackTrace) {
@@ -193,7 +193,7 @@ Future<void> initNotificationHandler() async {
       String title = '${dataValue['title']}';
       String desc = '${dataValue['body']}';
       String openData = '${dataValue['notificationId']}';
-      String channelId = '${dataValue['channelId']}';
+      String channelId = '${dataValue['channel_id']}';
 
       sendNotification(title, desc, openData, channelId);
     } on Exception catch (error, stackTrace) {

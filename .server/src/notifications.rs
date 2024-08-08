@@ -16,6 +16,8 @@ struct Notification {
 #[derive(Serialize, Deserialize)]
 struct Data {
     channel_id: String,
+    body: String,
+    title: String,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -141,21 +143,25 @@ pub async fn send_notification_to_user_id(app_state: &AppState<'_>, source_user_
         NotificationType::PostRated => Message {
             token: notification_device_token,
             notification: Notification {
-                title: "New rating".to_owned(),
-                body: format!("{} has rated your post.", source_username),
+                title: "Not Used".to_string(),
+                body: "Not Used".to_string(),
             },
             data: Data {
-                channel_id:"userRating".to_string()
+                channel_id:"userRating".to_string(),
+                title: "New rating".to_owned(),
+                body: format!("{} has rated your post.", source_username),
             }
         },
         NotificationType::UserLogin => Message {
             token: notification_device_token,
             notification: Notification {
-                title: "New account login".to_string(),
-                body: "A new device has logged into your account".to_string(),
+                title: "Not Used".to_string(),
+                body: "Not Used".to_string(),
             },
             data: Data {
                 channel_id:"newLogin".to_string(),
+                title: "New account login".to_string(),
+                body: "A new device has logged into your account".to_string(),
             }
         },
         
@@ -164,11 +170,13 @@ pub async fn send_notification_to_user_id(app_state: &AppState<'_>, source_user_
         NotificationType::RatingComment => Message {
             token: notification_device_token,
             notification: Notification {
-                title: "New reply to rating".to_string(),
-                body: format!("{} has replied your rating.", source_username),
+                title: "Not Used".to_string(),
+                body: "Not Used".to_string(),
             },
             data: Data {
-                channel_id:"userComment".to_string()
+                channel_id:"userComment".to_string(),
+                title: "New reply to rating".to_string(),
+                body: format!("{} has replied your rating.", source_username),
             }
         },
     };
