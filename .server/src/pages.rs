@@ -332,6 +332,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
   <b> 2.1.0 </b> <br>
    - pushed major release to force update for exif patch <br>
    - fixed notification_token not getting cleared from other users <br>
+   - updated notification icon <br>
   <br>
 
   <b> 2.0.3 </b> <br>
