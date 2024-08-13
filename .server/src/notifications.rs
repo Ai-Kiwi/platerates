@@ -287,11 +287,17 @@ pub async fn post_update_notification_token(State(app_state): State<AppState<'_>
 
     let notification_token: String = body.notification_token;
 
-    let _ = sqlx::query("UPDATE user_credentials SET notification_token = $1 WHERE user_id != $2 AND notification_token != $3")
-    .bind(&notification_token)
+    let remove_response = sqlx::query("UPDATE user_credentials SET notification_token = NULL WHERE user_id != $1 AND notification_token = $2")
     .bind(&user_id)
     .bind(&notification_token)
     .execute(database_pool).await;
+    
+    match remove_response {
+        Ok(_) => println!("removed notification_token from other users"),
+        Err(err) => println!("failed to remove notification_token from other users (${err})"),
+    }
+
+    
 
     let response = sqlx::query("UPDATE user_credentials SET notification_token = $1 WHERE user_id = $2")
     .bind(&notification_token)
@@ -299,8 +305,14 @@ pub async fn post_update_notification_token(State(app_state): State<AppState<'_>
     .execute(database_pool).await;
 
     match response {
-        Ok(_) => return (StatusCode::OK, "Updated notification token".to_string()),
-        Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update notification token".to_string()),
+        Ok(_) => {
+            println!("Updated notification token");
+            return (StatusCode::OK, "Updated notification token".to_string());
+        },
+        Err(_) => {
+            println!("Failed to update notification token");
+            return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update notification token".to_string())
+        }
     }
 }
 
