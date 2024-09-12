@@ -7,6 +7,7 @@ import 'package:PlateRates/login/userResetPassword.dart';
 import 'package:PlateRates/notifications/appNotificationHandler.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -205,27 +206,52 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const SizedBox(height: 8.0),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              //login button
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: TextButton(
-                                // reset password
+                          Row(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  //login button
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: TextButton(
+                                    // reset password
 
-                                onPressed: () {
-                                  Navigator.of(context).push(smoothTransitions
-                                      .slideUp(const ResetPasswordPage()));
-                                },
-                                child: const Text(
-                                  'Forgot Password?',
-                                  textAlign: TextAlign.start,
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          smoothTransitions.slideUp(
+                                              const ResetPasswordPage()));
+                                    },
+                                    child: const Text(
+                                      'Forgot Password?',
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
+                              Expanded(child: Center()),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Padding(
+                                  //login button
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: TextButton(
+                                    // reset password
 
+                                    onPressed: () {
+                                      launchUrl(Uri.parse(
+                                          "mailto:support@platerates.com"));
+                                    },
+                                    child: const Text(
+                                      'Contact Support',
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 8.0),
                           Padding(
                             //login button
@@ -261,12 +287,16 @@ class _LoginPageState extends State<LoginPage> {
                                             });
                                             //save login
                                             TextInput.finishAutofillContext();
-                                            //prompt server to save token
-                                            final fcmToken =
-                                                await FirebaseMessaging.instance
-                                                    .getToken();
-                                            await informServerNotificationToken(
-                                                fcmToken);
+                                            if (kIsWeb == false) {
+                                              //prompt server to save token
+                                              final fcmToken =
+                                                  await FirebaseMessaging
+                                                      .instance
+                                                      .getToken();
+                                              await informServerNotificationToken(
+                                                  fcmToken);
+                                            }
+
                                             setState(() {
                                               loggingIn = false;
                                             });

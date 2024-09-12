@@ -332,6 +332,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
   <b> 2.2.0 </b> <br>
    - added auto clearing old cache individually <br>
    - updated dependencies for app <br>
+   - added support link on login screen <br>
   <br>
 
   <b> 2.1.0 </b> <br>
