@@ -6,7 +6,7 @@ import 'dart:ui';
 import 'package:PlateRates/libs/usefullWidgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:PlateRates/chat/openChat.dart';
+//import 'package:PlateRates/chat/openChat.dart';
 import 'package:PlateRates/libs/adminZone.dart';
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/lazyLoadPage.dart';
@@ -170,7 +170,7 @@ class _UserProfileState extends State<UserProfile> {
       if (avatarData["imageData"] != null) {
         posterAvatar = base64Decode(avatarData["imageData"]);
       }
-      updateValue = randomString();
+      //updateValue = randomString();
       _isLoading = false;
     });
   }

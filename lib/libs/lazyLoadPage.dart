@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:PlateRates/chat/chatList.dart';
+//import 'package:PlateRates/chat/chatList.dart';
 import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/login/userLogin.dart';
 import 'package:PlateRates/notifications/notificationBarItem.dart';
@@ -211,10 +211,10 @@ class LazyLoadPageState extends State<LazyLoadPage> {
                 return notificationBarItem(
                   notificationData: itemsCollected[index - 1]["data"],
                 );
-              } else if (itemsCollected[index - 1]["type"] == "chat_room") {
-                return chatBarItem(
-                  chatItem: itemsCollected[index - 1]["data"],
-                );
+                //} else if (itemsCollected[index - 1]["type"] == "chat_room") {
+                //  return chatBarItem(
+                //    chatItem: itemsCollected[index - 1]["data"],
+                //  );
               }
             }
             return null;

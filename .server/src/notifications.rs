@@ -192,9 +192,12 @@ pub async fn send_notification_to_user_id(app_state: &AppState<'_>, source_user_
         .await;      
 
     match res {
-        Ok(_) => {
+        Ok(value) => {
             println!("sent notification");
-            //print!("{}", value.text().await.expect("failed to thingy"));
+            match value.text().await {
+                Ok(print_msg) => println!("{}", print_msg),
+                Err(_) => todo!("failed to format info correctly"),
+            }
         },
         Err(_) => {
             println!("Failed to send notification post request")

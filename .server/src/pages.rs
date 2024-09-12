@@ -329,6 +329,11 @@ pub async fn get_page_change_log() -> Html<&'static str> {
   3 : small changes to client or server that doesn't break api <br>
   <br>
 
+  <b> 2.2.0 </b> <br>
+   - added auto clearing old cache individually <br>
+   - updated dependencies for app <br>
+  <br>
+
   <b> 2.1.0 </b> <br>
    - pushed major release to force update for exif patch <br>
    - fixed notification_token not getting cleared from other users <br>

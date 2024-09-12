@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:PlateRates/chat/chatList.dart';
+//import 'package:PlateRates/chat/chatList.dart';
 import 'package:PlateRates/firebase_options.dart';
 import 'package:PlateRates/libs/loadScreen.dart';
 import 'package:PlateRates/notifications/appNotificationHandler.dart';
@@ -138,35 +138,63 @@ class MyApp extends StatelessWidget {
       jsonCache = JsonCacheMem(JsonCacheHive(box));
     }
 
-    //if I change reset data this also needs to be changed in login script as well as logout script in alerts
-    var expireTime = await jsonCache.value("expire-data");
-    if (expireTime == null) {
-      print("cache expire time is null");
-      await jsonCache.clear();
-      await jsonCache.refresh("expire-data", {
-        "expireTime": DateTime.now().day,
-        "clientVersion": '$version+$buildNumber'
-      });
-    } else {
-      if (expireTime["expireTime"] < (DateTime.now().day - 30)) {
-        print("cache expire time has expired");
+    try {
+      //if I change reset data this also needs to be changed in login script as well as logout script in alerts
+      var expireTime = await jsonCache.value("expire-data");
+      if (expireTime == null) {
+        print("cache expire time is null");
         await jsonCache.clear();
         await jsonCache.refresh("expire-data", {
           "expireTime": DateTime.now().day,
           "clientVersion": '$version+$buildNumber'
         });
       } else {
-        if (expireTime["clientVersion"] != '$version+$buildNumber') {
-          print("cache version is old");
+        if (expireTime["expireTime"] < (DateTime.now().day - 30)) {
+          print("cache expire time has expired");
           await jsonCache.clear();
           await jsonCache.refresh("expire-data", {
             "expireTime": DateTime.now().day,
             "clientVersion": '$version+$buildNumber'
           });
         } else {
-          print("cache expire time is still active");
+          if (expireTime["clientVersion"] != '$version+$buildNumber') {
+            print("cache version is old");
+            await jsonCache.clear();
+            await jsonCache.refresh("expire-data", {
+              "expireTime": DateTime.now().day,
+              "clientVersion": '$version+$buildNumber'
+            });
+          } else {
+            print("cache expire time is still active");
+          }
         }
       }
+      //loop over old keys and delete ones which are old
+      print("testing old keys");
+      var keys = await jsonCache.keys();
+      for (final key in keys) {
+        final keyData = await jsonCache.value(key);
+        //makes sure item is valid
+        print(key);
+        if (keyData != null) {
+          if (keyData["expire"] != null) {
+            if (keyData["expire"] >
+                DateTime.timestamp().millisecondsSinceEpoch) {
+              print("still valid");
+            } else {
+              print("invalid deleteing");
+              jsonCache.remove(key);
+            }
+          } else {
+            print("no expire time ignoring");
+          }
+        } else {
+          print("value null ignoring");
+        }
+      }
+    } on Error catch (err) {
+      print("error handling clear json cache $err");
+      jsonCache.clear();
     }
 
     //if (kIsWeb == false) {
