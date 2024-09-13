@@ -333,6 +333,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - added auto clearing old cache individually <br>
    - updated dependencies for app <br>
    - added support link on login screen <br>
+   - changed post popup to say for post not message, fixed copy id being user id instead of post id <br>
   <br>
 
   <b> 2.1.0 </b> <br>

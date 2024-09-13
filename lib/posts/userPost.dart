@@ -461,8 +461,8 @@ class PostManageButton extends StatelessWidget {
         color: Colors.grey[500],
       ),
       onPressed: () {
-        openAlert("custom_buttons", "select action for message", null, context,
-            null, [
+        openAlert(
+            "custom_buttons", "select action for post", null, context, null, [
           Visibility(
             visible: viewerIsCreator == true,
             child: DialogButton(
@@ -527,7 +527,7 @@ class PostManageButton extends StatelessWidget {
               style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
             onPressed: () async {
-              Clipboard.setData(ClipboardData(text: posterUserId));
+              Clipboard.setData(ClipboardData(text: postId));
             },
           ),
         ]);
