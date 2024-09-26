@@ -159,6 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                               onChanged: (value) {
                                 _username = value;
                               },
+                              initialValue: _username,
                               autofillHints: const [AutofillHints.email],
                               style: const TextStyle(
                                   color: Colors.white, fontSize: 20),
@@ -186,6 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                               onChanged: (value) {
                                 _password = value;
                               },
+                              initialValue: _password,
                               autofillHints: const [AutofillHints.password],
                               obscureText: true,
                               style: const TextStyle(

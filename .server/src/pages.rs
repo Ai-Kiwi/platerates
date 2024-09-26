@@ -335,6 +335,7 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - added support link on login screen <br>
    - changed post popup to say for post not message, fixed copy id being user id instead of post id <br>
    - added feature to add recipes for posts <br>
+   - stopped clearing of email and password feild on attempt to login to account  <br>
   <br>
 
   <b> 2.1.0 </b> <br>
