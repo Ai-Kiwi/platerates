@@ -5,6 +5,7 @@ import 'package:PlateRates/libs/alertSystem.dart';
 import 'package:PlateRates/libs/imageUtils.dart';
 import 'package:PlateRates/libs/loadScreen.dart';
 import 'package:PlateRates/libs/usefullWidgets.dart';
+import 'package:PlateRates/posts/userPostRecipe.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +38,7 @@ class _CreatePostState extends State<CreatePostPage> {
   final PageController _pageController = PageController();
   int currentPage = 0;
   bool uploadingPost = false;
+  String? recipe;
 
   _CreatePostState({required this.imagesData});
 
@@ -223,8 +225,95 @@ class _CreatePostState extends State<CreatePostPage> {
           //  ),
           //),
           const SizedBox(height: 16.0),
+          //recipe
+          Visibility(
+            visible: recipe == null,
+            child: Padding(
+              //take photo button
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                width: double.infinity,
+                height: 50.0,
+                child: ElevatedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+                  onPressed: () {
+                    setState(() {
+                      recipe = r'[{"insert":"Recipes input will go here\n"}]';
+                    });
+                  },
+                  child: const Text(
+                    'Attach recipe',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Visibility(
+            visible: recipe != null,
+            child: Padding(
+                //take photo button
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                          style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          )),
+                          onPressed: () async {
+                            final updated_recipe = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  maintainState: true,
+                                  builder: (context) => RecipeEditor(
+                                        recipeData: recipe!,
+                                      )),
+                            );
+                            setState(() {
+                              recipe = updated_recipe;
+                            });
+                          },
+                          child: const Text(
+                            'Edit recipe',
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 50.0,
+                      height: 50.0,
+                      child: ElevatedButton(
+                          style: OutlinedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              )),
+                          onPressed: () async {
+                            setState(() {
+                              recipe = null;
+                            });
+                          },
+                          child: const Center(
+                              child: Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ))),
+                    ),
+                  ],
+                )),
+          ),
+          const SizedBox(height: 16.0),
           Padding(
-            //take photo button
+            //upload post button
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
               width: double.infinity,
@@ -270,6 +359,7 @@ class _CreatePostState extends State<CreatePostPage> {
                                 "description": _description,
                                 "share_mode": postCodeNames[shareModeSelected],
                                 "images": imagesUploading,
+                                "recipe": recipe,
                                 //"image": base64Encode(
                                 //    imageUtils.uintListToBytes(imagesData)),
                               }),

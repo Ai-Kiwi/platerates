@@ -10,6 +10,7 @@ import 'package:PlateRates/libs/userAvatar.dart';
 import 'package:PlateRates/notifications/appNotificationHandler.dart';
 import 'package:PlateRates/posts/fullPagePost.dart';
 import 'package:PlateRates/login/userLogin.dart';
+import 'package:PlateRates/posts/userPostRecipe.dart';
 import 'package:PlateRates/userProfile/userProfile.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +66,7 @@ class _PostItemState extends State<PostItem> {
   int? postDate;
   int ratingsAmount = 0;
   bool? hasRated = true;
+  String? recipe;
   var posterAvatar;
   String posterUserId = "";
   var imagesData = {};
@@ -101,6 +103,7 @@ class _PostItemState extends State<PostItem> {
       setState(() {
         imagesData[0] = base64Decode(firstImageData['imageData']);
         title = jsonData["title"];
+        recipe = jsonData["recipe"];
         description = jsonData["description"];
         rating = double.parse('${jsonData["rating"]}');
         //imageData = base64Decode(jsonData['imageData']);
@@ -362,7 +365,41 @@ class _PostItemState extends State<PostItem> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8.0),
+                const SizedBox(height: 4.0),
+                Visibility(
+                  visible: recipe != null,
+                  child: Padding(
+                      //login button
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                              width: 100,
+                              height: 20.0,
+                              child: ElevatedButton(
+                                style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                )),
+                                onPressed: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        maintainState: true,
+                                        builder: (context) => RecipeViewer(
+                                              recipeData: recipe!,
+                                            )),
+                                  );
+                                },
+                                child: const Text(
+                                  'Open recipe',
+                                  style: TextStyle(fontSize: 12.0),
+                                ),
+                              )),
+                        ],
+                      )),
+                ),
+                const SizedBox(height: 4.0),
                 Padding(
                     //description
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),

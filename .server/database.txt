@@ -48,7 +48,8 @@ CREATE TABLE posts (
   title TEXT,
   description TEXT,
   image_count INT NOT NULL,
-  post_date BIGINT NOT NULL
+  post_date BIGINT NOT NULL,
+  recipe TEXT
   -- rating REAL NOT NULL DEFAULT 0,
   -- rating_count INT NOT NULL DEFAULT 0
 );

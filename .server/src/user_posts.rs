@@ -78,6 +78,7 @@ pub struct Posts {
     pub description: String, 
     pub image_count: i32, 
     pub post_date: i64,
+    pub recipe: Option<String>
     //pub rating: f32, 
     //pub rating_count: i32, 
 }
@@ -103,6 +104,13 @@ pub async fn get_post_data(pagination: Query<GetPostPaginator>, State(app_state)
     data_returning.insert("title".to_string(), Value::String(post_data.title));
     data_returning.insert("description".to_string(), Value::String(post_data.description));
     data_returning.insert("postDate".to_string(), Value::Number(post_data.post_date.into()));
+    match post_data.recipe {
+        //pretty sure something else is meant to be used instead of match here lol
+        Some(recipe) => {data_returning.insert("recipe".to_string(), Value::String(recipe)); ()},
+        None => (),
+    };
+    
+
 
     let row: (i64,) = match sqlx::query_as(
         "SELECT COUNT(*) FROM post_ratings WHERE parent_post_id = $1"
@@ -388,6 +396,7 @@ pub struct PostUpload {
     title : String,
     description : String,
     images : Vec<String>,
+    recipe : Option<String>,
     //share_mode : String
 }
 
@@ -398,6 +407,7 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
     let post_description: &String = &body.description;
     let images: &Vec<String> = &body.images;
     let image_count: usize = images.len();
+    let recipe: &Option<String> = &body.recipe;
 
     let token = test_token_header(&headers, &app_state).await;
     let user_id = match token {
@@ -427,6 +437,14 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
     }
     if post_description.len() < 5 {
         return (StatusCode::BAD_REQUEST, "description is to short".to_string());
+    }
+
+    match recipe {
+        Some(recipe) => if recipe.len() > 10000 {
+            return (StatusCode::BAD_REQUEST, "recipe size to large".to_string());
+
+        }
+        None => (),
     }
 
     if image_count > 8 {
@@ -470,13 +488,14 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
 
     //add post to database
     let result = sqlx::query(
-        "INSERT INTO posts (post_id, poster_user_id, title, description, image_count, post_date) VALUES ($1, $2, $3, $4, $5, $6)")
+        "INSERT INTO posts (post_id, poster_user_id, title, description, image_count, post_date, recipe) VALUES ($1, $2, $3, $4, $5, $6, $7)")
         .bind(&post_id)
         .bind(&user_id)
         .bind(post_title)
         .bind(post_description)
         .bind(image_count as i32)
         .bind(time_now_ms as i64)
+        .bind(recipe)
         .execute(database_pool).await;
 
     let mut image_upto = 0;
