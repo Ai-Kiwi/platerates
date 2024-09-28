@@ -28,7 +28,7 @@ use pages::{get_page_change_log, get_page_community_guidelines, get_page_delete_
 use report::post_report;
 use search::get_search_users;
 use serde_json::Value;
-use user_profiles::{post_setting_change, post_user_follow};
+use user_profiles::{get_settings, post_setting_change, post_user_follow};
 use user_ratings::post_like_rating;
 use std::env;
 use std::path::PathBuf;
@@ -278,6 +278,7 @@ async fn main() {
         .route("/report", post(post_report))
         .route("/createAccount", post(post_create_account))
         .route("/create-account", get(get_use_create_account_code))
+        .route("/profile/settings/list",get(get_settings))
         .nest_service("/", ServeDir::new(STATIC_DATA_FOLDER_PATH.join("web"))) //host web dir
         .layer(cors)
         .with_state(state);

@@ -6,7 +6,7 @@ use serde::{de::value, Deserialize};
 use serde_json::Value;
 use sqlx::{Pool, Postgres};
 
-use crate::{user_login::test_token_header, user_ratings::{Ratings, RatingsJustId}, utils::create_item_id, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
+use crate::{notifications::{send_notification_to_user_id, NotificationType}, user_login::test_token_header, user_profiles::UserJustUserId, user_ratings::{Ratings, RatingsJustId}, utils::create_item_id, AppState, DATA_IMAGE_POSTS_FOLDER_PATH};
 
 
 #[derive(sqlx::FromRow)]
@@ -475,7 +475,6 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
     .bind(&user_id)
     .fetch_one(database_pool).await {
         Ok(value) => {
-            println!("{}",value.title);
             if value.post_date > (time_now_ms as i64) - (20 * 1000){
                 return (StatusCode::REQUEST_TIMEOUT, "Timed out for 20 seconds".to_string());
             }
@@ -508,6 +507,25 @@ pub async fn post_create_upload(State(app_state): State<AppState<'_>>, headers: 
 
         image_upto = image_upto + 1;
     }
+
+    match sqlx::query_as::<_, UserJustUserId>("SELECT user_id FROM user_data WHERE notify_on_new_post = $1")
+    .bind(true)
+    .fetch_all(database_pool).await {
+        Ok(value) => {
+            for user in value.iter() {
+                let _ = send_notification_to_user_id(&app_state,&user_id,&user.user_id, &post_id, NotificationType::AnyNewPost).await;
+            }
+        },
+        Err(err) => {
+            println!("failed to get users that want to be altered on new post {err}");
+            ()
+        },
+    };
+
+
+
+
+
 
     match result {
         Ok(_) => (StatusCode::CREATED,"Post created".to_owned()),

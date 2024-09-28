@@ -13,7 +13,8 @@ CREATE TABLE user_data (
   -- followers_count INT NOT NULL DEFAULT 0,
   -- following_count INT NOT NULL DEFAULT 0,
   creation_date BIGINT NOT NULL,
-  licenses JSONB NOT NULL default '{}'::jsonb -- Add one different for tos and what not
+  notify_on_new_post BOOLEAN NOT NULL DEFAULT false,
+  licenses JSONB NOT NULL DEFAULT '{}'::jsonb -- Add one different for tos and what not
 );
 CREATE INDEX user_data_idx_username ON user_data (username);
 

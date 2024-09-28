@@ -15,9 +15,14 @@ pub struct GetUserInfoPaginator {
 
 #[derive(sqlx::FromRow)]
 pub struct UserBasicData { 
-    user_id: String,
-    username: String,
-    avatar_id: Option<String>,
+    pub user_id: String,
+    pub username: String,
+    pub avatar_id: Option<String>,
+}
+
+#[derive(sqlx::FromRow)]
+pub struct UserJustUserId { 
+    pub user_id: String,
 }
 
 pub async fn get_profile_basic_data(pagination: Query<GetUserInfoPaginator>, State(app_state): State<AppState<'_>>) -> (StatusCode, String) {
@@ -61,7 +66,8 @@ pub struct UserData {
     pub avatar_id: Option<String>,
     pub administrator : bool,
     pub creation_date: i64,
-    pub licenses: sqlx::types::Json<HashMap<String,i32>>
+    pub licenses: sqlx::types::Json<HashMap<String,i32>>,
+    pub notify_on_new_post : bool
 }
 
 pub async fn get_profile_data(pagination: Query<GetUserInfoPaginator>, State(app_state): State<AppState<'_>>, headers: HeaderMap,) -> (StatusCode, String) {
@@ -565,7 +571,57 @@ pub async fn post_setting_change(State(app_state): State<AppState<'_>>, headers:
                 return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update avatar".to_string())
             },
         };
+    }else if setting_name == "notify_on_new_post" {
+        let new_value: bool = if setting_value == "true" {
+            true
+        }else if setting_value == "false" {
+            false
+        }else {
+            return (StatusCode::BAD_REQUEST, "invalid value".to_owned());
+        };
+
+        let database_response = sqlx::query("UPDATE user_data SET notify_on_new_post = $1 WHERE user_id = $2")
+        .bind(new_value)
+        .bind(&user_id)
+        .execute(database_pool).await;
+
+        match database_response {
+            Ok(_) => {
+                return (StatusCode::OK, "setting updated".to_string())
+            },
+            Err(_) => {
+                return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to update setting".to_string())
+            },
+        };
     }else{
         return (StatusCode::BAD_REQUEST, "Invalid setting to change".to_string())
     }
+}
+
+pub async fn get_settings(State(app_state): State<AppState<'_>>, headers: HeaderMap) -> (StatusCode, String) {
+    println!("user getting settings");
+    let database_pool: &Pool<Postgres> = &app_state.database;
+    let token: Result<jsonwebtoken::TokenData<crate::user_login::JwtClaims>, ()> = test_token_header(&headers, &app_state).await;
+    let logged_in_user_id: Option<String> = match token {
+        Ok(value) => Some(value.claims.user_id),
+        Err(_) => None,
+    };
+
+    let user_data: UserData = match sqlx::query_as::<_, UserData>("SELECT * FROM user_data WHERE user_id = $1")
+    .bind(logged_in_user_id)
+    .fetch_one(database_pool).await {
+        Ok(value) => value,
+        Err(_) => return (StatusCode::NOT_FOUND, "No user found".to_string()),
+    };
+
+    let mut settings_returning: HashMap<String, Value> = HashMap::new();
+
+    settings_returning.insert("notify_on_new_post".to_string(), Value::Bool(user_data.notify_on_new_post));
+
+    let value = match serde_json::to_string(&settings_returning) {
+        Ok(value) => value,
+        Err(_) => return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to convert setting data to json".to_string()),
+    };
+
+    (StatusCode::OK, value)
 }

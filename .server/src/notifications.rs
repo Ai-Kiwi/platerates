@@ -36,6 +36,7 @@ pub enum NotificationType {
     PostRated,
     UserLogin,
     RatingComment,
+    AnyNewPost
 
 }
 
@@ -102,6 +103,7 @@ pub async fn send_notification_to_user_id(app_state: &AppState<'_>, source_user_
         NotificationType::PostRated => "userRating",
         NotificationType::UserLogin => "newLogin",
         NotificationType::RatingComment => "userComment",
+        NotificationType::AnyNewPost => "anyNewPost",
     };
 
     let notification_id: String = create_item_id(); 
@@ -177,6 +179,18 @@ pub async fn send_notification_to_user_id(app_state: &AppState<'_>, source_user_
                 channel_id:"userComment".to_string(),
                 title: "New reply to rating".to_string(),
                 body: format!("{} has replied your rating.", source_username),
+            }
+        },
+        NotificationType::AnyNewPost => Message {
+            token: notification_device_token,
+            notification: Notification {
+                title: "Not Used".to_string(),
+                body: "Not Used".to_string(),
+            },
+            data: Data {
+                channel_id:"anyNewPost".to_string(),
+                title: "New post".to_string(),
+                body: format!("{} just created a new post.", source_username),
             }
         },
     };
