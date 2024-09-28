@@ -68,11 +68,6 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
         print("installing app");
 
         //will download the file
-        //while (await Permission.requestInstallPackages.isGranted == false) {
-        //  // The OS restricts access, for example because of parental controls.
-        //  await Permission.requestInstallPackages.request();
-        //}
-        //sleep(Duration(seconds: 5));
         print(await File(downloadPath).exists());
         if (taskId != null && await File(downloadPath).exists() == true) {
           // Open the downloaded APK file using the android_intent package
@@ -80,45 +75,17 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
           //  _updatingApp = false;
           //});
           AppInstaller.installApk(downloadPath);
+          setState(() {
+            _updatingApp = false;
+          });
         } else {
           setState(() {
             _updatingApp = false;
           });
-          //openAlert("error", "failed downloading update", response.body,
-          //    context, null);
+          openAlert(
+              "error", "failed downloading update", null, context, null, null);
         }
       });
-
-      //get info
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        //String? taskId = await FlutterDownloader.enqueue(
-        //  url: url,
-        //  savedDir: appDir.path,
-        //  fileName: 'Platerates.apk',
-        //  showNotification: true,
-        //  openFileFromNotification: false,
-        //);
-
-        //int? statusCode =
-        //    await AndroidPackageInstaller.installApk(apkFilePath: downloadPath);
-        //print(statusCode);
-        //if (code != null) {
-        //  PackageInstallerStatus installationStatus =
-        //      PackageInstallerStatus.byCode(statusCode);
-        //  print(installationStatus.name);
-        //}
-
-        //SystemNavigator.pop();
-      } else {
-        // Handle download error
-        //openAlert(
-        //    "error", "failed downloading update", response.body, context, null);
-        print('Error: ${response.statusCode}');
-        setState(() {
-          _updatingApp = false;
-        });
-      }
     } on Exception catch (error, stackTrace) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
       print(error);
@@ -156,52 +123,39 @@ class _DisplayErrorMessagePageState extends State<DisplayErrorMessagePage>
               const SizedBox(
                 height: 32,
               ),
-
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
-                child: Text(
-                  "you must update your client to keep using Platerates\ncurrently auto updating is not supported please uninstall then reinstall the app",
-                  style: TextStyle(
-                    color: Color.fromARGB(210, 255, 255, 255),
-                    fontWeight: FontWeight.normal,
-                    fontSize: 15,
-                  ),
-                  textAlign: TextAlign.center,
+              const Text(
+                "you may need to give some permissions to update",
+                style: TextStyle(
+                  color: Color.fromARGB(210, 255, 255, 255),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 15,
                 ),
               ),
-              //const Text(
-              //  "you may need to give some permissions to update",
-              //  style: TextStyle(
-              //    color: Color.fromARGB(210, 255, 255, 255),
-              //    fontWeight: FontWeight.normal,
-              //    fontSize: 15,
-              //  ),
-              //),
-              //const Text(
-              //  "app will close after done, you must reopen it yourself",
-              //  style: TextStyle(
-              //    color: Color.fromARGB(210, 255, 255, 255),
-              //    fontWeight: FontWeight.normal,
-              //    fontSize: 15,
-              //  ),
-              //),
-              //const SizedBox(height: 32),
-              //Visibility(
-              //  visible: !_updatingApp,
-              //  child: ElevatedButton(
-              //    style: OutlinedButton.styleFrom(
-              //        shape: RoundedRectangleBorder(
-              //      borderRadius: BorderRadius.circular(15.0),
-              //    )),
-              //    onPressed: () async {
-              //      downloadAndInstallApp();
-              //    },
-              //    child: const Text(
-              //      'update app',
-              //      style: TextStyle(fontSize: 18.0),
-              //    ),
-              //  ),
-              //),
+              const Text(
+                "app will close after done, you must reopen it yourself",
+                style: TextStyle(
+                  color: Color.fromARGB(210, 255, 255, 255),
+                  fontWeight: FontWeight.normal,
+                  fontSize: 15,
+                ),
+              ),
+              const SizedBox(height: 32),
+              Visibility(
+                visible: !_updatingApp,
+                child: ElevatedButton(
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  )),
+                  onPressed: () async {
+                    downloadAndInstallApp();
+                  },
+                  child: const Text(
+                    'update app',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                ),
+              ),
               Visibility(
                 visible: _updatingApp,
                 child: Padding(

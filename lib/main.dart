@@ -13,7 +13,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_flavor/flutter_flavor.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -438,14 +437,6 @@ class _MyHomePageState extends State<MyHomePage> {
             unreadMessagesCount = jsonData['newChatMessages'];
             //unreadMessageCount = jsonData['unreadMessageCount'];
           });
-        }
-        if (await FlutterAppBadger.isAppBadgeSupported() == true) {
-          if (unreadNotificationCount + unreadMessagesCount > 0) {
-            await FlutterAppBadger.updateBadgeCount(
-                unreadNotificationCount + unreadMessagesCount);
-          } else {
-            await FlutterAppBadger.removeBadge();
-          }
         }
       } else {
         print("failed to update unread notifications");
