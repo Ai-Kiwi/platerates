@@ -337,6 +337,8 @@ pub async fn get_page_change_log() -> Html<&'static str> {
    - added feature to add recipes for posts <br>
    - stopped clearing of email and password feild on attempt to login to account <br>
    - added app updater in app on outdated version <br>
+   - added experimental settings tab <br>
+   - added experimental setting for getting notifications on any new post created <br>
   <br>
 
   <b> 2.1.0 </b> <br>
