@@ -135,8 +135,10 @@ class _UserFeedState extends State<userFeed> {
                       height: 60.0,
                       child: InkWell(
                           onTap: () {
-                            Navigator.of(context).push(
-                                smoothTransitions.slideUp(migrateToAppPage()));
+                            Navigator.of(context).push(smoothTransitions
+                                .slideUp(DisplayErrorMessagePage(
+                              errorMessage: 'client-out-of-date',
+                            )));
                           },
                           child: Container(
                               decoration: BoxDecoration(
