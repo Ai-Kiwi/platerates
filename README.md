@@ -6,7 +6,7 @@ Welcome to the official repository for PlateRates, a fun and engaging social med
 ![image](https://github.com/user-attachments/assets/9c61a25d-22de-48cd-96a9-110b93ae518d)
 ![image](https://github.com/user-attachments/assets/dc53db35-0a57-42a1-9701-a0f7a6bd7983)
 ![image](https://github.com/user-attachments/assets/0c90c701-4713-42b3-b628-f13ebbd757a5)
-![image](https://github.com/user-attachments/assets/cc802c95-9dc4-42d7-838b-ff4693dd8418)
+![image](https://github.com/user-attachments/assets/0e2c7547-0924-43b5-828b-61b7eb5dc7e9)
 
 
 ## What is PlateRates?
