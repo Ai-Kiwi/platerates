@@ -1,20 +1,17 @@
 # PlateRates
 
-Welcome to the official repository for PlateRates, a fun and engaging social media app centered around food. PlateRates was inspired by a joke about an app called Toaster Todo with toast, and it has since evolved through various stages to become an app where you can rate any food. You can find PlateRates at 
-
-![image](https://github.com/user-attachments/assets/76b2d469-e1ba-4840-8063-9c4c61b70a76)
-![image](https://github.com/user-attachments/assets/9c61a25d-22de-48cd-96a9-110b93ae518d)
-![image](https://github.com/user-attachments/assets/dc53db35-0a57-42a1-9701-a0f7a6bd7983)
-![image](https://github.com/user-attachments/assets/0c90c701-4713-42b3-b628-f13ebbd757a5)
-![image](https://github.com/user-attachments/assets/0e2c7547-0924-43b5-828b-61b7eb5dc7e9)
-
+Welcome to the official repository for PlateRates, a fun and engaging social media app centered around food. PlateRates was inspired by a joke about an app called Toaster Todo with toast, and it has since evolved through various stages to become an app where you can rate any food. You can find PlateRates at platerates.com
 
 ## What is PlateRates?
 
 PlateRates is a lighthearted app designed for food enthusiasts to share and rate homemade dishes. Whether you're a culinary expert or just love to experiment in the kitchen, PlateRates is the perfect platform to showcase your creations and get feedback from the community. Unlike other food-related social media apps, PlateRates focuses on food made by users themselves, creating a more personal and fun experience.
 
+![image](https://github.com/user-attachments/assets/76b2d469-e1ba-4840-8063-9c4c61b70a76)
 ![image](https://github.com/user-attachments/assets/3ce1349e-0fa4-4f7c-948f-7ed339726582)
-
+![image](https://github.com/user-attachments/assets/9c61a25d-22de-48cd-96a9-110b93ae518d)
+![image](https://github.com/user-attachments/assets/dc53db35-0a57-42a1-9701-a0f7a6bd7983)
+![image](https://github.com/user-attachments/assets/0c90c701-4713-42b3-b628-f13ebbd757a5)
+![image](https://github.com/user-attachments/assets/0e2c7547-0924-43b5-828b-61b7eb5dc7e9)
 
 ## Features
 
