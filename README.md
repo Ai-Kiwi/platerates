@@ -3,8 +3,10 @@
 Welcome to the official repository for PlateRates, a fun and engaging social media app centered around food. PlateRates was inspired by a joke about an app called Toaster Todo with toast, and it has since evolved through various stages to become an app where you can rate any food. You can find PlateRates at 
 
 ![image](https://github.com/user-attachments/assets/76b2d469-e1ba-4840-8063-9c4c61b70a76)
-![image](https://github.com/user-attachments/assets/8168efa7-189d-4ce5-ac53-097498a0e986)
 ![image](https://github.com/user-attachments/assets/9c61a25d-22de-48cd-96a9-110b93ae518d)
+![image](https://github.com/user-attachments/assets/dc53db35-0a57-42a1-9701-a0f7a6bd7983)
+![image](https://github.com/user-attachments/assets/0c90c701-4713-42b3-b628-f13ebbd757a5)
+![image](https://github.com/user-attachments/assets/cc802c95-9dc4-42d7-838b-ff4693dd8418)
 
 
 ## What is PlateRates?
