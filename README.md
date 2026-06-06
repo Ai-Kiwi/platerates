@@ -10,7 +10,7 @@ PlateRates is a lighthearted app designed for food enthusiasts to share and rate
 ![image](https://github.com/user-attachments/assets/3ce1349e-0fa4-4f7c-948f-7ed339726582)
 ![image](https://github.com/user-attachments/assets/9c61a25d-22de-48cd-96a9-110b93ae518d)
 ![image](https://github.com/user-attachments/assets/dc53db35-0a57-42a1-9701-a0f7a6bd7983)
-![image](https://github.com/user-attachments/assets/0c90c701-4713-42b3-b628-f13ebbd757a5)
+![image](https://github.com/user-attachments/assets/aa771640-a0dc-4f0e-8722-427fb6cae7b3)
 ![image](https://github.com/user-attachments/assets/0e2c7547-0924-43b5-828b-61b7eb5dc7e9)
 
 ## Features
